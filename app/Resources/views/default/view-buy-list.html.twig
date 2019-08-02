@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css"
+          href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/sl-1.3.0/datatables.min.css"/>
+{% endblock %}
+{% block head_javascripts %}
+
+{% endblock %}
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <p>Liste des billets pour </p>
+                <h2>{{ event.titreEvenement }}</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+{% block body %}
+
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+        <section class="section-padding-100">
+            <div class="container">
+                <p style="font-size: 20px;" class="pull-right"><span class="badge badge-danger">{{ ticketState['vendus'] }}</span> billets
+                    vendus, <span class="badge badge-success">{{ ticketState['restants'] }}</span> billets restants</p>
+                <div id="ticketList">Loading...</div>
+                {% if event.isUsingSeatMap %}
+                    <p>
+                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_seat_map'|trans }}</a>
+                    </p>
+                {% endif %}
+            </div>
+        </section>
+    {% endblock %}
+    {% block javascripts %}
+        {{ parent() }}
+        <script type="text/javascript"
+                src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/sl-1.3.0/datatables.min.js"></script>
+        <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
+        <script>
+            $(function () {
+                $('#ticketList').initDataTables({{ datatable_settings(datatable) }}, {
+                    createdRow: function (row, data, index) {//
+                        let id_colonne_billet_restant = 2,id_colonne_billets_total=0;// changer cette valeur si modification datatables
+                        let billets_total = parseInt($('td', row).eq(id_colonne_billets_total).text());
+                        $('td', row).eq(id_colonne_billets_total).html('<h5 ><span class="badge badge-success"> ' + billets_total + '</span></h5> ');
+                        let billets_restants = parseInt($('td', row).eq(id_colonne_billet_restant).text());
+                        if (billets_restants > 0) // si le nombre de billets restants est > 0
+                            $('td', row).eq(id_colonne_billet_restant).html('<h5>' + billets_restants + ' &nbsp; <span class="badge badge-primary">{{ 'events.buy_tickets'|trans }}</span></h5>');
+
+                        else
+                            $('td', row).eq(id_colonne_billet_restant).html('<span class="badge badge">' + billets_restants + '</span>');
+
+                    }
+
+                });
+            });
+        </script>
+    {% endblock %}
+{% endblock %}
+

@@ -1,0 +1,21 @@
+create_event_field_label:
+    submit: 'Enregistrer'
+    title_event: "Titre de l'évènement"
+    date_start: 'Date de début'
+    date_end: 'Date de fin'
+    image_event: 'Image'
+    description: 'Description'
+    categorie: 'Catégorie'
+    lieu: 'Lieu'
+filter_events:
+    countResults: 'Affichage de 1 résultat|Affichage de %count% résultats'
+    noEvents: "Aucun évènements à afficher"
+events:
+    are_you_sure_to_delete: "Etes-vous sur de vouloir supprimer?"
+    delete: "Supprimer"
+    cancel: "Annuler"
+    return_to_seat_map: 'Retourner vers la visualisation de plan de salle'
+    return_to_billet_list: 'Retourner vers la liste des billets'
+    buy_tickets: 'Acheter des billets'
+
+

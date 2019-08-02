@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+{% block title%}
+   {{  event.titreEvenement }} | Plan de salle
+{% endblock %}
+{% block breadcrumb_content %}
+    <p>{{  event.titreEvenement }}</p>
+    <h2>Plan de salle</h2>
+{% endblock %}
+{% block body %}
+    {% block content %}
+        <div id="vue-app-user" class="container-fluid">
+            <!-- Vertical toolbar -->
+            <p class="font-weight-light text-justify">Sélectionner une place pour pouvoir réserver .</p>
+            <div class="row">
+                <div class="col-sm-10">
+                    <canvas-element-user></canvas-element-user>
+                </div>
+                <div class="col-sm-2">
+                    <sidebar-right-user></sidebar-right-user>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+    {% block contact %}{% endblock %}
+    {% block javascripts %}
+        <!-- ##### All Javascript Script ##### -->
+        <!-- jQuery-2.2.4 js -->
+        <script src="{{ asset('js/jquery/jquery-2.2.4.min.js') }}"></script>
+        <!-- Popper js -->
+        <script src="{{ asset('js/bootstrap/popper.min.js') }}"></script>
+        <!-- Bootstrap js -->
+        <script src="{{ asset('js/bootstrap/bootstrap.min.js') }}"></script>
+        <!-- All Plugins js -->
+        <script src="{{ asset('js/plugins/plugins.js') }}"></script>
+        <!-- Active js -->
+        <script src="{{ asset('js/active.js') }}"></script>
+
+        <script type="text/javascript" src="{{ asset('js/fabric.js') }}"></script>
+        <!-- Vue js -->
+        <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
+
+
+    {% endblock %}
+{% endblock %}

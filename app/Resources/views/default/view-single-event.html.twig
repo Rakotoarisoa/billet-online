@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    {{ event.titreEvenement }} | {{ event.dateDebutEvent|date('d-m-Y') }}
+{% endblock %}
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <p>Parcourir</p>
+                <h2>{{ event.titreEvenement }}</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+{% block body %}
+
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+        <div class="blog-area section-padding-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-lg-9">
+
+                        <!-- Single Post Start -->
+                        <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
+                            <!-- Post Thumb -->
+                            <div class="blog-post-thumb mt-30">
+                                <a href="#"><img src="{{ asset('img/blog1.jpg') }}" alt=""></a>
+                                <!-- Post Date -->
+                                <div class="post-date">
+                                    <span>{{ event.dateDebutEvent|date('d') }}</span>
+                                    <span>{{ event.dateDebutEvent|date('m') }} {{ event.dateDebutEvent|date('Y') }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Blog Content -->
+                            <div class="blog-content">
+                                <!-- Post Title -->
+                                <a href="#" class="post-title">{{ event.titreEvenement }}</a>
+                                <!-- Post Meta -->
+                                <div class="post-meta d-flex mb-30">
+                                    <p class="post-author">Par<a href="#">Organisateur</a></p>
+                                    <p class="tags">in<a href="#"> Events</a></p>
+                                    <p class="tags"><a href="#"><span class="badge-success">80</span> Billets
+                                            restants</a></p>
+                                </div>
+                                <!-- Post Excerpt -->
+                                <p>{{ event.description|raw }}</p>
+                                <a class="btn oneMusic-btn m-2" style="text-transform: none;" data-toggle="modal"
+                                   data-target="#choixVue">Acheter des billets <i class="fa fa-ticket"></i></a>
+                                <!--<script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU"></script>
+                                <script>paypal.Buttons({
+                                        createOrder: function(data, actions) {
+                                            // Set up the transaction
+                                            return actions.order.create({
+                                                purchase_units: [{
+                                                    amount: {
+                                                        currency_code:'EUR',
+                                                        value: '300'
+                                                    }
+                                                }],
+
+                                            });
+                                        },
+                                        onApprove: function(data, actions) {
+                                            // Capture the funds from the transaction
+                                            return actions.order.capture().then(function(details) {
+                                                // Show a success message to your buyer
+                                                alert('Transaction completed by ' + details.payer.name.given_name);
+                                            });
+                                        }
+                                    }).render('body');</script>-->
+                            </div>
+                        </div>
+                        <div class="modal fade" id="choixVue" tabindex="-1" role="dialog"
+                             aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Choisir des billets</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {% if event.isUsingSeatMap == 1 %}
+                                            <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"
+                                               class="btn oneMusic-btn m-2" style="text-transform: none;">Sur le plan de salle
+                                                <i class="fa fa-circle"></i></a>
+                                        {% else %}
+                                            <a href="#" class="btn m-2 btn-danger"
+                                               style="text-transform: none;">Plan de salle non disponible</a>
+                                        {% endif %}
+                                        <a href="{{ url('viewTicketList',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d")}) }}"
+                                           class="btn oneMusic-btn m-2" style="text-transform: none;">Liste des
+                                            billets<i class="fa fa-list"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-3">
+                        <div class="blog-sidebar-area">
+
+                            <!-- Widget Area -->
+                            <div class="single-widget-area mb-30">
+                                <div class="widget-title">
+                                    <h5>Categories</h5>
+                                </div>
+                                <div class="widget-content">
+                                    <ul>
+                                        <li><a href="#">Music</a></li>
+                                        <li><a href="#">Events &amp; Press</a></li>
+                                        <li><a href="#">Festivals</a></li>
+                                        <li><a href="#">Lyfestyle</a></li>
+                                        <li><a href="#">Uncategorized</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+
+                            <!-- Widget Area -->
+                            <div class="single-widget-area mb-30">
+                                <div class="widget-title">
+                                    <h5>Tags</h5>
+                                </div>
+                                <div class="widget-content">
+                                    <ul class="tags">
+                                        <li><a href="#">music</a></li>
+                                        <li><a href="#">events</a></li>
+                                        <li><a href="#">artists</a></li>
+                                        <li><a href="#">press</a></li>
+                                        <li><a href="#">mp3</a></li>
+                                        <li><a href="#">videos</a></li>
+                                        <li><a href="#">concerts</a></li>
+                                        <li><a href="#">performers</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Widget Area -->
+                            <div class="single-widget-area mb-30">
+                                <a href="#"><img src="{{ asset('img/add.gif') }}" alt="gif1"></a>
+                            </div>
+
+                            <!-- Widget Area -->
+                            <div class="single-widget-area mb-30">
+                                <a href="#"><img src="{{ asset('img/add2.gif') }}" alt="gif2"></a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+    {% block javascripts %}
+        {{ parent() }} {% endblock %}
+{% endblock %}
+

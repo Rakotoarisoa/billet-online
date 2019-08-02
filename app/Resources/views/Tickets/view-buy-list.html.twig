@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/sl-1.3.0/datatables.min.css"/>
+{% endblock %}
+{% block head_javascripts %}
+
+{% endblock %}
+{%  block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content  %}
+                <p>Liste des billets pour </p>
+                <h2>{{ event.titreEvenement }}</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+{% block body %}
+
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+        <section class="section-padding-100">
+            <div class="container">
+                <div id="ticketList">Loading...</div>
+            </div>
+        </section>
+    {% endblock %}
+    {% block javascripts %}
+        {{ parent() }}
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/sl-1.3.0/datatables.min.js"></script>
+        <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
+        <script>
+            $(function() {
+                $('#ticketList').initDataTables({{ datatable_settings(datatable) }});
+            });
+        </script>
+    {% endblock %}
+{% endblock %}
+

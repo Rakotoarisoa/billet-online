@@ -1,0 +1,55 @@
+{% trans_default_domain 'FOSUserBundle' %}
+{% block body %}
+    <!-- ##### Login Area Start ##### -->
+    <section class="login-area section-padding-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <div class="login-content">
+                        <h3>Bienvenue</h3>
+                        <!-- Login Form -->
+                        <div class="login-form">
+                            <form action="{{ path("fos_user_security_check") }}" method="post">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+                                {% if error %}
+                                    <div class="form-group">
+                                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div></div>
+                                {% endif %}
+                                <div class="form-group">
+                                    <label for="username">{{ 'security.login.username'|trans }}</label>
+                                    <input name="_username" type="text" class="form-control" id="username"
+                                           value="{{ last_username }}">
+                                    <!--<small id="emailHelp" class="form-text text-muted"><i class="fa fa-lock mr-2"></i>We'll never share your email with anyone else.</small>-->
+                                </div>
+                                <div class="form-group">
+                                    <p class="alert-danger">
+                                        {% if app.request.hasPreviousSession %}
+                                        {% for type, messages in app.session.flashbag.all() %}
+                                        {% for message in messages %}
+                                    <div class="flash-{{ type }}">
+                                        {{ message }}
+                                    </div>
+                                    {% endfor %}
+                                    {% endfor %}
+                                    {% endif %}
+                                    </p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">{{ 'security.login.password'|trans }}</label>
+                                    <input name="_password" type="password" class="form-control" id="password">
+                                </div>
+                                <div class="checkbox">
+                                    <input type="checkbox" id="remember_me" name="_remember_me" value="on"/>
+                                    <label for="remember_me">{{ 'security.login.remember_me'|trans }}</label>
+                                </div>
+                                <button id="_submit" name="_submit" type="submit"
+                                        class="btn oneMusic-btn mt-30">{{ 'security.login.submit'|trans }}</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ##### Login Area End ##### -->
+{% endblock %}
