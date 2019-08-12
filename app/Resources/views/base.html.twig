@@ -63,7 +63,7 @@
                                     <!-- Login/Register -->
                                     <div class="login-register-btn mr-50">
                                         {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                                            <span style="color: #FFFFFF;">{{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }}</span> |
+                                            <span style="color: #FFFFFF;"><a style="font-size: 15px;font-weight: inherit;" href="{{ path('fos_user_profile_show') }}">{{ 'layout.logged_in_as'|trans({'%username%': app.user.username}, 'FOSUserBundle') }}</a></span> |
                                             <a href="{{ path('fos_user_security_logout') }}">
                                                 {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
                                             </a>

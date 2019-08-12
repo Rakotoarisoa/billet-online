@@ -1,12 +1,27 @@
 {% trans_default_domain 'FOSUserBundle' %}
+{% block body %}
 <section class="section-padding-100">
     <div class="container">
         <div class="fos_user_user_show">
+            <div class="col-sm-9 col-lg-9">
+                <!-- page content -->
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }}" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">{{ 'profile.show.username'|trans }}: <p class="badge badge-success">{{ user.username }}</p></li>
                 <li class="list-group-item">{{ 'profile.show.email'|trans }}: {{ user.email }}</li>
-                <li class="list-group-item">{{ 'profile.show.email'|trans }}: </li>
+                <a href="{{ path('fos_user_profile_edit') }}" class="btn btn-outline-dark">Modifier mes informations</a>
             </ul>
         </div>
     </div>
 </section>
+{% endblock %}

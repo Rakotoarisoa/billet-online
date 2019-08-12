@@ -6,6 +6,12 @@
             <div class="login-content">
                 {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register','enctype':'multipart/form-data'}}) }}
                 <p class="alert-danger">{{ form_errors(form) }}</p>
+                <div class="row">
+                    <div class="col"><hr/></div>
+                <div class="col-auto">Informations personnelles</div>
+                    <div class="col"><hr/></div>
+                </div>
+
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.nom) }}
                     {{ form_widget(form.nom) }}
@@ -14,80 +20,86 @@
                     {{ form_label(form.prenom) }}
                     {{ form_widget(form.prenom) }}
                 </div>
+                <div class="form-group col-md-10 col-sm-100">
+                    {{ form_label(form.sexe) }}
+                    {{ form_widget(form.sexe) }}
+                    {{ form_errors(form.sexe) }}
+                </div>
+                <div class="form-group col-md-10 col-sm-10">
+                    {{ form_label(form.date_de_naissance) }}
+                    {{ form_widget(form.date_de_naissance) }}
+                    {{ form_errors(form.date_de_naissance) }}
+                </div>
+                <div class="row">
+                    <div class="col"><hr/></div>
+                    <div class="col-auto">Informations de connexion</div>
+                    <div class="col"><hr/></div>
+                </div>
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.username) }}
                     {{ form_widget(form.username) }}
                     {{ form_errors(form.username) }}
                 </div>
                 <div class="form-group col-md-10 col-sm-10">
-                    {{ form_label(form.plainPassword) }}
                     {{ form_widget(form.plainPassword) }}
                     {{ form_errors(form.plainPassword) }}
-
                 </div>
-                <div class="form-group col-md-10 col-sm-10">
-                    {{ form_label(form.adresse) }}
-                    {{ form_widget(form.adresse) }}
-                </div>
-                <div class="form-group col-md-10 col-sm-100">
-                    {{ form_label(form.sexe) }}
-                    {{ form_widget(form.sexe) }}
-                    {{ form_errors(form.sexe) }}
-                </div>
-
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.email) }}
                     {{ form_widget(form.email) }}
                     {{ form_errors(form.email) }}
                 </div>
 
+
+                <div class="row">
+                    <div class="col"><hr/></div>
+                    <div class="col-auto">Contacts</div>
+                    <div class="col"><hr/></div>
+                </div>
+                <div class="form-group col-md-10 col-sm-10">
+                    {{ form_label(form.adresse) }}
+                    {{ form_widget(form.adresse) }}
+                    {{ form_errors(form.adresse) }}
+                </div>
+                <div class="form-row col-md-10 col-sm-10">
+                    <div class="col">
+                        {{ form_label(form.region) }}
+                        {{ form_widget(form.region) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form.pays) }}
+                        {{ form_widget(form.pays) }}
+                    </div>
+                    <div class="col">
+                        {{ form_label(form.code_postal) }}
+                        {{ form_widget(form.code_postal) }}
+                    </div>
+                </div>
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.mobile_phone) }}
                     {{ form_widget(form.mobile_phone) }}
                 </div>
-
+                <hr/>
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.phone) }}
                     {{ form_widget(form.phone) }}
                 </div>
 
                 <div class="form-group col-md-10 col-sm-10">
-                    {{ form_label(form.date_de_naissance) }}
-                    {{ form_widget(form.date_de_naissance) }}
-                    {{ form_errors(form.date_de_naissance) }}
-                </div>
-
-                <div class="form-group col-md-10 col-sm-10">
-                    {{ form_label(form.mobile_phone) }}
-                    {{ form_widget(form.mobile_phone) }}
-                </div>
-
-                <div class="form-row col-md-10 col-sm-10">
-                    <div class="col">
-                    {{ form_label(form.region) }}
-                    {{ form_widget(form.region) }}
-                    </div>
-                    <div class="col">
-                    {{ form_label(form.pays) }}
-                    {{ form_widget(form.pays) }}
-                    </div>
-                    <div class="col">
-                    {{ form_label(form.code_postal) }}
-                    {{ form_widget(form.code_postal) }}
-                    </div>
-                </div>
-                <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.website) }}
                     {{ form_widget(form.website) }}
+                    {{ form_errors(form.website) }}
                 </div>
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.blog) }}
                     {{ form_widget(form.blog) }}
+                    {{ form_errors(form.blog) }}
                 </div>
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.image) }}
                     {{ form_widget(form.image) }}
                     {{ form_errors(form.image) }}
+                    <p class="text text-muted">L'image ne doit pas dépasser 1024Mo. L'image servira de couverture pour votre organisation</p>
                 </div>
                 <div class="form-group col-md-10 col-sm-10">
                     <input class="btn oneMusic-btn mt-30" type="submit" value="{{ 'registration.submit'|trans }}"/>

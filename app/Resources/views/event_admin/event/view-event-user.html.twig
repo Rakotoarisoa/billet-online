@@ -60,7 +60,7 @@
                                     <p class="isPublished">{% if item.isPublished %}Publié{% else %}<i
                                                 class="fa fa-close"></i>Non publié {% endif %}</p>
                                     <div class="event-thumbnail">
-                                        <img src="{{ asset(item.imageEvent) }}" alt="">
+                                        <img src="{{ asset(item.imageEvent) }}" width="350px" height="436.33px">
                                     </div>
                                     <div class="event-text">
                                         <h4>{{ item.titreEvenement }}</h4>
@@ -114,14 +114,14 @@
                 {% else %}
                     <p>{{ 'filter_events.noEvents'|trans }}</p>
                 {% endif %}
-                <div class="row">
+                <!--<div class="row">
                     <div class="col-12">
                         <div class="load-more-btn text-center mt-70">
                             <a href="#" class="btn oneMusic-btn">Charger ... <i
                                         class="fa fa-angle-double-right"></i></a>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </div>
         </section>
     {% endblock %}

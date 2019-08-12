@@ -92,7 +92,8 @@ class RegistrationController extends BaseController
                     );
 
                     if (null === $response = $event->getResponse()) {
-                        $url = $this->generateUrl('fos_user_registration_confirmed');
+                        $this->addFlash('success',"Profil enregistré avec succès");
+                        $url = $this->generateUrl('fos_user_profile_show');
                         $response = new RedirectResponse($url);
                     }
 
@@ -108,7 +109,6 @@ class RegistrationController extends BaseController
                     return $response;
                 }
                 $this->addFlash('success',"Profil enregistré avec succès");
-                return $this->redirectToRoute('fos_user_profile_show');
             }
         }
 

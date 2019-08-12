@@ -38,6 +38,14 @@ events:
         event_reservation: "Réservations"
         event_published_info: "Votre évènement sera visible par les visiteurs"
         event_no_published_info: "Votre évènement ne sera pas visible par les visiteurs"
+profile:
+    show:
+        first_name: "Prénom"
+        last_name: "Nom"
+        roles : "Roles"
+
+        e_mail: "Adresse e-mail"
+
 
 
 

@@ -16,7 +16,6 @@
                                         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                                     </div>
                                 {% endif %}
-                                <div class="form-group">
 
                                     {% if app.request.hasPreviousSession %}
                                         {% for type, messages in app.session.flashbag.all() %}
@@ -30,7 +29,6 @@
                                         {% endfor %}
                                     {% endif %}
 
-                                </div>
                                 <div class="form-group">
                                     <label for="username">{{ 'security.login.username'|trans }}</label>
                                     <input name="_username" type="text" class="form-control" id="username"
@@ -48,6 +46,7 @@
                                 <button id="_submit" name="_submit" type="submit"
                                         class="btn oneMusic-btn mt-30">{{ 'security.login.submit'|trans }}</button>
                             </form>
+                            <p class="text-muted">Pas encore inscrit? <a href="{{  path('fos_user_registration_register')  }}">Inscrivez-vous</a></p>
                         </div>
                     </div>
                 </div>
