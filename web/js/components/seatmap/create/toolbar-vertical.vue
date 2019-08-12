@@ -43,7 +43,7 @@
                 var fileName = "seat-map.json";
                 let pathArray = window.location.pathname.split('/');
                 const api = axios.create({baseURL: pathArray[0]});
-                api.post('/api/event/update-map/'+pathArray[4], {//getting Id of Event
+                api.post('/api/event/update-map/'+pathArray[5], {//getting Id of Event
                     data_map: JSON.stringify(this.fabCanvas)
                 })
                     .then(res => {

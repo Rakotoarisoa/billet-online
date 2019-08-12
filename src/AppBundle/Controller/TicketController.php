@@ -163,7 +163,6 @@ class TicketController extends Controller
         $searchForm = $this->createForm(RechercheBilletType::class);
         $searchForm->handleRequest($request);
         $data=$searchForm->getData();
-        var_dump($request->query->get('identifiant'));
         $billets='';
         if($searchForm->isSubmitted() && $searchForm->isValid())
         {
