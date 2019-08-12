@@ -122,7 +122,7 @@ class HomeController extends Controller
      */
     public function testQRCode(){
         $options = array(
-            'code'   => 'string to encode',
+            'code'   => '001-T1',
             'type'   => 'qrcode',
             'format' => 'png',
             'width'  => 10,

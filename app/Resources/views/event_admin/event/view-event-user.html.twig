@@ -78,10 +78,10 @@
 
                                         </div>
                                         <hr/>
-                                        <div class="btn-group">
-                                            <a data-toggle="modal" data-target="#confirmDelete" href=""
+                                       <!-- <div class="btn-group">
+                                            <a data-toggle="modal" data-target="#confirmDelete" href="" data-id="{# item.id #}"
                                                class="btn btn-danger">Supprimer</a>
-                                        </div>
+                                        </div>-->
 
                                     </div>
                                 </div>
@@ -91,15 +91,18 @@
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Supprimer</h5>
+                                            <h5 class="modal-title">Supprimer</h5>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
                                             <p class="text-justify text-danger text-center">{{ 'events.are_you_sure_to_delete'|trans }}</p>
-                                            <a href="" class="btn btn-danger m-2 pull-right"
-                                               style="text-transform: none;">{{ 'events.delete'|trans }}</a>
+                                            <form method="POST" id="form_delete">
+                                                <input type="hidden" id="id_event" name="id">
+                                            <button type="submit" href="" class="btn btn-danger m-2 pull-right"
+                                               style="text-transform: none;">{{ 'events.delete'|trans }}</button>
+                                            </form>
                                             <a class="btn btn- m-2 pull-right"
                                                style="text-transform: none;">{{ 'events.cancel'|trans }}</a>
                                         </div>
@@ -124,7 +127,15 @@
     {% endblock %}
     <!-- ##### Events Area End ##### -->
     {% block javascripts %}
-        {{ parent() }} {% endblock %}
+        {{ parent() }}
+    <script>
+        $('#confirmDelete').on('show.bs.modal', function (e) {
+            //get data-id attribute of the clicked element
+            var id_event = $(e.relatedTarget).data('id');
+            $("#form_delete").attr('action','/api/event/delete/'+id_event);
+            $("#id_event").attr("value",id_event);
+        });
+    </script>{% endblock %}
 {% endblock %}
 {% block contact %}{% endblock %}
 

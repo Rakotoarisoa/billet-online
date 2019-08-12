@@ -107,6 +107,7 @@ class RegistrationController extends BaseController
                 if (null !== $response = $event->getResponse()) {
                     return $response;
                 }
+                $this->addFlash('success',"Profil enregistré avec succès");
                 return $this->redirectToRoute('fos_user_profile_show');
             }
         }

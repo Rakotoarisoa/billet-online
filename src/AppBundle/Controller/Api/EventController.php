@@ -81,13 +81,13 @@ class EventController extends AbstractFOSRestController
 
     }
     /**
-     * @Rest\Get("/api/event/delete/{id}")
+     * @Rest\Post("/api/event/delete/{id}")
      * @param $id
      * @return View|object|null
      */
-    public function deleteEvent(Request $request){
+    public function deleteEvent(Request $request,$id){
         if($request->getMethod() != 'POST')
-            return new MethodNotAllowedException('');
+            return new MethodNotAllowedException('POST');
         $id=$request->get('id');
         $sn = $this->getDoctrine()->getManager();
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($id);

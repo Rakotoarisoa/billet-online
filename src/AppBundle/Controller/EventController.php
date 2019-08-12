@@ -3,6 +3,7 @@
 
 namespace AppBundle\Controller;
 use AppBundle\Entity\Billet;
+use AppBundle\Entity\CategorieEvenement;
 use AppBundle\Form\EventType;
 use AppBundle\Utils\Slugger;
 use Doctrine\ORM\EntityManager;
@@ -146,7 +147,34 @@ class EventController extends Controller
      * Supprimer un évènement
      * @Route("/{user]/events/delete/{id}", name="viewEventDelete")
      * */
-    public function deleteEventById(){
+    public function deleteEventById(Request $request,Evenement $event){
+        $deleteForm = $this->createDeleteForm($event);
+        $this->addFlash('success','Vous avez supprimé l\'évènement '. $event->getTitreEvenement()." de manière définitive." );
+        $deleteForm->handleRequest($request);
+
+        if ($deleteForm->isSubmitted() && $deleteForm->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($event);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('viewListUser', array(
+            'user' => $event->getUser()
+        ));
+    }
+    /**
+     * Creates a form to delete a categorie entity.
+     *
+     * @param categorie $categorie The categorie entity
+     *
+     * @return
+     */
+    private function createDeleteForm(Evenement $event)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('viewEventDelete', array('id' => $event->getId(), 'user' => $this->getUser()->getUserName())))
+            ->setMethod('DELETE')
+            ->getForm();
     }
     /**
      * Modifier un évènement
@@ -202,21 +230,7 @@ class EventController extends Controller
 
 
     }
-    /**
-     * Creates a form to delete a event entity.
-     *
-     * @param Billet $billet The event entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm(Evenement $event)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('viewEventDelete', array('id' => $event->getId())))
-            ->setMethod('DELETE')
-            ->getForm()
-            ;
-    }
+
     /**
      * Creates a view for event.
      *

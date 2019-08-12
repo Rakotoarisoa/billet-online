@@ -48,7 +48,7 @@
                             <!-- Nav Start -->
                             <div class="classynav">
                                 <ul>
-                                    <li><a href="/">Acceuil</a></li>
+                                    <li><a href="{{ path('viewList') }}">Acceuil</a></li>
                                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
                                         <li><a href="{{ path('createEvent',{'userId':app.user.username }) }}">Créer un
                                                 évènement</a></li>
