@@ -64,8 +64,7 @@ class BilletRepository extends EntityRepository
             JOIN AppBundle:Billet b WITH b.typeBillet=tb.id
             LEFT JOIN AppBundle:Evenement evt WITH evt.id=b.evenement
             WHERE evt.id= :idEvent
-            GROUP BY b.estVendu
-            ORDER BY tb.libelle DESC')
+            GROUP BY b.estVendu DESC')
             ->setParameter('idEvent', $event->getId())
             ->getScalarResult();
         $result = array();

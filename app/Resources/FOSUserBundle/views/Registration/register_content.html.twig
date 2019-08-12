@@ -4,7 +4,6 @@
     <div class="container">
         <div class="col-12 col-lg-12">
             <div class="login-content">
-
                 {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register','enctype':'multipart/form-data'}}) }}
                 <p class="alert-danger">{{ form_errors(form) }}</p>
                 <div class="form-group col-md-10 col-sm-10">
