@@ -2,6 +2,7 @@
 
 
 namespace AppBundle\Form;
+use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,7 +25,13 @@ class RegistrationType extends  AbstractType
             'Femme' => '2',
             ),
             'choices_as_values' => true,'multiple'=>false,'expanded'=>true));
-        $builder->add('date_de_naissance');
+        $builder->add('date_de_naissance', BirthdayType::class,array(
+            'widget'=>'single_text',
+            'attr'=>['class'=>'form-row'],
+            'placeholder' => [
+                'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour',
+            ]
+        ));
         $builder->add('pays');
         $builder->add('code_postal');
         $builder->add('region',TextType::class);

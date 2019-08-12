@@ -13,7 +13,8 @@ import BusBuy from './components/seatmap/purchase/Bus.js'
 import axios from 'axios'
 
 let pathArray = window.location.pathname.split('/');
-let eventId=pathArray[4];
+let eventId=pathArray[3].split('-')[1];
+Vue.prototype.$eventId=eventId;
 /**/
 Vue.component('add-general-form',{
     template: '#add-general-form',
@@ -98,9 +99,10 @@ function mountTemplateByContext(vm_create,vm_buy){
     //const newURL = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + window.location.search;
     const pathArray = window.location.pathname.split('/');
     if(pathArray[5] === "map"){
+        eventId=pathArray[4];
         vm_buy.$mount("#vue-app-user");
     }
-    else if(pathArray[1] === "create-map"){
+    else if(pathArray[3] === "create-map"){
         vm_create.$mount("#vue-app");
     }
 }
@@ -640,11 +642,13 @@ const vm_create = new Vue({
             this.removeSelectedSeat();
         }
     },
-    created() {
+    created(){
         BusCreate.$on('fabricCanvas', fabCanvas => {
             this.fabCanvas=fabCanvas;
-            axios.get("./js/seat-map.json")
+            //console.log(pathArray[3].split('-')[1]);
+            axios.get("/api/event/get-map/"+pathArray[4])
                 .then(response => {
+
                     fabCanvas.loadFromJSON(response.data);
                     // get the array of fabric objects stored in the canvas object
                     var fabGroupObjects = fabCanvas.getObjects();
@@ -683,7 +687,6 @@ const vm_create = new Vue({
             this.makeTable(posX, posY, type, seats, xSeats, ySeats, name, seatingType, price);
         });
         // charger un canvas depuis un fichier json
-        // TODO: Intégration canvas depuis base de données, utilisant axios
 
     },
     components: {ToolbarVertical,SidebarRight,CanvasElement,EditForm,AddForm}
@@ -708,7 +711,7 @@ const vm_buy = new Vue({
         BusBuy.$on('fabricCanvasUser', fabCanvas => {
             this.fabCanvas=fabCanvas;
 
-            axios.get("/api/event/"+eventId+"/getMap")
+            axios.get("/api/event/get-map/"+eventId)
                 .then(response =>{
                  //console.log(response.data);
                 this.fabCanvas.loadFromJSON(response.data);

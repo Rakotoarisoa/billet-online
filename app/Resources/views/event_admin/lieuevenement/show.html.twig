@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Lieuevenement</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ lieuEvenement.id }}</td>
+            </tr>
+            <tr>
+                <th>Adresse</th>
+                <td>{{ lieuEvenement.adresse }}</td>
+            </tr>
+            <tr>
+                <th>Pays</th>
+                <td>{{ lieuEvenement.pays }}</td>
+            </tr>
+            <tr>
+                <th>Codepostal</th>
+                <td>{{ lieuEvenement.codePostal }}</td>
+            </tr>
+            <tr>
+                <th>Nomsalle</th>
+                <td>{{ lieuEvenement.nomSalle }}</td>
+            </tr>
+            <tr>
+                <th>Capacite</th>
+                <td>{{ lieuEvenement.capacite }}</td>
+            </tr>
+            <tr>
+                <th>Structuresalle</th>
+                <td>{{ lieuEvenement.structureSalle }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('place_event_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('place_event_edit', { 'id': lieuEvenement.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

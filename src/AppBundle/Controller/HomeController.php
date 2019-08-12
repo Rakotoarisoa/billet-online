@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Omines\DataTablesBundle\Adapter\ArrayAdapter;
 use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\Controller\DataTablesTrait;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
 
 class HomeController extends Controller
@@ -23,7 +24,6 @@ class HomeController extends Controller
     /**
      * Page d'accueil liste d'évènements
      * @Route("/", name="viewList")
-     * TODO:Implémentation Liste Evenement
      */
     public function showListEvent(Request $request)
     {
@@ -43,19 +43,21 @@ class HomeController extends Controller
      * Page affichage évènement
      * @Route("/event/{date}/{slugEvent}", name="viewSingle")
      * @ParamConverter("event", options={"mapping":{"slugEvent" = "titreEvenementSlug","date"="dateDebutEvenement"}})
-     * TODO:Implémentation Vue Evenement
      */
     public function showSingleEvent(Evenement $event)
     {
-        $path = $this->get('kernel')->getRootDir() . '/../web/js/seat-map.json';
-        $file=file_get_contents($path);
-        $event->setEtatSalle(serialize(json_encode($file)));
+        //$path = $this->get('kernel')->getRootDir() . '/../web/js/seat-map.json';
+        //$file=file_get_contents($path);
+        //$event->setEtatSalle(serialize(json_encode($file)));
+        $repo = $this->getDoctrine()->getRepository(Billet::class);
+        $queryTicketsState=$repo->countPurchasedTickets($event);
         $this->getDoctrine()->getRepository(Evenement::class)->initMapEvent($event);
-        return $this->render('default/view-single-event.html.twig',array('event'=>$event));
+        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketState'=> $queryTicketsState));
     }
     /**
      * Page création map
-     * @Route("/create-map", name="viewCreateMap")
+     * @Route("/create-map", name="viewCreateMape")
+     * @Security("has_role('ROLE_USER')")
      * TODO:Implémentation Création Map
      */
     public function vueCreateMap(){
@@ -65,7 +67,6 @@ class HomeController extends Controller
      * Page Seatmap , reservation de place
      * @Route("/event/{date}/{slugEvent}/{idEvent}/map", name="viewBuyMap")
      * @ParamConverter("event", options={"mapping":{"slugEvent" = "titreEvenementSlug","date"="dateDebutEvenement","idEvent"="id"}})
-     * TODO:Implémentation Vue Map
      */
     public function vueMap(Evenement $event){
 
@@ -76,7 +77,6 @@ class HomeController extends Controller
      * Page Seatmap , reservation de place, liste de billets
      * @Route("/{date}/{slugEvent}/listTicket", name="viewTicketList")
      * @ParamConverter("event", options={"mapping":{"slugEvent" = "titreEvenementSlug","date"="dateDebutEvenement"}})
-     * TODO:Implémentation Liste billet
      * @param Request $request
      * @param Evenement $event
      * @return Response
@@ -88,6 +88,7 @@ class HomeController extends Controller
         $datatable = $this->createDataTable()
             ->add('nombreBillets', TextColumn::class,['label'=>'Nombre total de billets'])
             ->add('libelle', TextColumn::class,['label'=>'Type'])
+            ->add('prix',TextColumn::class,['label'=>'Prix du billet'])
             ->add('reste_tickets',TextColumn::class,['label'=>'Billets restants'])
             ->createAdapter(ArrayAdapter::class,
                $queryDt
@@ -99,6 +100,21 @@ class HomeController extends Controller
         }
         return $this->render('default/view-buy-list.html.twig',array('event'=>$event,'datatable'=>$datatable,'ticketState'=>$queryTicketsState));
 
+    }
+
+    /**
+     * @Route("/contact", name="contact")
+     * @return Response
+     */
+    public function contact(){
+        return $this->render('default/view-contact.html.twig');
+    }
+    /**
+     * @Route("/support", name="support")
+     * @return Response
+     */
+    public function support(){
+        return $this->render('default/view-support.html.twig');
     }
     /**
      * @Route("/testQrCode", name="qc")

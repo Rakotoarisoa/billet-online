@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block head_javascripts %}
+{% endblock %}
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <p>Liste des billets pour </p>
+                <h2>{{ event.titreEvenement }}</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+{% block body %}
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+
+        <section class="section-padding-100">
+            {{ parent() }}
+            <div class="container">
+                <p style="font-size: 20px;" class="pull-right">
+                    {% if ticketState is not empty %}
+                        {% if ticketState['vendus'] is defined %}
+                            <span
+                                    class="badge badge-danger">{{ ticketState['vendus'] }}</span> billets
+                            vendus
+                        {% endif %}
+                        {% if ticketState['vendus'] is defined and  ticketState['restants'] is defined %}
+                         ,
+                        {% endif %}
+                        {% if ticketState['restants'] is defined %}
+                            <span class="badge badge-success">{{ ticketState['restants'] }}</span> billets restants
+                        {% endif %}
+                    {% endif %}
+                </p>
+                <p class="text-muted">Liste de {{ billets.getTotalItemCount }} billets pour l'évènement <a
+                            href="#">{{ event.titreEvenement }}</a></p>
+                <ul>
+                    <li>
+                        <a href="{{ path('billet_new',{'userId':app.user.username,'event':event.titreEvenementSlug}) }}">Créer
+                            un billet</a>
+                    </li>
+                </ul>
+                <br/>
+                {% if billets.getTotalItemCount > 0 %}
+                    {{ form_start(searchForm,{'attr':{'class':'form-inline'},'method':'GET'}) }}
+                    {# form_widget(searchForm) #}
+                        {{ form_label(searchForm.identifiant) }}
+                    &nbsp;
+                        {{ form_widget(searchForm.identifiant) }}
+                    &nbsp; <!--<input type="text" class="form-control mb-2 mr-sm-2" id="email">-->
+                       {{ form_label(searchForm.place_id) }}
+                    &nbsp;
+                        {{ form_widget(searchForm.place_id) }}
+                    &nbsp;
+                        {{ form_label(searchForm.typeBillet) }}
+                    &nbsp;
+                        {{ form_widget(searchForm.typeBillet) }}
+                    &nbsp;
+                        <div class="form-check mb-2 mr-sm-2">
+                            {{ form_label(searchForm.estVendu) }}
+                            &nbsp;
+                            {{ form_widget(searchForm.estVendu) }}
+                        </div>
+                    &nbsp;
+                        <button type="submit" class="btn btn-outline-dark mb-2">Recherche</button>
+
+                    {{ form_end(searchForm) }}
+                    <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>{{ knp_pagination_sortable(billets, 'Identifiant', 'identifiant') }}</th>
+                        <th{% if billets.isSorted('place_id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(billets, 'Identifiant place', 'place_id') }}</th>
+                        <th>{{ knp_pagination_sortable(billets, 'Type', 'libelle') }}</th>
+                        <th>{{ knp_pagination_sortable(billets, 'Vendu', 'est_vendu') }}</th>
+                        <th>{{ knp_pagination_sortable(billets, 'Prix', 'prix') }}</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for billet in billets %}
+                        <tr>
+                            <td>{{ billet.identifiant }}</td>
+                            <td>{{ billet.place_id }}N/A</td>
+
+                            <td>{{ billet.libelle }}</td>
+                            <td>{% if billet.est_vendu %}Oui{% else %}Non{% endif %}</td>
+                            <td>{{ billet.prix }}</td>
+                            <td>
+
+                                <a class="btn btn-success"
+                                   href="{{ path('billet_show', { 'userId':app.user.username,'event':event.titreEvenementSlug,'id': billet.id }) }}">Afficher</a>
+                                <a class="btn btn-danger"
+                                   href="{{ path('billet_edit', { 'userId':app.user.username,'event':event.titreEvenementSlug,'id': billet.id }) }}">Editer</a>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <div class="navigation">
+                    {{ knp_pagination_render(billets) }}
+                </div>
+                {% else %}
+                    <p class="text text-warning">Aucun billet à afficher</p>
+                {% endif %}
+
+                {% if event.isUsingSeatMap %}
+                    <p>
+                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span
+                                    class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_seat_map'|trans }}</a>
+                    </p>
+                {% else %}
+                    <p>
+                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span
+                                    class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
+                    </p>
+                {% endif %}
+            </div>
+            <div class="modal fade" id="nbrBillets" tabindex="-1" role="dialog"
+                 aria-labelledby="" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="">{{ 'events.buy_tickets'|trans }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-inline" id="commande" method="POST" action="{{ path('cart_add') }}">
+                                <div class="form-check form-check-inline">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="select_nb_billets" class="form-check-label">
+                                                <select class="form-control mr-sm-2" id="select_nb_billets"
+                                                        name="select_nb_billets">
+                                                </select>
+                                                <input type="hidden" value="" name="type_billet">
+                                                <input type="hidden" value="{{ event.id }}" name="event_id">
+                                                <input type="hidden"
+                                                       value="{{ path('viewTicketList',{'date': event.dateDebutEvent|date("Y-m-d"),'slugEvent': event.titreEvenementSlug}) }}"
+                                                       name="redirect">
+                                                {{ 'events.tickets'|trans }}
+                                            </label>
+
+                                        </div>
+                                        <div class="col">
+                                            <button class="form-control btn btn-success">{{ 'events.commander'|trans }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endblock %}
+    {% block javascripts %}
+        {{ parent() }}
+    {% endblock %}
+{% endblock %}
+

@@ -4,7 +4,7 @@
     <div class="container">
         <div class="col-12 col-lg-12">
             <div class="login-content">
-                {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register'}}) }}
+                {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register','enctype':'multipart/form-data'}}) }}
                 <p class="alert-danger">{{ form_errors(form) }}</p>
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.nom) }}
@@ -17,10 +17,13 @@
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.username) }}
                     {{ form_widget(form.username) }}
+                    {{ form_errors(form.username) }}
                 </div>
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.plainPassword) }}
                     {{ form_widget(form.plainPassword) }}
+                    {{ form_errors(form.plainPassword) }}
+
                 </div>
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.adresse) }}
@@ -29,11 +32,13 @@
                 <div class="form-group col-md-10 col-sm-100">
                     {{ form_label(form.sexe) }}
                     {{ form_widget(form.sexe) }}
+                    {{ form_errors(form.sexe) }}
                 </div>
 
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.email) }}
                     {{ form_widget(form.email) }}
+                    {{ form_errors(form.email) }}
                 </div>
 
                 <div class="form-group col-md-10 col-sm-10">
@@ -46,9 +51,10 @@
                     {{ form_widget(form.phone) }}
                 </div>
 
-                <div class="form-row col-md-10 col-sm-10">
+                <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.date_de_naissance) }}
                     {{ form_widget(form.date_de_naissance) }}
+                    {{ form_errors(form.date_de_naissance) }}
                 </div>
 
                 <div class="form-group col-md-10 col-sm-10">
@@ -81,6 +87,7 @@
                 <div class="form-group col-md-10 col-sm-10">
                     {{ form_label(form.image) }}
                     {{ form_widget(form.image) }}
+                    {{ form_errors(form.image) }}
                 </div>
                 <div class="form-group col-md-10 col-sm-10">
                     <input class="btn oneMusic-btn mt-30" type="submit" value="{{ 'registration.submit'|trans }}"/>

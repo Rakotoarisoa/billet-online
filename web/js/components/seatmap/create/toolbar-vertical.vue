@@ -20,6 +20,7 @@
 
 <script>
     import Bus from './Bus'
+    import axios from 'axios'
     export default {
         name: "ToolbarVertical",
         template: '#toolbar-vertical',
@@ -40,6 +41,18 @@
                 //TODO : enregistrer les données de la carte .
                 // console.log("download performing on "+ name);
                 var fileName = "seat-map.json";
+                let pathArray = window.location.pathname.split('/');
+                const api = axios.create({baseURL: pathArray[0]});
+                api.post('/api/event/update-map/'+pathArray[4], {//getting Id of Event
+                    data_map: JSON.stringify(this.fabCanvas)
+                })
+                    .then(res => {
+                        console.log(res);
+                        //$('.toast-save-map-success').toast('show');
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
                 var jsonString = JSON.stringify(this.fabCanvas);
                 // console.log("jsonString:");
                 // console.log(jsonString);

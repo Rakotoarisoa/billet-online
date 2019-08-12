@@ -33,33 +33,30 @@
                 <div class="container">
                     <!-- Menu -->
                     <nav class="classy-navbar justify-content-between" id="oneMusicNav">
-
                         <!-- Nav brand -->
-                        <a href="" class="nav-brand"><img src="{{ asset('img/logo.png') }}" alt=""></a>
-
+                        <a href="" class="nav-brand"><img width="156" heigth="17" src="{{ asset('img/ivenco.png') }}" alt=""></a>
                         <!-- Navbar Toggler -->
                         <div class="classy-navbar-toggler">
                             <span class="navbarToggler"><span></span><span></span><span></span></span>
                         </div>
-
                         <!-- Menu -->
                         <div class="classy-menu">
-
                             <!-- Close Button -->
                             <div class="classycloseIcon">
                                 <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
                             </div>
-
                             <!-- Nav Start -->
                             <div class="classynav">
                                 <ul>
                                     <li><a href="/">Acceuil</a></li>
                                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                                        <li><a href="{{ path('createEvent',{'userId':app.user.username }) }}">Créer un évènement</a></li>
-                                        <li><a href="{{ path('viewListUser',{'userId':app.user.username}) }}">Gérer les évènements</a></li>
+                                        <li><a href="{{ path('createEvent',{'userId':app.user.username }) }}">Créer un
+                                                évènement</a></li>
+                                        <li><a href="{{ path('viewListUser',{'userId':app.user.username}) }}">Gérer les
+                                                évènements</a></li>
                                     {% endif %}
-                                    <li><a href="#">Aide</a></li>
-                                    <li><a href="#">Contact</a></li>
+                                    <li><a href="{{ path('support') }}">Aide</a></li>
+                                    <li><a href="{{ path('contact') }}">Contact</a></li>
                                 </ul>
                                 <!-- Login/Register & Cart Button -->
                                 <div class="login-register-cart-button d-flex align-items-center">
@@ -71,32 +68,23 @@
                                                 {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}
                                             </a>
                                         {% else %}
-                                            <a id="loginBtn"
+                                            <a id="loginBtn" data-toggle="tooltip" title="Vous pouvez créer et administrer des évènements en étant connecté" data-placement="bottom"
                                                href="{{ path('fos_user_security_login') }}">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}
                                             </a> <b style="color: #FFF;">|</b>
                                             <a id="register"
                                                href="{{ path('fos_user_registration_register') }}">{{ 'layout.register'|trans({}, 'FOSUserBundle') }}
                                             </a>
                                         {% endif %}
-
                                     </div>
-                                    {% if app.request.hasPreviousSession %}
-                                        {% for type, messages in app.session.flashbag.all() %}
-                                            {% for message in messages %}
-                                                <div class="flash-{{ type }}">
-                                                    {{ message }}
-                                                </div>
-                                            {% endfor %}
-                                        {% endfor %}
-                                    {% endif %}
                                     <!-- Cart Button -->
-                                    <!--<div class="cart-btn">
-                                        <p><span class="icon-shopping-cart" data-tooltip="test"></span> <span class="quantity">1</span></p>
-                                    </div>-->
+                                    <div class="cart-btn">
+                                        <p><span class="fa fa-ticket"></span> <a data-toggle="tooltip" data-placement="bottom" title="Vous avez {{ not app.session.get('quantity') ? "0" : app.session.get('quantity') }} sortes de billets à commander" href="{{ path('cart_index') }}"><span
+                                                        class="quantity">{{ not app.session.get('quantity') ? "0" : app.session.get('quantity') }}</span></a>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Nav End -->
-
                         </div>
                     </nav>
                 </div>
@@ -117,21 +105,38 @@
     </section>
 {% endblock %}
 {% block body %}
-    {% block content %}{% endblock %}
-    {% block javascripts %}
-        <!-- ##### All Javascript Script ##### -->
-        <!-- jQuery-2.2.4 js -->
-        <script src="{{ asset('js/jquery/jquery-2.2.4.min.js') }}"></script>
-        <!-- Popper js -->
-        <script src="{{ asset('js/bootstrap/popper.min.js') }}"></script>
-        <!-- Bootstrap js -->
-        <script src="{{ asset('js/bootstrap/bootstrap.min.js') }}"></script>
-        <!-- All Plugins js -->
-        <script src="{{ asset('js/plugins/plugins.js') }}"></script>
-        <!-- Active js -->
-        <script src="{{ asset('js/active.js') }}"></script>
+{% block content %}
+    <div class="col-sm-9 col-lg-9">
+        <!-- page content -->
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <!-- ##### All Javascript Script ##### -->
+    <!-- jQuery-2.2.4 js -->
+    <script src="{{ asset('js/jquery/jquery-2.2.4.min.js') }}"></script>
+    <!-- Popper js -->
+    <script src="{{ asset('js/bootstrap/popper.min.js') }}"></script>
+    <!-- Bootstrap js -->
+    <script src="{{ asset('js/bootstrap/bootstrap.min.js') }}"></script>
+    <!-- All Plugins js -->
+    <script src="{{ asset('js/plugins/plugins.js') }}"></script>
+    <!-- Active js -->
+    <script src="{{ asset('js/active.js') }}"></script>
+    <script type="text/javascript">$(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    })</script>
 
-    {% endblock %}
+{% endblock %}
 {% endblock %}
 {% block contact %}
     <!-- ##### Contact Area Start ##### -->
@@ -193,7 +198,7 @@
         <div class="container">
             <div class="row d-flex flex-wrap align-items-center">
                 <div class="col-12 col-md-6">
-                    <a href="#"><img src="{{ asset('img/logo.png') }}" alt=""></a>
+                    <a href="#"><img width="156" height="17" src="{{ asset('img/ivenco.png') }}" alt=""></a>
                     <p class="copywrite-text"><a href="#">
                             <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                             Copyright &copy;<script>document.write(new Date().getFullYear());</script>
@@ -202,7 +207,7 @@
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
                 </div>
 
-                <div class="col-12 col-md-6">
+                <!--<div class="col-12 col-md-6">
                     <div class="footer-nav">
                         <ul>
                             <li><a href="#">Accueil</a></li>
@@ -212,7 +217,7 @@
                             <li><a href="#">Contact</a></li>
                         </ul>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
     </footer>

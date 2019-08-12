@@ -2,17 +2,27 @@
 
 
 namespace AppBundle\Controller;
+
 use AppBundle\Datatables\BilletDatatable;
+use AppBundle\Entity\Billet;
 use AppBundle\Entity\Place;
 use AppBundle\Entity\TypeBillet;
+use AppBundle\Form\RechercheBilletType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use AppBundle\Form\EventType;
 use Doctrine\ORM\EntityManager;
 use FOS\UserBundle\Event\FilterUserResponseEvent;
 use FOS\UserBundle\Event\FormEvent;
 use FOS\UserBundle\FOSUserEvents;
+use Omines\DataTablesBundle\Adapter\ArrayAdapter;
+use Omines\DataTablesBundle\Column\TextColumn;
+use Omines\DataTablesBundle\Controller\DataTablesTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,51 +30,212 @@ use AppBundle\Entity\Evenement;
 use AppBundle\Entity\User;
 use AppBundle\Repository\EvenementRepository;
 use Symfony\Component\HttpFoundation\Response;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class TicketController extends Controller
 {
+    use DataTablesTrait;
+
     /**
      * Formulaire de création d'évènements
      * @Route("/tickets/list", name="ticketList")
      * @param Request $request
      * @return null
      */
-    public function getListBillets(Request $request){
+    public function getListBillets(Request $request)
+    {
 
 
-        return $this->render('Tickets/view-buy-list.html.twig',array());
+        return $this->render('Tickets/view-buy-list.html.twig', array());
+    }
+
+    /**
+     * Displays a form to edit an existing billet entity.
+     *
+     * @Route("/{userId}/{event}/tickets/edit/{id}", name="billet_edit")
+     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug","id"="id"}})
+     * @Security("has_role('ROLE_USER')")
+     * @Method({"GET", "POST"})
+     */
+    public function editAction(Request $request, Billet $billet)
+    {
+        $deleteForm = $this->createDeleteForm($billet);
+        $editForm = $this->createForm('AppBundle\Form\BilletType', $billet);
+        $editForm->handleRequest($request);
+
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+            return $this->redirectToRoute('billet_show', array('id' => $billet->getId(), 'userId' => $this->getUser()->getUserName(), 'event' => $billet->getEvenement()->getTitreEvenementSlug()));
+        }
+
+        return $this->render('event_admin/billet/edit.html.twig', array(
+            'event' => $billet->getEvenement(),
+            'billet' => $billet,
+            'edit_form' => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        ));
+    }
+
+    /**
+     * Deletes a billet entity.
+     *
+     * @Route("/{userId}/{event}/tickets/delete/{id}", name="billet_delete")
+     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug","id"="id"}})
+     * @Method("DELETE")
+     * @Security("has_role('ROLE_USER')")
+     */
+    public function deleteAction(Request $request, Billet $billet)
+    {
+        $form = $this->createDeleteForm($billet);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($billet);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('billet_index', array('userId' => $this->getUser()->getUserName(), 'event' => $billet->getEvenement()->getTitreEvenementSlug()));
+    }
+
+    /**
+     * Finds and displays a billet entity.
+     *
+     * @Route("/{userId}/{event}/tickets/{id}", name="billet_show")
+     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug","id"="id"}})
+     * @Method("GET")
+     * @Security("has_role('ROLE_USER')")
+     */
+    public function showAction(Billet $billet)
+    {
+        $deleteForm = $this->createDeleteForm($billet);
+
+        return $this->render('event_admin/billet/show.html.twig', array(
+            'event' => $billet->getEvenement(),
+            'billet' => $billet,
+            'delete_form' => $deleteForm->createView(),
+        ));
+    }
+
+    /**
+     * Creates a new billet entity.
+     *
+     * @Route("/{userId}/{event}/billets/create", name="billet_new")
+     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug"}})
+     * @Method({"GET", "POST"})
+     * @Security("has_role('ROLE_USER')")
+     * @param Request $request
+     * @param Evenement $event
+     * @return RedirectResponse|Response
+     */
+    public function newAction(Request $request, Evenement $event)
+    {
+        $billet = new Billet();
+        $form = $this->createForm('AppBundle\Form\BilletType', $billet);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $billet->setEvenement($event);
+            $em->persist($billet);
+            $em->flush();
+            return $this->redirectToRoute('billet_show', array('id' => $billet->getId(), 'event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUserName()));
+        }
+        return $this->render('event_admin/billet/new.html.twig', array(
+            'billet' => $billet,
+            'event' => $event,
+            'form' => $form->createView(),
+        ));
+    }
+
+    /**
+     * @Route("/{userId}/{event}/billets/list", name="billet_index")
+     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug"}})
+     * @Security("has_role('ROLE_USER')")
+     * @param Request $request
+     * @param Evenement $event
+     * @return null
+     */
+    public function getListBilletsByUser(Request $request, Evenement $event)
+    {
+        $repo = $this->getDoctrine()->getRepository(Billet::class);
+        $billet=new Billet();
+        $searchForm = $this->createForm(RechercheBilletType::class);
+        $searchForm->handleRequest($request);
+        $data=$searchForm->getData();
+        var_dump($request->query->get('identifiant'));
+        $billets='';
+        if($searchForm->isSubmitted() && $searchForm->isValid())
+        {
+            if($request->request->has('identifiant')){
+                $billets = $repo->getListBilletByUser($event,$request);//Query Billets
+            }
+        }
+        else{
+            $billets = $repo->getListBilletByUser($event);//Query Billets
+        }
+        $paginator = $this->get('knp_paginator');
+        $pagination = $paginator->paginate(
+            $billets, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
+        $queryTicketsState = $repo->countPurchasedTickets($event);
+        return $this->render('event_admin/billet/view-billet-list.html.twig', array('event' => $event, 'ticketState' => $queryTicketsState, 'billets' => $pagination, 'searchForm' => $searchForm->createView()));
     }
 
     /**
      * Supprimer un billet par ID
      * @Route("/{eventId}/ticket/delete/", name="deleteTicket")
      * */
-    public function deleteTicketsById(Request $request){
+    public function deleteTicketsById(Request $request)
+    {
 
     }
+
     /**
      * Supprimer des billets par ID
      * @Route("/{eventId}/tickets/delete/", name="deleteTicketType")
      * */
-    public function deleteTicketsByType(Request $request){
+    public function deleteTicketsByType(Request $request)
+    {
 
     }
+
     /**
      * Modifier des billets
      * @Route("/{enventId}/tickets/update/", name="updateTicket")
      * */
-    public function updateTicketByType(){
+    public function updateTicketByType()
+    {
 
     }
 
     /**
      * Générer des billets
-     * @Route("/{enventId}/tickets/generate/", name="generateTickets")
+     * @Route("/{eventId}/tickets/generate/", name="generateTickets")
      * @param Request $request
      * @param TypeBillet $type_billet
      * @param $nbr
      */
-    public function generate(Request $request,TypeBillet $type_billet,$nbr){
+    public function generate(Request $request, TypeBillet $type_billet, $nbr)
+    {
 
+    }
+
+    /**
+     * Creates a form to delete a billet entity.
+     *
+     * @param Billet $billet The billet entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm(Billet $billet)
+    {
+
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('billet_delete', array('id' => $billet->getId(), 'userId' => $this->getUser()->getUserName(), 'event' => $billet->getEvenement()->getTitreEvenementSlug())))
+            ->setMethod('DELETE')
+            ->getForm();
     }
 }

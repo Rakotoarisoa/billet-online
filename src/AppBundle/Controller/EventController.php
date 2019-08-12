@@ -2,20 +2,18 @@
 
 
 namespace AppBundle\Controller;
+use AppBundle\Entity\Billet;
 use AppBundle\Form\EventType;
+use AppBundle\Utils\Slugger;
 use Doctrine\ORM\EntityManager;
-use FOS\UserBundle\Event\FilterUserResponseEvent;
-use FOS\UserBundle\Event\FormEvent;
-use FOS\UserBundle\FOSUserEvents;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\User;
-use AppBundle\Repository\EvenementRepository;
 use Symfony\Component\HttpFoundation\Response;
 
 class EventController extends Controller
@@ -30,6 +28,7 @@ class EventController extends Controller
      * Formulaire de création d'évènements
      * @Route("/{userId}/events/create", name="createEvent")
      * @ParamConverter("user",options={"mapping":{"userId" = "username"}})
+     * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
      * @return Response
@@ -41,13 +40,20 @@ class EventController extends Controller
         };
         $event = new Evenement();
         $form = $this->createForm(EventType::class, $event);
+        $slug=new Slugger();
         $form->handleRequest($request);
-
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('save_create_map')->isClicked()) {
                 /** @var UploadedFile $imageFile */
-                $imageFile = $form['image']->getData();
+                $entityManager = $this->getDoctrine()->getManager();
+                $event->setImageEvent('img/e2.jpg');
+                $event->setIsPublished(1);
+                $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
+                $event->setUser($user);
+                $event->setEtatSalle(json_encode(array('objects'=>array())));
 
+                /** @var UploadedFile $imageFile */
+                $imageFile = $form['imageEvent']->getData();
                 // this condition is needed because the 'brochure' field is not required
                 // so the PDF file must be processed only when a file is uploaded
                 if ($imageFile) {
@@ -62,19 +68,44 @@ class EventController extends Controller
                             $this->getParameter('image_events'),
                             $newFilename
                         );
-                        $user->setImage($newFilename);
-                        $this->em->persist($user);
                     } catch (FileException $e) {
-                        // ... handle exception if something happens during file upload
+                        $this->addFlash('error','Erreur pendant l\'upload du fichier');
                     }
-
+                    $event->setImageEvent($newFilename);
                 }
+                $entityManager->persist($event);
+                $entityManager->flush();
+                $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez votre carte ici');
+                return $this->redirectToRoute('viewCreateMap',array('event'=>$event,'slugEvent'=>$event->getTitreEvenementSlug(),'id'=>$event->getId(),'userId'=>$this->getUser()->getUserName()));
 
-                if (null !== $response = $event->getResponse()) {
-                    return $response;
-                }
 
             }
+            else if ($form->get('save_create_billet')->isClicked()) {
+                /** @var UploadedFile $imageFile */
+                $entityManager = $this->getDoctrine()->getManager();
+                $event->setImageEvent('img/e2.jpg');
+                $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
+                $event->setIsPublished(1);
+                $event->setUser($user);
+                $entityManager->persist($event);
+                $entityManager->flush();
+                $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez vos billets ici');
+                return $this->redirectToRoute('billet_index',array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUsername()));
+            }
+            else{
+                $entityManager = $this->getDoctrine()->getManager();
+                $event->setImageEvent('img/e2.jpg');
+                $event->setIsPublished(1);
+                $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
+                $event->setUser($user);
+                $entityManager->persist($event);
+                $entityManager->flush();
+                $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès');
+                return $this->redirectToRoute('viewEventAdmin',array('userId'=>$event->getUser()->getUserName(),'slugEvent'=>(string)$event->getTitreEvenementSlug(),'event'=>$event));
+            }
+        }
+        else{
+            $this->addFlash('error','Erreur lors de l\'ajout de l\'évènement');
         }
         return $this->render('event_admin/event/event-register.html.twig',array('form'=> $form->createView(), 'user'=>$user,'event'=>$event));
     }
@@ -102,17 +133,110 @@ class EventController extends Controller
     }
 
     /**
+     * @Route("/{userId}/event/create-map/{slugEvent}/{id}", name="viewCreateMap")
+     * @ParamConverter("event",options={"mapping":{"id" = "id","slugEvent":"titreEvenementSlug"}})
+     * @param Evenement $event
+     * @return Response
+     */
+    public function createMap(Evenement $event){
+        return $this->render('event_admin/event/view-create-map.html.twig',array('event'=>$event));
+    }
+
+    /**
      * Supprimer un évènement
-     * @Route("/{user]/events/delete/{id}", name="viewList")
+     * @Route("/{user]/events/delete/{id}", name="viewEventDelete")
      * */
     public function deleteEventById(){
-
     }
     /**
      * Modifier un évènement
-     * @Route("/{user]/events/update/{id}", name="viewList")
+     * @Route("/{user}/event/manage/{id}", name="viewEventUpdate")
      * */
-    public function updateEventById(){
+    public function updateEvent(Request $request,Evenement $event){
+        $event=$this->getDoctrine()->getRepository(Evenement::class)->find($event->getId());
+        $deleteForm = $this->createDeleteForm($event);
+        $editForm = $this->createForm('AppBundle\Form\EventType', $event);
+        $editForm->handleRequest($request);
+        $slug=new Slugger();
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
+            if ($editForm->get('save_create_map')->isClicked()) {
+                try {
+                    $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
+                    $this->getDoctrine()->getManager()->persist($event);
+                    $this->getDoctrine()->getManager()->flush();
+                    $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez le plan de salle');
+                    return $this->redirectToRoute('viewCreateMap', array('id' => $event->getId(), 'userId' => $this->getUser()->getUsername(),'slugEvent'=>$event->getTitreEvenementSlug()));
+                } catch (\ErrorException $e) {
+                    $this->addFlash('error','Erreur pendant l\'enregistrement');
+                }
+            }
+            else if ($editForm->get('save_create_billet')->isClicked()) {
+                try {
+                    $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
+                    $this->getDoctrine()->getManager()->persist($event);
+                    $this->getDoctrine()->getManager()->flush();
+                    $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez vos billets ici');
+                    return $this->redirectToRoute('billet_index', array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUsername()));
+                } catch (\ErrorException $e) {
+                    $this->addFlash('error','Erreur pendant l\'enregistrement');
+                }
+            }
+            else{
+                $entityManager = $this->getDoctrine()->getManager();
+                $event->setImageEvent('img/e2.jpg');
+                $event->setIsPublished(1);
+                $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
+                $entityManager->persist($event);
+                $entityManager->flush();
+                $this->addFlash('success','Evènement '.$event->getTitreEvenement().' crée avec suuccès');
+                return $this->redirectToRoute('viewEventAdmin',array('user'=>$this->getUser()->getUserName(),'id'=>$event->getId(),'event'=>$event));
+            }
+
+        }
+        return $this->render('event_admin/event/event-update.html.twig', array(
+            'event' => $event,
+            'form' => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        ));
+
+
 
     }
+    /**
+     * Creates a form to delete a event entity.
+     *
+     * @param Billet $billet The event entity
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm(Evenement $event)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('viewEventDelete', array('id' => $event->getId())))
+            ->setMethod('DELETE')
+            ->getForm()
+            ;
+    }
+    /**
+     * Creates a view for event.
+     *
+     * @param Evenement $event The event entity
+     *
+     * @return Response
+     */
+    /**
+     * Modifier un évènement
+     * @Route("/{user}/event/view/{id}", name="viewEventAdmin")
+     * */
+    public function viewEventUser(Evenement $event){
+        return $this->render('event_admin/event/event-view.html.twig',array('event'=>$event));
+    }
+    /**
+     * Modifier un évènement
+     * @Route("/{userId}/event/view/{id}/map", name="viewEventMapAdmin")
+     * */
+    public function viewStateUserMap(Evenement $event){
+        return $this->render('event_admin/event/view-map-admin.html.twig',array('event'=>$event));
+    }
+
 }

@@ -37,7 +37,8 @@
                             </div>
 
                             <div class="col-3 text-center">
-                                <button class="btn oneMusic-btn mt-0" type="submit">Recherche<i class="fa fa-search"></i></button>
+                                <button class="btn oneMusic-btn mt-0" type="submit">Recherche<i
+                                            class="fa fa-search"></i></button>
                             </div>
                         </div>
                     </form>
@@ -49,54 +50,72 @@
     {% block content %}
         <section class="events-area section-padding-100">
             <div class="container">
-                {% if (nbEvents > 0)  %}
-                <p>{{ 'filter_events.countResults'|transchoice(nbEvents) }}</p>
-                <div class="row">
-                    {% for item in events %}
-                        <!-- Single Event Area -->
-                        <div class="col-12 col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="100ms">
-                            <div class="single-event-area mb-30">
-                                <p class="isPublished">Publié</p>
-                                <div class="event-thumbnail">
-                                    <img src="{{  asset(item.imageEvent)}}" alt="">
-                                </div>
-                                <div class="event-text">
-                                    <h4>{{ item.titreEvenement }}</h4>
-                                    <div class="event-meta-data">
-                                        <a href="#" class="event-place">{{   item.nomSalle }}</a>
-                                        <a href="#" class="event-date">{{ item.dateDebutEvent|date("m/d/Y") }}</a>
+                {% if (nbEvents > 0) %}
+                    <p>{{ 'filter_events.countResults'|transchoice(nbEvents) }}</p>
+                    <div class="row">
+                        {% for item in events %}
+                            <!-- Single Event Area -->
+                            <div class="col-12 col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="100ms">
+                                <div class="single-event-area mb-30">
+                                    <p class="isPublished">{% if item.isPublished %}Publié{% else %}<i
+                                                class="fa fa-close"></i>Non publié {% endif %}</p>
+                                    <div class="event-thumbnail">
+                                        <img src="{{ asset(item.imageEvent) }}" alt="">
                                     </div>
-                                    <a href="{{ path('viewSingle',{'slugEvent':item.titreEvenementSlug,'date':item.dateDebutEvent|date("Y-m-d")}) }}" class="btn oneMusic-btn m-2">Gérer</a>
-                                    <a data-toggle="modal" data-target="#confirmDelete" href="" class="btn btn-danger m-2">Supprimer</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="deleteModel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Supprimer</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p class="text-justify text-danger text-center">{{ 'events.are_you_sure_to_delete'|trans }}</p>
-                                        <a href="" class="btn btn-danger m-2 pull-right" style="text-transform: none;">{{ 'events.delete'|trans }}</a>
-                                        <a class="btn btn- m-2 pull-right" style="text-transform: none;">{{ 'events.cancel'|trans }}</a>
+                                    <div class="event-text">
+                                        <h4>{{ item.titreEvenement }}</h4>
+                                        <div class="event-meta-data">
+                                            <a href="#" class="event-place">{{ item.nomSalle }}</a>
+                                            <a href="#" class="event-date">{{ item.dateDebutEvent|date("m/d/Y") }}</a>
+                                        </div>
+                                        <div class="btn-group">
+
+                                            <a href="{{ path('viewEventAdmin',{'user':app.user.username,'id':item.id}) }}"
+                                               class="btn btn-light">Infos</a>
+                                            <a href="{{ path('billet_index',{'userId':app.user.username,'event':item.titreEvenementSlug}) }}"
+                                               class="btn btn-light">Liste des billets</a>
+                                            <a class="btn btn-light" href="{{ path('viewEventUpdate',{'user':app.user.username,'id':item.id}) }}">Modifier</a>
+
+                                        </div>
+                                        <hr/>
+                                        <div class="btn-group">
+                                            <a data-toggle="modal" data-target="#confirmDelete" href=""
+                                               class="btn btn-danger">Supprimer</a>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                            <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog"
+                                 aria-labelledby="deleteModel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Supprimer</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="text-justify text-danger text-center">{{ 'events.are_you_sure_to_delete'|trans }}</p>
+                                            <a href="" class="btn btn-danger m-2 pull-right"
+                                               style="text-transform: none;">{{ 'events.delete'|trans }}</a>
+                                            <a class="btn btn- m-2 pull-right"
+                                               style="text-transform: none;">{{ 'events.cancel'|trans }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% else %}
                     <p>{{ 'filter_events.noEvents'|trans }}</p>
                 {% endif %}
                 <div class="row">
                     <div class="col-12">
                         <div class="load-more-btn text-center mt-70">
-                            <a href="#" class="btn oneMusic-btn">Charger ... <i class="fa fa-angle-double-right"></i></a>
+                            <a href="#" class="btn oneMusic-btn">Charger ... <i
+                                        class="fa fa-angle-double-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -105,7 +124,7 @@
     {% endblock %}
     <!-- ##### Events Area End ##### -->
     {% block javascripts %}
-        {{  parent()}} {% endblock %}
+        {{ parent() }} {% endblock %}
 {% endblock %}
 {% block contact %}{% endblock %}
 

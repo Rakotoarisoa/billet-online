@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block head_javascripts %}
+{% endblock %}
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <p>Liste des catégories pour </p>
+                <h2>{{ event.titreEvenement }}</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+{% block body %}
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+        <section class="section-padding-100">
+            {{ parent() }}
+            <div class="container">
+                <p class="text-muted">Liste des catégories pour l'évènement <a href="#">{{ event.titreEvenement }}</a>
+                </p>
+                <ul>
+                    <li>
+                        <a href="{{ path('categorie_new',{'userId':app.user.username,'event':event.titreEvenementSlug}) }}">Créer
+                            une catégorie</a>
+                    </li>
+                </ul>
+                <br/>
+                {% if categories.getTotalItemCount > 0 %}
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>{{ knp_pagination_sortable(categories, 'Type', 'libelle') }}</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for categorie in categories %}
+                            <tr>
+                                <td>{{ categorie.libelle }}</td>
+                                <td>
+
+                                    <a class="btn btn-success"
+                                       href="{{ path('cat_show', { 'userId':app.user.username,'event':event.titreEvenementSlug,'id': categorie.id }) }}">Afficher</a>
+                                    <a class="btn btn-danger"
+                                       href="{{ path('cat_edit', { 'userId':app.user.username,'event':event.titreEvenementSlug,'id': categorie.id }) }}">Editer</a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="navigation">
+                        {{ knp_pagination_render(categories) }}
+                    </div>
+                {% else %}
+                    <p class="text text-warning">Aucune categorie à afficher</p>
+                {% endif %}
+            </div>
+        </section>
+    {% endblock %}
+    {% block javascripts %}
+        {{ parent() }}
+
+    {% endblock %}
+{% endblock %}
+

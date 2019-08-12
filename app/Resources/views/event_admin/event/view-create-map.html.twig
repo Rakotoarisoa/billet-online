@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'messages' %}
+{% block title %}
+    Carte  | {{ app.user.username }}
+{% endblock %}
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <h2>PLAN DE SALLE : {{ event.titreEvenement }}</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+
+{% block body %}
+    {% block content %}
+        {{ parent() }}
+        <div id="vue-app" class="container-fluid">
+            <!-- Vertical toolbar -->
+            <div class="row">
+                <div class="col-sm-10">
+                    <toolbar-vertical></toolbar-vertical>
+                    <canvas-element></canvas-element>
+                </div>
+                <div class="col-sm-2">
+                    <sidebar-right></sidebar-right>
+                </div>
+            </div>
+            <!--Add Modal -->
+            <add-form></add-form>
+            <!--Edit Modal -->
+            <edit-form></edit-form>
+        </div>
+        <div class="toast-save-map-success">
+            <div class="toast-header">
+                <strong class="mr-auto text-success">Plan de salle pour{{ event.titreEvenement }}</strong>
+                <small class="text-muted"></small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+            </div>
+            <div class="toast-body">
+                Plan de salle sauvegardé avec succès
+            </div>
+        </div>
+        </div>
+    {% endblock %}
+    {% block contact %}{% endblock %}
+    {% block javascripts %}
+        <!-- ##### All Javascript Script ##### -->
+        <!-- jQuery-2.2.4 js -->
+        <script src="{{ asset('js/jquery/jquery-2.2.4.min.js') }}"></script>
+        <!-- Popper js -->
+        <script src="{{ asset('js/bootstrap/popper.min.js') }}"></script>
+        <!-- Bootstrap js -->
+        <script src="{{ asset('js/bootstrap/bootstrap.min.js') }}"></script>
+        <!-- All Plugins js -->
+        <script src="{{ asset('js/plugins/plugins.js') }}"></script>
+        <!-- Active js -->
+        <script src="{{ asset('js/active.js') }}"></script>
+
+        <script type="text/javascript" src="{{ asset('js/fabric.js') }}"></script>
+        <!-- Vue js -->
+        <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
+
+
+    {% endblock %}
+{% endblock %}

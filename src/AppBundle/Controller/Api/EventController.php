@@ -45,7 +45,7 @@ class EventController extends AbstractFOSRestController
         return $restResult;
     }
     /**
-     * @Rest\Get("/api/event/{id}/getMap")
+     * @Rest\Get("/api/event/get-map/{id}")
      * Get Event by Id
      * @param $id
      * @return View|object|null
@@ -59,15 +59,25 @@ class EventController extends AbstractFOSRestController
         //var_dump(unserialize(json_decode($restResult->getEtatSalle())));
         return json_decode(unserialize($restResult->getEtatSalle()),JSON_UNESCAPED_SLASHES);
     }
-    /**
-     * @Rest\Get("/api/event/update/{id}")
-     * @param $id
-     * @return View|object|null
-     */
-    public function setEventSeatMap($id){
-        $em=$this->getDoctrine()->getManager();
 
-        $restResult = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+    /**
+     * @Rest\Post("/api/event/update-map/{id}")
+     * @param Request $request
+     * @param $id
+     * @return string
+     */
+    public function setEventSeatMap(Request $request,$id){
+        try {
+            $em = $this->getDoctrine()->getManager();
+            $data_map = $request->request->get('data_map');
+            $event = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+            $event->setEtatSalle(serialize($data_map));
+            $em->persist($event);
+            $em->flush($event);
+        }
+        catch (\Exception $e){
+            return 'Cannot create Map';
+        }
 
     }
     /**

@@ -504,7 +504,7 @@ img {
     top: 0;
     left: 0;
     z-index: 9999;
-    background-color: #000000;
+    background-color: #19868a;
     box-shadow: 0 5px 50px 15px rgba(0, 0, 0, 0.2); }
     @media only screen and (max-width: 767px) {
       .header-area .is-sticky .oneMusic-main-menu {
@@ -1199,7 +1199,7 @@ img {
 .footer-area {
   position: relative;
   z-index: 1;
-  background-color: #000000;
+  background-color: #19868a;
   padding: 30px 0; }
   @media only screen and (max-width: 767px) {
     .footer-area {

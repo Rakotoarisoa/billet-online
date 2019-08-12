@@ -16,6 +16,29 @@ events:
     cancel: "Annuler"
     return_to_seat_map: 'Retourner vers la visualisation de plan de salle'
     return_to_billet_list: 'Retourner vers la liste des billets'
-    buy_tickets: 'Acheter des billets'
+    return_to_event: "Retourner vers la page de l'évènement"
+    buy_tickets: 'Commander des billets'
+    commander: 'Commander'
+    tickets: 'billets'
+    map_not_available: 'Plan de salle non disponible'
+    ticket_off: 'Billets épuisés'
+    table_view:
+        event_title: "Titre"
+        event_date_start: "Date de début"
+        event_date_end: "Date de fin"
+        event_desc: "Description"
+        event_cat: "Catégorie"
+        event_lieu: "Lieu"
+        event_publish : "Publié"
+        event_image: "Image"
+        event_org: "Organisateur"
+        event_seatmap: "Plan de salle"
+        event_billets: "Billets"
+        event_user: "Utilisateur"
+        event_reservation: "Réservations"
+        event_published_info: "Votre évènement sera visible par les visiteurs"
+        event_no_published_info: "Votre évènement ne sera pas visible par les visiteurs"
+
+
 
 

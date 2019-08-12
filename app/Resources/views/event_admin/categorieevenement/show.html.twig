@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block head_javascripts %}
+{% endblock %}
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <p>Création de catégorie </p>
+                <h2>{{ event.titreEvenement }}</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+{% block body %}
+    {% block content %}
+        {{ parent() }}
+        <section class="section-padding-100">
+            <div class="container">
+                <h1>categorie</h1>
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Libellé</th>
+                        <td>{{ categorie.libelle }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="row col-md-5">
+                    <div class="col">
+                        <a class=""
+                           href="{{ path('cat_index',{ 'userId':app.user.username,'event':event.titreEvenementSlug}) }}">Retourner
+                            vers la liste des categories</a>
+                    </div>
+                    <div class="col">
+                        <a class="btn btn-success"
+                           href="{{ path('cat_edit', { 'userId':app.user.username,'event':event.titreEvenementSlug,'id': categorie.id }) }}">Editer</a>
+                    </div>
+                    <div class="col">
+                        {{ form_start(delete_form) }}
+                        <input class="btn btn-danger" type="submit" value="Supprimer">
+                        {{ form_end(delete_form) }}
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    {% endblock %}
+    {% block javascripts %}
+        {{ parent() }}
+    {% endblock %}
+{% endblock %}

@@ -6,6 +6,8 @@ use AppBundle\Entity\LieuEvenement;
 use AppBundle\Entity\TypeBillet;
 use AppBundle\Entity\Reservation;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\HttpFoundation\Cookie;
+
 /**
  * EvenementRepository
  *

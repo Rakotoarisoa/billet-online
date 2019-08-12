@@ -28,6 +28,7 @@ class EventType extends  AbstractType
                     'autocomplete' => 'off',
                 ],
                 'constraints' => new NotBlank(),
+                'required' => true,
             ))
             ->add('dateDebutEvent',  DateTimeType::class, array(
                 'required' => true,
@@ -44,6 +45,7 @@ class EventType extends  AbstractType
             ))
             ->add('dateFinEvent',    DateTimeType::class, array(
                 'widget' => 'single_text',
+                'required' => false,
                 'attr' => [
                     'class' => 'form-control datetimepicker dateFin',
                     'data-provide' => 'datetimepicker',
@@ -76,16 +78,47 @@ class EventType extends  AbstractType
                 'config' => array(
                     'uiColor' => '#ffffff',
                 ),
+                'required' => true
             ))
             ->add('categorieEvenement',EntityType::class, array(
                 'class'         => 'AppBundle\Entity\CategorieEvenement',
                 'placeholder'=>'Sélectionnez la catégorie de l\'évènement',
-                'choice_label'  => 'libelle'
+                'choice_label'  => 'libelle',
+                'required' => true
             ))
             ->add('lieuEvenement',       EntityType::class, array(
                 'class'         => 'AppBundle\Entity\LieuEvenement',
                 'placeholder'=>'Sélectionnez le lieu ',
-                'choice_label'  => 'nomSalle'
+                'choice_label'  => 'nomSalle',
+                'required' => true
+            ))
+            ->add('isUsingSeatMap',       ChoiceType::class, [
+                    'choices'  => [
+                        'Oui' => true,
+                        'Non' => false,
+                    ],
+                    'expanded' => true,
+                    'multiple' => false,
+                    'label'=> 'Utiliser le plan de salle'
+                ]
+
+            )
+            ->add('isPublished',       ChoiceType::class, [
+                    'choices'  => [
+                        'Oui' => true,
+                        'Non' => false,
+                    ],
+                    'expanded' => false,
+                    'multiple' => false,
+                    'label'=>'Publier',
+                ]
+
+            )
+            ->add('organisation',TextType::class, array(
+                'label'  => 'Organisateur de l\'évènement',
+                'required' => true,
+                'constraints' => new NotBlank(),
+
             ))
             /*->add('salle',       EntityType::class, array(
                 'class'         => 'Nexthope\IvencoBundle\Entity\Salle',
@@ -98,13 +131,15 @@ class EventType extends  AbstractType
                         ;
                 },
             ))*/
+            ->add('save_create_map',SubmitType::class, array(
+                'label' => 'Enregistrer et créer un plan de salle',
+                'attr'=>['class'=>'btn btn-outline-dark m-lg-2']))
+            ->add('save_create_billet',SubmitType::class, array(
+                'label' => 'Enregistrer et créer des billets',
+                'attr'=>['class'=>'btn btn-outline-dark m-lg-2']))
             ->add('save',        SubmitType::class, array(
                 'label' => 'Enregistrer'
             ))
-            ->add('nextStep', SubmitType::class,[
-                'validation_groups' => false,
-            ])
-            ->add('previousStep', SubmitType::class)
             ->getForm();
         ;
 

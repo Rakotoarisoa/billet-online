@@ -13,26 +13,29 @@
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
                                 {% if error %}
                                     <div class="form-group">
-                                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div></div>
+                                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                                    </div>
                                 {% endif %}
+                                <div class="form-group">
+
+                                    {% if app.request.hasPreviousSession %}
+                                        {% for type, messages in app.session.flashbag.all() %}
+                                            {% for message in messages %}
+                                                <p class="alert alert-danger">
+                                                <div class="flash-{{ type }}">
+                                                    {{ message }}
+                                                </div>
+                                                </p>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    {% endif %}
+
+                                </div>
                                 <div class="form-group">
                                     <label for="username">{{ 'security.login.username'|trans }}</label>
                                     <input name="_username" type="text" class="form-control" id="username"
                                            value="{{ last_username }}">
                                     <!--<small id="emailHelp" class="form-text text-muted"><i class="fa fa-lock mr-2"></i>We'll never share your email with anyone else.</small>-->
-                                </div>
-                                <div class="form-group">
-                                    <p class="alert-danger">
-                                        {% if app.request.hasPreviousSession %}
-                                        {% for type, messages in app.session.flashbag.all() %}
-                                        {% for message in messages %}
-                                    <div class="flash-{{ type }}">
-                                        {{ message }}
-                                    </div>
-                                    {% endfor %}
-                                    {% endfor %}
-                                    {% endif %}
-                                    </p>
                                 </div>
                                 <div class="form-group">
                                     <label for="password">{{ 'security.login.password'|trans }}</label>

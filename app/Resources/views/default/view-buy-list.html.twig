@@ -5,7 +5,6 @@
           href="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/sl-1.3.0/datatables.min.css"/>
 {% endblock %}
 {% block head_javascripts %}
-
 {% endblock %}
 {% block breadcrumb %}
     <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
@@ -18,44 +17,108 @@
     </section>
 {% endblock %}
 {% block body %}
-
     <!-- ##### Events Area Start ##### -->
     {% block content %}
+
         <section class="section-padding-100">
+            {{ parent() }}
             <div class="container">
-                <p style="font-size: 20px;" class="pull-right"><span class="badge badge-danger">{{ ticketState['vendus'] }}</span> billets
-                    vendus, <span class="badge badge-success">{{ ticketState['restants'] }}</span> billets restants</p>
+                <p style="font-size: 20px;" class="pull-right">
+                    {% if ticketState is not empty %}
+                        {% if ticketState['vendus'] is defined %}
+                            <span
+                                    class="badge badge-danger">{{ ticketState['vendus'] }}</span> billets
+                            vendus
+                        {% endif %}
+                        {% if ticketState['vendus'] is defined and  ticketState['restants'] is defined %}
+                            ,
+                        {% endif %}
+                        {% if ticketState['restants'] is defined %}
+                            <span class="badge badge-success">{{ ticketState['restants'] }}</span> billets restants
+                        {% endif %}
+                    {% endif %}
+                </p>
                 <div id="ticketList">Loading...</div>
                 {% if event.isUsingSeatMap %}
                     <p>
-                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_seat_map'|trans }}</a>
+                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span
+                                    class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_seat_map'|trans }}</a>
+                    </p>
+                {% else %}
+                    <p>
+                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span
+                                    class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
                     </p>
                 {% endif %}
+            </div>
+            <div class="modal fade" id="nbrBillets" tabindex="-1" role="dialog"
+                 aria-labelledby="" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="">{{ 'events.buy_tickets'|trans }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-inline" id="commande" method="POST" action="{{ path('cart_add') }}">
+                                <div class="form-check form-check-inline">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label for="select_nb_billets" class="form-check-label">
+                                                <select class="form-control mr-sm-2" id="select_nb_billets"
+                                                        name="select_nb_billets">
+                                                </select>
+                                                <input type="hidden" value="" name="type_billet">
+                                                <input type="hidden" value="{{ event.id }}" name="event_id">
+                                                <input type="hidden" value="{{ path('viewTicketList',{'date': event.dateDebutEvent|date("Y-m-d"),'slugEvent': event.titreEvenementSlug}) }}" name="redirect">
+                                                {{ 'events.tickets'|trans }}
+                                            </label>
+
+                                        </div>
+                                        <div class="col">
+                                            <button class="form-control btn btn-success">{{ 'events.commander'|trans }}</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     {% endblock %}
     {% block javascripts %}
         {{ parent() }}
-        <script type="text/javascript"
-                src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/sl-1.3.0/datatables.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/sl-1.3.0/datatables.min.js"></script>
         <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
         <script>
             $(function () {
                 $('#ticketList').initDataTables({{ datatable_settings(datatable) }}, {
                     createdRow: function (row, data, index) {//
-                        let id_colonne_billet_restant = 2,id_colonne_billets_total=0;// changer cette valeur si modification datatables
+                        let id_colonne_billet_restant = 3, id_colonne_billets_total = 0, id_type_billet = 1;// changer cette valeur si modification datatables
                         let billets_total = parseInt($('td', row).eq(id_colonne_billets_total).text());
                         $('td', row).eq(id_colonne_billets_total).html('<h5 ><span class="badge badge-success"> ' + billets_total + '</span></h5> ');
+                        let billets_type = $('td', row).eq(id_type_billet).text();
                         let billets_restants = parseInt($('td', row).eq(id_colonne_billet_restant).text());
                         if (billets_restants > 0) // si le nombre de billets restants est > 0
-                            $('td', row).eq(id_colonne_billet_restant).html('<h5>' + billets_restants + ' &nbsp; <span class="badge badge-primary">{{ 'events.buy_tickets'|trans }}</span></h5>');
-
+                            $('td', row).eq(id_colonne_billet_restant).html('<h5>' + billets_restants + ' &nbsp; <button class="btn btn-success" data-id="" data-nbr="' + billets_restants + '" data-type="' + billets_type + '" data-toggle="modal" data-target="#nbrBillets">{{ 'events.buy_tickets'|trans }}</button></h5>');
                         else
                             $('td', row).eq(id_colonne_billet_restant).html('<span class="badge badge">' + billets_restants + '</span>');
-
                     }
-
                 });
+            });
+            $('#nbrBillets').on('show.bs.modal', function (e) {
+                //get data-id attribute of the clicked element
+                var nbr_billets = $(e.relatedTarget).data('nbr'), type_billet = $(e.relatedTarget).data('type');
+                $("#select_nb_billets").empty();
+                //populate the select option
+                for (var i = 1; i <= nbr_billets; i++) {
+                    $("#select_nb_billets").append('<option value="' + i + '">' + i + '</option>');
+                }
+                $("input[name|='type_billet']").val(type_billet);
             });
         </script>
     {% endblock %}

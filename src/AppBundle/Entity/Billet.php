@@ -17,7 +17,7 @@ class Billet
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100,unique=true)
      */
     private $identifiant;
     /**
@@ -36,9 +36,30 @@ class Billet
     private $place_id;
     /**
      * @ORM\Column(type="boolean")
+     *
      */
     private $estVendu;
+    /**
+     * @ORM\ManyToOne(targetEntity="Evenement",inversedBy="billets")
+     * @ORM\JoinColumn(name="id_evenement", referencedColumnName="id")
+     */
+    private $evenement;
 
+    /**
+     * @return mixed
+     */
+    public function getEvenement()
+    {
+        return $this->evenement;
+    }
+
+    /**
+     * @param mixed $evenement
+     */
+    public function setEvenement($evenement): void
+    {
+        $this->evenement = $evenement;
+    }
     /**
      * @return mixed
      */

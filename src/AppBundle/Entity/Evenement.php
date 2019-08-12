@@ -2,6 +2,7 @@
 
 namespace AppBundle\Entity;
 
+use AppBundle\Utils\Slugger;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -13,7 +14,8 @@ class Evenement
 
     public function __construct()
     {
-
+        $slugger= new Slugger();
+            $this->setTitreEvenementSlug($slugger->slugify($this->getTitreEvenement()));
     }
 
     /**
@@ -54,7 +56,7 @@ class Evenement
     private $dateDebutEvent;
 
     /**
-     * @ORM\Column(type="datetime", length=100)
+     * @ORM\Column(type="datetime", length=100,nullable=true)
      */
     private $dateFinEvent;
 
@@ -100,7 +102,7 @@ class Evenement
     }
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255,nullable=true)
      */
     private $imageEvent;
 
@@ -108,7 +110,25 @@ class Evenement
      * @ORM\Column(type="text")
      */
     private $description;
+    /**
+    * @ORM\Column(type="string",length=255)
+     */
+    private $organisation;
+    /**
+     * @return mixed
+     */
+    public function getOrganisation()
+    {
+        return $this->organisation;
+    }
 
+    /**
+     * @param mixed $organisation
+     */
+    public function setOrganisation($organisation): void
+    {
+        $this->organisation = $organisation;
+    }
 
     /**
      * @ORM\ManyToOne(targetEntity="CategorieEvenement", inversedBy="evenement")
@@ -130,7 +150,27 @@ class Evenement
      */
     private $reservation;
     /**
-     * @ORM\Column(type="json", length=255)
+     * @ORM\OneToMany(targetEntity="Billet", mappedBy="evenement")
+     */
+    private $billets;
+
+    /**
+     * @return mixed
+     */
+    public function getBillets()
+    {
+        return $this->billets;
+    }
+
+    /**
+     * @param mixed $billets
+     */
+    public function setBillets($billets): void
+    {
+        $this->billets = $billets;
+    }
+    /**
+     * @ORM\Column(type="json", length=255,nullable=true)
      */
     private $etatSalle;
 

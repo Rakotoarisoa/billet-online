@@ -69,13 +69,14 @@ class RegistrationController extends BaseController
                             $this->getParameter('image_users'),
                             $newFilename
                         );
+                        $user->setImage($newFilename);
                     } catch (FileException $e) {
+                        $this->addFlash('error','Erreur pendant l\'upload de l\'image');
                         // ... handle exception if something happens during file upload
                     }
 
                     // updates the 'brochureFilename' property to store the PDF file name
                     // instead of its contents
-                    $user->setImage($newFilename);
                     $user->setRoles(array('ROLE_USER'));
 
                     $event = new FormEvent($form, $request);
@@ -106,6 +107,7 @@ class RegistrationController extends BaseController
                 if (null !== $response = $event->getResponse()) {
                     return $response;
                 }
+                return $this->redirectToRoute('fos_user_profile_show');
             }
         }
 

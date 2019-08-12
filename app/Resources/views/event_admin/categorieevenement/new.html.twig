@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Catégorie d'évènements</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="Créer" />
+    {{ form_end(form) }}
+
+    <ul>
+        <li>
+            <a href="{{ path('cat_event_index') }}">Retour vers la liste des catégories</a>
+        </li>
+    </ul>
+{% endblock %}

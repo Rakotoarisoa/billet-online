@@ -19,7 +19,7 @@
         <div class="blog-area section-padding-100">
             <div class="container">
                 <div class="row">
-                    <div class="col-12 col-lg-9">
+                    <div class="col-12 col-lg-12">
 
                         <!-- Single Post Start -->
                         <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
@@ -39,15 +39,38 @@
                                 <a href="#" class="post-title">{{ event.titreEvenement }}</a>
                                 <!-- Post Meta -->
                                 <div class="post-meta d-flex mb-30">
-                                    <p class="post-author">Par<a href="#">Organisateur</a></p>
-                                    <p class="tags">in<a href="#"> Events</a></p>
-                                    <p class="tags"><a href="#"><span class="badge-success">80</span> Billets
-                                            restants</a></p>
+                                    Par &nbsp;&nbsp;<h6 class="post-author"><a href="#">{{ event.organisation }}</a>
+                                    </h6>
+                                    &nbsp;|&nbsp; au&nbsp;&nbsp; <h6 class="tags"><a
+                                                href="#"> {{ event.lieuEvenement.nomSalle }}</a></h6>
+                                    &nbsp;|&nbsp;
+                                    {% if (ticketState != null) %}
+                                        <h6 class="tags"><a href="#"><span
+                                                        class="badge badge-success">{{ ticketState['restants'] }}</span>
+                                                Billets
+                                                restants</a></h6>
+                                    {% endif %}
                                 </div>
                                 <!-- Post Excerpt -->
+
                                 <p>{{ event.description|raw }}</p>
-                                <a class="btn oneMusic-btn m-2" style="text-transform: none;" data-toggle="modal"
-                                   data-target="#choixVue">Acheter des billets <i class="fa fa-ticket"></i></a>
+                                {% if (ticketState != null) %}
+                                    {% if ticketState['restants'] > 0 %}
+                                        <a class="btn oneMusic-btn m-2" style="text-transform: none;"
+                                           data-toggle="modal"
+                                           data-target="#choixVue">{{ 'events.buy_tickets'|trans }} <i
+                                                    class="fa fa-ticket"></i></a>
+                                    {% else %}
+                                        <a class="btn oneMusic-btn m-2" style="text-transform: none;"
+                                           data-toggle="modal"
+                                           data-target="#choixVue">{{ 'events.ticket_off'|trans }} <i
+                                                    class="fa fa-ticket"></i></a>
+
+                                    {% endif %}
+                                {% else %}
+                                    <p class="info text-danger">Pas de billets disponibles</p>
+                                {% endif %}
+
                                 <!--<script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU"></script>
                                 <script>paypal.Buttons({
                                         createOrder: function(data, actions) {
@@ -85,70 +108,19 @@
                                     <div class="modal-body">
                                         {% if event.isUsingSeatMap == 1 %}
                                             <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"
-                                               class="btn oneMusic-btn m-2" style="text-transform: none;">Sur le plan de salle
+                                               class="btn oneMusic-btn m-2" style="text-transform: none;">Sur le plan de
+                                                salle
                                                 <i class="fa fa-circle"></i></a>
                                         {% else %}
                                             <a href="#" class="btn m-2 btn-danger"
-                                               style="text-transform: none;">Plan de salle non disponible</a>
+                                               style="text-transform: none;">{{ 'events.map_not_available'|trans }}</a>
                                         {% endif %}
                                         <a href="{{ url('viewTicketList',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d")}) }}"
-                                           class="btn oneMusic-btn m-2" style="text-transform: none;">Liste des
-                                            billets<i class="fa fa-list"></i></a>
+                                           class="btn oneMusic-btn m-2" style="text-transform: none;">Lister les billets<i
+                                                    class="fa fa-list"></i></a>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-lg-3">
-                        <div class="blog-sidebar-area">
-
-                            <!-- Widget Area -->
-                            <div class="single-widget-area mb-30">
-                                <div class="widget-title">
-                                    <h5>Categories</h5>
-                                </div>
-                                <div class="widget-content">
-                                    <ul>
-                                        <li><a href="#">Music</a></li>
-                                        <li><a href="#">Events &amp; Press</a></li>
-                                        <li><a href="#">Festivals</a></li>
-                                        <li><a href="#">Lyfestyle</a></li>
-                                        <li><a href="#">Uncategorized</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-
-
-                            <!-- Widget Area -->
-                            <div class="single-widget-area mb-30">
-                                <div class="widget-title">
-                                    <h5>Tags</h5>
-                                </div>
-                                <div class="widget-content">
-                                    <ul class="tags">
-                                        <li><a href="#">music</a></li>
-                                        <li><a href="#">events</a></li>
-                                        <li><a href="#">artists</a></li>
-                                        <li><a href="#">press</a></li>
-                                        <li><a href="#">mp3</a></li>
-                                        <li><a href="#">videos</a></li>
-                                        <li><a href="#">concerts</a></li>
-                                        <li><a href="#">performers</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <!-- Widget Area -->
-                            <div class="single-widget-area mb-30">
-                                <a href="#"><img src="{{ asset('img/add.gif') }}" alt="gif1"></a>
-                            </div>
-
-                            <!-- Widget Area -->
-                            <div class="single-widget-area mb-30">
-                                <a href="#"><img src="{{ asset('img/add2.gif') }}" alt="gif2"></a>
-                            </div>
-
                         </div>
                     </div>
                 </div>
