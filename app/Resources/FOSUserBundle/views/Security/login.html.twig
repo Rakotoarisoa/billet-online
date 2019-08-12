@@ -1,7 +1,7 @@
 {% extends "FOSUserBundle::layout.html.twig" %}
 {% trans_default_domain 'FOSUserBundle' %}
 {% block breadcrumb_content  %}
-    <h2>Connexion</h2>
+    <img src="{{ asset('img/ivenco.png') }}" width="200" height="50">
 {% endblock %}
 {% block fos_user_content %}
     {{ include('@FOSUser/Security/login_content.html.twig') }}
