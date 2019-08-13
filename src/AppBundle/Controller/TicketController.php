@@ -9,21 +9,11 @@ use AppBundle\Entity\Place;
 use AppBundle\Entity\TypeBillet;
 use AppBundle\Form\RechercheBilletType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use AppBundle\Form\EventType;
-use Doctrine\ORM\EntityManager;
-use FOS\UserBundle\Event\FilterUserResponseEvent;
-use FOS\UserBundle\Event\FormEvent;
-use FOS\UserBundle\FOSUserEvents;
-use Omines\DataTablesBundle\Adapter\ArrayAdapter;
-use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\Controller\DataTablesTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Evenement;
@@ -53,7 +43,7 @@ class TicketController extends Controller
      * Displays a form to edit an existing billet entity.
      *
      * @Route("/{userId}/{event}/tickets/edit/{id}", name="billet_edit")
-     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug","id"="id"}})
+     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug","id"="id"}})
      * @Security("has_role('ROLE_USER')")
      * @Method({"GET", "POST"})
      */
@@ -80,7 +70,7 @@ class TicketController extends Controller
      * Deletes a billet entity.
      *
      * @Route("/{userId}/{event}/tickets/delete/{id}", name="billet_delete")
-     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug","id"="id"}})
+     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug","id"="id"}})
      * @Method("DELETE")
      * @Security("has_role('ROLE_USER')")
      */
@@ -102,7 +92,7 @@ class TicketController extends Controller
      * Finds and displays a billet entity.
      *
      * @Route("/{userId}/{event}/tickets/{id}", name="billet_show")
-     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug","id"="id"}})
+     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug","id"="id"}})
      * @Method("GET")
      * @Security("has_role('ROLE_USER')")
      */
@@ -121,7 +111,7 @@ class TicketController extends Controller
      * Creates a new billet entity.
      *
      * @Route("/{userId}/{event}/billets/create", name="billet_new")
-     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug"}})
+     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug"}})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
@@ -150,7 +140,7 @@ class TicketController extends Controller
 
     /**
      * @Route("/{userId}/{event}/billets/list", name="billet_index")
-     * @ParamConverter("event", options={"mapping":{"userId" = "username","event"="titreEvenementSlug"}})
+     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug"}})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param Evenement $event
@@ -203,7 +193,7 @@ class TicketController extends Controller
 
     /**
      * Modifier des billets
-     * @Route("/{enventId}/tickets/update/", name="updateTicket")
+     * @Route("/{eventId}/tickets/update/", name="updateTicket")
      * */
     public function updateTicketByType()
     {
@@ -212,14 +202,26 @@ class TicketController extends Controller
 
     /**
      * Générer des billets
-     * @Route("/{eventId}/tickets/generate/", name="generateTickets")
+     * @Route("/{userId}/{event}/tickets/generate/", name="generateTickets")
+     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug"}})
      * @param Request $request
-     * @param TypeBillet $type_billet
-     * @param $nbr
+     * @param Evenement $event
      */
-    public function generate(Request $request, TypeBillet $type_billet, $nbr)
+    public function generate(Request $request,Evenement $event)
     {
+        $repo = $this->getDoctrine()->getRepository(Billet::class);
+        $queryTicketsState = $repo->countPurchasedTickets($event);
+            $repo=$this->getDoctrine()->getRepository(Billet::class);
+            if($request->request->has('type_billet') && $request->request->has('nombre') && $request->request->has('prix')){
+                $nbr_b=(int)$request->request->get('nombre');
+                $type_b=trim(ucfirst($request->request->get('type_billet')));
+                $prix=(float)$request->request->get('prix');
+                $repo->generateTickets($prix,$nbr_b,$type_b,$event);
+                $this->addFlash('success','Billets Ajouté avec succès');
+                return $this->redirectToRoute('billet_index',array('userId'=>$this->getUser()->getUserName(),'event'=>$event->getTitreEvenementSlug()));
+            }
 
+        return $this->render('event_admin/billet/view-billet-generate.html.twig',array('event'=>$event,'ticketState'=>$queryTicketsState));
     }
 
     /**

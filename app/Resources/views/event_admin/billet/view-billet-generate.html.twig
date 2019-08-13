@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block head_javascripts %}
+{% endblock %}
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <p>Création de billets pour</p>
+                <h2>{{ event.titreEvenement }}</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
+{% block body %}
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+        <section class="section-padding-100">
+            <div class="container">
+                {{ parent() }}
+                <p style="font-size: 20px;" class="pull-right">
+                    {% if ticketState is not empty %}
+                        {% if ticketState['vendus'] is defined %}
+                            <span
+                                    class="badge badge-danger">{{ ticketState['vendus'] }}</span> billets
+                            vendus
+                        {% endif %}
+                        {% if ticketState['vendus'] is defined and  ticketState['restants'] is defined %}
+                            ,
+                        {% endif %}
+                        {% if ticketState['restants'] is defined %}
+                            <span class="badge badge-success">{{ ticketState['restants'] }}</span> billets restants
+                        {% endif %}
+                    {% endif %}
+                </p>
+                <!--<form class="form-inline" id="billets_form">
+                    <div id="billets_fields">
+
+                    </div>
+                    <div class="col-sm-3 nopadding">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="type_billet" name="type_billet" value=""
+                                   placeholder="Type du billet">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 nopadding">
+                        <div class="form-group">
+                            <input type="number" class="form-control" id="nombre" name="nbr" value=""
+                                   placeholder="Nombre">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 nopadding">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="prix" name="prix" value="" placeholder="Prix">
+                        </div>
+                    </div>
+                    <div class="col-sm-3 nopadding">
+                        <div class="form-group">
+                            <span class="fa fa-plus" onclick="billets_fields();"></span>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <br/>
+                    <div class="col-sm-3 nopadding">
+                        <div class="form-group">
+                            <button class="btn btn-primary">Valider</button>
+                        </div>
+                    </div>
+                </form>-->
+                <form name="form" method="post" class="form">
+                    <p class="text text-muted text-warning"></p>
+                    <label class="form-control-label required" for="form_type_billet">Type de billet</label>
+
+                    <input type="text" id="form_type_billet" name="type_billet" required="required"
+                           class="form-control col-sm-2 mb-2 mr-sm-2 form-control" value="Spéciale">
+                    <p class="text text-muted">Exemple : VIP, Normal, ..</p>
+
+                    <label class="form-control-label" for="form_nombre">Nombre</label>
+
+
+                    <input type="number" id="form_nombre" class="form-control col-sm-2 mr-sm-2 form-control" value=""
+                           name="nombre">
+                    <p class="text text-muted">Ajouter le nombrre de billet à générer (50,100,..)</p>
+
+                    <label class="form-control-label" for="form_prix">Prix</label>
+
+                    <input type="text" id="form_prix" name="prix" class="form-control col-sm-2 mb-2 mr-sm-2 form-control"
+                           value="17">
+                    <p class="text text-muted">Exemple : 15.00, si le type de billet est "Gratuit",le prix sera
+                        configuré automatiquement</p>
+                    <div class="form-group">
+                        <button type="submit" id="form_register" name="register" class="btn-secondary btn">
+                            Enregistrer
+                        </button>
+                    </div>
+                    <input type="hidden" id="form__token" name="_token"
+                           value="{{ csrf_token('add-type-billet') }}">
+                </form>
+
+
+            </div>
+        </section>
+    {% endblock %}
+    {% block javascripts %}
+        {{ parent() }}
+        <script type="text/javascript">
+            var type = 1;
+
+            function billets_fields() {
+
+                type++;
+                let objTo = document.getElementById('billets_fields');
+                let divtest = document.createElement("div");
+                divtest.setAttribute("class", "form-group removeclass" + type);
+                objTo.innerHTML = '<div class="col-sm-3 nopadding"><div class="form-group"> <input type="text" class="form-control" id="type_billets" name="type_billet" value="" placeholder="Type du billet"></div></div><div class="col-sm-3 nopadding"><div class="form-group"> <input type="number" class="form-control" id="nbr" name="nbr" value="" placeholder="Nombre"></div></div><div class="col-sm-3 nopadding"><div class="form-group"> <input type="text" class="form-control" id="Prix" name="prix" value="" placeholder="Prix"></div></div> <button class="btn btn-danger" type="button" onclick="remove_tickets_fields(' + type + ');"> <span class="fa fa-minus" aria-hidden="true"></span> </button></div></div></div></div><div class="clear"></div>';
+
+                objTo.appendChild(divtest);
+            }
+
+            function remove_tickets_fields(tid) {
+                $('.removeclass' + tid).remove();
+            }
+        </script>
+    {% endblock %}
+{% endblock %}
+

@@ -5,7 +5,9 @@ namespace AppBundle\Repository;
 use AppBundle\Entity\Billet;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\TypeBillet;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityRepository;
+use function PHPSTORM_META\elementType;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -81,19 +83,39 @@ class BilletRepository extends EntityRepository
     /** @function générer billets
      * TODO: Generation Identifiant pour billet
      */
-    public function generateTickets($prix, $number, TypeBillet $typeBillet, Evenement $event)
+    public function generateTickets($prix, $number, $typeBillet, Evenement $event)
     {
         $em = $this->getEntityManager();
+        $type_billet_object=null;
+        $object_type_billets=$em->getRepository(TypeBillet::class)->findOneBy(['libelle'=>$typeBillet]);
+        if($object_type_billets)
+        {
+            if($typeBillet== "Gratuit"){
+                $prix= 0;
+            }
+            $type_billet_object=$object_type_billets;
+        }
+        else{
+            $new_tb=new TypeBillet();
+            $new_tb->setLibelle($typeBillet);
+            $em->persist($new_tb);
+            $em->flush();
+            $type_billet_object=$new_tb;
+        }
 
         for ($i = 0; $i < $number; $i++) {
+            $ticketLeft=$em->getRepository(Billet::class)->countPurchasedTickets($event);
+            $nbr=(int)$ticketLeft['vendus']+$ticketLeft['restants'];
             $newTicket = new Billet();
             $newTicket->setEstVendu(0);
             $newTicket->setPrix($prix);
-            $newTicket->setIdentifiant($event->getTitreEvenementSlug() + date_timestamp_set($event->getDateDebutEvent(), 3));
+            $id_billet=$event->getTitreEvenementSlug() .'-'. date_format($event->getDateDebutEvent(),'Y-m-d-H-i-s').'-'.strtolower($this->stripAccents($typeBillet).'-'.($nbr+1));
+            $newTicket->setIdentifiant($id_billet);
+            $newTicket->setPlaceId('N/A');
             $newTicket->setEvenement($event);
-            $newTicket->setTypeBillet($typeBillet);
-            //register to entityManager
+            $newTicket->setTypeBillet($type_billet_object);
             $em->persist($newTicket);
+            $em->flush();
         }
     }
 
@@ -173,6 +195,9 @@ ORDER BY b.id ASC')
             }
         }
         return $rs;
+    }
+    private function stripAccents($str) {
+        return strtr(utf8_decode($str), utf8_decode('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
     }
 
 }

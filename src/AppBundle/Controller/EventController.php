@@ -28,7 +28,7 @@ class EventController extends Controller
     /**
      * Formulaire de création d'évènements
      * @Route("/{userId}/events/create", name="createEvent")
-     * @ParamConverter("user",options={"mapping":{"userId" = "username"}})
+     * @ParamConverter("user",options={"mapping":{"userId" = "usernameCanonical"}})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
@@ -77,7 +77,8 @@ class EventController extends Controller
                 $entityManager->persist($event);
                 $entityManager->flush();
                 $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez votre carte ici');
-                return $this->redirectToRoute('viewCreateMap',array('event'=>$event,'slugEvent'=>$event->getTitreEvenementSlug(),'id'=>$event->getId(),'userId'=>$this->getUser()->getUserName()));
+                return $this->redirectToRoute('viewCreateMap',array('event'=>$event,'slugEvent'=>$event->getTitreEvenementSlug(),'id'=>$event->getId(),'userId'=>$this->getUser()->getUserCanonical()));
+
 
 
             }
@@ -91,7 +92,7 @@ class EventController extends Controller
                 $entityManager->persist($event);
                 $entityManager->flush();
                 $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez vos billets ici');
-                return $this->redirectToRoute('billet_index',array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUsername()));
+                return $this->redirectToRoute('billet_index',array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUsernameCanonical()));
             }
             else{
                 $entityManager = $this->getDoctrine()->getManager();
@@ -114,7 +115,7 @@ class EventController extends Controller
     /**
      * Gestion des évènements de l'utilisateur
      * @Route("/{userId}/events/list", name="viewListUser")
-     * @ParamConverter("user",options={"mapping":{"userId" = "username"}})
+     * @ParamConverter("user",options={"mapping":{"userId" = "usernameCanonical"}})
      * @param Request $request
      * @param User $user
      * @return Response
@@ -145,7 +146,7 @@ class EventController extends Controller
 
     /**
      * Supprimer un évènement
-     * @Route("/{user]/events/delete/{id}", name="viewEventDelete")
+     * @Route("/{user}/events/delete/{id}", name="viewEventDelete")
      * */
     public function deleteEventById(Request $request,Evenement $event){
         $deleteForm = $this->createDeleteForm($event);

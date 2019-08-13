@@ -32,6 +32,7 @@
             <!--Edit Modal -->
             <edit-form></edit-form>
             <strong class="mr-auto text-success">Plan de salle pour l'évènement {{ event.titreEvenement }}</strong>
+            <p><a href="{{ path('viewEventAdmin',{'user':app.user.username,'id':event.id}) }}">Retour vers l'évènement</a> </p>
         </div>
     {% endblock %}
     {% block contact %}{% endblock %}

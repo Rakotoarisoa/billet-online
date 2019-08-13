@@ -70,11 +70,11 @@
                                         </div>
                                         <div class="btn-group">
 
-                                            <a href="{{ path('viewEventAdmin',{'user':app.user.username,'id':item.id}) }}"
+                                            <a href="{{ path('viewEventAdmin',{'user':app.user.usernameCanonical,'id':item.id}) }}"
                                                class="btn btn-light">Infos</a>
-                                            <a href="{{ path('billet_index',{'userId':app.user.username,'event':item.titreEvenementSlug}) }}"
+                                            <a href="{{ path('billet_index',{'userId':app.user.usernameCanonical,'event':item.titreEvenementSlug}) }}"
                                                class="btn btn-light">Liste des billets</a>
-                                            <a class="btn btn-light" href="{{ path('viewEventUpdate',{'user':app.user.username,'id':item.id}) }}">Modifier</a>
+                                            <a class="btn btn-light" href="{{ path('viewEventUpdate',{'user':app.user.usernameCanonical,'id':item.id}) }}">Modifier</a>
 
                                         </div>
                                         <hr/>

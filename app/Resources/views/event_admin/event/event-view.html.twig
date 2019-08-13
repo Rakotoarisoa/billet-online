@@ -48,7 +48,7 @@
                         </tr>
                     </table>
                     <div class="btn-group">
-                        <a href="{{ path('viewEventMapAdmin',{'id':event.id,'userId':app.user.username}) }}" class="btn btn-outline-dark text-center">{{ 'events.table_view.event_seatmap'|trans }}</p></a><a href="{{ path('billet_index',{'userId':app.user.username,'event':event.titreEvenementSlug}) }}" class="btn btn-outline-dark">{{ 'events.table_view.event_billets'|trans }}</a></div>
+                        <a href="{{ path('viewEventMapAdmin',{'id':event.id,'userId':app.user.usernameCanonical}) }}" class="btn btn-outline-dark text-center">{{ 'events.table_view.event_seatmap'|trans }}</p></a><a href="{{ path('billet_index',{'userId':app.user.usernameCanonical,'event':event.titreEvenementSlug}) }}" class="btn btn-outline-dark">{{ 'events.table_view.event_billets'|trans }}</a></div>
                 </div>
             </div>
         </section>

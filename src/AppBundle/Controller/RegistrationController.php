@@ -93,7 +93,7 @@ class RegistrationController extends BaseController
 
                     if (null === $response = $event->getResponse()) {
                         $this->addFlash('success',"Profil enregistré avec succès");
-                        $url = $this->generateUrl('fos_user_profile_show');
+                        $url = $this->generateUrl('viewListUser', array('userId'=> $user->getUsernameCanonical()));
                         $response = new RedirectResponse($url);
                     }
 
