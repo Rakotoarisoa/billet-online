@@ -109,7 +109,7 @@ class CartController extends Controller
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event_id);
         if (count($result) > 0) {
             $item = new CartItem([
-                'id' => $result[0]['identifiant'],
+                'id' => $result[0]['id'],
                 'name' => strtolower($type_billet) . "-" . $result[0]['identifiant'] . "-" . $event->getTitreEvenementSlug(),
                 'price' => $result[0]['prix'],
                 'event' => $event_id
