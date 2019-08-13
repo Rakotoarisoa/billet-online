@@ -77,7 +77,7 @@ class EventController extends Controller
                 $entityManager->persist($event);
                 $entityManager->flush();
                 $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez votre carte ici');
-                return $this->redirectToRoute('viewCreateMap',array('event'=>$event,'slugEvent'=>$event->getTitreEvenementSlug(),'id'=>$event->getId(),'userId'=>$this->getUser()->getUserCanonical()));
+                return $this->redirectToRoute('viewCreateMap',array('event'=>$event,'slugEvent'=>$event->getTitreEvenementSlug(),'id'=>$event->getId(),'userId'=>$this->getUser()->getUserNameCanonical()));
 
 
 
@@ -92,7 +92,7 @@ class EventController extends Controller
                 $entityManager->persist($event);
                 $entityManager->flush();
                 $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez vos billets ici');
-                return $this->redirectToRoute('billet_index',array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUsernameCanonical()));
+                return $this->redirectToRoute('billet_index',array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUserNameCanonical()));
             }
             else{
                 $entityManager = $this->getDoctrine()->getManager();
@@ -191,6 +191,8 @@ class EventController extends Controller
             if ($editForm->get('save_create_map')->isClicked()) {
                 try {
                     $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
+                    if(!$event->getImageEvent()){
+                    $event->setImageEvent('/web/img/events/e2.jpg');}
                     $this->getDoctrine()->getManager()->persist($event);
                     $this->getDoctrine()->getManager()->flush();
                     $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez le plan de salle');
@@ -202,7 +204,11 @@ class EventController extends Controller
             else if ($editForm->get('save_create_billet')->isClicked()) {
                 try {
                     $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
+                    if(!$event->getImageEvent()) {
+                        $event->setImageEvent('/web/img/events/e2.jpg');
+                    }
                     $this->getDoctrine()->getManager()->persist($event);
+
                     $this->getDoctrine()->getManager()->flush();
                     $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez vos billets ici');
                     return $this->redirectToRoute('billet_index', array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUsername()));
