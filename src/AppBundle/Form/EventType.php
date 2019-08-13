@@ -69,6 +69,7 @@ class EventType extends  AbstractType
                         'mimeTypes' => [
                             'image/png',
                             'image/jpg',
+                            'image/jpeg',
                         ],
                         'mimeTypesMessage' => 'Enregistrez une image valide',
                     ])

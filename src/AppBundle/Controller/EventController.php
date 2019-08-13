@@ -212,7 +212,7 @@ class EventController extends Controller
             }
             else{
                 $entityManager = $this->getDoctrine()->getManager();
-                $event->setImageEvent('img/e2.jpg');
+                $event->setImageEvent('/web/img/events/e2.jpg');
                 $event->setIsPublished(1);
                 $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
                 $entityManager->persist($event);
