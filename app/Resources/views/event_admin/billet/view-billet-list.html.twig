@@ -72,7 +72,7 @@
                     <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <th>{{ knp_pagination_sortable(billets, 'Identifiant', 'identifiant') }}</th>
+                        <th>{{ knp_pagination_sortable(billets, 'Référence', 'identifiant') }}</th>
                         <th{% if billets.isSorted('place_id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(billets, 'Identifiant place', 'place_id') }}</th>
                         <th>{{ knp_pagination_sortable(billets, 'Type', 'libelle') }}</th>
                         <th>{{ knp_pagination_sortable(billets, 'Vendu', 'est_vendu') }}</th>

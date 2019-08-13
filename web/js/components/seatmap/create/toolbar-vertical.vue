@@ -56,16 +56,16 @@
                 var jsonString = JSON.stringify(this.fabCanvas);
                 // console.log("jsonString:");
                 // console.log(jsonString);
-                var element = document.createElement('a');
-                element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonString));
-                element.setAttribute('download', fileName);
+                //var element = document.createElement('a');
+                //element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonString));
+                //element.setAttribute('download', fileName);
 
-                element.style.display = 'none';
-                document.body.appendChild(element);
+                //element.style.display = 'none';
+                //document.body.appendChild(element);
 
-                element.click();
+                //element.click();
 
-                document.body.removeChild(element);
+                //document.body.removeChild(element);
             },
             setAddSeating() {
                 // emits a Bus signal to toggle the add seating form.

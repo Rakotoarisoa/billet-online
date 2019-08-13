@@ -646,7 +646,7 @@ const vm_create = new Vue({
         BusCreate.$on('fabricCanvas', fabCanvas => {
             this.fabCanvas=fabCanvas;
             //console.log(pathArray[3].split('-')[1]);
-            axios.get("/api/event/get-map/"+pathArray[4])
+            axios.get("/api/event/get-map/"+pathArray[5])
                 .then(response => {
 
                     fabCanvas.loadFromJSON(response.data);
