@@ -8,14 +8,8 @@
 {% endblock %}
 {% block body %}
     {% block content %}
-        <div id="vue-app-user" class="container-fluid">
-            <!-- Vertical toolbar -->
-            <p class="font-weight-light text-justify">Sélectionner une place pour pouvoir réserver .</p>
-            <div class="row">
-                <div class="col-sm-12">
-                    <canvas-element-user></canvas-element-user>
-                </div>
-            </div>
+        <div id="root" class="container-fluid">
+
         </div>
         <p>
             <a href="{{ url('viewEventAdmin',{'id':event.id,'user':app.user.username,}) }}"><span class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
@@ -34,8 +28,6 @@
         <script src="{{ asset('js/plugins/plugins.js') }}"></script>
         <!-- Active js -->
         <script src="{{ asset('js/active.js') }}"></script>
-
-        <script type="text/javascript" src="{{ asset('js/fabric.js') }}"></script>
         <!-- Vue js -->
         <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
     {% endblock %}

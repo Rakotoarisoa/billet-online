@@ -50,9 +50,9 @@
                                 <ul>
                                     <li><a href="{{ path('viewList') }}">Acceuil</a></li>
                                     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                                        <li><a href="{{ path('createEvent',{'userId':app.user.username }) }}">Créer un
+                                        <li><a href="{{ path('createEvent',{'userId':app.user.usernameCanonical }) }}">Créer un
                                                 évènement</a></li>
-                                        <li><a href="{{ path('viewListUser',{'userId':app.user.username}) }}">Gérer les
+                                        <li><a href="{{ path('viewListUser',{'userId':app.user.usernameCanonical}) }}">Gérer les
                                                 évènements</a></li>
                                     {% endif %}
                                     <li><a href="{{ path('support') }}">Aide</a></li>
@@ -165,6 +165,21 @@
     <script type="text/javascript">$(function () {
         $('[data-toggle="tooltip"]').tooltip();
     })</script>
+    <div class="js-user-rating" data-is-authenticated="{{ app.user ? 'true' : 'false' }}" data-event-id="{{ (event is defined) ? event.id : null }}">
+        <!-- ... -->
+    </div>
+    <script type="text/javascript">
+        var eventId=null;
+        document.addEventListener('DOMContentLoaded', function() {
+            var userRating = document.querySelector('.js-user-rating');
+            var isAuthenticated = userRating.dataset.isAuthenticated;
+            eventId = userRating.dataset.eventId;
+
+
+            // or with jQuery
+            //var isAuthenticated = $('.js-user-rating').data('isAuthenticated');
+        });
+    </script>
 
 {% endblock %}
 {% endblock %}

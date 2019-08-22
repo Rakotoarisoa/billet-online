@@ -105,7 +105,13 @@ class BilletRepository extends EntityRepository
 
         for ($i = 0; $i < $number; $i++) {
             $ticketLeft=$em->getRepository(Billet::class)->countPurchasedTickets($event);
-            $nbr=(int)$ticketLeft['vendus']+$ticketLeft['restants'];
+            if(isset($ticketLeft['vendus'])) {
+                $nbr = (int)$ticketLeft['vendus'] + $ticketLeft['restants'];
+            }
+            else
+            {
+                $nbr = (int)$ticketLeft['restants'];
+            }
             $newTicket = new Billet();
             $newTicket->setEstVendu(0);
             $newTicket->setPrix($prix);
