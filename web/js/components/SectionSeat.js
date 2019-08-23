@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import Konva from "konva";
 import {Circle, Group, Text} from "react-konva";
-import RightSidebar from "./RightSidebar";
 
 const rows=5,
     cols=5,
@@ -28,6 +27,8 @@ class SectionSeat extends Component {
             color: '#A9A8B3',
             stroke: '#888888',
             isSelected: false,
+            colNumber: cols,
+            rowNumber: rows,
             x: posX,
             y: posY
         };
@@ -40,7 +41,6 @@ class SectionSeat extends Component {
     };
     handleClick = () => {
         this.setState({
-            color: Konva.Util.getRandomColor(),
             isSelected: true,
         });
     };

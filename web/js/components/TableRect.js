@@ -51,7 +51,8 @@ let rightPos = tablePosX + tableWidth / 2 + gap + rad;
 class TableRect extends Component {
     state = {
         color: 'green',
-        xSeats: 5,
+        xSeats: xSeats,
+        ySeats: ySeats,
         x: posX,
         y: posY
     };

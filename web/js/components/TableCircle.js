@@ -45,7 +45,7 @@ let tableLeft=posX + contWidth/2,tableTop=(textWidth + textHeight + topBuff) + d
 class TableCircle extends Component {
     state = {
         color: 'green',
-        xSeats: 5,
+        seats: seats,
         x: posX,
         y: posY
     };
