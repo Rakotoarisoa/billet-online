@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component,useState} from 'react';
 import Konva from 'konva';
 import {render} from 'react-dom';
 import {Stage, Layer, Transformer} from 'react-konva';
@@ -9,6 +9,11 @@ import RightSidebar from "./components/RightSidebar";
 
 
 class App extends Component {
+    state = {
+        stageScale: 1,
+        stageX: 0,
+        stageY: 0
+    };
     handleDragStart = e => {
         e.target.setAttrs({
             shadowOffset: {
@@ -56,11 +61,21 @@ class App extends Component {
         return (
             <Stage width={window.innerWidth}
                    height={window.innerHeight}
-                   onWheel={this.handleWheel}>
+                   onWheel={this.handleWheel}
+                   scaleX={this.state.stageScale}
+                   scaleY={this.state.stageScale}
+                   x={this.state.stageX}
+                   y={this.state.stageY}>
                 <Layer>
-                    <TableRect/>
-                    <TableCircle/>
-                    <SectionSeat/>
+                    <TableRect onSelect={() => {
+                        selectShape(rect.id);
+                    }}/>
+                    <TableCircle onSelect={() => {
+                        selectShape(rect.id);
+                    }}/>
+                    <SectionSeat onSelect={() => {
+                        selectShape(rect.id);
+                    }}/>
                 </Layer>
             </Stage>
 
