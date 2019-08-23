@@ -22,10 +22,10 @@ class RightSidebar extends Component {
         return (
             <aside>
                 <div className={"pull-right d-flex"}>
-                    <div className="d-flex p-3 bg-secondary text-white">
-                        <div className="p-2 bg-info">Ajouter une table</div>
-                        <div className="p-2 bg-warning">Ajouter une section</div>
-                        <div className="p-2 bg-primary">Ajouter une rangée</div>
+                    <div className="d-flex p-3 bg-light ">
+                        <div className="p-2 bg-light"><button className={"btn btn-light"}>Table</button></div>
+                        <div className="p-2 bg-light"><button className={"btn btn-light"}>Section</button></div>
+                        <div className="p-2 bg-light"><button className={"btn btn-light"}>Rangée</button></div>
                     </div>
                 </div>
             </aside>
