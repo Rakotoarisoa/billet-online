@@ -52,3 +52,5 @@
 /.web-server-pid
 
 /web/build/ckeditor/
+#.idea
+.idea/workspace.xml
