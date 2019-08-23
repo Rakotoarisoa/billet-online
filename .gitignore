@@ -50,5 +50,7 @@
 
 # Embedded web-server pid file
 /.web-server-pid
-
+#ckeditor
 /web/build/ckeditor/
+#package-lock
+package-lock.json
