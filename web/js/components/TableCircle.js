@@ -45,9 +45,16 @@ let tableLeft=posX + contWidth/2,tableTop=(textWidth + textHeight + topBuff) + d
 class TableCircle extends Component {
     state = {
         color: 'green',
-        xSeats: 5
+        xSeats: 5,
+        x: posX,
+        y: posY
     };
-
+    handleDragEnd = e => {
+        this.setState({
+            x: e.target.x(),
+            y: e.target.y()
+        });
+    };
     handleClick = () => {
         this.setState({
             color: Konva.Util.getRandomColor()
@@ -57,15 +64,17 @@ class TableCircle extends Component {
     render() {
         return (
             <Group
-                x={posX}
-                y={posY}
+                x={this.state.x}
+                y={this.state.y}
                 height={topBuff * 2 + textWidth + bottomBuff}
                 width={contWidth}
                 visible={true}
                 draggable
+                onDragEnd={this.handleDragEnd}
             >
                 {[...Array(seats)].map((_, i) => (// CREER chaises à gauche de la table
-                    <Group>
+                    <Group
+                    key={"Circle"+i}>
                         <Circle
                             key={i+1}
                             x={Math.cos(deg*i)*(tableRad + gap + rad) + tableLeft}
@@ -74,7 +83,7 @@ class TableCircle extends Component {
                             height={20}
                             fill="#A9A8B3"
                             stroke={"#888888"}
-                            strokeWidth={"2px"}
+                            strokeWidth={2}
                             shadowColor={'gray'}
                             shadowOffset={{x: 2,
                                 y: 2}}
@@ -96,7 +105,7 @@ class TableCircle extends Component {
                     y={ (tableRad+textWidth + textHeight + topBuff) + dia + gap}
                     fill={"white"}
                     stroke={"#444444"}
-                    strokeWidth={"2px"}
+                    strokeWidth={2}
                 />
                 <Text
                     text={"Test"}

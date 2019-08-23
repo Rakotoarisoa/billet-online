@@ -22,23 +22,37 @@ let currentRow = 'A';
 
 
 class SectionSeat extends Component {
-    state = {
-        color: 'green'
-    };
-
-    handleClick = () => {
+    constructor(props) {
+        super(props);
+        this.state = {
+            color: '#A9A8B3',
+            stroke: '#888888',
+            isSelected: false,
+            x: posX,
+            y: posY
+        };
+    }
+    handleDragEnd = e => {
         this.setState({
-            color: Konva.Util.getRandomColor()
+            x: e.target.x(),
+            y: e.target.y()
         });
     };
-
+    handleClick = () => {
+        this.setState({
+            color: Konva.Util.getRandomColor(),
+            isSelected: true,
+        });
+    };
     render() {
         return (
             <Group
-                x={posX}
-                y={posY}
+                key={"section1"}
+                x={this.state.x}
+                y={this.state.y}
                 height={sizeX}
                 width={sizeY}
+                onDragEnd={this.handleDragEnd}
                 draggable
             >
 
@@ -46,17 +60,18 @@ class SectionSeat extends Component {
                 {[...Array(rows)].map((_, i) => (// CREER
                     [...Array(cols)].map((_, j) => (// CREER
                         <Group
+                            key={"Element"+i+" "+j}
                         >
 
                             <Circle
-                                key={j+1}
+                                key={j+"1"+i}
                                 x={(posX + sideBuff) + rad + j * dia + j * gap}
                                 y={( textHeight + topBuff) + rad + i * dia + i * gap}
                                 width={20}
                                 height={20}
-                                stroke={"#888888"}
-                                strokeWidth={"2px"}
-                                fill="#A9A8B3"
+                                stroke={this.state.stroke}
+                                strokeWidth={2}
+                                fill={this.state.color}
                                 shadowColor={'gray'}
                                 shadowOffset={{x: 2,
                                     y: 2}}

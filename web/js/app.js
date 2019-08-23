@@ -1,12 +1,11 @@
-import React,{Component} from 'react';
+import React, {Component} from 'react';
 import Konva from 'konva';
 import {render} from 'react-dom';
-import {Stage, Layer} from 'react-konva';
+import {Stage, Layer, Transformer} from 'react-konva';
 import TableCircle from "./components/TableCircle";
 import TableRect from "./components/TableRect";
 import SectionSeat from "./components/SectionSeat";
 import RightSidebar from "./components/RightSidebar";
-
 
 
 class App extends Component {
@@ -46,12 +45,12 @@ class App extends Component {
 
 render(
     <div className="row">
-    <div className="col-sm-9">
-    <App/>
-    </div>
-    <div className="col-sm-3 sidebar-right">
-    <RightSidebar/>
-    </div>
+        <div className="col-sm-9">
+            <App/>
+        </div>
+        <div className="col-sm-3 sidebar-right">
+            <RightSidebar/>
+        </div>
     </div>
     , document.getElementById('root')
 );

@@ -51,9 +51,16 @@ let rightPos = tablePosX + tableWidth / 2 + gap + rad;
 class TableRect extends Component {
     state = {
         color: 'green',
-        xSeats: 5
+        xSeats: 5,
+        x: posX,
+        y: posY
     };
-
+    handleDragEnd = e => {
+        this.setState({
+            x: e.target.x(),
+            y: e.target.y()
+        });
+    };
     handleClick = () => {
         this.setState({
             color: Konva.Util.getRandomColor()
@@ -65,10 +72,11 @@ class TableRect extends Component {
         return (
             <Group
                 key={"Rect"}
-                x={posX}
-                y={posY}
+                x={this.state.x}
+                y={this.state.y}
                 height={topBuff * 2 + textWidth + wholeHeight + bottomBuff}
                 width={contWidth}
+                onDragEnd={this.handleDragEnd}
                 draggable
             >
 
@@ -78,7 +86,7 @@ class TableRect extends Component {
                     radius={50}
                     fill="white"
                     stroke={"#888888"}
-                    strokeWidth={"2px"}
+                    strokeWidth={2}
                     width={tableWidth}
                     height={tableHeight}
                 />
@@ -86,7 +94,7 @@ class TableRect extends Component {
 
                 {[...Array(xSeats)].map((_, i) => (// CREER chaises en haut de la table
                     <Group
-                        key={"Rect"}
+                        key={"RectT"+i}
                     >
 
                         <Circle
@@ -97,7 +105,7 @@ class TableRect extends Component {
                             height={20}
                             fill="#A9A8B3"
                             stroke={"#888888"}
-                            strokeWidth={"2px"}
+                            strokeWidth={2}
                             shadowColor={'gray'}
                             shadowOffset={{x: 2,
                                 y: 2}}
@@ -115,7 +123,7 @@ class TableRect extends Component {
                 ))}
                 {[...Array(ySeats)].map((_, i) => (// CREER chaises à droite de la table
                     <Group
-                        key={"Rect"}>
+                        key={"Rectd"+i}>
                         <Circle
                             key={numero_chaise++}
                             x={rightPos}
@@ -124,7 +132,7 @@ class TableRect extends Component {
                             height={20}
                             fill="#A9A8B3"
                             stroke={"#888888"}
-                            strokeWidth={"2px"}
+                            strokeWidth={2}
                             shadowColor={'gray'}
                             shadowOffset={{x: 2,
                                 y: 2}}
@@ -141,7 +149,8 @@ class TableRect extends Component {
                     </Group>
                 ))}
                 {[...Array(xSeats)].map((_, i) => (// CREER chaises en bas de la table
-                    <Group>
+                    <Group
+                    key={"Rectb"+i}>
                         <Circle
                             key={numero_chaise++}
                             x={leftStart + dia * i + gap * i}
@@ -150,7 +159,7 @@ class TableRect extends Component {
                             height={20}
                             fill="#A9A8B3"
                             stroke={"#888888"}
-                            strokeWidth={"2px"}
+                            strokeWidth={2}
                             shadowColor={'gray'}
                             shadowOffset={{x: 2,
                                 y: 2}}
@@ -168,7 +177,8 @@ class TableRect extends Component {
                     </Group>
                 ))}
                 {[...Array(ySeats)].map((_, i) => (// CREER chaises à gauche de la table
-                    <Group>
+                    <Group
+                    key={"Rectg"+i}>
                         <Circle
                             key={numero_chaise++}
                             x={leftPos}
@@ -177,7 +187,7 @@ class TableRect extends Component {
                             height={20}
                             fill="#A9A8B3"
                             stroke={"#888888"}
-                            strokeWidth={"2px"}
+                            strokeWidth={2}
                             shadowColor={'gray'}
                             shadowOffset={{x: 2,
                                 y: 2}}
