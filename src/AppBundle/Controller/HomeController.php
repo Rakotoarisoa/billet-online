@@ -39,10 +39,13 @@ class HomeController extends Controller
             ->search($titre,$lieu,$date);
         return $this->render('default/index.html.twig', array('dataSearch'=>$request->request,'events' => $eventsList,'lieu'=>$lieu,'nbEvents'=>count($eventsList)));
     }
+
     /**
      * Page affichage évènement
      * @Route("/event/{date}/{slugEvent}", name="viewSingle")
      * @ParamConverter("event", options={"mapping":{"slugEvent" = "titreEvenementSlug","date"="dateDebutEvenement"}})
+     * @param Evenement $event
+     * @return Response
      */
     public function showSingleEvent(Evenement $event)
     {
@@ -61,7 +64,7 @@ class HomeController extends Controller
      * TODO:Implémentation Création Map
      */
     public function vueCreateMap(){
-        return $this->render('default/view-create-map.html.twig');
+        return $this->render('event_admin/event/view-map-admin.html.twig');
     }
     /**
      * Page Seatmap , reservation de place

@@ -1,6 +1,5 @@
 {
   "build/css/app.css": "/build/css/app.css",
-  "build/js/app.css": "/build/js/app.css",
   "build/js/app.js": "/build/js/app.js",
   "build/ckeditor/adapters/jquery.js": "/build/ckeditor/adapters/jquery.js",
   "build/ckeditor/ckeditor.js": "/build/ckeditor/ckeditor.js",
@@ -2663,5 +2662,6 @@
   "build/fonts/fa-solid-900.eot": "/build/fonts/fa-solid-900.ef3df984.eot",
   "build/images/fa-brands-400.svg": "/build/images/fa-brands-400.073c2f3c.svg",
   "build/images/fa-regular-400.svg": "/build/images/fa-regular-400.8fdea4e8.svg",
-  "build/images/fa-solid-900.svg": "/build/images/fa-solid-900.b557f56e.svg"
+  "build/images/fa-solid-900.svg": "/build/images/fa-solid-900.b557f56e.svg",
+  "build/js/app.css": "/build/js/app.css"
 }
