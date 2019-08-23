@@ -54,3 +54,4 @@
 /web/build/ckeditor/
 #package-lock
 package-lock.json
+yarn.lock
