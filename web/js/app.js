@@ -6,7 +6,6 @@ import TableCircle from "./components/TableCircle";
 import TableRect from "./components/TableRect";
 import SectionSeat from "./components/SectionSeat";
 import RightSidebar from "./components/RightSidebar";
-import '../css/index.css';
 
 
 
@@ -45,7 +44,8 @@ class App extends Component {
     }
 }
 
-render(<div className="row">
+render(
+    <div className="row">
     <div className="col-sm-9">
     <App/>
     </div>
@@ -53,5 +53,6 @@ render(<div className="row">
     <RightSidebar/>
     </div>
     </div>
-    , document.getElementById('root'));
+    , document.getElementById('root')
+);
 
