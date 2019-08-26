@@ -14,7 +14,7 @@ const rows=5,
     sizeY = topBuff + bottomBuff + rows * dia + (rows - 1) * gap,
     posY = 200,
     posX = 200,
-    textWidth = 50,
+    textWidth = 100,
     textHeight = 10;
 let currentCol = 5;//NBR OF Columns
 let currentRow = 'A';
@@ -30,7 +30,8 @@ class SectionSeat extends Component {
             colNumber: cols,
             rowNumber: rows,
             x: posX,
-            y: posY
+            y: posY,
+            sectionName: this.props.title
         };
     }
     handleDragEnd = e => {
@@ -90,7 +91,7 @@ class SectionSeat extends Component {
 
                 ))}
                 <Text
-                    text={"Test"}
+                    text={this.state.sectionName}
                     x={posX+10}
                     y={0}
                     width={textWidth}

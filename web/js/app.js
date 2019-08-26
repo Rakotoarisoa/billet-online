@@ -67,15 +67,10 @@ class App extends Component {
                    x={this.state.stageX}
                    y={this.state.stageY}>
                 <Layer>
-                    <TableRect onSelect={() => {
-                        selectShape(rect.id);
-                    }}/>
-                    <TableCircle onSelect={() => {
-                        selectShape(rect.id);
-                    }}/>
-                    <SectionSeat onSelect={() => {
-                        selectShape(rect.id);
-                    }}/>
+                    <TableRect/>
+                    <TableCircle />
+                    <SectionSeat title={"Section 1"}/>
+                    <SectionSeat title={"Section 2"}/>
                 </Layer>
             </Stage>
 
