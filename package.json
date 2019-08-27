@@ -30,6 +30,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "ckeditor": "^4.12.1",
     "lodash": "^4.17.15",
+    "react-material-ui-form-validator": "^2.0.9",
     "yarn": "^1.17.3"
   }
 }

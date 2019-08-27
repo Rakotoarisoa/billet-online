@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import TextField from "@material-ui/core/TextField";
+import SectionSeat from "../SectionSeat";
+import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Button from "@material-ui/core/Button";
 
 class CreateRangeForm extends Component{
@@ -8,10 +9,11 @@ class CreateRangeForm extends Component{
         this.state = {
             nom: 'Nom par défaut',
             cols: 5,
-            rows: 5
+            rows: 5,
+            submitted: false
         };
         this.handleChangeRangeForm = this.handleChangeRangeForm.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSubmitRangeForm = this.handleSubmitRangeForm.bind(this);
     }
     handleSubmit(event) {
         alert('Nom de rangée: ' + this.state.value);
@@ -24,61 +26,88 @@ class CreateRangeForm extends Component{
         this.setState({
             [name]: value
         });
-        console.log(this.state.nom);
+
     }
 
     handleSubmitRangeForm(event) {
+        this.setState({ submitted: true }, () => {
+            //TODO: create object SectionSeat
+            const sectionSeat= new SectionSeat({
+                rowNumber:this.state.rows,
+                colNumber: this.state.cols,
+                nom: this.state.nom
+            });
+            let canvas=this.props.canvas;
+            console.log(canvas);
+
+            setTimeout(() => this.setState({ submitted: false }), 5000);
+        });
         alert('Nom de rangée: ' + this.state.nom);
         event.preventDefault();
     }
     render(){
+        const { rows, cols, nom } = this.state;
         return(
-
-            <form onSubmit={this.handleSubmitRangeForm}>
-
+            <ValidatorForm
+                ref="form"
+                onSubmit={this.handleSubmitRangeForm}
+            >
                 <div className="p-2 bg-light">
-                    <TextField
-                        id="standard-name"
+
+                    <TextValidator
+                        validators={["required"]}
+                        errorMessages={['Ce champ est requis']}
+                        id="nom"
                         label="Nom"
                         className={"form-control secondary"}
-                        defaultValue={this.state.nom}
+                        value={nom}
                         onChange={this.handleChangeRangeForm}
                         margin="normal"
                         name={"nom"}
                     />
-
-                    <TextField
+                   <br/><br/>
+                    <TextValidator
                         id="rangeCols"
                         label="Nombre de colonnes"
-                        defaultValue={this.state.cols}
+                        value={cols}
                         onChange={this.handleChangeRangeForm}
-                        type="number"
+                        type="text"
                         className={"form-control secondary"}
                         InputLabelProps={{
                             shrink: true,
                         }}
                         margin="normal"
+                        validators={['required','minNumber:0', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
+                        errorMessages={['Ce champ est requis','Nombre min:0','Nombre max:50','Veuiller insérer un nombre']}
+                        name={"cols"}
                     />
+                    <br/><br/>
 
-                    <TextField
+                    <TextValidator
                         id="rangeRows"
                         label="Nombre de Rangées"
-                        defaultValue={this.state.rows}
+                        value={rows}
                         onChange={this.handleChangeRangeForm}
-                        type="number"
+                        type="text"
                         className={"form-control secondary"}
                         InputLabelProps={{
                             shrink: true,
                         }}
                         margin="normal"
+                        validators={['required','minNumber:1','isNumber', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
+                        errorMessages={['Ce champ est requis','Nombre min:1','Nombre max:50','Veuiller insérer un nombre']}
+                        name={"rows"}
                     />
+                    <br/><br/>
+
                     <Button variant="contained"
                             color="primary"
-                            className={"btn btn-primary"}>
-                        Valider
+                            className={"btn btn-primary"}
+                            type={"submit"}>
+                        Créer
                     </Button>
                 </div>
-            </form>
+            </ValidatorForm>
         );
     }
 }

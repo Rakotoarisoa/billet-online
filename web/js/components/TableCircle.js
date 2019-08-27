@@ -47,7 +47,8 @@ class TableCircle extends Component {
         color: 'green',
         seats: seats,
         x: posX,
-        y: posY
+        y: posY,
+        nom: "Table 1"
     };
     handleDragEnd = e => {
         this.setState({
@@ -72,7 +73,7 @@ class TableCircle extends Component {
                 draggable
                 onDragEnd={this.handleDragEnd}
             >
-                {[...Array(seats)].map((_, i) => (// CREER chaises à gauche de la table
+                {[...Array(this.state.seats)].map((_, i) => (// CREER chaises à gauche de la table
                     <Group
                     key={"Circle"+i}>
                         <Circle
@@ -108,7 +109,7 @@ class TableCircle extends Component {
                     strokeWidth={2}
                 />
                 <Text
-                    text={"Test"}
+                    text={this.state.nom}
                     x={posX+contWidth/2-12}
                     y={(tableRad+textWidth + topBuff) + dia + gap}
                     width={textWidth}

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Konva from "konva";
 import {Circle, Group, Text} from "react-konva";
 
 const rows=5,
@@ -27,8 +26,8 @@ class SectionSeat extends Component {
             color: '#A9A8B3',
             stroke: '#888888',
             isSelected: false,
-            colNumber: cols,
-            rowNumber: rows,
+            colNumber: this.props.cols,
+            rowNumber: this.props.rows,
             x: posX,
             y: posY,
             sectionName: this.props.title
@@ -58,8 +57,8 @@ class SectionSeat extends Component {
             >
 
 
-                {[...Array(rows)].map((_, i) => (// CREER
-                    [...Array(cols)].map((_, j) => (// CREER
+                {[...Array(this.state.rowNumber)].map((_, i) => (// CREER
+                    [...Array(this.state.colNumber)].map((_, j) => (// CREER
                         <Group
                             key={"Element"+i+" "+j}
                         >

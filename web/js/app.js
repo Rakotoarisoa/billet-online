@@ -1,7 +1,6 @@
-import React, {Component,useState} from 'react';
-import Konva from 'konva';
+import React, {Component} from 'react';
 import {render} from 'react-dom';
-import {Stage, Layer, Transformer} from 'react-konva';
+import {Stage, Layer, useStrictMode} from 'react-konva';
 import TableCircle from "./components/TableCircle";
 import TableRect from "./components/TableRect";
 import SectionSeat from "./components/SectionSeat";
@@ -69,15 +68,14 @@ class App extends Component {
                 <Layer>
                     <TableRect/>
                     <TableCircle />
-                    <SectionSeat title={"Section 1"}/>
-                    <SectionSeat title={"Section 2"}/>
+                    <SectionSeat title={"Section 1"} rows={5} cols={5} />
                 </Layer>
             </Stage>
 
         );
     }
 }
-
+useStrictMode(false);
 render(
     <div className="row">
         <div className="col-sm-9">
@@ -89,4 +87,5 @@ render(
     </div>
     , document.getElementById('root')
 );
+
 

@@ -1,8 +1,12 @@
 import React, {Component} from 'react';
 import CreateRangeForm from "./forms/CreateRangeForm";
+import CreateTableForm from "./forms/CreateTableForm";
 
 class RightSidebar extends Component {
-
+    constructor(props) {
+        super(props);
+        console.log(this.props.canvas);
+    }
 
     handleChange(event) {
         const target = event.target;
@@ -11,7 +15,6 @@ class RightSidebar extends Component {
         this.setState({
             [name]: value
         });
-        console.log(value);
     };
 
     handleSubmit(event) {
@@ -47,7 +50,7 @@ class RightSidebar extends Component {
                         </div>
                         <div className="p-2 bg-light">
                             <button className={"btn btn-light"} data-toggle={"collapse"}
-                                    data-target={"#zoneCreate"}>Zone
+                                    data-target={"#zoneCreate"} aria-expanded="false" aria-controls="zoneCreate">Zone
                             </button>
                         </div>
                         <div className="p-2 bg-light">
@@ -59,9 +62,12 @@ class RightSidebar extends Component {
                 </div>
                 <div className={"collapse"} id="sectionCreate">
                     <div className="d-flex p-3 bg-light">
-
-                        <CreateRangeForm />
-
+                        <CreateRangeForm canvas={this.props.canvas} />
+                    </div>
+                </div>
+                <div className={"collapse"} id="zoneCreate">
+                    <div className="d-flex p-3 bg-light">
+                        <CreateTableForm canvas={this.props.canvas} />
                     </div>
                 </div>
             </aside>

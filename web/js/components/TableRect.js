@@ -54,7 +54,8 @@ class TableRect extends Component {
         xSeats: xSeats,
         ySeats: ySeats,
         x: posX,
-        y: posY
+        y: posY,
+        nom:"Table 1"
     };
     handleDragEnd = e => {
         this.setState({
@@ -93,7 +94,7 @@ class TableRect extends Component {
                 />
 
 
-                {[...Array(xSeats)].map((_, i) => (// CREER chaises en haut de la table
+                {[...Array(this.state.xSeats)].map((_, i) => (// CREER chaises en haut de la table
                     <Group
                         key={"RectT"+i}
                     >
@@ -122,7 +123,7 @@ class TableRect extends Component {
                         />
                     </Group>
                 ))}
-                {[...Array(ySeats)].map((_, i) => (// CREER chaises à droite de la table
+                {[...Array(this.state.ySeats)].map((_, i) => (// CREER chaises à droite de la table
                     <Group
                         key={"Rectd"+i}>
                         <Circle
@@ -205,7 +206,7 @@ class TableRect extends Component {
                     </Group>
                 ))}
                 <Text
-                    text={"Test"}
+                    text={this.state.nom}
                     x={0}
                     y={wholeHeight/2+(posY+topBuff)}
                     width={textWidth}
