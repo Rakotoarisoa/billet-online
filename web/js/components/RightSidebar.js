@@ -65,7 +65,7 @@ class RightSidebar extends Component {
                         <CreateRangeForm canvas={this.props.canvas} />
                     </div>
                 </div>
-                <div className={"collapse"} id="zoneCreate">
+                <div className={"collapse"} id="tableCreate">
                     <div className="d-flex p-3 bg-light">
                         <CreateTableForm canvas={this.props.canvas} />
                     </div>
