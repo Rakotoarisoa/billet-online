@@ -5,7 +5,6 @@ import CreateTableForm from "./forms/CreateTableForm";
 class RightSidebar extends Component {
     constructor(props) {
         super(props);
-        console.log(this.props.canvas);
     }
 
     handleChange(event) {
@@ -31,10 +30,6 @@ class RightSidebar extends Component {
     }
 
     componentWillUnmount() {
-
-    }
-
-    renderPortal(props) {
 
     }
 

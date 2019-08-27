@@ -10,7 +10,14 @@ class TextFieldsByTable extends Component{
     constructor(props){
         super(props);
     }
+
+    state={
+    cols: this.props.cols,
+    rows: this.props.rows,
+    chaises: this.props.chaises
+    };
     render() {
+        let {  handleChangeRangeForm } = this.props;
         if (this.props.table_type === RECTANGLE) {
 
             return (
@@ -19,16 +26,16 @@ class TextFieldsByTable extends Component{
                     id="horizontal"
                     label="Nombre à l'horizontal"
                     value={this.props.cols}
-                    onChange={this.props.onChange}
                     type="text"
                     className={"form-control secondary"}
+                    onChange={handleChangeRangeForm}
                     InputLabelProps={{
                         shrink: true,
                     }}
                     margin="normal"
-                    validators={['required', 'minNumber:0', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
+                    validators={['required', 'minNumber:1', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
                     errorMessages={['Ce champ est requis', 'Nombre min:0', 'Nombre max:50', 'Veuiller insérer un nombre']}
-                    name={"xSeat"}
+                    name={"cols"}
                 />
                     <br/><br/>
 
@@ -36,34 +43,33 @@ class TextFieldsByTable extends Component{
                         id="vertical"
                         label="Nombre à la verticale"
                         value={this.props.rows}
-                        onChange={this.props.onChange}
                         type="text"
                         className={"form-control secondary"}
+                        onChange={handleChangeRangeForm}
                         InputLabelProps={{
                             shrink: true,
                         }}
                         margin="normal"
                         validators={['required', 'minNumber:1', 'isNumber', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
                         errorMessages={['Ce champ est requis', 'Nombre min:1', 'Nombre max:50', 'Veuiller insérer un nombre']}
-                        name={"ySeat"}
+                        name={"rows"}
                     />
                     <br/><br/>
                 </section>
             );
         } else if (this.props.table_type === RONDE) {
-
             return (<section><TextValidator
                 id="chaises"
                 label="Nombre de chaises"
-                value={this.props.cols}
-                onChange={this.props.onChange}
+                value={this.props.chaises}
                 type="text"
                 className={"form-control secondary"}
                 InputLabelProps={{
-                    shrink: true,
+                    shrink: true
                 }}
                 margin="normal"
-                validators={['required', 'minNumber:0', 'maxNumber:25', 'matchRegexp:^[0-9]$']}
+                onChange={handleChangeRangeForm}
+                validators={['required', 'minNumber:1', 'maxNumber:25', 'matchRegexp:^[0-9]$']}
                 errorMessages={['Ce champ est requis', 'Nombre min:0', 'Nombre max:50', 'Veuiller insérer un nombre']}
                 name={"chaises"}
             />
@@ -78,9 +84,9 @@ class CreateTableForm extends Component{
         super(props);
         this.state = {
             nom: 'Table 1',
-            cols: 5,
             rows: 5,
-            nbChaisesRonde: 5,
+            cols: 5,
+            chaises: 5,
             table_type: RECTANGLE,
             submitted: false
         };
@@ -109,8 +115,6 @@ class CreateTableForm extends Component{
                 colNumber: this.state.cols,
                 nom: this.state.nom
             });
-            let canvas=this.props.canvas;
-            console.log(canvas);
 
             setTimeout(() => this.setState({ submitted: false }), 5000);
         });
@@ -128,7 +132,7 @@ class CreateTableForm extends Component{
                 label: 'Ronde',
             }
         ];
-        const { rows, cols, nom, table_type } = this.state;
+        const { rows, cols, nom,chaises, table_type } = this.state;
         return(
             <ValidatorForm
                 ref="form"
@@ -166,7 +170,7 @@ class CreateTableForm extends Component{
                         name={"nom"}
                     />
                     <br/><br/>
-                    <TextFieldsByTable rows={rows} cols={cols} table_type={this.state.table_type}/>
+                    <TextFieldsByTable chaises={chaises} rows={rows} cols={cols} table_type={table_type} handleChangeRangeForm={this.handleChangeRangeForm}/>
                     <Button variant="contained"
                             color="primary"
                             className={"btn btn-primary"}
