@@ -4,18 +4,20 @@ import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from '@material-ui/core/MenuItem';
+const RECTANGLE="rectangle",RONDE="ronde";
+
 class TextFieldsByTable extends Component{
     constructor(props){
         super(props);
     }
     render() {
-        if (this.props.table_type === "rectangle") {
+        if (this.props.table_type === RECTANGLE) {
 
             return (
 
                 <section><TextValidator
-                    id="rangeCols"
-                    label="Nombre de colonnes"
+                    id="horizontal"
+                    label="Nombre à l'horizontal"
                     value={this.props.cols}
                     onChange={this.props.onChange}
                     type="text"
@@ -26,13 +28,13 @@ class TextFieldsByTable extends Component{
                     margin="normal"
                     validators={['required', 'minNumber:0', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
                     errorMessages={['Ce champ est requis', 'Nombre min:0', 'Nombre max:50', 'Veuiller insérer un nombre']}
-                    name={"cols"}
+                    name={"xSeat"}
                 />
                     <br/><br/>
 
                     <TextValidator
-                        id="rangeRows"
-                        label="Nombre de Rangées"
+                        id="vertical"
+                        label="Nombre à la verticale"
                         value={this.props.rows}
                         onChange={this.props.onChange}
                         type="text"
@@ -43,12 +45,12 @@ class TextFieldsByTable extends Component{
                         margin="normal"
                         validators={['required', 'minNumber:1', 'isNumber', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
                         errorMessages={['Ce champ est requis', 'Nombre min:1', 'Nombre max:50', 'Veuiller insérer un nombre']}
-                        name={"rows"}
+                        name={"ySeat"}
                     />
                     <br/><br/>
                 </section>
             );
-        } else if (this.props.table_type === "ronde") {
+        } else if (this.props.table_type === RONDE) {
 
             return (<section><TextValidator
                 id="chaises"
@@ -65,6 +67,7 @@ class TextFieldsByTable extends Component{
                 errorMessages={['Ce champ est requis', 'Nombre min:0', 'Nombre max:50', 'Veuiller insérer un nombre']}
                 name={"chaises"}
             />
+            <br/><br/>
             </section>);
         }
     }
@@ -78,7 +81,7 @@ class CreateTableForm extends Component{
             cols: 5,
             rows: 5,
             nbChaisesRonde: 5,
-            table_type:"rectangle",
+            table_type: RECTANGLE,
             submitted: false
         };
         this.handleChangeRangeForm = this.handleChangeRangeForm.bind(this);
@@ -117,11 +120,11 @@ class CreateTableForm extends Component{
     render(){
         const tableType = [
             {
-                value: 'rectangle',
+                value: RECTANGLE,
                 label: 'Rectangle',
             },
             {
-                value: 'ronde',
+                value: RONDE,
                 label: 'Ronde',
             }
         ];
@@ -140,7 +143,7 @@ class CreateTableForm extends Component{
                         className={"form-control"}
                         value={table_type}
                         onChange={this.handleChangeRangeForm}
-                        //helperText="Please select your currency"
+                        helperText="Selectionner la forme de la table"
                         margin="normal"
                         variant="filled"
                         name={"table_type"}
@@ -163,7 +166,7 @@ class CreateTableForm extends Component{
                         name={"nom"}
                     />
                     <br/><br/>
-                    <TextFieldsByTable rows={this.state.rows} cols={this.state.cols} table_type={this.state.table_type}/>
+                    <TextFieldsByTable rows={rows} cols={cols} table_type={this.state.table_type}/>
                     <Button variant="contained"
                             color="primary"
                             className={"btn btn-primary"}
