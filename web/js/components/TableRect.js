@@ -73,12 +73,13 @@ class TableRect extends Component {
         let numero_chaise = 0;
         return (
             <Group
-                key={"Rect"}
+                key={"rect"}
                 x={this.state.x}
                 y={this.state.y}
                 height={topBuff * 2 + textWidth + wholeHeight + bottomBuff}
                 width={contWidth}
                 onDragEnd={this.handleDragEnd}
+                name={"rectangle"}
                 draggable
             >
 

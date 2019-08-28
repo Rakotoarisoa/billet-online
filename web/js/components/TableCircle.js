@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import Konva from "konva";
 import {Circle, Group, Text} from "react-konva";
+import TransformHandler from "./TransformHandler";
 
 const rad = 10,
     dia = rad * 2,
@@ -57,6 +58,9 @@ class TableCircle extends Component {
         });
     };
     handleClick = () => {
+        let handler= new TransformHandler({
+
+        });
         this.setState({
             color: Konva.Util.getRandomColor()
         });
@@ -72,7 +76,10 @@ class TableCircle extends Component {
                 visible={true}
                 draggable
                 onDragEnd={this.handleDragEnd}
+                onClick={this.handleClick}
+                fill={this.state.color}
             >
+
                 {[...Array(this.state.seats)].map((_, i) => (// CREER chaises à gauche de la table
                     <Group
                     key={"Circle"+i}>
@@ -115,7 +122,6 @@ class TableCircle extends Component {
                     width={textWidth}
                     height={textHeight}
                 />
-
             </Group>);
     }
 }

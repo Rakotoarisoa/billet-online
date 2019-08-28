@@ -4,6 +4,7 @@ import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from '@material-ui/core/MenuItem';
+import TableRect from "../TableRect";
 const RECTANGLE="rectangle",RONDE="ronde";
 
 class TextFieldsByTable extends Component{
@@ -109,16 +110,22 @@ class CreateTableForm extends Component{
 
     handleSubmitRangeForm(event) {
         this.setState({ submitted: true }, () => {
-            //TODO: create object SectionSeat
-            const sectionSeat= new SectionSeat({
-                rowNumber:this.state.rows,
-                colNumber: this.state.cols,
-                nom: this.state.nom
-            });
+            //TODO: create object Table
+            let newTable='';
+            if(this.state.table_type === RECTANGLE){
+                newTable = new TableRect({
+
+                });
+            }
+            else if(this.state.table_type === RONDE){
+                newTable = new TableCircle({
+
+                });
+            }
 
             setTimeout(() => this.setState({ submitted: false }), 5000);
         });
-        alert('Nom de rangée: ' + this.state.nom);
+        alert('Nom de rangée: ' + this.state.nom+' '+'Chaises: '+this.state.chaises);
         event.preventDefault();
     }
     render(){

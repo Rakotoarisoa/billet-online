@@ -6,8 +6,11 @@ import TableRect from "./components/TableRect";
 import SectionSeat from "./components/SectionSeat";
 import RightSidebar from "./components/RightSidebar";
 
-
 class App extends Component {
+    constructor(props){
+        super(props);
+        this.stageRef = React.createRef();
+    }
     state = {
         stageScale: 1,
         stageX: 0,
@@ -64,10 +67,11 @@ class App extends Component {
                    scaleX={this.state.stageScale}
                    scaleY={this.state.stageScale}
                    x={this.state.stageX}
-                   y={this.state.stageY}>
+                   y={this.state.stageY}
+                   ref={ref => { this.stageRef = ref; }}>
                 <Layer>
-                    <TableRect/>
-                    <TableCircle />
+                    <TableRect title={"Test"} colNb={5} rowNb={5}/>
+                    <TableCircle title={"Test"} chaises={5}/>
                     <SectionSeat title={"Section 1"} rows={5} cols={5} />
                 </Layer>
             </Stage>

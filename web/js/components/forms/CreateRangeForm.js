@@ -37,8 +37,6 @@ class CreateRangeForm extends Component{
                 colNumber: this.state.cols,
                 nom: this.state.nom
             });
-            let canvas=this.props.canvas;
-            console.log(canvas);
 
             setTimeout(() => this.setState({ submitted: false }), 5000);
         });
