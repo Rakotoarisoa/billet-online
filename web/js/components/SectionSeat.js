@@ -41,10 +41,6 @@ class SectionSeat extends Component {
         });
     };
     handleDragStart = e => {
-        this.setState({
-            x: e.target.x(),
-            y: e.target.y()
-        });
     };
     handleClick = () => {
         this.setState({
@@ -62,7 +58,6 @@ class SectionSeat extends Component {
                 onDragStart={this.handleDragStart}
                 onDragEnd={this.handleDragEnd}
                 draggable
-                zIndex={}
             >
 
 

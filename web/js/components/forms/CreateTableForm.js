@@ -35,7 +35,7 @@ class TextFieldsByTable extends Component{
                         shrink: true,
                     }}
                     margin="normal"
-                    validators={['required', 'minNumber:1', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
+                    validators={['required', 'minNumber:1', 'maxNumber:50', 'matchRegexp:^[0-9]{1,2}$']}
                     errorMessages={['Ce champ est requis', 'Nombre min:0', 'Nombre max:50', 'Veuiller insérer un nombre']}
                     name={"cols"}
                 />
@@ -52,7 +52,7 @@ class TextFieldsByTable extends Component{
                             shrink: true,
                         }}
                         margin="normal"
-                        validators={['required', 'minNumber:1', 'isNumber', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
+                        validators={['required', 'minNumber:1', 'maxNumber:50', 'matchRegexp:^[0-9]{1,2}$']}
                         errorMessages={['Ce champ est requis', 'Nombre min:1', 'Nombre max:50', 'Veuiller insérer un nombre']}
                         name={"rows"}
                     />
@@ -71,7 +71,7 @@ class TextFieldsByTable extends Component{
                 }}
                 margin="normal"
                 onChange={handleChangeRangeForm}
-                validators={['required', 'minNumber:1', 'maxNumber:25', 'matchRegexp:^[0-9]$']}
+                validators={['required', 'minNumber:1', 'maxNumber:25', 'matchRegexp:^[0-9]{1,2}$']}
                 errorMessages={['Ce champ est requis', 'Nombre min:0', 'Nombre max:50', 'Veuiller insérer un nombre']}
                 name={"chaises"}
             />

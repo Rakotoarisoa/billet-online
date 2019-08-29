@@ -76,8 +76,8 @@ class CreateRangeForm extends Component{
                             shrink: true,
                         }}
                         margin="normal"
-                        validators={['required','minNumber:0', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
-                        errorMessages={['Ce champ est requis','Nombre min:0','Nombre max:50','Veuiller insérer un nombre']}
+                        validators={['required','minNumber:1', 'maxNumber:50', 'matchRegexp:^[0-9]{1,2}$']}
+                        errorMessages={['Ce champ est requis','Nombre min:1','Nombre max:50','Veuiller insérer un nombre']}
                         name={"cols"}
                     />
                     <br/><br/>
@@ -93,7 +93,7 @@ class CreateRangeForm extends Component{
                             shrink: true,
                         }}
                         margin="normal"
-                        validators={['required','minNumber:1','isNumber', 'maxNumber:50', 'matchRegexp:^[0-9]$']}
+                        validators={['required','minNumber:1', 'maxNumber:50', 'matchRegexp:^[0-9]{1,2}$']}
                         errorMessages={['Ce champ est requis','Nombre min:1','Nombre max:50','Veuiller insérer un nombre']}
                         name={"rows"}
                     />
