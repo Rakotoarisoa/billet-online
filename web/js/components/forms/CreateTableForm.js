@@ -15,6 +15,7 @@ class TextFieldsByTable extends Component{
     state={
     cols: this.props.cols,
     rows: this.props.rows,
+    type: this.props.table_type,
     chaises: this.props.chaises
     };
     render() {
@@ -110,22 +111,24 @@ class CreateTableForm extends Component{
 
     handleSubmitRangeForm(event) {
         this.setState({ submitted: true }, () => {
-            //TODO: create object Table
-            let newTable='';
             if(this.state.table_type === RECTANGLE){
-                newTable = new TableRect({
-
+                this.props.newObject({
+                    nom:this.state.nom,
+                    rows:parseInt(this.state.rows),
+                    cols:parseInt(this.state.cols),
+                    type:this.state.table_type
                 });
             }
             else if(this.state.table_type === RONDE){
-                newTable = new TableCircle({
-
+                this.props.newObject({
+                    nom:this.state.nom,
+                    chaises:parseInt(this.state.chaises),
+                    type:this.state.table_type
                 });
             }
 
-            setTimeout(() => this.setState({ submitted: false }), 5000);
+            setTimeout(() => this.setState({ submitted: false }), 1000);
         });
-        alert('Nom de rangée: ' + this.state.nom+' '+'Chaises: '+this.state.chaises);
         event.preventDefault();
     }
     render(){

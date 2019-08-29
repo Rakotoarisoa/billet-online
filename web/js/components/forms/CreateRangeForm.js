@@ -10,6 +10,7 @@ class CreateRangeForm extends Component{
             nom: 'Nom par défaut',
             cols: 5,
             rows: 5,
+            type:'section',
             submitted: false
         };
         this.handleChangeRangeForm = this.handleChangeRangeForm.bind(this);
@@ -31,16 +32,16 @@ class CreateRangeForm extends Component{
 
     handleSubmitRangeForm(event) {
         this.setState({ submitted: true }, () => {
-            //TODO: create object SectionSeat
-            const sectionSeat= new SectionSeat({
-                rowNumber:this.state.rows,
-                colNumber: this.state.cols,
-                nom: this.state.nom
+            //TODO: create object SectionSeat, interaction with app.js
+            this.props.newObject({
+                nom:this.state.nom,
+                rows:parseInt(this.state.rows),
+                cols:parseInt(this.state.cols),
+                type:this.state.type
             });
-
-            setTimeout(() => this.setState({ submitted: false }), 5000);
+            setTimeout(() => this.setState({ submitted: false }), 1000);
         });
-        alert('Nom de rangée: ' + this.state.nom);
+        console.log(this.props.newObject);
         event.preventDefault();
     }
     render(){

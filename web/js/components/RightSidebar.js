@@ -6,20 +6,20 @@ class RightSidebar extends Component {
     constructor(props) {
         super(props);
     }
-
-    handleChange(event) {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-        this.setState({
-            [name]: value
-        });
+    state = {
+      newObject: {
+          name: '',
+          type: '',
+          coords : {
+              x:'',
+              y:''
+          }
+      }
     };
-
-    handleSubmit(event) {
-        alert('Nom de rangée: ' + this.state.value);
-        event.preventDefault();
-    }
+    handleNewObject =(object)=>{
+        this.props.addNewObject(object);
+        console.log(object);
+    };
 
     componentDidMount() {
 
@@ -57,12 +57,12 @@ class RightSidebar extends Component {
                 </div>
                 <div className={"collapse"} id="sectionCreate">
                     <div className="d-flex p-3 bg-light">
-                        <CreateRangeForm canvas={this.props.canvas} />
+                        <CreateRangeForm newObject={this.handleNewObject}/>
                     </div>
                 </div>
                 <div className={"collapse"} id="tableCreate">
                     <div className="d-flex p-3 bg-light">
-                        <CreateTableForm canvas={this.props.canvas} />
+                        <CreateTableForm  newObject={this.handleNewObject}/>
                     </div>
                 </div>
             </aside>

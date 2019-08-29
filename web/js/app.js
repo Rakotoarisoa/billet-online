@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {render} from 'react-dom';
+import Konva from 'konva';
 import {Stage, Layer, useStrictMode} from 'react-konva';
 import TableCircle from "./components/TableCircle";
 import TableRect from "./components/TableRect";
@@ -7,14 +8,54 @@ import SectionSeat from "./components/SectionSeat";
 import RightSidebar from "./components/RightSidebar";
 
 class App extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.stageRef = React.createRef();
     }
+
     state = {
         stageScale: 1,
         stageX: 0,
-        stageY: 0
+        stageY: 0,
+        selectedItem: '',
+        newItem: '',
+        isAddingItem: false
+    };
+    addNewObject = (object) => {
+        if (object && (this.state.isAddingItem === false)) {
+            this.setState({"isAddingItem": true});
+            switch (object.type) {
+                case "section":
+                    this.setState({'newItem': this.renderSectionSeat(object)});
+                    break;
+                case "ronde":
+                    this.setState({'newItem': this.renderTableRect(object)});
+                    break;
+                case "rectangle":
+                    this.setState({'newItem': this.renderTableCircle(object)});
+                    break;
+                default:
+                    this.setState({'newItem': this.renderSectionSeat(object)});
+                    break;
+            }
+        }
+    };
+    saveStage = () => {
+        console.log(this.stageRef.toJSON()); //Données sur le canvas
+    };
+    renderSectionSeat = (section) => {
+        return (<SectionSeat title={section.nom} rows={section.rows} cols={section.cols}/>);
+    };
+    renderTableRect = (object) => {
+        return (<TableRect title={object.nom} rows={object.rows} cols={object.cols}/>);
+    };
+    renderTableCircle = (object) => {
+        return (<TableCircle title={object.nom} chaises={object.chaises}/>);
+    };
+    handleLayerChange = () => {
+      this.state.isAddingItem = !this.state.isAddingItem;
+      this.state.newItem = '';
+      console.log("Changé");
     };
     handleDragStart = e => {
         e.target.setAttrs({
@@ -49,7 +90,7 @@ class App extends Component {
 
         const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-        stage.scale({ x: newScale, y: newScale });
+        stage.scale({x: newScale, y: newScale});
 
         this.setState({
             stageScale: newScale,
@@ -59,36 +100,44 @@ class App extends Component {
                 -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
         });
     };
+
     render() {
         return (
-            <Stage width={window.innerWidth}
-                   height={window.innerHeight}
-                   onWheel={this.handleWheel}
-                   scaleX={this.state.stageScale}
-                   scaleY={this.state.stageScale}
-                   x={this.state.stageX}
-                   y={this.state.stageY}
-                   ref={ref => { this.stageRef = ref; }}>
-                <Layer>
-                    <TableRect title={"Test"} colNb={5} rowNb={5}/>
-                    <TableCircle title={"Test"} chaises={5}/>
-                    <SectionSeat title={"Section 1"} rows={5} cols={5} />
-                </Layer>
-            </Stage>
+            <div className="row">
+                <div className="col-sm-9">
+                    <Stage width={window.innerWidth}
+                           height={window.innerHeight}
+                           onWheel={this.handleWheel}
+                           onTransformEnd={this.handleLayerChange}
+                           scaleX={this.state.stageScale}
+                           scaleY={this.state.stageScale}
+                           x={this.state.stageX}
+                           y={this.state.stageY}
+                           ref={ref => {
+                               this.stageRef = ref;
+                           }}
+                    >
+                        <Layer
+                        >
+                            <TableRect title={"Test"} colNb={5} rowNb={5}/>
+                            <TableCircle title={"Test"} chaises={5}/>
+                            <SectionSeat title={"Section 1"} rows={5} cols={5}/>
+                            {this.state.isAddingItem && this.state.newItem}
+                        </Layer>
+                    </Stage>
+                </div>
+                <div className="col-sm-3 sidebar-right">
+                    <RightSidebar addNewObject={this.addNewObject}/>
+                </div>
+            </div>
 
         );
     }
 }
+
 useStrictMode(false);
 render(
-    <div className="row">
-        <div className="col-sm-9">
-            <App/>
-        </div>
-        <div className="col-sm-3 sidebar-right">
-            <RightSidebar/>
-        </div>
-    </div>
+    <App/>
     , document.getElementById('root')
 );
 

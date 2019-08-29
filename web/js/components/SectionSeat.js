@@ -30,10 +30,17 @@ class SectionSeat extends Component {
             rowNumber: this.props.rows,
             x: posX,
             y: posY,
-            sectionName: this.props.title
+            nom: this.props.title,
+            zIndex: 1
         };
     }
     handleDragEnd = e => {
+        this.setState({
+            x: e.target.x(),
+            y: e.target.y()
+        });
+    };
+    handleDragStart = e => {
         this.setState({
             x: e.target.x(),
             y: e.target.y()
@@ -47,13 +54,15 @@ class SectionSeat extends Component {
     render() {
         return (
             <Group
-                key={"section1"}
+                key={this.state.nom}
                 x={this.state.x}
                 y={this.state.y}
                 height={sizeX}
                 width={sizeY}
+                onDragStart={this.handleDragStart}
                 onDragEnd={this.handleDragEnd}
                 draggable
+                zIndex={}
             >
 
 
@@ -90,7 +99,7 @@ class SectionSeat extends Component {
 
                 ))}
                 <Text
-                    text={this.state.sectionName}
+                    text={this.state.nom}
                     x={posX+10}
                     y={0}
                     width={textWidth}

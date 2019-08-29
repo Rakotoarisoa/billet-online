@@ -9,8 +9,8 @@ class TransformHandler extends React.Component {
     componentDidMount() {
         // not really "react-way". But it works.
         const stage = this.transformer.getStage();
-        const selected = stage.findOne(this.props.selector);
-        this.transformer.attachTo(selected);
+        const selected = stage.findOne(".rectangle");
+        //this.transformer.attachTo(selected);
         this.transformer.getLayer().batchDraw();
     }
     render() {
