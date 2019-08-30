@@ -49,13 +49,91 @@ let rightPos = tablePosX + tableWidth / 2 + gap + rad;
 
 
 class TableRect extends Component {
+
+    constructor(props){
+        super(props);
+    }
     state = {
         color: 'green',
         xSeats: xSeats,
         ySeats: ySeats,
         x: posX,
         y: posY,
-        nom:"Table 1"
+        nom:"Table 1",
+        bottomSeats: [],
+        leftSeats:[]
+    };
+    createBottomSeats = (number) => {
+
+        let bottomSeats =[];
+        for(var i=parseInt(this.state.xSeats);i>0;i--){
+            number=number+1;
+            bottomSeats.push(
+                <Group
+                    key={"Rectb"+i}>
+                    <Circle
+                        key={number}
+                        x={leftStart + dia * (i-1) + gap * (i-1)}
+                        y={bottomPos}
+                        width={20}
+                        height={20}
+                        fill="#A9A8B3"
+                        stroke={"#888888"}
+                        strokeWidth={2}
+                        shadowColor={'gray'}
+                        shadowOffset={{x: 2,
+                            y: 2}}
+                        shadowBlur={5}
+
+                    />
+                    <Text
+                        text={number}
+                        fontStyle={"arial"}
+                        fontSize={10}
+                        x={leftStart + dia * (i-1) + gap * (i-1)-5}
+                        y={bottomPos-5}
+
+                    />
+                </Group>
+            );
+        }
+        bottomSeats["current_nb"] = number;
+        return bottomSeats;
+    };
+    createLeftSeats = (number) => {
+        let leftSeats =[];
+        for(let i=parseInt(this.state.ySeats);i>0;i--) {
+            number=number+1;
+            //console.log(number);
+            leftSeats.push(
+                <Group
+                    key={"Rectg"+i}>
+                    <Circle
+                        key={number}
+                        x={leftPos}
+                        y={topStart + topBuff + dia * (i-1) + gap * (i-1)+4}
+                        width={20}
+                        height={20}
+                        fill="#A9A8B3"
+                        stroke={"#888888"}
+                        strokeWidth={2}
+                        shadowColor={'gray'}
+                        shadowOffset={{x: 2,
+                            y: 2}}
+                        shadowBlur={5}
+                    />
+                    <Text
+                        text={(number)}
+                        fontStyle={"arial"}
+                        fontSize={10}
+                        x={leftPos-7}
+                        y={topStart + topBuff + dia * (i-1) + gap * i-6}
+
+                    />
+                </Group>
+            );
+        }
+        return leftSeats;
     };
     handleDragEnd = e => {
         this.setState({
@@ -151,61 +229,8 @@ class TableRect extends Component {
                         />
                     </Group>
                 ))}
-                {[...Array(xSeats)].map((_, i) => (// CREER chaises en bas de la table
-                    <Group
-                    key={"Rectb"+i}>
-                        <Circle
-                            key={numero_chaise++}
-                            x={leftStart + dia * i + gap * i}
-                            y={bottomPos}
-                            width={20}
-                            height={20}
-                            fill="#A9A8B3"
-                            stroke={"#888888"}
-                            strokeWidth={2}
-                            shadowColor={'gray'}
-                            shadowOffset={{x: 2,
-                                y: 2}}
-                            shadowBlur={5}
-
-                        />
-                        <Text
-                            text={numero_chaise}
-                            fontStyle={"arial"}
-                            fontSize={10}
-                            x={leftStart + dia * i + gap * i-7}
-                            y={bottomPos-5}
-
-                        />
-                    </Group>
-                ))}
-                {[...Array(ySeats)].map((_, i) => (// CREER chaises à gauche de la table
-                    <Group
-                    key={"Rectg"+i}>
-                        <Circle
-                            key={numero_chaise++}
-                            x={leftPos}
-                            y={topStart + topBuff + dia * i + gap * i}
-                            width={20}
-                            height={20}
-                            fill="#A9A8B3"
-                            stroke={"#888888"}
-                            strokeWidth={2}
-                            shadowColor={'gray'}
-                            shadowOffset={{x: 2,
-                                y: 2}}
-                            shadowBlur={5}
-                        />
-                        <Text
-                            text={(numero_chaise)}
-                            fontStyle={"arial"}
-                            fontSize={10}
-                            x={leftPos-7}
-                            y={topStart + topBuff + dia * i + gap * i-5}
-
-                        />
-                    </Group>
-                ))}
+                {this.createBottomSeats(numero_chaise)}
+                {this.createLeftSeats(numero_chaise+parseInt(this.state.xSeats))}
                 <Text
                     text={this.state.nom}
                     x={0}

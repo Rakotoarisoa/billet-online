@@ -48,6 +48,7 @@ class SectionSeat extends Component {
         });
     };
     render() {
+        const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
         return (
             <Group
                 key={this.state.nom}
@@ -59,16 +60,24 @@ class SectionSeat extends Component {
                 onDragEnd={this.handleDragEnd}
                 draggable
             >
-
-
                 {[...Array(this.state.rowNumber)].map((_, i) => (// CREER
+                    /*TODO: Add Rowname*/ /*<Text
+                        text={alphabet[i]}
+                        fontStyle={"arial"}
+                        fontSize={10}
+                        x={(posX + sideBuff) + rad + this.state.colNumber * dia + this.state.colNumber * gap-3}
+                        y={( textHeight + topBuff) + rad + i * dia + i * gap-5}
+                    />*/
                     [...Array(this.state.colNumber)].map((_, j) => (// CREER
+
+
                         <Group
-                            key={"Element"+i+" "+j}
+                            key={alphabet[i].toUpperCase()+(j+1)}
+                            name={alphabet[i].toUpperCase()+(j+1)}
                         >
 
                             <Circle
-                                key={j+"1"+i}
+                                key={alphabet[i].toUpperCase()+(j+1)}
                                 x={(posX + sideBuff) + rad + j * dia + j * gap}
                                 y={( textHeight + topBuff) + rad + i * dia + i * gap}
                                 width={20}
@@ -80,9 +89,9 @@ class SectionSeat extends Component {
                                 shadowOffset={{x: 2,
                                     y: 2}}
                                 shadowBlur={5}
-
                             />
                             <Text
+
                                 text={j+1}
                                 fontStyle={"arial"}
                                 fontSize={10}
@@ -91,7 +100,6 @@ class SectionSeat extends Component {
                             />
                         </Group>
                     ))
-
                 ))}
                 <Text
                     text={this.state.nom}
