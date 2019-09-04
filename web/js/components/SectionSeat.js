@@ -15,8 +15,6 @@ const rows=5,
     posX = 200,
     textWidth = 100,
     textHeight = 10;
-let currentCol = 5;//NBR OF Columns
-let currentRow = 'A';
 
 
 class SectionSeat extends Component {

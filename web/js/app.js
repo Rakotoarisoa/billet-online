@@ -170,8 +170,8 @@ class App extends Component {
                             <TableRect title={"Test"} colNb={4} rowNb={4} hoverSeat={this.hoverSeat} selected={this.handleSelected}/>
                             <TableRect title={"Test"} colNb={5} rowNb={5} hoverSeat={this.hoverSeat} selected={this.handleSelected}/>
                             <TableRect title={"Test"} colNb={15} rowNb={15} hoverSeat={this.hoverSeat} selected={this.handleSelected}/>
-                            <TableCircle title={"Test"} chaises={5}/>
-                            <SectionSeat title={"Section 1"} rows={5} cols={5} />
+                            <TableCircle title={"Test"} nbSeats={20}/>
+                            <SectionSeat title={"Section 1"} rows={15} cols={5} />
                         </Layer>
                     </Stage>
                     {this.state.selectedSeat && (

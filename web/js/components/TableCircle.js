@@ -3,52 +3,20 @@ import Konva from "konva";
 import {Circle, Group, Text} from "react-konva";
 import TransformHandler from "./TransformHandler";
 
-const rad = 10,
-    dia = rad * 2,
-    gap = 5,
-    posY = 200,
-    posX = 200,
-    // buffers from edges of group box
-    sideBuff = 10,
-    topBuff = 10,
-    bottomBuff = 10,
-    sizeX = 10, // doesn't matter, just an initialization
-    seats=10,
-    deg = (2*Math.PI)/seats;//initialisation Nombre chaise.
 
-
-let tableRad = rad + gap;
-if (seats >= 4 && seats < 6)
-    tableRad = rad*1.5;
-if (seats >= 6 && seats < 9)
-    tableRad = rad*2;
-if (seats >= 9 && seats < 13)
-    tableRad = rad*3.5;
-if (seats >= 13 && seats <15)
-    tableRad = rad*4.2;
-if (seats >= 15 && seats <17)
-    tableRad = rad*4.5;
-if (seats >= 17 && seats <22)
-    tableRad = rad*6;
-if (seats >= 22 && seats <25)
-    tableRad = rad*10;
-let wholeDia = tableRad * 2 + dia*2 + gap*2;
-// resize container to accomodate text and table
-let textWidth = 50, textHeight = 10;
-let contWidth =0;
-if (textWidth > wholeDia) {
-    contWidth = sideBuff*2 + textWidth;
-} else {
-    contWidth = sideBuff*2 + wholeDia;
-}
-let tableLeft=posX + contWidth/2,tableTop=(textWidth + textHeight + topBuff) + dia + gap;
 
 class TableCircle extends Component {
+    constructor(props){
+        super(props);
+    }
+    componentDidMount() {
+    }
+
     state = {
         color: 'green',
-        seats: seats,
-        x: posX,
-        y: posY,
+        seats: this.props.nbSeats,
+        x: 200,
+        y: 200,
         nom: "Table 1"
     };
     handleDragEnd = e => {
@@ -67,6 +35,45 @@ class TableCircle extends Component {
     };
 
     render() {
+        const rad = 10,
+            dia = rad * 2,
+            gap = 5,
+            posY = 200,
+            posX = 200,
+            // buffers from edges of group box
+            sideBuff = 10,
+            topBuff = 10,
+            bottomBuff = 10,
+            sizeX = 10, // doesn't matter, just an initialization
+            seats=this.state.seats,
+            deg = (2*Math.PI)/seats;//initialisation Nombre chaise.
+
+
+        let tableRad = rad + gap;
+        if (seats >= 4 && seats < 6)
+            tableRad = rad*1.5;
+        if (seats >= 6 && seats < 9)
+            tableRad = rad*2;
+        if (seats >= 9 && seats < 13)
+            tableRad = rad*3.5;
+        if (seats >= 13 && seats <15)
+            tableRad = rad*4.2;
+        if (seats >= 15 && seats <17)
+            tableRad = rad*4.5;
+        if (seats >= 17 && seats <22)
+            tableRad = rad*6;
+        if (seats >= 22 && seats <25)
+            tableRad = rad*10;
+        let wholeDia = tableRad * 2 + dia*2 + gap*2;
+// resize container to accomodate text and table
+        let textWidth = 50, textHeight = 10;
+        let contWidth =0;
+        if (textWidth > wholeDia) {
+            contWidth = sideBuff*2 + textWidth;
+        } else {
+            contWidth = sideBuff*2 + wholeDia;
+        }
+        let tableLeft=posX + contWidth/2,tableTop=(textWidth + textHeight + topBuff) + dia + gap;
         return (
             <Group
                 x={this.state.x}
