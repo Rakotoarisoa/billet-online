@@ -319,16 +319,93 @@ class App extends Component {
         table.add(text);
         return table;
     };
-    renderTableCircle = (object) => {
-        return (<TableCircle title={object.nom} chaises={object.chaises}/>);
+    renderTableCircle = (seats,nom) => {
+        const deg = (2*Math.PI)/seats;//initialisation Nombre chaise.
+        let tableRad = this.state.rad + this.state.gap;
+        if (seats >= 4 && seats < 6)
+            tableRad = this.state.rad*1.5;
+        if (seats >= 6 && seats < 9)
+            tableRad = this.state.rad*2;
+        if (seats >= 9 && seats < 13)
+            tableRad = this.state.rad*3.5;
+        if (seats >= 13 && seats <15)
+            tableRad = this.state.rad*4.2;
+        if (seats >= 15 && seats <17)
+            tableRad = this.state.rad*4.5;
+        if (seats >= 17 && seats <22)
+            tableRad = this.state.rad*6;
+        if (seats >= 22 && seats <25)
+            tableRad = this.state.rad*10;
+        let wholeDia = tableRad * 2 + this.state.dia*2 + this.state.gap*2;
+// resize container to accomodate text and table
+        let textWidth = 50, textHeight = 10;
+        let contWidth =0;
+        if (textWidth > wholeDia) {
+            contWidth = this.state.sideBuff*2 + textWidth;
+        } else {
+            contWidth = this.state.sideBuff*2 + wholeDia;
+        }
+        let tableLeft=posX + contWidth/2,tableTop=(textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap;
+        let group= new Konva.Group({
+            x:this.state.x,
+            y:this.state.y,
+            height:this.state.topBuff * 2 + textWidth + this.state.bottomBuff,
+            width:contWidth,
+            visible:true,
+            draggable:true,
+            onDragEnd:this.handleDragEnd,
+            onClick:this.handleClick,
+            fill:"#A9A8B3",
+            });
+        let tableCircle=new Konva.Circle({
+            radius:tableRad,
+            x:this.state.posX + contWidth/2,
+            y: (tableRad+textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap,
+            fill:"white",
+            stroke:"#444444",
+            strokeWidth:2
+        });
+        let text = new Konva.Text({
+            text:i+1,
+            fontStyle:"Tahoma, Geneva, sans-serif",
+            fontSize:10,
+            x:Math.cos(deg*i)*(tableRad + this.state.gap + this.state.rad) + tableLeft-5,
+            y:Math.sin(deg*i)*(tableRad + this.stategap + this.state.rad) + (tableTop + tableRad-5)
+        });
+        for(let i=0;i<seats;i++){
+            let c_group=new Konva.Group({});
+            let circle=new Konva.Circle({
+                x:Math.cos(deg*i)*(tableRad + gap + rad) + tableLeft,
+                y:Math.sin(deg*i)*(tableRad + gap + rad) + (tableTop + tableRad),
+                width:20,
+                height:20,
+                fill:"#A9A8B3",
+                stroke:"#888888",
+                strokeWidth:2,
+                shadowColor:'gray',
+                shadowOffsetX:2,
+                shadowOffsetY:2,
+                shadowBlur:5
+            });
+            let text=new Konva.Text({
+                text:i+1,
+                fontStyle:"Tahoma, Geneva, sans-serif",
+                fontSize:10,
+                x:Math.cos(deg*i)*(tableRad + gap + rad) + tableLeft-5,
+                y:Math.sin(deg*i)*(tableRad + gap + rad) + (tableTop + tableRad-5)
+            });
+            c_group.add(circle);
+            c_group.add(text);
+            group.add(c_group);
+        }
+        group.add(tableCircle);
+        group.add(text);
     };
     componentDidMount() {
         this.loadStage();
-        //this.stageRef.children.children.cache();
-        //console.log(this.stageRef);
+
     }
     componentDidUpdate() {
-        //this.stageRef.children.children.batchDraw();
     }
 
     saveStage = () => {
@@ -367,83 +444,12 @@ class App extends Component {
         let newSection = this.renderSectionSeat(2,2,"Test");
         let newRect = this.renderTableRect(3,3,"Test");
         let newRect2 = this.renderTableRect(8,6,"Test");
+        let circle = this.renderTableCircle(5,"Test");
         stage.children.add(newSection);
         stage.children.add(newRect);
         stage.children.add(newRect2);
+        stage.children.add(circle);
         stage.batchDraw();
-        /*let layer = new Konva.Layer();
-        let dragLayer = new Konva.Layer();
-
-        for (let n = 0; n < 30; n++) {
-            let scale = Math.random();
-
-            let star = new Konva.Star({
-                x: Math.random() * stage.getWidth(),
-                y: Math.random() * stage.getHeight(),
-                numPoints: 5,
-                innerRadius: 30,
-                outerRadius: 50,
-                fill: "#89b717",
-                opacity: 0.8,
-                draggable: true,
-                scale: {
-                    x: scale,
-                    y: scale
-                },
-                rotation: Math.random() * 180,
-                shadowColor: "black",
-                shadowBlur: 10,
-                shadowOffset: {
-                    x: 5,
-                    y: 5
-                },
-                shadowOpacity: 0.6,
-                // custom attribute
-                startScale: scale
-            });
-
-            layer.add(star);
-        }
-
-        stage.add(layer);
-        stage.add(dragLayer);
-
-        stage.on("dragstart", function(evt) {
-            let shape = evt.target;
-            // moving to another layer will improve dragging performance
-            shape.moveTo(dragLayer);
-            stage.draw();
-
-            if (tween) {
-                tween.pause();
-            }
-            shape.setAttrs({
-                shadowOffset: {
-                    x: 15,
-                    y: 15
-                },
-                scale: {
-                    x: shape.getAttr("startScale") * 1.2,
-                    y: shape.getAttr("startScale") * 1.2
-                }
-            });
-        });
-
-        stage.on("dragend", function(evt) {
-            let shape = evt.target;
-            shape.moveTo(layer);
-            stage.draw();
-            shape.to({
-                duration: 0.5,
-                easing: Konva.Easings.ElasticEaseOut,
-                scaleX: shape.getAttr("startScale"),
-                scaleY: shape.getAttr("startScale"),
-                shadowOffsetX: 5,
-                shadowOffsetY: 5
-            });
-        });
-
-        //return map;*/
     };
     handleLayerChange = () => {
       this.state.isAddingItem = !this.state.isAddingItem;
