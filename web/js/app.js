@@ -345,7 +345,7 @@ class App extends Component {
         } else {
             contWidth = this.state.sideBuff*2 + wholeDia;
         }
-        let tableLeft=posX + contWidth/2,tableTop=(textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap;
+        let tableLeft=this.state.posX + contWidth/2,tableTop=(textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap;
         let group= new Konva.Group({
             x:this.state.x,
             y:this.state.y,
@@ -366,17 +366,18 @@ class App extends Component {
             strokeWidth:2
         });
         let text = new Konva.Text({
-            text:i+1,
-            fontStyle:"Tahoma, Geneva, sans-serif",
-            fontSize:10,
-            x:Math.cos(deg*i)*(tableRad + this.state.gap + this.state.rad) + tableLeft-5,
-            y:Math.sin(deg*i)*(tableRad + this.stategap + this.state.rad) + (tableTop + tableRad-5)
+            text:nom,
+            fontStyle:"arial",
+            x:this.state.posX+contWidth/2-12,
+            y:(tableRad+textWidth + this.state.topBuff) + this.state.dia + this.state.gap,
+            width:textWidth/2,
+            height:textHeight
         });
         for(let i=0;i<seats;i++){
             let c_group=new Konva.Group({});
             let circle=new Konva.Circle({
-                x:Math.cos(deg*i)*(tableRad + gap + rad) + tableLeft,
-                y:Math.sin(deg*i)*(tableRad + gap + rad) + (tableTop + tableRad),
+                x:Math.cos(deg*i)*(tableRad + this.state.gap + this.state.rad) + tableLeft,
+                y:Math.sin(deg*i)*(tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad),
                 width:20,
                 height:20,
                 fill:"#A9A8B3",
@@ -391,8 +392,8 @@ class App extends Component {
                 text:i+1,
                 fontStyle:"Tahoma, Geneva, sans-serif",
                 fontSize:10,
-                x:Math.cos(deg*i)*(tableRad + gap + rad) + tableLeft-5,
-                y:Math.sin(deg*i)*(tableRad + gap + rad) + (tableTop + tableRad-5)
+                x:Math.cos(deg*i)*(tableRad + this.state.gap + this.state.rad) + tableLeft-5,
+                y:Math.sin(deg*i)*(tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad-5)
             });
             c_group.add(circle);
             c_group.add(text);
@@ -400,6 +401,7 @@ class App extends Component {
         }
         group.add(tableCircle);
         group.add(text);
+        return group;
     };
     componentDidMount() {
         this.loadStage();
@@ -444,7 +446,7 @@ class App extends Component {
         let newSection = this.renderSectionSeat(2,2,"Test");
         let newRect = this.renderTableRect(3,3,"Test");
         let newRect2 = this.renderTableRect(8,6,"Test");
-        let circle = this.renderTableCircle(5,"Test");
+        let circle = this.renderTableCircle(10,"Test");
         stage.children.add(newSection);
         stage.children.add(newRect);
         stage.children.add(newRect2);
