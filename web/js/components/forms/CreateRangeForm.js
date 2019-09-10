@@ -35,9 +35,12 @@ class CreateRangeForm extends Component{
             //TODO: create object SectionSeat, interaction with app.js
             this.props.newObject({
                 nom:this.state.nom,
-                rows:parseInt(this.state.rows),
-                cols:parseInt(this.state.cols),
-                type:this.state.type
+                xSeats:parseInt(this.state.rows),
+                ySeats:parseInt(this.state.cols),
+                number_seats: parseInt(this.state.cols)*parseInt(this.state.rows),
+                type:this.state.type,
+                x:200,
+                y:200
             });
             setTimeout(() => this.setState({ submitted: false }), 1000);
         });

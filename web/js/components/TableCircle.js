@@ -10,6 +10,7 @@ class TableCircle extends Component {
         super(props);
     }
     componentDidMount() {
+
     }
 
     state = {
@@ -86,6 +87,7 @@ class TableCircle extends Component {
                 onClick={this.handleClick}
                 fill={this.state.color}
             >
+
 
                 {[...Array(this.state.seats)].map((_, i) => (// CREER chaises à gauche de la table
                     <Group

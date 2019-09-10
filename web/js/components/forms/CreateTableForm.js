@@ -116,14 +116,20 @@ class CreateTableForm extends Component{
                     nom:this.state.nom,
                     rows:parseInt(this.state.rows),
                     cols:parseInt(this.state.cols),
-                    type:this.state.table_type
+                    type:this.state.table_type,
+                    number_seats: parseInt(this.state.rows)*parseInt(this.state.cols),
+                    x:200,
+                    y:200
                 });
             }
             else if(this.state.table_type === RONDE){
                 this.props.newObject({
                     nom:this.state.nom,
                     chaises:parseInt(this.state.chaises),
-                    type:this.state.table_type
+                    type:this.state.table_type,
+                    number_seats:parseInt(this.state.chaises),
+                    x:200,
+                    y:200
                 });
             }
 

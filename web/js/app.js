@@ -2,18 +2,8 @@ import React, {Component} from 'react';
 import {render} from 'react-dom';
 import Konva from 'konva';
 import axios from 'axios';
+import _ from "lodash";
 import RightSidebar from "./components/RightSidebar";
-import SectionSeat from "./components/SectionSeat";
-import TableRect from "./components/TableRect";
-import TableCircle from "./components/TableCircle";
-import {Circle, Group, Rect, Text} from "react-konva";
-/*import {Stage, Layer,FastLayer, useStrictMode} from 'react-konva';
-import TableCircle from "./components/TableCircle";
-import TableRect from "./components/TableRect";
-import SectionSeat from "./components/SectionSeat";
-
-import PopupEvent from "./components/canvas-events/PopupEvent";
-import TransformHandler from "./components/TransformHandler";*/
 
 class App extends Component {
     constructor(props) {
@@ -40,33 +30,31 @@ class App extends Component {
         sideBuff : 10,
         topBuff : 10,
         bottomBuff : 10,
-        sizeX : 10
+        sizeX : 10,
+        data_map : [{nom:"Table 1",x: 200,y: 200,number_seats:40,type: "rectangle",xSeats: 10,ySeats:10, deleted_seats:[1,4]},{nom:"Table 2",x: 400,y: 200,number_seats:40,type: "rectangle",xSeats: 10,ySeats:10, deleted_seats:[1,4]}],
+        saveCanvas : false
     };
 
     addNewObject = (object) => {
-        if (object && (this.state.isAddingItem === false)) {
-            this.setState({"isAddingItem": true});
+        let object_names=[];
+        _.forEach(this.state.data_map, function(k,v){
+            object_names.push(k.nom);
+        });
+
+        if (object_names && object) {
             switch (object.type) {
                 case "section":
-                    this.setState({'newItem': this.renderSectionSeat(object)});
-                    this.setState({"isAddingItem": false});
-                    break;
-                case "ronde":
-                    this.setState({'newItem': this.renderTableRect(object)});
-                    this.setState({"isAddingItem": false});
-                    break;
+                    return this.renderSectionSeat(object.xSeats,object.ySeats,object.nom);
                 case "rectangle":
-                    this.setState({'newItem': this.renderTableCircle(object)});
-                    this.setState({"isAddingItem": false});
-                    break;
+                    return this.renderTableRect(object.xSeats,object.ySeats,object.nom);
+                case "ronde":
+                    return this.renderTableCircle(object.chaises,object.nom);
                 default:
-                    this.setState({'newItem': this.renderSectionSeat(object)});
-                    this.setState({"isAddingItem": false});
-                    break;
+                    return this.renderSectionSeat(object.xSeats,object.ySeats,object.nom);
             }
         }
     };
-    renderSectionSeat = (row,col,nom) => {
+    renderSectionSeat = (row,col,nom,transformer=null) => {
         const rows=row,
             cols=col,
             rad = 10,
@@ -83,13 +71,11 @@ class App extends Component {
             textHeight = 10,
             alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
         let section = new Konva.Group({
-            key:this.state.nom,
+            name:this.state.nom,
             x:this.state.x,
             y:this.state.y,
             height:parseInt(sizeX),
             width:parseInt(sizeY),
-            onDragStart:this.handleDragStart,
-            onDragEnd:this.handleDragEnd,
             draggable: true
         });
         let text = new Konva.Text({
@@ -101,7 +87,7 @@ class App extends Component {
         });
         for(let i=0;i<rows;i++)
         {
-            for(let j=0;j<rows;j++){
+            for(let j=0;j<cols;j++){
                 let newGroup =new Konva.Group({
                     name:alphabet[i].toUpperCase()+(j+1)
                 });
@@ -131,6 +117,12 @@ class App extends Component {
             }
         }
         section.add(text);
+        section.cache();
+        section.on('dblclick',(e)=>{
+            console.log(e.target);
+            //transformer.detach();
+            transformer.attachTo(section);
+        });
         return section;
     };
     renderTableRect = (x,y,nom) => {
@@ -405,53 +397,80 @@ class App extends Component {
     };
     componentDidMount() {
         this.loadStage();
-
     }
     componentDidUpdate() {
+        if(this.state.stage) {
+            let stage = this.state.stage;
+            stage.batchDraw();
+           // this.setState({'stage':stage});
+        }
     }
-
-    saveStage = () => {
-
-        console.log(this.stageRef.toJSON()); //Données sur le canvas
-        axios.post(
-            '/symfony3.4/web/api/event/update-map/395', {
-                data_map: JSON.parse(this.stageRef.toJSON())
-            })
-            .then(function (response) {
-                console.log(response);
-            })
-            .catch(function (error) {
-                console.log(error);
-            }
-        );
+    saveCanvas= (save) => {
+       this.setState({'saveCanvas': save});
+       this.saveStage();
+       setTimeout(()=>{this.setState({'saveCanvas':!save})},3000);
     };
-    
+    saveStage = () => {
+        if(this.state.saveCanvas) {
+            let data = this.state.stage;
+            data = data.toJSON();
+            axios.post(
+                '/symfony3.4/web/api/event/update-map/395', {
+                    data_map: JSON.parse(data)
+                })
+                .then(function (response) {
+                    console.log(response);
+                })
+                .catch(function (error) {
+                        console.log(error);
+                    }
+                );
+        }
+    };
     loadStage = () => {
+        let data = this.state.data_map;
         /*axios.get(
             '/symfony3.4/web/api/event/get-map/395')
             .then(function (response) {
-                let width = window.innerWidth;
-                let height = window.innerHeight;
-                let tween = null;
-
+                console.log(response);
             })
             .catch(function (error) {
                     console.log(error);
                 }
             );*/
+        let stage=  new Konva.Stage({
+            container:'stage-container',
+            width:window.innerWidth,
+            height:window.innerHeight
+        });
+        let layer=new Konva.Layer();
+        let dragLayer=new Konva.Layer();
+        stage.add(layer);
+        stage.add(dragLayer);
+        let transformer= new Konva.Transformer({
+            name:'Transformer',
+            rotateAnchorOffset: 5,
+            enabledAnchors: [''],
+            borderStroke: "#888",
+            resizeEnabled: false,
+            rotationSnaps: [0, 45,90, 180, 270],
+        });
+        layer.add(transformer);
+        data.push({nom:"Table 3",x: 200,y: 200,number_seats:40,type: "rectangle",xSeats: 5,ySeats:5, deleted_seats:[1,4]});
+        data.forEach((obj,v)=>{
+            let newObject= this.addNewObject(obj);
+            layer.add(newObject);
+        });
 
-        let data="{\"attrs\":{\"width\":1280,\"height\":686,\"scaleX\":1.0201,\"scaleY\":1.0201,\"x\":-14.391600000000063,\"y\":-8.019899999999998},\"className\":\"Stage\",\"children\":[{\"attrs\":{},\"className\":\"Layer\",\"children\":[{\"attrs\":{\"x\":200,\"y\":200,\"height\":385,\"width\":325,\"name\":\"rectangle\",\"draggable\":true},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-122.5,\"y\":245,\"radius\":50,\"fill\":\"white\",\"stroke\":\"#888888\",\"width\":255,\"height\":255},\"className\":\"Rect\"},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-107.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"1\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-110.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-82.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"2\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-85.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-57.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"3\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-60.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-32.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"4\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-35.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-7.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"5\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-10.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":17.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"6\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":14.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":42.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"7\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":39.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":67.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"8\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":64.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":92.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"9\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":89.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":117.5,\"y\":230,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"10\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":114.5,\"y\":225},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":260,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"11\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":255},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":285,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"12\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":280},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":310,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"13\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":305},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":335,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"14\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":330},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":360,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"15\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":355},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":385,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"16\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":380},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":410,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"17\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":405},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":435,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"18\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":430},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":460,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"19\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":455},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":147.5,\"y\":485,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"20\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":140.5,\"y\":480},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-107.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"21\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-114.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-82.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"22\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-89.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-57.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"23\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-64.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-32.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"24\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-39.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-7.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"25\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-14.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":17.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"26\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":10.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":42.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"27\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":35.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":67.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"28\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":60.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":92.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"29\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":85.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":117.5,\"y\":515,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"30\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":110.5,\"y\":510},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":260,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"31\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":255},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":285,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"32\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":280},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":310,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"33\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":305},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":335,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"34\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":330},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":360,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"35\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":355},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":385,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"36\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":380},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":410,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"37\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":405},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":435,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"38\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":430},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":460,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"39\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":455},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":-137.5,\"y\":485,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"40\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":-144.5,\"y\":480},\"className\":\"Text\"}]},{\"attrs\":{\"fill\":\"black\",\"text\":\"Table 1\",\"y\":362.5,\"width\":50,\"height\":10},\"className\":\"Text\"}]},{\"attrs\":{\"x\":200,\"y\":200,\"height\":80,\"width\":140,\"visible\":true,\"draggable\":true,\"fill\":\"green\"},\"className\":\"Group\",\"children\":[{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":320,\"y\":130,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"1\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":315,\"y\":125},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":310.45084971874735,\"y\":159.38926261462365,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"2\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":305.45084971874735,\"y\":154.38926261462365},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":285.45084971874735,\"y\":177.55282581475768,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"3\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":280.45084971874735,\"y\":172.55282581475768},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":254.54915028125262,\"y\":177.55282581475768,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"4\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":249.54915028125262,\"y\":172.55282581475768},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":229.54915028125265,\"y\":159.38926261462365,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"5\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":224.54915028125265,\"y\":154.38926261462365},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":220,\"y\":130,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"6\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":215,\"y\":125},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":229.54915028125262,\"y\":100.61073738537635,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"7\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":224.54915028125262,\"y\":95.61073738537635},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":254.54915028125262,\"y\":82.44717418524232,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"8\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":249.54915028125262,\"y\":77.44717418524232},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":285.45084971874735,\"y\":82.44717418524232,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"9\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":280.45084971874735,\"y\":77.44717418524232},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":310.45084971874735,\"y\":100.61073738537632,\"radius\":10,\"fill\":\"#A9A8B3\",\"stroke\":\"#888888\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"10\",\"fontStyle\":\"Tahoma, Geneva, sans-serif\",\"fontSize\":10,\"x\":305.45084971874735,\"y\":95.61073738537632},\"className\":\"Text\"}]},{\"attrs\":{\"radius\":35,\"x\":270,\"y\":130,\"fill\":\"white\",\"stroke\":\"#444444\"},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"Table 1\",\"x\":258,\"y\":120,\"width\":50,\"height\":10},\"className\":\"Text\"}]},{\"attrs\":{\"x\":200,\"y\":200,\"height\":140,\"width\":140,\"draggable\":true},\"className\":\"Group\",\"children\":[{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":220,\"y\":30,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"1\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":217,\"y\":25},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":245,\"y\":30,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"2\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":242,\"y\":25},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":270,\"y\":30,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"3\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":267,\"y\":25},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":295,\"y\":30,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"4\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":292,\"y\":25},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":320,\"y\":30,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"5\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":317,\"y\":25},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":220,\"y\":55,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"1\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":217,\"y\":50},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":245,\"y\":55,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"2\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":242,\"y\":50},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":270,\"y\":55,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"3\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":267,\"y\":50},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":295,\"y\":55,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"4\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":292,\"y\":50},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":320,\"y\":55,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"5\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":317,\"y\":50},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":220,\"y\":80,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"1\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":217,\"y\":75},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":245,\"y\":80,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"2\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":242,\"y\":75},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":270,\"y\":80,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"3\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":267,\"y\":75},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":295,\"y\":80,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"4\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":292,\"y\":75},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":320,\"y\":80,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"5\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":317,\"y\":75},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":220,\"y\":105,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"1\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":217,\"y\":100},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":245,\"y\":105,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"2\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":242,\"y\":100},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":270,\"y\":105,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"3\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":267,\"y\":100},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":295,\"y\":105,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"4\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":292,\"y\":100},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":320,\"y\":105,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"5\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":317,\"y\":100},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":220,\"y\":130,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"1\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":217,\"y\":125},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":245,\"y\":130,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"2\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":242,\"y\":125},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":270,\"y\":130,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"3\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":267,\"y\":125},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":295,\"y\":130,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"4\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":292,\"y\":125},\"className\":\"Text\"}]},{\"attrs\":{},\"className\":\"Group\",\"children\":[{\"attrs\":{\"x\":320,\"y\":130,\"radius\":10,\"stroke\":\"#888888\",\"fill\":\"#A9A8B3\",\"shadowColor\":\"gray\",\"shadowOffsetX\":2,\"shadowOffsetY\":2,\"shadowBlur\":5},\"className\":\"Circle\"},{\"attrs\":{\"fill\":\"black\",\"text\":\"5\",\"fontStyle\":\"arial\",\"fontSize\":10,\"x\":317,\"y\":125},\"className\":\"Text\"}]},{\"attrs\":{\"fill\":\"black\",\"text\":\"Section 1\",\"x\":210,\"width\":100,\"height\":10},\"className\":\"Text\"}]}]}]}";
-        let stage = Konva.Node.create(data,'stage-container');
-        //stage.children.cache();
-        let newSection = this.renderSectionSeat(2,2,"Test");
-        let newRect = this.renderTableRect(3,3,"Test");
-        let newRect2 = this.renderTableRect(8,6,"Test");
-        let circle = this.renderTableCircle(10,"Test");
-        stage.children.add(newSection);
-        stage.children.add(newRect);
-        stage.children.add(newRect2);
-        stage.children.add(circle);
-        stage.batchDraw();
+        stage.on('click',(e)=>{
+
+            if(e.target.parent == null){
+                console.log('destroyed');
+                transformer.detach();
+            }
+        });
+        stage.draw();
+        this.setState({'stage': stage});
     };
     handleLayerChange = () => {
       this.state.isAddingItem = !this.state.isAddingItem;
@@ -467,6 +486,7 @@ class App extends Component {
             scaleX: 1.1,
             scaleY: 1.1
         });
+        alert('Drag');
     };
     handleDragEnd = e => {
         e.target.to({
@@ -510,7 +530,6 @@ class App extends Component {
         this.setState({'selectedItem': e});
         console.log(e.target);
     };
-
     render() {
         return (
             <div className="row">
@@ -518,10 +537,9 @@ class App extends Component {
 
                 </div>
                 <div className="col-sm-3 sidebar-right">
-                    <RightSidebar addNewObject={this.addNewObject}/>
+                    <RightSidebar addNewObject={this.addNewObject} saveCanvas={this.saveCanvas}/>
                 </div>
             </div>
-
         );
     }
 }
