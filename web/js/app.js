@@ -36,6 +36,19 @@ class App extends Component {
         stage: null,
         mainLayer: null
     };
+    updateObject=(object)=> {
+        //find object into data_map state
+        let data = this.state.data_map;
+        data.find((el,i)=> {
+            if(el.nom === object.nom){
+                data[i]=object;
+                console.log(data[i]);
+                this.setState({'data_map':data});
+            }
+        });
+
+
+    };
     addNewObjectFromSidebar = (object) => {
         let data_map = this.state.data_map;
         data_map.push(object);
@@ -129,6 +142,10 @@ class App extends Component {
             console.log(e.target);
             //transformer.detach();
             transformer.attachTo(section);
+        });
+        section.on('dragend',(e)=>{
+            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:row,ySeats:col,number_seats:(row*col)};
+            this.updateObject(data);
         });
         return section;
     };
@@ -403,7 +420,6 @@ class App extends Component {
         group.add(text);
         return group;
     };
-
     componentDidMount() {
         axios.get(
             '/symfony3.4/web/api/event/get-map/395')
@@ -415,7 +431,6 @@ class App extends Component {
                     console.log(error);
             });
     }
-
     componentDidUpdate() {
         if (this.state.stage) {
             let stage = this.state.stage;
@@ -423,7 +438,6 @@ class App extends Component {
             // this.setState({'stage':stage});
         }
     }
-
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save});
         this.saveStage();
