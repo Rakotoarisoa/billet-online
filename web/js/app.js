@@ -8,8 +8,8 @@ import RightSidebar from "./components/RightSidebar";
 class App extends Component {
     constructor(props) {
         super(props);
-    }
 
+    }
     state = {
         stageScale: 1,
         stageX: 0,
@@ -19,44 +19,44 @@ class App extends Component {
         isAddingItem: false,
         current_map: '',
         selectedSeat: null,
-        x:200,
-        y:200,
-        rad : 10,
-        dia : 20,
-        gap : 5,
-        posY : 200,
-        posX : 200,
+        x: 200,
+        y: 200,
+        rad: 10,
+        dia: 20,
+        gap: 5,
+        posY: 200,
+        posX: 200,
         // buffers from edges of group box
-        sideBuff : 10,
-        topBuff : 10,
-        bottomBuff : 10,
-        sizeX : 10,
-        data_map : [{nom:"Table 1",x: 200,y: 200,number_seats:40,type: "rectangle",xSeats: 10,ySeats:10, deleted_seats:[1,4]},{nom:"Table 2",x: 400,y: 200,number_seats:40,type: "rectangle",xSeats: 10,ySeats:10, deleted_seats:[1,4]}],
-        saveCanvas : false
+        sideBuff: 10,
+        topBuff: 10,
+        bottomBuff: 10,
+        sizeX: 10,
+        data_map: [],
+        saveCanvas: false
     };
 
     addNewObject = (object) => {
-        let object_names=[];
-        _.forEach(this.state.data_map, function(k,v){
+        let object_names = [];
+        _.forEach(this.state.data_map, function (k, v) {
             object_names.push(k.nom);
         });
 
         if (object_names && object) {
             switch (object.type) {
                 case "section":
-                    return this.renderSectionSeat(object.xSeats,object.ySeats,object.nom);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats, object.nom);
                 case "rectangle":
-                    return this.renderTableRect(object.xSeats,object.ySeats,object.nom);
+                    return this.renderTableRect(object.xSeats, object.ySeats, object.nom);
                 case "ronde":
-                    return this.renderTableCircle(object.chaises,object.nom);
+                    return this.renderTableCircle(object.chaises, object.nom);
                 default:
-                    return this.renderSectionSeat(object.xSeats,object.ySeats,object.nom);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats, object.nom);
             }
         }
     };
-    renderSectionSeat = (row,col,nom,transformer=null) => {
-        const rows=row,
-            cols=col,
+    renderSectionSeat = (row, col, nom, transformer = null) => {
+        const rows = row,
+            cols = col,
             rad = 10,
             dia = rad * 2,
             gap = 5,
@@ -71,45 +71,44 @@ class App extends Component {
             textHeight = 10,
             alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
         let section = new Konva.Group({
-            name:this.state.nom,
-            x:this.state.x,
-            y:this.state.y,
-            height:parseInt(sizeX),
-            width:parseInt(sizeY),
+            name: this.state.nom,
+            x: this.state.x,
+            y: this.state.y,
+            height: parseInt(sizeX),
+            width: parseInt(sizeY),
             draggable: true
         });
         let text = new Konva.Text({
-            text:nom,
-            x:posX+10,
-            y:0,
-            width:textWidth,
-            height:textHeight,
+            text: nom,
+            x: posX + 10,
+            y: 0,
+            width: textWidth,
+            height: textHeight,
         });
-        for(let i=0;i<rows;i++)
-        {
-            for(let j=0;j<cols;j++){
-                let newGroup =new Konva.Group({
-                    name:alphabet[i].toUpperCase()+(j+1)
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                let newGroup = new Konva.Group({
+                    name: alphabet[i].toUpperCase() + (j + 1)
                 });
-                let circle =new Konva.Circle({
-                    x:parseInt((posX + sideBuff) + rad + j * dia + j * gap),
-                    y:parseInt(( textHeight + topBuff) + rad + i * dia + i * gap),
-                    width:20,
-                    height:20,
-                    stroke:"#888888",
-                    strokeWidth:2,
-                    fill:"#A9A8B3",
-                    shadowColor:'gray',
-                    shadowOffsetX:2,
-                    shadowOffsetY:2,
-                    shadowBlur:5
+                let circle = new Konva.Circle({
+                    x: parseInt((posX + sideBuff) + rad + j * dia + j * gap),
+                    y: parseInt((textHeight + topBuff) + rad + i * dia + i * gap),
+                    width: 20,
+                    height: 20,
+                    stroke: "#888888",
+                    strokeWidth: 2,
+                    fill: "#A9A8B3",
+                    shadowColor: 'gray',
+                    shadowOffsetX: 2,
+                    shadowOffsetY: 2,
+                    shadowBlur: 5
                 });
                 let text = new Konva.Text({
-                    text:j+1,
-                    fontStyle:"arial",
-                    fontSize:10,
-                    x:(posX + sideBuff) + rad + j * dia + j * gap-3,
-                    y:( textHeight + topBuff) + rad + i * dia + i * gap-5
+                    text: j + 1,
+                    fontStyle: "arial",
+                    fontSize: 10,
+                    x: (posX + sideBuff) + rad + j * dia + j * gap - 3,
+                    y: (textHeight + topBuff) + rad + i * dia + i * gap - 5
                 });
                 newGroup.add(circle);
                 newGroup.add(text);
@@ -118,14 +117,14 @@ class App extends Component {
         }
         section.add(text);
         section.cache();
-        section.on('dblclick',(e)=>{
+        section.on('dblclick', (e) => {
             console.log(e.target);
             //transformer.detach();
             transformer.attachTo(section);
         });
         return section;
     };
-    renderTableRect = (x,y,nom) => {
+    renderTableRect = (x, y, nom) => {
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
@@ -142,7 +141,8 @@ class App extends Component {
         if (x > 0)
             wholeHeight = wholeHeight + this.state.dia * 2 + this.state.gap * 2;
 
-        let tablePosY = (this.state.posY + this.state.topBuff *2) + (wholeHeight - tableHeight) / 2, tablePosX = (this.state.sizeX / 2);
+        let tablePosY = (this.state.posY + this.state.topBuff * 2) + (wholeHeight - tableHeight) / 2,
+            tablePosX = (this.state.sizeX / 2);
 //CONSTANTE Texte
         const textWidth = 50, textHeight = 10;
 // resize container to accomodate text and table
@@ -157,37 +157,37 @@ class App extends Component {
         let bottomPos = (this.state.posY + textHeight + this.state.topBuff) + this.state.dia + this.state.gap * 2 + tableHeight + this.state.rad;
 //VARIABLE POUR CHAISE VERTICALE
         let topStart = (this.state.posX + this.state.topBuff) + (wholeHeight - tableHeight) / 2 + this.state.gap + this.state.rad;
-        let leftPos = tablePosX - tableWidth / 2 ;
-        let rightPos = tablePosX + tableWidth / 2 + this.state.gap + this.state.rad+this.state.sideBuff;
+        let leftPos = tablePosX - tableWidth / 2;
+        let rightPos = tablePosX + tableWidth / 2 + this.state.gap + this.state.rad + this.state.sideBuff;
         let table = new Konva.Group({
-            x:this.state.x,
-            y:this.state.y,
-            height:parseInt(this.state.topBuff * 2 + textWidth + wholeHeight + this.state.bottomBuff),
-            width:contWidth,
-            onDragEnd:this.handleDragEnd,
-            name:"rectangle",
-            draggable:true
+            x: this.state.x,
+            y: this.state.y,
+            height: parseInt(this.state.topBuff * 2 + textWidth + wholeHeight + this.state.bottomBuff),
+            width: contWidth,
+            onDragEnd: this.handleDragEnd,
+            name: "rectangle",
+            draggable: true
         });
         let tableRect = new Konva.Rect({
-            x:leftStart+this.state.sideBuff*1.5,
-            y:parseInt((this.state.posY + textHeight + this.state.topBuff) + (wholeHeight - tableHeight) / 2),
-            radius:50,
-            fill:"white",
-            stroke:"#888888",
-            strokeWidth:2,
-            width:tableWidth,
-            height:tableHeight
+            x: leftStart + this.state.sideBuff * 1.5,
+            y: parseInt((this.state.posY + textHeight + this.state.topBuff) + (wholeHeight - tableHeight) / 2),
+            radius: 50,
+            fill: "white",
+            stroke: "#888888",
+            strokeWidth: 2,
+            width: tableWidth,
+            height: tableHeight
         });
-        let text= new Konva.Text({
-            text:nom,
+        let text = new Konva.Text({
+            text: nom,
             fontStyle: "arial",
-            x:textWidth/2,
-            y:parseInt(wholeHeight/2+(this.state.posY+this.state.topBuff)),
-            width:textWidth,
-            height:textHeight,
+            x: textWidth / 2,
+            y: parseInt(wholeHeight / 2 + (this.state.posY + this.state.topBuff)),
+            width: textWidth,
+            height: textHeight,
         });
         //render top and left seats
-        for(let i=0;i<x;i++) {
+        for (let i = 0; i < x; i++) {
             let top_group = new Konva.Group({
                 name: nom + "-" + 1,
                 id: numero_chaise++
@@ -216,38 +216,38 @@ class App extends Component {
             top_group.add(top_text);
             table.add(top_group);
         }
-        for(let i=0;i<y;i++) {
+        for (let i = 0; i < y; i++) {
             let right_group = new Konva.Group({
-                name:nom+"-"+1,
-                id:numero_chaise++
+                name: nom + "-" + 1,
+                id: numero_chaise++
 
             });
             let right_circle = new Konva.Circle({
-                key:numero_chaise,
-                x:rightPos+this.state.sideBuff*2,
-                y:parseInt(topStart + this.state.topBuff + this.state.dia * i + this.state.gap * i),
-                width:20,
-                height:20,
-                fill:"#A9A8B3",
-                stroke:"#888888",
-                strokeWidth:2,
-                shadowColor:'gray',
-                shadowOffsetX:2,
-                shadowOffsetY:2,
-                shadowBlur:5
+                key: numero_chaise,
+                x: rightPos + this.state.sideBuff * 2,
+                y: parseInt(topStart + this.state.topBuff + this.state.dia * i + this.state.gap * i),
+                width: 20,
+                height: 20,
+                fill: "#A9A8B3",
+                stroke: "#888888",
+                strokeWidth: 2,
+                shadowColor: 'gray',
+                shadowOffsetX: 2,
+                shadowOffsetY: 2,
+                shadowBlur: 5
             });
             let right_text = new Konva.Text({
-                text:numero_chaise,
-                fontStyle:"arial",
-                fontSize:10,
-                x:rightPos+this.state.sideBuff*2-7,
-                y:topStart + this.state.topBuff + this.state.dia * i + this.state.gap * i - 5
+                text: numero_chaise,
+                fontStyle: "arial",
+                fontSize: 10,
+                x: rightPos + this.state.sideBuff * 2 - 7,
+                y: topStart + this.state.topBuff + this.state.dia * i + this.state.gap * i - 5
             });
             right_group.add(right_circle);
             right_group.add(right_text);
             table.add(right_group);
         }
-        for(let j=x;j>0;j--) {
+        for (let j = x; j > 0; j--) {
             let bottom_group = new Konva.Group({
                 name: nom + "-" + 1,
                 id: numero_chaise++
@@ -269,38 +269,38 @@ class App extends Component {
                 text: numero_chaise,
                 fontStyle: "arial",
                 fontSize: 10,
-                x: this.state.sideBuff * 2.7 + leftStart + this.state.dia * (j - 1) + this.state.gap * (j - 1)-5,
-                y: bottomPos-5
+                x: this.state.sideBuff * 2.7 + leftStart + this.state.dia * (j - 1) + this.state.gap * (j - 1) - 5,
+                y: bottomPos - 5
             });
             bottom_group.add(bottom_circle);
             bottom_group.add(bottom_text);
             table.add(bottom_group);
         }
-        for(let j=y;j>0;j--) {
+        for (let j = y; j > 0; j--) {
             let left_group = new Konva.Group({
-                name:nom+"-"+1,
+                name: nom + "-" + 1,
 
             });
             let left_circle = new Konva.Circle({
-                key:numero_chaise++,
-                x:leftPos+15,
-                y:parseInt(topStart + this.state.topBuff + this.state.dia * (j-1) + this.state.gap * (j-1)),
-                width:20,
-                height:20,
-                fill:"#A9A8B3",
-                stroke:"#888888",
-                strokeWidth:2,
-                shadowColor:'gray',
-                shadowOffsetX:2,
-                shadowOffestY:2,
-                shadowBlur:5
+                key: numero_chaise++,
+                x: leftPos + 15,
+                y: parseInt(topStart + this.state.topBuff + this.state.dia * (j - 1) + this.state.gap * (j - 1)),
+                width: 20,
+                height: 20,
+                fill: "#A9A8B3",
+                stroke: "#888888",
+                strokeWidth: 2,
+                shadowColor: 'gray',
+                shadowOffsetX: 2,
+                shadowOffestY: 2,
+                shadowBlur: 5
             });
             let left_text = new Konva.Text({
-                text:numero_chaise,
-                fontStyle:"arial",
-                fontSize:10,
-                x:leftPos+10,
-                y:topStart + this.state.topBuff + this.state.dia * (j-1) + this.state.gap * (j-1)-5
+                text: numero_chaise,
+                fontStyle: "arial",
+                fontSize: 10,
+                x: leftPos + 10,
+                y: topStart + this.state.topBuff + this.state.dia * (j - 1) + this.state.gap * (j - 1) - 5
             });
             left_group.add(left_circle);
             left_group.add(left_text);
@@ -311,81 +311,82 @@ class App extends Component {
         table.add(text);
         return table;
     };
-    renderTableCircle = (seats,nom) => {
-        const deg = (2*Math.PI)/seats;//initialisation Nombre chaise.
+    renderTableCircle = (seats, nom) => {
+        const deg = (2 * Math.PI) / seats;//initialisation Nombre chaise.
         let tableRad = this.state.rad + this.state.gap;
         if (seats >= 4 && seats < 6)
-            tableRad = this.state.rad*1.5;
+            tableRad = this.state.rad * 1.5;
         if (seats >= 6 && seats < 9)
-            tableRad = this.state.rad*2;
+            tableRad = this.state.rad * 2;
         if (seats >= 9 && seats < 13)
-            tableRad = this.state.rad*3.5;
-        if (seats >= 13 && seats <15)
-            tableRad = this.state.rad*4.2;
-        if (seats >= 15 && seats <17)
-            tableRad = this.state.rad*4.5;
-        if (seats >= 17 && seats <22)
-            tableRad = this.state.rad*6;
-        if (seats >= 22 && seats <25)
-            tableRad = this.state.rad*10;
-        let wholeDia = tableRad * 2 + this.state.dia*2 + this.state.gap*2;
+            tableRad = this.state.rad * 3.5;
+        if (seats >= 13 && seats < 15)
+            tableRad = this.state.rad * 4.2;
+        if (seats >= 15 && seats < 17)
+            tableRad = this.state.rad * 4.5;
+        if (seats >= 17 && seats < 22)
+            tableRad = this.state.rad * 6;
+        if (seats >= 22 && seats < 25)
+            tableRad = this.state.rad * 10;
+        let wholeDia = tableRad * 2 + this.state.dia * 2 + this.state.gap * 2;
 // resize container to accomodate text and table
         let textWidth = 50, textHeight = 10;
-        let contWidth =0;
+        let contWidth = 0;
         if (textWidth > wholeDia) {
-            contWidth = this.state.sideBuff*2 + textWidth;
+            contWidth = this.state.sideBuff * 2 + textWidth;
         } else {
-            contWidth = this.state.sideBuff*2 + wholeDia;
+            contWidth = this.state.sideBuff * 2 + wholeDia;
         }
-        let tableLeft=this.state.posX + contWidth/2,tableTop=(textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap;
-        let group= new Konva.Group({
-            x:this.state.x,
-            y:this.state.y,
-            height:this.state.topBuff * 2 + textWidth + this.state.bottomBuff,
-            width:contWidth,
-            visible:true,
-            draggable:true,
-            onDragEnd:this.handleDragEnd,
-            onClick:this.handleClick,
-            fill:"#A9A8B3",
-            });
-        let tableCircle=new Konva.Circle({
-            radius:tableRad,
-            x:this.state.posX + contWidth/2,
-            y: (tableRad+textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap,
-            fill:"white",
-            stroke:"#444444",
-            strokeWidth:2
+        let tableLeft = this.state.posX + contWidth / 2,
+            tableTop = (textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap;
+        let group = new Konva.Group({
+            x: this.state.x,
+            y: this.state.y,
+            height: this.state.topBuff * 2 + textWidth + this.state.bottomBuff,
+            width: contWidth,
+            visible: true,
+            draggable: true,
+            onDragEnd: this.handleDragEnd,
+            onClick: this.handleClick,
+            fill: "#A9A8B3",
+        });
+        let tableCircle = new Konva.Circle({
+            radius: tableRad,
+            x: this.state.posX + contWidth / 2,
+            y: (tableRad + textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap,
+            fill: "white",
+            stroke: "#444444",
+            strokeWidth: 2
         });
         let text = new Konva.Text({
-            text:nom,
-            fontStyle:"arial",
-            x:this.state.posX+contWidth/2-12,
-            y:(tableRad+textWidth + this.state.topBuff) + this.state.dia + this.state.gap,
-            width:textWidth/2,
-            height:textHeight
+            text: nom,
+            fontStyle: "arial",
+            x: this.state.posX + contWidth / 2 - 12,
+            y: (tableRad + textWidth + this.state.topBuff) + this.state.dia + this.state.gap,
+            width: textWidth / 2,
+            height: textHeight
         });
-        for(let i=0;i<seats;i++){
-            let c_group=new Konva.Group({});
-            let circle=new Konva.Circle({
-                x:Math.cos(deg*i)*(tableRad + this.state.gap + this.state.rad) + tableLeft,
-                y:Math.sin(deg*i)*(tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad),
-                width:20,
-                height:20,
-                fill:"#A9A8B3",
-                stroke:"#888888",
-                strokeWidth:2,
-                shadowColor:'gray',
-                shadowOffsetX:2,
-                shadowOffsetY:2,
-                shadowBlur:5
+        for (let i = 0; i < seats; i++) {
+            let c_group = new Konva.Group({});
+            let circle = new Konva.Circle({
+                x: Math.cos(deg * i) * (tableRad + this.state.gap + this.state.rad) + tableLeft,
+                y: Math.sin(deg * i) * (tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad),
+                width: 20,
+                height: 20,
+                fill: "#A9A8B3",
+                stroke: "#888888",
+                strokeWidth: 2,
+                shadowColor: 'gray',
+                shadowOffsetX: 2,
+                shadowOffsetY: 2,
+                shadowBlur: 5
             });
-            let text=new Konva.Text({
-                text:i+1,
-                fontStyle:"Tahoma, Geneva, sans-serif",
-                fontSize:10,
-                x:Math.cos(deg*i)*(tableRad + this.state.gap + this.state.rad) + tableLeft-5,
-                y:Math.sin(deg*i)*(tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad-5)
+            let text = new Konva.Text({
+                text: i + 1,
+                fontStyle: "Tahoma, Geneva, sans-serif",
+                fontSize: 10,
+                x: Math.cos(deg * i) * (tableRad + this.state.gap + this.state.rad) + tableLeft - 5,
+                y: Math.sin(deg * i) * (tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad - 5)
             });
             c_group.add(circle);
             c_group.add(text);
@@ -395,25 +396,40 @@ class App extends Component {
         group.add(text);
         return group;
     };
+
     componentDidMount() {
-        this.loadStage();
+        axios.get(
+            '/symfony3.4/web/api/event/get-map/395')
+            .then( (response)=> {
+                this.setState({'data_map':response.data});
+                this.loadStage();
+                console.log(this.state.data_map);
+            })
+            .catch(function (error) {
+                    console.log(error);
+            });
     }
+
     componentDidUpdate() {
-        if(this.state.stage) {
+        if (this.state.stage) {
             let stage = this.state.stage;
             stage.batchDraw();
-           // this.setState({'stage':stage});
+            // this.setState({'stage':stage});
         }
     }
-    saveCanvas= (save) => {
-       this.setState({'saveCanvas': save});
-       this.saveStage();
-       setTimeout(()=>{this.setState({'saveCanvas':!save})},3000);
+
+    saveCanvas = (save) => {
+        this.setState({'saveCanvas': save});
+        this.saveStage();
+        setTimeout(() => {
+            this.setState({'saveCanvas': !save})
+        }, 3000);
     };
     saveStage = () => {
-        if(this.state.saveCanvas) {
-            let data = this.state.stage;
-            data = data.toJSON();
+        if (this.state.saveCanvas) {
+            let data = this.state.data_map;
+            data = JSON.stringify(data);
+            console.log(data);
             axios.post(
                 '/symfony3.4/web/api/event/update-map/395', {
                     data_map: JSON.parse(data)
@@ -429,42 +445,34 @@ class App extends Component {
     };
     loadStage = () => {
         let data = this.state.data_map;
-        /*axios.get(
-            '/symfony3.4/web/api/event/get-map/395')
-            .then(function (response) {
-                console.log(response);
-            })
-            .catch(function (error) {
-                    console.log(error);
-                }
-            );*/
-        let stage=  new Konva.Stage({
-            container:'stage-container',
-            width:window.innerWidth,
-            height:window.innerHeight
+        console.log(data);
+        let stage = new Konva.Stage({
+            container: 'stage-container',
+            width: window.innerWidth,
+            height: window.innerHeight
         });
-        let layer=new Konva.Layer();
-        let dragLayer=new Konva.Layer();
+        let layer = new Konva.Layer();
+        let dragLayer = new Konva.Layer();
         stage.add(layer);
         stage.add(dragLayer);
-        let transformer= new Konva.Transformer({
-            name:'Transformer',
+        let transformer = new Konva.Transformer({
+            name: 'Transformer',
             rotateAnchorOffset: 5,
             enabledAnchors: [''],
             borderStroke: "#888",
             resizeEnabled: false,
-            rotationSnaps: [0, 45,90, 180, 270],
+            rotationSnaps: [0, 45, 90, 180, 270],
         });
         layer.add(transformer);
-        data.push({nom:"Table 3",x: 200,y: 200,number_seats:40,type: "rectangle",xSeats: 5,ySeats:5, deleted_seats:[1,4]});
-        data.forEach((obj,v)=>{
-            let newObject= this.addNewObject(obj);
+        data.forEach((obj, v) => {
+            let newObject = this.addNewObject(obj);
+            newObject.cache();
             layer.add(newObject);
         });
 
-        stage.on('click',(e)=>{
+        stage.on('click', (e) => {
 
-            if(e.target.parent == null){
+            if (e.target.parent == null) {
                 console.log('destroyed');
                 transformer.detach();
             }
@@ -473,9 +481,9 @@ class App extends Component {
         this.setState({'stage': stage});
     };
     handleLayerChange = () => {
-      this.state.isAddingItem = !this.state.isAddingItem;
-      this.state.newItem = '';
-      console.log("Changé");
+        this.state.isAddingItem = !this.state.isAddingItem;
+        this.state.newItem = '';
+        console.log("Changé");
     };
     handleDragStart = e => {
         e.target.setAttrs({
@@ -523,13 +531,14 @@ class App extends Component {
     };
     hoverSeat = e => {
         this.setState({
-           selectedSeat : e
-    });
+            selectedSeat: e
+        });
     };
     handleSelected = e => {
         this.setState({'selectedItem': e});
         console.log(e.target);
     };
+
     render() {
         return (
             <div className="row">
@@ -543,6 +552,7 @@ class App extends Component {
         );
     }
 }
+
 render(
     <App/>
     , document.getElementById('root')

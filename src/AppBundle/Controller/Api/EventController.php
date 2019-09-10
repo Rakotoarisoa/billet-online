@@ -3,15 +3,11 @@
 
 namespace AppBundle\Controller\Api;
 use AppBundle\Entity\Evenement;
-use Doctrine\ORM\EntityManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
-use AppBundle\Entity\User;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 
 
@@ -57,7 +53,24 @@ class EventController extends AbstractFOSRestController
             return new View("there are no map event exist", Response::HTTP_NOT_FOUND);
         }
         //var_dump(unserialize(json_decode($restResult->getEtatSalle())));
-        return json_decode(unserialize($restResult->getEtatSalle()),JSON_UNESCAPED_SLASHES);
+        //var_dump($restResult->getEtatSalle());
+        return unserialize($restResult->getEtatSalle());
+    }
+    /**
+     * @Rest\Get("/event/get-map2/{id}")
+     * Get Event by Id
+     * @param $id
+     * @return View|object|null
+     */
+    public function getEventMapById2($id)
+    {
+        $restResult = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        if ($restResult === null) {
+            return new View("there are no map event exist", Response::HTTP_NOT_FOUND);
+        }
+        //var_dump(unserialize(json_decode($restResult->getEtatSalle())));
+        var_dump(unserialize($restResult->getEtatSalle()));
+        return json_decode($restResult->getEtatSalle(),true);
     }
 
     /**
