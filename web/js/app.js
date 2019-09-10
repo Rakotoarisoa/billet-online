@@ -32,15 +32,22 @@ class App extends Component {
         bottomBuff: 10,
         sizeX: 10,
         data_map: [],
-        saveCanvas: false
+        saveCanvas: false,
+        stage: null,
+        mainLayer: null
     };
-
+    addNewObjectFromSidebar = (object) => {
+        let data_map = this.state.data_map;
+        data_map.push(object);
+        this.setState({'data_map': data_map});
+        this.addNewObject(object);
+        this.loadStage();
+    };
     addNewObject = (object) => {
         let object_names = [];
         _.forEach(this.state.data_map, function (k, v) {
             object_names.push(k.nom);
         });
-
         if (object_names && object) {
             switch (object.type) {
                 case "section":
@@ -53,6 +60,7 @@ class App extends Component {
                     return this.renderSectionSeat(object.xSeats, object.ySeats, object.nom);
             }
         }
+        console.log(object);
     };
     renderSectionSeat = (row, col, nom, transformer = null) => {
         const rows = row,
@@ -128,7 +136,6 @@ class App extends Component {
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
-
         if (x >= 1)
             tableWidth = (x * this.state.dia) + ((x + 1) * this.state.gap);
         if (y >= 1)
@@ -403,7 +410,6 @@ class App extends Component {
             .then( (response)=> {
                 this.setState({'data_map':response.data});
                 this.loadStage();
-                console.log(this.state.data_map);
             })
             .catch(function (error) {
                     console.log(error);
@@ -429,7 +435,6 @@ class App extends Component {
         if (this.state.saveCanvas) {
             let data = this.state.data_map;
             data = JSON.stringify(data);
-            console.log(data);
             axios.post(
                 '/symfony3.4/web/api/event/update-map/395', {
                     data_map: JSON.parse(data)
@@ -445,7 +450,6 @@ class App extends Component {
     };
     loadStage = () => {
         let data = this.state.data_map;
-        console.log(data);
         let stage = new Konva.Stage({
             container: 'stage-container',
             width: window.innerWidth,
@@ -478,7 +482,7 @@ class App extends Component {
             }
         });
         stage.draw();
-        this.setState({'stage': stage});
+        this.setState({'stage': stage,'mainLayer':layer});
     };
     handleLayerChange = () => {
         this.state.isAddingItem = !this.state.isAddingItem;
@@ -546,7 +550,7 @@ class App extends Component {
 
                 </div>
                 <div className="col-sm-3 sidebar-right">
-                    <RightSidebar addNewObject={this.addNewObject} saveCanvas={this.saveCanvas}/>
+                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}/>
                 </div>
             </div>
         );
