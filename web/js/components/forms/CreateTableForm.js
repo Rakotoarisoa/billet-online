@@ -114,8 +114,8 @@ class CreateTableForm extends Component{
             if(this.state.table_type === RECTANGLE){
                 this.props.newObject({
                     nom:this.state.nom,
-                    rows:parseInt(this.state.rows),
-                    cols:parseInt(this.state.cols),
+                    xSeats:parseInt(this.state.rows),
+                    ySeats:parseInt(this.state.cols),
                     type:this.state.table_type,
                     number_seats: parseInt(this.state.rows)*parseInt(this.state.cols),
                     x:200,
