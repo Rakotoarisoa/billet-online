@@ -46,7 +46,7 @@ class App extends Component {
                 this.setState({'data_map':data});
             }
         });
-
+        this.loadStage();
 
     };
     addNewObjectFromSidebar = (object) => {
@@ -64,18 +64,17 @@ class App extends Component {
         if (object_names && object) {
             switch (object.type) {
                 case "section":
-                    return this.renderSectionSeat(object.xSeats, object.ySeats, object.nom);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x,object.y, object.nom);
                 case "rectangle":
-                    return this.renderTableRect(object.xSeats, object.ySeats, object.nom);
+                    return this.renderTableRect(object.xSeats, object.ySeats,object.x,object.y, object.nom);
                 case "ronde":
-                    return this.renderTableCircle(object.chaises, object.nom);
+                    return this.renderTableCircle(object.chaises,object.x,object.y, object.nom);
                 default:
-                    return this.renderSectionSeat(object.xSeats, object.ySeats, object.nom);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x,object.y, object.nom);
             }
         }
-        console.log(object);
     };
-    renderSectionSeat = (row, col, nom, transformer = null) => {
+    renderSectionSeat = (row, col, posX, posY,nom, transformer = null) => {
         const rows = row,
             cols = col,
             rad = 10,
@@ -86,22 +85,20 @@ class App extends Component {
             bottomBuff = 10,
             sizeX = sideBuff * 2 + cols * dia + (cols - 1) * gap,
             sizeY = topBuff + bottomBuff + rows * dia + (rows - 1) * gap,
-            posY = 200,
-            posX = 200,
             textWidth = 100,
             textHeight = 10,
             alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
         let section = new Konva.Group({
             name: this.state.nom,
-            x: this.state.x,
-            y: this.state.y,
+            x: posX,
+            y: posY,
             height: parseInt(sizeX),
             width: parseInt(sizeY),
             draggable: true
         });
         let text = new Konva.Text({
             text: nom,
-            x: posX + 10,
+            x: this.state.posX + 10,
             y: 0,
             width: textWidth,
             height: textHeight,
@@ -144,12 +141,12 @@ class App extends Component {
             transformer.attachTo(section);
         });
         section.on('dragend',(e)=>{
-            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:row,ySeats:col,number_seats:(row*col)};
+            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:row,ySeats:col,type:'section',number_seats:(row*col)};
             this.updateObject(data);
         });
         return section;
     };
-    renderTableRect = (x, y, nom) => {
+    renderTableRect = (x, y,posX,posY, nom) => {
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
@@ -184,8 +181,8 @@ class App extends Component {
         let leftPos = tablePosX - tableWidth / 2;
         let rightPos = tablePosX + tableWidth / 2 + this.state.gap + this.state.rad + this.state.sideBuff;
         let table = new Konva.Group({
-            x: this.state.x,
-            y: this.state.y,
+            x: posX,
+            y: posY,
             height: parseInt(this.state.topBuff * 2 + textWidth + wholeHeight + this.state.bottomBuff),
             width: contWidth,
             onDragEnd: this.handleDragEnd,
@@ -329,13 +326,16 @@ class App extends Component {
             left_group.add(left_circle);
             left_group.add(left_text);
             table.add(left_group);
-
         }
         table.add(tableRect);
         table.add(text);
+        table.on('dragend',(e)=>{
+            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:x,ySeats:y,type:'rectangle',number_seats:(x*y)};
+            this.updateObject(data);
+        });
         return table;
     };
-    renderTableCircle = (seats, nom) => {
+    renderTableCircle = (seats,posX,posY, nom) => {
         const deg = (2 * Math.PI) / seats;//initialisation Nombre chaise.
         let tableRad = this.state.rad + this.state.gap;
         if (seats >= 4 && seats < 6)
@@ -364,8 +364,8 @@ class App extends Component {
         let tableLeft = this.state.posX + contWidth / 2,
             tableTop = (textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap;
         let group = new Konva.Group({
-            x: this.state.x,
-            y: this.state.y,
+            x: posX,
+            y: posY,
             height: this.state.topBuff * 2 + textWidth + this.state.bottomBuff,
             width: contWidth,
             visible: true,
@@ -418,6 +418,10 @@ class App extends Component {
         }
         group.add(tableCircle);
         group.add(text);
+        group.on('dragend',(e)=>{
+            let data ={nom:nom,x:e.target.x(),y:e.target.y(),chaises:seats,type:'ronde',number_seats:seats};
+            this.updateObject(data);
+        });
         return group;
     };
     componentDidMount() {
