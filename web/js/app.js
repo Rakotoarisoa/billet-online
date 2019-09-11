@@ -50,6 +50,7 @@ class App extends Component {
 
     };
     addNewObjectFromSidebar = (object) => {
+
         let data_map = this.state.data_map;
         data_map.push(object);
         this.setState({'data_map': data_map});
@@ -57,14 +58,11 @@ class App extends Component {
         this.loadStage();
     };
     addNewObject = (object) => {
-        let object_names = [];
-        _.forEach(this.state.data_map, function (k, v) {
-            object_names.push(k.nom);
-        });
-        if (object_names && object) {
+
+        if (object) {
             switch (object.type) {
                 case "section":
-                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x,object.y, object.nom);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x, object.y, object.nom);
                 case "rectangle":
                     return this.renderTableRect(object.xSeats, object.ySeats,object.x,object.y, object.nom);
                 case "ronde":
@@ -74,7 +72,7 @@ class App extends Component {
             }
         }
     };
-    renderSectionSeat = (row, col, posX, posY,nom, transformer = null) => {
+    renderSectionSeat = (row, col, posX, posY, nom, transformer = null) => {
         const rows = row,
             cols = col,
             rad = 10,
@@ -109,7 +107,7 @@ class App extends Component {
                     name: alphabet[i].toUpperCase() + (j + 1)
                 });
                 let circle = new Konva.Circle({
-                    x: parseInt((posX + sideBuff) + rad + j * dia + j * gap),
+                    x: parseInt((this.state.posX + sideBuff) + rad + j * dia + j * gap),
                     y: parseInt((textHeight + topBuff) + rad + i * dia + i * gap),
                     width: 20,
                     height: 20,
@@ -125,7 +123,7 @@ class App extends Component {
                     text: j + 1,
                     fontStyle: "arial",
                     fontSize: 10,
-                    x: (posX + sideBuff) + rad + j * dia + j * gap - 3,
+                    x: (this.state.posX + sideBuff) + rad + j * dia + j * gap - 3,
                     y: (textHeight + topBuff) + rad + i * dia + i * gap - 5
                 });
                 newGroup.add(circle);
@@ -387,7 +385,7 @@ class App extends Component {
             fontStyle: "arial",
             x: this.state.posX + contWidth / 2 - 12,
             y: (tableRad + textWidth + this.state.topBuff) + this.state.dia + this.state.gap,
-            width: textWidth / 2,
+            width: textWidth,
             height: textHeight
         });
         for (let i = 0; i < seats; i++) {
@@ -480,18 +478,16 @@ class App extends Component {
         let transformer = new Konva.Transformer({
             name: 'Transformer',
             rotateAnchorOffset: 5,
-            enabledAnchors: [''],
             borderStroke: "#888",
             resizeEnabled: false,
             rotationSnaps: [0, 45, 90, 180, 270],
         });
         layer.add(transformer);
-        data.forEach((obj, v) => {
+        data.forEach((obj) => {
             let newObject = this.addNewObject(obj);
             newObject.cache();
             layer.add(newObject);
         });
-
         stage.on('click', (e) => {
 
             if (e.target.parent == null) {
@@ -500,7 +496,6 @@ class App extends Component {
             }
         });
         stage.draw();
-        this.setState({'stage': stage,'mainLayer':layer});
     };
     handleLayerChange = () => {
         this.state.isAddingItem = !this.state.isAddingItem;
@@ -568,7 +563,7 @@ class App extends Component {
 
                 </div>
                 <div className="col-sm-3 sidebar-right">
-                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}/>
+                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas} dataMap={this.state.data_map}/>
                 </div>
             </div>
         );

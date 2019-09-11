@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import SectionSeat from "../SectionSeat";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Button from "@material-ui/core/Button";
 
@@ -16,9 +15,17 @@ class CreateRangeForm extends Component{
         this.handleChangeRangeForm = this.handleChangeRangeForm.bind(this);
         this.handleSubmitRangeForm = this.handleSubmitRangeForm.bind(this);
     }
-    handleSubmit(event) {
-        alert('Nom de rangée: ' + this.state.value);
-        event.preventDefault();
+    componentDidMount() {
+        ValidatorForm.addValidationRule('alreadyExist', (value) => {
+            let data = this.props.dataMap;
+            let object_names= [];
+            data.forEach((el)=>{
+                object_names.push(el.nom);
+            });
+            if(object_names.includes(value))
+                return false;
+            return true;
+        });
     }
     handleChangeRangeForm(event) {
         const target = event.target;
@@ -31,8 +38,7 @@ class CreateRangeForm extends Component{
     }
 
     handleSubmitRangeForm(event) {
-        this.setState({ submitted: true }, () => {
-            //TODO: create object SectionSeat, interaction with app.js
+            this.setState({ submitted: true }, () => {
             this.props.newObject({
                 nom:this.state.nom,
                 xSeats:parseInt(this.state.rows),
@@ -44,7 +50,6 @@ class CreateRangeForm extends Component{
             });
             setTimeout(() => this.setState({ submitted: false }), 1000);
         });
-        console.log(this.props.newObject);
         event.preventDefault();
     }
     render(){
@@ -55,10 +60,9 @@ class CreateRangeForm extends Component{
                 onSubmit={this.handleSubmitRangeForm}
             >
                 <div className="p-2 bg-light">
-
                     <TextValidator
-                        validators={["required"]}
-                        errorMessages={['Ce champ est requis']}
+                        validators={["required","alreadyExist"]}
+                        errorMessages={['Ce champ est requis',"Ce nom d'objet existe déjà sur le plan"]}
                         id="nom"
                         label="Nom"
                         className={"form-control secondary"}

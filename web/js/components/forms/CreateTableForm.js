@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
-import SectionSeat from "../SectionSeat";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from '@material-ui/core/MenuItem';
-import TableRect from "../TableRect";
 const RECTANGLE="rectangle",RONDE="ronde";
 
 class TextFieldsByTable extends Component{
@@ -108,7 +106,18 @@ class CreateTableForm extends Component{
         });
 
     }
-
+    componentDidMount() {
+        ValidatorForm.addValidationRule('alreadyExist1', (value) => {
+            let data = this.props.dataMap;
+            let object_names= [];
+            data.forEach((el)=>{
+                object_names.push(el.nom);
+            });
+            if(object_names.includes(value))
+                return false;
+            return true;
+        });
+    }
     handleSubmitRangeForm(event) {
         this.setState({ submitted: true }, () => {
             if(this.state.table_type === RECTANGLE){
@@ -175,8 +184,8 @@ class CreateTableForm extends Component{
                         ))}
                     </TextField>
                     <TextValidator
-                        validators={["required"]}
-                        errorMessages={['Ce champ est requis']}
+                        validators={["required","alreadyExist1"]}
+                        errorMessages={['Ce champ est requis',"Ce nom d\'objet existe déjà sur le plan"]}
                         id="nom"
                         label="Nom"
                         className={"form-control secondary"}

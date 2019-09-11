@@ -29,8 +29,11 @@ class RightSidebar extends Component {
 
     }
 
-    componentDidUpdate(props) {
+    componentDidUpdate(prevProps) {
+        if(prevProps.dataMap !== this.props.dataMap)
+        {
 
+        }
     }
 
     componentWillUnmount() {
@@ -67,12 +70,12 @@ class RightSidebar extends Component {
                 </div>
                 <div className={"collapse"} id="sectionCreate">
                     <div className="d-flex p-3 bg-light">
-                        <CreateRangeForm newObject={this.handleNewObject}/>
+                        <CreateRangeForm dataMap={this.props.dataMap} newObject={this.handleNewObject}/>
                     </div>
                 </div>
                 <div className={"collapse"} id="tableCreate">
                     <div className="d-flex p-3 bg-light">
-                        <CreateTableForm newObject={this.handleNewObject}/>
+                        <CreateTableForm dataMap={this.props.dataMap} newObject={this.handleNewObject}/>
                     </div>
                 </div>
             </aside>
