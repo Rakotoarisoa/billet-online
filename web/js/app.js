@@ -57,18 +57,18 @@ class App extends Component {
         this.addNewObject(object);
         this.loadStage();
     };
-    addNewObject = (object) => {
+    addNewObject = (object,transformer) => {
 
         if (object) {
             switch (object.type) {
                 case "section":
-                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x, object.y, object.nom);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x, object.y, object.nom,transformer);
                 case "rectangle":
-                    return this.renderTableRect(object.xSeats, object.ySeats,object.x,object.y, object.nom);
+                    return this.renderTableRect(object.xSeats, object.ySeats,object.x,object.y, object.nom,transformer);
                 case "ronde":
-                    return this.renderTableCircle(object.chaises,object.x,object.y, object.nom);
+                    return this.renderTableCircle(object.chaises,object.x,object.y, object.nom,transformer);
                 default:
-                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x,object.y, object.nom);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x,object.y, object.nom,transformer);
             }
         }
     };
@@ -92,7 +92,7 @@ class App extends Component {
             y: posY,
             height: parseInt(sizeX),
             width: parseInt(sizeY),
-            draggable: true
+            draggable: false
         });
         let text = new Konva.Text({
             text: nom,
@@ -133,18 +133,18 @@ class App extends Component {
         }
         section.add(text);
         section.cache();
-        section.on('dblclick', (e) => {
-            console.log(e.target);
-            //transformer.detach();
+        section.on('click tap', (e) => {
             transformer.attachTo(section);
+            section.draggable(true);
+            section.getLayer().draw();
         });
-        section.on('dragend',(e)=>{
+        /*section.on('dragend',(e)=>{
             let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:row,ySeats:col,type:'section',number_seats:(row*col)};
             this.updateObject(data);
-        });
+        });*/
         return section;
     };
-    renderTableRect = (x, y,posX,posY, nom) => {
+    renderTableRect = (x, y,posX, posY, nom, transformer = null) => {
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
@@ -183,9 +183,8 @@ class App extends Component {
             y: posY,
             height: parseInt(this.state.topBuff * 2 + textWidth + wholeHeight + this.state.bottomBuff),
             width: contWidth,
-            onDragEnd: this.handleDragEnd,
-            name: "rectangle",
-            draggable: true
+            name: nom,
+            draggable: false
         });
         let tableRect = new Konva.Rect({
             x: leftStart + this.state.sideBuff * 1.5,
@@ -327,14 +326,19 @@ class App extends Component {
         }
         table.add(tableRect);
         table.add(text);
-        table.on('dragend',(e)=>{
+        table.on('click tap', (e) => {
+            transformer.attachTo(table);
+            table.draggable(true);
+            table.getLayer().draw();
+        });
+        /*table.on('dragend',(e)=>{
             let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:x,ySeats:y,type:'rectangle',number_seats:(x*y)};
             this.updateObject(data);
-        });
+        });*/
         return table;
     };
-    renderTableCircle = (seats,posX,posY, nom) => {
-        const deg = (2 * Math.PI) / seats;//initialisation Nombre chaise.
+    renderTableCircle = (seats, posX, posY, nom, transformer = null) => {
+        const deg = (2 * Math.PI) / seats;
         let tableRad = this.state.rad + this.state.gap;
         if (seats >= 4 && seats < 6)
             tableRad = this.state.rad * 1.5;
@@ -367,10 +371,9 @@ class App extends Component {
             height: this.state.topBuff * 2 + textWidth + this.state.bottomBuff,
             width: contWidth,
             visible: true,
-            draggable: true,
-            onDragEnd: this.handleDragEnd,
-            onClick: this.handleClick,
+            draggable: false,
             fill: "#A9A8B3",
+            name: nom
         });
         let tableCircle = new Konva.Circle({
             radius: tableRad,
@@ -416,10 +419,15 @@ class App extends Component {
         }
         group.add(tableCircle);
         group.add(text);
-        group.on('dragend',(e)=>{
+        group.on('click tap', (e) => {
+            transformer.attachTo(group);
+            group.draggable(true);
+            group.getLayer().draw();
+        });
+        /*group.on('dragend',(e)=>{
             let data ={nom:nom,x:e.target.x(),y:e.target.y(),chaises:seats,type:'ronde',number_seats:seats};
             this.updateObject(data);
-        });
+        });*/
         return group;
     };
     componentDidMount() {
@@ -478,21 +486,24 @@ class App extends Component {
         let transformer = new Konva.Transformer({
             name: 'Transformer',
             rotateAnchorOffset: 5,
-            borderStroke: "#888",
+            borderStroke: "#007bff",
             resizeEnabled: false,
+            borderDash:[2,2],
+            borderStrokeWidth: 2,
             rotationSnaps: [0, 45, 90, 180, 270],
         });
         layer.add(transformer);
         data.forEach((obj) => {
-            let newObject = this.addNewObject(obj);
+            let newObject = this.addNewObject(obj,transformer);
             newObject.cache();
             layer.add(newObject);
         });
-        stage.on('click', (e) => {
-
-            if (e.target.parent == null) {
-                console.log('destroyed');
-                transformer.detach();
+        stage.on('click tap', (e) => {
+            if (e.target === stage) {
+                stage.find('Transformer').detach();
+                console.log(stage.getChildren());
+                layer.draw();
+                return;
             }
         });
         stage.draw();
@@ -525,7 +536,6 @@ class App extends Component {
     };
     handleWheel = e => {
         e.evt.preventDefault();
-
         const scaleBy = 1.01;
         const stage = e.target.getStage();
         const oldScale = stage.scaleX();
