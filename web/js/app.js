@@ -62,17 +62,17 @@ class App extends Component {
         if (object) {
             switch (object.type) {
                 case "section":
-                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x, object.y, object.nom,transformer);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x, object.y,object.rotation, object.nom,transformer);
                 case "rectangle":
-                    return this.renderTableRect(object.xSeats, object.ySeats,object.x,object.y, object.nom,transformer);
+                    return this.renderTableRect(object.xSeats, object.ySeats,object.x,object.y,object.rotation, object.nom,transformer);
                 case "ronde":
-                    return this.renderTableCircle(object.chaises,object.x,object.y, object.nom,transformer);
+                    return this.renderTableCircle(object.chaises,object.x,object.y,object.rotation, object.nom,transformer);
                 default:
-                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x,object.y, object.nom,transformer);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x,object.y,object.rotation, object.nom,transformer);
             }
         }
     };
-    renderSectionSeat = (row, col, posX, posY, nom, transformer = null) => {
+    renderSectionSeat = (row, col, posX, posY,rotation, nom, transformer = null) => {
         const rows = row,
             cols = col,
             rad = 10,
@@ -92,7 +92,8 @@ class App extends Component {
             y: posY,
             height: parseInt(sizeX),
             width: parseInt(sizeY),
-            draggable: false
+            draggable: false,
+            rotation: rotation
         });
         let text = new Konva.Text({
             text: nom,
@@ -138,13 +139,13 @@ class App extends Component {
             section.draggable(true);
             section.getLayer().draw();
         });
-        /*section.on('dragend',(e)=>{
-            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:row,ySeats:col,type:'section',number_seats:(row*col)};
+        section.on('transformend',(e)=>{
+            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:row,ySeats:col,type:'section',rotation:section.rotation(),number_seats:(row*col)};
             this.updateObject(data);
-        });*/
+        });
         return section;
     };
-    renderTableRect = (x, y,posX, posY, nom, transformer = null) => {
+    renderTableRect = (x, y,posX, posY,rotation, nom, transformer = null) => {
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
@@ -184,7 +185,8 @@ class App extends Component {
             height: parseInt(this.state.topBuff * 2 + textWidth + wholeHeight + this.state.bottomBuff),
             width: contWidth,
             name: nom,
-            draggable: false
+            draggable: false,
+            rotation
         });
         let tableRect = new Konva.Rect({
             x: leftStart + this.state.sideBuff * 1.5,
@@ -331,13 +333,14 @@ class App extends Component {
             table.draggable(true);
             table.getLayer().draw();
         });
-        /*table.on('dragend',(e)=>{
-            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:x,ySeats:y,type:'rectangle',number_seats:(x*y)};
+        table.on('transformend',(e)=>{
+            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:x,ySeats:y,type:'rectangle',rotation: table.rotation(),number_seats:(x*y)};
+            console.log('transformend');
             this.updateObject(data);
-        });*/
+        });
         return table;
     };
-    renderTableCircle = (seats, posX, posY, nom, transformer = null) => {
+    renderTableCircle = (seats, posX, posY,rotation, nom, transformer = null) => {
         const deg = (2 * Math.PI) / seats;
         let tableRad = this.state.rad + this.state.gap;
         if (seats >= 4 && seats < 6)
@@ -373,7 +376,8 @@ class App extends Component {
             visible: true,
             draggable: false,
             fill: "#A9A8B3",
-            name: nom
+            name: nom,
+            rotation: rotation
         });
         let tableCircle = new Konva.Circle({
             radius: tableRad,
@@ -424,10 +428,10 @@ class App extends Component {
             group.draggable(true);
             group.getLayer().draw();
         });
-        /*group.on('dragend',(e)=>{
-            let data ={nom:nom,x:e.target.x(),y:e.target.y(),chaises:seats,type:'ronde',number_seats:seats};
+        group.on('transformend',(e)=>{
+            let data ={nom:nom,x:e.target.x(),y:e.target.y(),chaises:seats,type:'ronde',rotation:group.rotation(),number_seats:seats};
             this.updateObject(data);
-        });*/
+        });
         return group;
     };
     componentDidMount() {
@@ -458,6 +462,7 @@ class App extends Component {
     saveStage = () => {
         if (this.state.saveCanvas) {
             let data = this.state.data_map;
+            console.log(data);
             data = JSON.stringify(data);
             axios.post(
                 '/symfony3.4/web/api/event/update-map/395', {
