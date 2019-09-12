@@ -534,7 +534,10 @@ class App extends Component {
         let stage = new Konva.Stage({
             container: 'stage-container',
             width: window.innerWidth * 3 / 4,
-            height: window.innerHeight
+            height: window.innerHeight,
+            scale: this.state.stageScale,
+            scaleX: this.state.scaleX,
+            scaleY: this.state.scaleY
         });
         let layer = new Konva.Layer();
         let dragLayer = new Konva.Layer();
@@ -551,9 +554,9 @@ class App extends Component {
         });
         layer.add(transformer);
         let padding = 20;
-        for (var i = 0; i < window.innerWidth / padding; i++) {
+        for (var i = 0; i < window.innerWidth*2 / padding; i++) {
             let h_line = new Konva.Line({
-                points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth],
+                points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth*2],
                 stroke: '#ddd',
                 strokeWidth: 1,
             });
@@ -562,9 +565,9 @@ class App extends Component {
 
         let t_line = new Konva.Line({points: [0, 0, 10, 10]});
         layer.add(t_line);
-        for (var j = 0; j < window.innerHeight / padding; j++) {
+        for (var j = 0; j < window.innerHeight*2 / padding; j++) {
             let v_line = new Konva.Line({
-                points: [0, Math.round(j * padding), window.innerWidth, Math.round(j * padding)],
+                points: [0, Math.round(j * padding), window.innerWidth*2, Math.round(j * padding)],
                 stroke: '#ddd',
                 strokeWidth: 0.5,
             });
@@ -578,6 +581,7 @@ class App extends Component {
                 if(focusObj.nom === obj.nom)
                 {
                     transformer.attachTo(newObject);
+                    newObject.draggable(true);
                 }
             }
             layer.add(newObject);
@@ -662,7 +666,6 @@ class App extends Component {
         return (
             <div className="row">
                 <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
-
                 </div>
                 <div className="col-sm-3 sidebar-right">
                     <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
