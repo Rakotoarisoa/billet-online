@@ -9,6 +9,7 @@ class App extends Component {
         super(props);
 
     }
+
     state = {
         stageScale: 1,
         stageX: 0,
@@ -35,17 +36,17 @@ class App extends Component {
         stage: null,
         mainLayer: null
     };
-    updateObject=(object)=> {
+    updateObject = (object) => {
         //find object into data_map state
         let data = this.state.data_map;
-        data.find((el,i)=> {
-            if(el.nom === object.nom){
-                data[i]=object;
+        data.find((el, i) => {
+            if (el.nom === object.nom) {
+                data[i] = object;
                 console.log(data[i]);
-                this.setState({'data_map':data});
+                this.setState({'data_map': data});
             }
         });
-        this.loadStage();
+        this.loadStage(object);
 
     };
     addNewObjectFromSidebar = (object) => {
@@ -56,22 +57,22 @@ class App extends Component {
         this.addNewObject(object);
         this.loadStage();
     };
-    addNewObject = (object,transformer) => {
+    addNewObject = (object, transformer) => {
 
         if (object) {
             switch (object.type) {
                 case "section":
-                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x, object.y,object.rotation, object.nom,transformer);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats, object.x, object.y, object.rotation, object.nom, transformer);
                 case "rectangle":
-                    return this.renderTableRect(object.xSeats, object.ySeats,object.x,object.y,object.rotation, object.nom,transformer);
+                    return this.renderTableRect(object.xSeats, object.ySeats, object.x, object.y, object.rotation, object.nom, transformer);
                 case "ronde":
-                    return this.renderTableCircle(object.chaises,object.x,object.y,object.rotation, object.nom,transformer);
+                    return this.renderTableCircle(object.chaises, object.x, object.y, object.rotation, object.nom, transformer);
                 default:
-                    return this.renderSectionSeat(object.xSeats, object.ySeats,object.x,object.y,object.rotation, object.nom,transformer);
+                    return this.renderSectionSeat(object.xSeats, object.ySeats, object.x, object.y, object.rotation, object.nom, transformer);
             }
         }
     };
-    renderSectionSeat = (row, col, posX, posY,rotation, nom, transformer = null) => {
+    renderSectionSeat = (row, col, posX, posY, rotation, nom, transformer = null) => {
         const rows = row,
             cols = col,
             rad = 10,
@@ -138,13 +139,23 @@ class App extends Component {
             section.draggable(true);
             section.getLayer().draw();
         });
-        section.on('transformend',(e)=>{
-            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:row,ySeats:col,type:'section',rotation:section.rotation(),number_seats:(row*col)};
+        section.on('dragend', (e) => {
+            let data = {
+                nom: nom,
+                x: e.target.x(),
+                y: e.target.y(),
+                xSeats: row,
+                ySeats: col,
+                type: 'section',
+                rotation: section.rotation(),
+                number_seats: (row * col)
+            };
+            console.log('mouseup');
             this.updateObject(data);
         });
         return section;
     };
-    renderTableRect = (x, y,posX, posY,rotation, nom, transformer = null) => {
+    renderTableRect = (x, y, posX, posY, rotation, nom, transformer = null) => {
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
@@ -329,20 +340,38 @@ class App extends Component {
         table.add(text);
         table.on('click tap', (e) => {
             transformer.attachTo(table);
-            this.setState({'selectedItem':
-                                                {nom:nom,x:e.target.x(),y:e.target.y(),xSeats:x,ySeats:y,type:'rectangle',rotation: table.rotation(),number_seats:(x*y)}
-                                });
+            this.setState({
+                'selectedItem':
+                    {
+                        nom: nom,
+                        x: e.target.x(),
+                        y: e.target.y(),
+                        xSeats: x,
+                        ySeats: y,
+                        type: 'rectangle',
+                        rotation: table.rotation(),
+                        number_seats: (x * y)
+                    }
+            });
             table.draggable(true);
             table.getLayer().draw();
         });
-        table.on('transformend',(e)=>{
-            let data ={nom:nom,x:e.target.x(),y:e.target.y(),xSeats:x,ySeats:y,type:'rectangle',rotation: table.rotation(),number_seats:(x*y)};
-            console.log('transformend');
+        table.on('dragend', (e) => {
+            let data = {
+                nom: nom,
+                x: e.target.x(),
+                y: e.target.y(),
+                xSeats: x,
+                ySeats: y,
+                type: 'rectangle',
+                rotation: table.rotation(),
+                number_seats: (x * y)
+            };
             this.updateObject(data);
         });
         return table;
     };
-    renderTableCircle = (seats, posX, posY,rotation, nom, transformer = null) => {
+    renderTableCircle = (seats, posX, posY, rotation, nom, transformer = null) => {
         const deg = (2 * Math.PI) / seats;
         let tableRad = this.state.rad + this.state.gap;
         if (seats >= 4 && seats < 6)
@@ -427,33 +456,56 @@ class App extends Component {
         group.add(text);
         group.on('click tap', (e) => {
             transformer.attachTo(group);
+            this.setState({
+                'selectedItem':
+                    {
+                        nom: nom,
+                        x: e.target.x(),
+                        y: e.target.y(),
+                        chaises: seats,
+                        type: 'ronde',
+                        rotation: group.rotation(),
+                        number_seats: seats
+                    }
+            });
             group.draggable(true);
             group.getLayer().draw();
         });
-        group.on('transformend',(e)=>{
-            let data ={nom:nom,x:e.target.x(),y:e.target.y(),chaises:seats,type:'ronde',rotation:group.rotation(),number_seats:seats};
+        group.on('dragend', (e) => {
+            let data = {
+                nom: nom,
+                x: e.target.x(),
+                y: e.target.y(),
+                chaises: seats,
+                type: 'ronde',
+                rotation: group.rotation(),
+                number_seats: seats
+            };
             this.updateObject(data);
         });
         return group;
     };
+
     componentDidMount() {
         axios.get(
             '/symfony3.4/web/api/event/get-map/395')
-            .then( (response)=> {
-                this.setState({'data_map':response.data});
+            .then((response) => {
+                this.setState({'data_map': response.data});
                 this.loadStage();
             })
             .catch(function (error) {
-                    console.log(error);
+                console.log(error);
             });
     }
+
     componentDidUpdate() {
         if (this.state.stage) {
             let stage = this.state.stage;
             stage.batchDraw();
-            // this.setState({'stage':stage});
+            //this.setState({'stage':stage});
         }
     }
+
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save});
         this.saveStage();
@@ -463,25 +515,25 @@ class App extends Component {
     };
     saveStage = () => {
 
-            let data = this.state.data_map;
-            data = JSON.stringify(data);
-            axios.post(
-                '/symfony3.4/web/api/event/update-map/395', {
-                    data_map: JSON.parse(data)
-                })
-                .then(function (response) {
-                    console.log(response);
-                })
-                .catch(function (error) {
-                        console.log(error);
-                    }
-                );
+        let data = this.state.data_map;
+        data = JSON.stringify(data);
+        axios.post(
+            '/symfony3.4/web/api/event/update-map/395', {
+                data_map: JSON.parse(data)
+            })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                    console.log(error);
+                }
+            );
     };
-    loadStage = () => {
+    loadStage = (focusObj) => {
         let data = this.state.data_map;
         let stage = new Konva.Stage({
             container: 'stage-container',
-            width: window.innerWidth*3/4,
+            width: window.innerWidth * 3 / 4,
             height: window.innerHeight
         });
         let layer = new Konva.Layer();
@@ -493,41 +545,52 @@ class App extends Component {
             rotateAnchorOffset: 5,
             borderStroke: "#007bff",
             resizeEnabled: false,
-            borderDash:[2,2],
+            borderDash: [2, 2],
             borderStrokeWidth: 2,
             rotationSnaps: [0, 45, 90, 180, 270],
         });
         layer.add(transformer);
         let padding = 20;
         for (var i = 0; i < window.innerWidth / padding; i++) {
-            layer.add(new Konva.Line({
+            let h_line = new Konva.Line({
                 points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth],
                 stroke: '#ddd',
                 strokeWidth: 1,
-            }));
-            layer.add(new Konva.Line({points: [0,0,10,10]}));
-            for (var j = 0; j < window.innerHeight / padding; j++) {
-                layer.add(new Konva.Line({
-                    points: [0, Math.round(j * padding), window.innerWidth, Math.round(j * padding)],
-                    stroke: '#ddd',
-                    strokeWidth: 0.5,
-                }));
-            }
+            });
+            layer.add(h_line);
         }
+
+        let t_line = new Konva.Line({points: [0, 0, 10, 10]});
+        layer.add(t_line);
+        for (var j = 0; j < window.innerHeight / padding; j++) {
+            let v_line = new Konva.Line({
+                points: [0, Math.round(j * padding), window.innerWidth, Math.round(j * padding)],
+                stroke: '#ddd',
+                strokeWidth: 0.5,
+            });
+            layer.add(v_line);
+        }
+
         data.forEach((obj) => {
-            let newObject = this.addNewObject(obj,transformer);
+            let newObject = this.addNewObject(obj, transformer);
             newObject.cache();
+            if(focusObj){
+                if(focusObj.nom === obj.nom)
+                {
+                    transformer.attachTo(newObject);
+                }
+            }
             layer.add(newObject);
         });
         stage.on('click tap', (e) => {
             if (e.target === stage) {
                 stage.find('Transformer').detach();
-               let objects=stage.getChildren()[0].getChildren();
-               objects.each((obj)=>{
-                   if(obj.name !== "Transformer")
-                    obj.draggable(false);
-               });
-               this.setState({'selectedItem': null});
+                let objects = stage.getChildren()[0].getChildren();
+                objects.each((obj) => {
+                    if (obj.name !== "Transformer")
+                        obj.draggable(false);
+                });
+                this.setState({'selectedItem': null});
                 layer.draw();
                 return;
             }
@@ -598,11 +661,12 @@ class App extends Component {
     render() {
         return (
             <div className="row">
-                <div id="stage-container" className={"col-sm-9"} style={{paddingLeft:0}}>
+                <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
 
                 </div>
                 <div className="col-sm-3 sidebar-right">
-                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas} dataMap={this.state.data_map} updateObject={this.state.selectedItem}/>
+                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
+                                  dataMap={this.state.data_map} updateObject={this.state.selectedItem}/>
                 </div>
             </div>
         );
