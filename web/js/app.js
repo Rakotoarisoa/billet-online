@@ -501,7 +501,11 @@ class App extends Component {
         stage.on('click tap', (e) => {
             if (e.target === stage) {
                 stage.find('Transformer').detach();
-                console.log(stage.getChildren());
+               let objects=stage.getChildren()[0].getChildren();
+               objects.each((obj)=>{
+                   if(obj.name !== "Transformer")
+                    obj.draggable(false);
+               });
                 layer.draw();
                 return;
             }
