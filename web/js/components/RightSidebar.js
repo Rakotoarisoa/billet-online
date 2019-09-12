@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import CreateRangeForm from "./forms/CreateRangeForm";
 import CreateTableForm from "./forms/CreateTableForm";
 import SaveCanvas from "./forms/SaveCanvas";
+import UpdateTableForm from "./forms/UpdateTableForm";
 
 class RightSidebar extends Component {
     constructor(props) {
@@ -66,16 +67,17 @@ class RightSidebar extends Component {
                             </div>
                         </div>
                     </div>
+                    {this.props.updateObject && <UpdateTableForm updateObject={this.props.updateObject} />}
                     <SaveCanvas saveCanvas={this.saveCanvas}/>
                 </div>
                 <div className={"collapse"} id="sectionCreate">
                     <div className="d-flex p-3 bg-light">
-                        <CreateRangeForm dataMap={this.props.dataMap} newObject={this.handleNewObject}/>
+                        <CreateRangeForm dataMap={this.props.dataMap} newObject={this.handleNewObject} updateObject={this.props.updateObject}/>
                     </div>
                 </div>
                 <div className={"collapse"} id="tableCreate">
                     <div className="d-flex p-3 bg-light">
-                        <CreateTableForm dataMap={this.props.dataMap} newObject={this.handleNewObject}/>
+                        <CreateTableForm dataMap={this.props.dataMap} newObject={this.handleNewObject} updateObject={this.props.updateObject}/>
                     </div>
                 </div>
             </aside>

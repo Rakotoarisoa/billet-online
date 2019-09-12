@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {render} from 'react-dom';
 import Konva from 'konva';
 import axios from 'axios';
-import _ from "lodash";
 import RightSidebar from "./components/RightSidebar";
 
 class App extends Component {
@@ -330,6 +329,9 @@ class App extends Component {
         table.add(text);
         table.on('click tap', (e) => {
             transformer.attachTo(table);
+            this.setState({'selectedItem':
+                                                {nom:nom,x:e.target.x(),y:e.target.y(),xSeats:x,ySeats:y,type:'rectangle',rotation: table.rotation(),number_seats:(x*y)}
+                                });
             table.draggable(true);
             table.getLayer().draw();
         });
@@ -460,9 +462,8 @@ class App extends Component {
         }, 3000);
     };
     saveStage = () => {
-        if (this.state.saveCanvas) {
+
             let data = this.state.data_map;
-            console.log(data);
             data = JSON.stringify(data);
             axios.post(
                 '/symfony3.4/web/api/event/update-map/395', {
@@ -475,13 +476,12 @@ class App extends Component {
                         console.log(error);
                     }
                 );
-        }
     };
     loadStage = () => {
         let data = this.state.data_map;
         let stage = new Konva.Stage({
             container: 'stage-container',
-            width: window.innerWidth,
+            width: window.innerWidth*3/4,
             height: window.innerHeight
         });
         let layer = new Konva.Layer();
@@ -498,6 +498,22 @@ class App extends Component {
             rotationSnaps: [0, 45, 90, 180, 270],
         });
         layer.add(transformer);
+        let padding = 20;
+        for (var i = 0; i < window.innerWidth / padding; i++) {
+            layer.add(new Konva.Line({
+                points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth],
+                stroke: '#ddd',
+                strokeWidth: 1,
+            }));
+            layer.add(new Konva.Line({points: [0,0,10,10]}));
+            for (var j = 0; j < window.innerHeight / padding; j++) {
+                layer.add(new Konva.Line({
+                    points: [0, Math.round(j * padding), window.innerWidth, Math.round(j * padding)],
+                    stroke: '#ddd',
+                    strokeWidth: 0.5,
+                }));
+            }
+        }
         data.forEach((obj) => {
             let newObject = this.addNewObject(obj,transformer);
             newObject.cache();
@@ -511,9 +527,13 @@ class App extends Component {
                    if(obj.name !== "Transformer")
                     obj.draggable(false);
                });
+               this.setState({'selectedItem': null});
                 layer.draw();
                 return;
             }
+        });
+        stage.on('wheel', (e) => {
+            this.handleWheel(e);
         });
         stage.draw();
     };
@@ -564,6 +584,7 @@ class App extends Component {
             stageY:
                 -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
         });
+        stage.batchDraw();
     };
     hoverSeat = e => {
         this.setState({
@@ -572,17 +593,16 @@ class App extends Component {
     };
     handleSelected = e => {
         this.setState({'selectedItem': e});
-        console.log(e.target);
     };
 
     render() {
         return (
             <div className="row">
-                <div id="stage-container" className="col-sm-9">
+                <div id="stage-container" className={"col-sm-9"} style={{paddingLeft:0}}>
 
                 </div>
                 <div className="col-sm-3 sidebar-right">
-                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas} dataMap={this.state.data_map}/>
+                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas} dataMap={this.state.data_map} updateObject={this.state.selectedItem}/>
                 </div>
             </div>
         );

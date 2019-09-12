@@ -1,4 +1,5 @@
 import React, {Component} from "react";
+import Button from "@material-ui/core/Button";
 
 class SaveCanvas extends Component {
     constructor(props) {
@@ -24,7 +25,13 @@ class SaveCanvas extends Component {
             <div className={"p-2 bg-light"}>
                 <div className={"d-flex d-flex-row"}>
                     <div className="p-2 bg-light">
-                        <button className={'btn btn-primary'} onClick={this.saveCanvas} >Sauvegarder</button>
+                        <Button variant="contained"
+                                color="primary"
+                                className={"btn btn-primary"}
+                                type={"submit"}
+                                onClick={this.saveCanvas}>
+                            Sauvegarder
+                        </Button>
                     </div>
                 </div>
             </div>
