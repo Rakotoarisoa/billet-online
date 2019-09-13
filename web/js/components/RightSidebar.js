@@ -3,6 +3,7 @@ import CreateRangeForm from "./forms/CreateRangeForm";
 import CreateTableForm from "./forms/CreateTableForm";
 import SaveCanvas from "./forms/SaveCanvas";
 import UpdateTableForm from "./forms/UpdateTableForm";
+import { ToastContainer } from "react-toastr";
 
 class RightSidebar extends Component {
     constructor(props) {
@@ -42,6 +43,7 @@ class RightSidebar extends Component {
     }
 
     render() {
+        let container;
         return (
             <aside>
                 <div className={''}>

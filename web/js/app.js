@@ -3,7 +3,8 @@ import {render} from 'react-dom';
 import Konva from 'konva';
 import axios from 'axios';
 import RightSidebar from "./components/RightSidebar";
-
+import {ToastContainer} from "react-toastr";
+let container;
 class App extends Component {
     constructor(props) {
         super(props);
@@ -136,6 +137,19 @@ class App extends Component {
         section.cache();
         section.on('click tap', (e) => {
             transformer.attachTo(section);
+            this.setState({
+                'selectedItem':
+                    {
+                        nom: nom,
+                        x: e.target.x(),
+                        y: e.target.y(),
+                        xSeats: row,
+                        ySeats: col,
+                        type: 'section',
+                        rotation: section.rotation(),
+                        number_seats: row*col
+                    }
+            });
             section.draggable(true);
             section.getLayer().draw();
         });
@@ -150,7 +164,6 @@ class App extends Component {
                 rotation: section.rotation(),
                 number_seats: (row * col)
             };
-            console.log('mouseup');
             this.updateObject(data);
         });
         return section;
@@ -509,6 +522,8 @@ class App extends Component {
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save});
         this.saveStage();
+
+        container.success("Carte enregistré aves succès",'Succès',{ closeButton: true});
         setTimeout(() => {
             this.setState({'saveCanvas': !save})
         }, 3000);
@@ -668,9 +683,12 @@ class App extends Component {
                 <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
                 <div className="col-sm-3 sidebar-right">
+                    <ToastContainer ref={ref => container = ref} className="toast-top-right"/>
                     <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
                                   dataMap={this.state.data_map} updateObject={this.state.selectedItem}/>
                 </div>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>
             </div>
         );
     }

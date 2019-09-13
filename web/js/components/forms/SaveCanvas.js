@@ -30,7 +30,7 @@ class SaveCanvas extends Component {
                                 className={"btn btn-primary"}
                                 type={"submit"}
                                 onClick={this.saveCanvas}>
-                            Sauvegarder
+                            Sauvegarder la carte
                         </Button>
                     </div>
                 </div>
