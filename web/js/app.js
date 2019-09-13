@@ -365,9 +365,11 @@ class App extends Component {
                         rotation: table.rotation(),
                         number_seats: (x * y)
                     }
+            }, ()=>{
+                table.draggable(true);
+                table.getLayer().draw();
             });
-            table.draggable(true);
-            table.getLayer().draw();
+
         });
         table.on('dragend', (e) => {
             let data = {
@@ -480,9 +482,11 @@ class App extends Component {
                         rotation: group.rotation(),
                         number_seats: seats
                     }
+            },()=>{
+                group.draggable(true);
+                group.getLayer().draw();
             });
-            group.draggable(true);
-            group.getLayer().draw();
+
         });
         group.on('dragend', (e) => {
             let data = {
@@ -502,8 +506,9 @@ class App extends Component {
         axios.get(
             '/symfony3.4/web/api/event/get-map/395')
             .then((response) => {
-                this.setState({'data_map': response.data});
-                this.loadStage();
+                this.setState({'data_map': response.data},()=>{
+                    this.loadStage();
+                });
             })
             .catch(function (error) {
                 console.log(error);
@@ -517,9 +522,10 @@ class App extends Component {
         }
     }
     saveCanvas = (save) => {
-        this.setState({'saveCanvas': save});
-        this.saveStage();
-        container.success("Carte enregistré aves succès",'Succès',{ closeButton: true});
+        this.setState({'saveCanvas': save},()=>{
+            this.saveStage();
+            container.success("Carte enregistré aves succès",'Succès',{ closeButton: true});
+        });
         setTimeout(() => {
             this.setState({'saveCanvas': !save})
         }, 3000);
@@ -556,7 +562,6 @@ class App extends Component {
     };
     loadStage = (focusObj) => {
         let data = this.state.data_map;
-        console.log(this.state.data_map);
         let stage = new Konva.Stage({
             container: 'stage-container',
             width: window.innerWidth * 3 / 4,
@@ -604,8 +609,7 @@ class App extends Component {
             let newObject = this.addNewObject(obj, transformer);
             newObject.cache();
             if(focusObj){
-                if(focusObj.nom === obj.nom)
-                {
+                if(focusObj.nom === obj.nom) {
                     transformer.attachTo(newObject);
                     newObject.draggable(true);
                 }
