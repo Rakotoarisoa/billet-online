@@ -30,6 +30,9 @@ class RightSidebar extends Component {
     componentDidMount() {
 
     }
+    deleteObject =(object) =>{
+        this.props.deleteObject(object);
+    };
 
     componentDidUpdate(prevProps) {
         if(prevProps.dataMap !== this.props.dataMap)
@@ -69,7 +72,7 @@ class RightSidebar extends Component {
                             </div>
                         </div>
                     </div>
-                    {this.props.updateObject && <UpdateTableForm updateObject={this.props.updateObject} />}
+                    {this.props.updateObject && <UpdateTableForm deleteObject={this.deleteObject} updateObject={this.props.updateObject} dataMap={this.props.dataMap}/>}
                     <SaveCanvas saveCanvas={this.saveCanvas}/>
                 </div>
                 <div className={"collapse"} id="sectionCreate">

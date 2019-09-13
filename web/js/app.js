@@ -498,7 +498,6 @@ class App extends Component {
         });
         return group;
     };
-
     componentDidMount() {
         axios.get(
             '/symfony3.4/web/api/event/get-map/395')
@@ -510,7 +509,6 @@ class App extends Component {
                 console.log(error);
             });
     }
-
     componentDidUpdate() {
         if (this.state.stage) {
             let stage = this.state.stage;
@@ -518,15 +516,27 @@ class App extends Component {
             //this.setState({'stage':stage});
         }
     }
-
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save});
         this.saveStage();
-
         container.success("Carte enregistré aves succès",'Succès',{ closeButton: true});
         setTimeout(() => {
             this.setState({'saveCanvas': !save})
         }, 3000);
+    };
+    deleteObject =(object) => {
+            let data = this.state.data_map;
+            data.forEach((el,i)=>{
+                if(el.nom === object.nom){
+                    data=data.filter(function(ele){
+                        return ele.nom !== object.nom;
+                    });
+                }
+            });
+            console.log(data);
+            this.setState({data_map: data,selectedItem:null},()=>{
+                this.loadStage();
+            });
     };
     saveStage = () => {
 
@@ -546,6 +556,7 @@ class App extends Component {
     };
     loadStage = (focusObj) => {
         let data = this.state.data_map;
+        console.log(this.state.data_map);
         let stage = new Konva.Stage({
             container: 'stage-container',
             width: window.innerWidth * 3 / 4,
@@ -676,7 +687,6 @@ class App extends Component {
     handleSelected = e => {
         this.setState({'selectedItem': e});
     };
-
     render() {
         return (
             <div className="row">
@@ -685,7 +695,7 @@ class App extends Component {
                 <div className="col-sm-3 sidebar-right">
                     <ToastContainer ref={ref => container = ref} className="toast-top-right"/>
                     <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
-                                  dataMap={this.state.data_map} updateObject={this.state.selectedItem}/>
+                                  dataMap={this.state.data_map} updateObject={this.state.selectedItem} deleteObject={this.deleteObject}/>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>

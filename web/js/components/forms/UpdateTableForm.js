@@ -38,16 +38,21 @@ class UpdateTableForm extends Component {
         });
 
     }
-    deleteObject(){}
+    deleteObject= ()=>{
+        return this.props.deleteObject(this.props.updateObject);
+    };
     componentDidMount() {
         ValidatorForm.addValidationRule('alreadyExist1', (value) => {
             let data = this.props.dataMap;
             let object_names = [];
             data.forEach((el) => {
-                object_names.push(el.nom);
+                let data= this.props.updateObject;
+                if(value !== data.nom){
+                    object_names.push(el.nom);}
             });
-            if (object_names.includes(value))
+            if (object_names.includes(value)){
                 return false;
+            }
             return true;
         });
     }
@@ -123,9 +128,8 @@ class UpdateTableForm extends Component {
                             </div>
                             <div className="p-2 bg-light">
                                 <Button variant="contained"
-                                        color="danger"
+                                        color="secondary"
                                         className={"btn btn-danger pull-right"}
-                                        type={"submit"}
                                     onClick={this.deleteObject}>
                                     Supprimer
                                 </Button>
