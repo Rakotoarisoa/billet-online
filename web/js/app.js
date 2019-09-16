@@ -11,8 +11,10 @@ class App extends Component {
     }
     state = {
         stageScale: 1,
-        stageX: 0,
-        stageY: 0,
+        stageX: 1,
+        stageY: 1,
+        scaleX: 1,
+        scaleY: 1,
         selectedItem: null,
         newItem: '',
         isAddingItem: false,
@@ -33,7 +35,8 @@ class App extends Component {
         data_map: [],
         saveCanvas: false,
         stage: null,
-        mainLayer: null
+        tempLayer: null,
+        focusObject: null,
     };
     updateObject = (object) => {
         //find object into data_map state
@@ -521,7 +524,6 @@ class App extends Component {
         if (this.state.stage) {
             let stage = this.state.stage;
             stage.batchDraw();
-            //this.setState({'stage':stage});
         }
     }
     saveCanvas = (save) => {
@@ -536,9 +538,9 @@ class App extends Component {
     deleteObject =(object) => {
             let data = this.state.data_map;
             data.forEach((el,i)=>{
-                if(el.nom === object.nom){
+                if(el.id === object.id){
                     data=data.filter(function(ele){
-                        return ele.nom !== object.nom;
+                        return ele.id !== object.id;
                     });
                 }
             });
@@ -571,9 +573,9 @@ class App extends Component {
 
         });
         let layer = new Konva.Layer();
-        let dragLayer = new Konva.Layer();
+        let focusLayer = new Konva.Layer();
         stage.add(layer);
-        stage.add(dragLayer);
+        stage.add(focusLayer);
         let transformer = new Konva.Transformer({
             name: 'Transformer',
             rotateAnchorOffset: 5,
@@ -606,11 +608,9 @@ class App extends Component {
         data.forEach((obj) => {
             let newObject = this.addNewObject(obj, transformer);
             newObject.cache();
-            if(focusObj){
-                if(focusObj.nom === obj.nom) {
+            if(focusObj && focusObj.id === obj.id){
                     transformer.attachTo(newObject);
                     newObject.draggable(true);
-                }
             }
             layer.add(newObject);
         });
@@ -658,7 +658,7 @@ class App extends Component {
             shadowOffsetY: 5
         });
     };
-    handleWheel = e => {
+    handleWheel  = e => {
         e.evt.preventDefault();
         const scaleBy = 1.01;
         const stage = e.target.getStage();
@@ -677,7 +677,9 @@ class App extends Component {
             stageX:
                 -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
             stageY:
-                -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
+                -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
+            scaleX: newScale,
+            scaleY: newScale
         },()=>{
             stage.batchDraw();
         });
@@ -693,7 +695,7 @@ class App extends Component {
     };
     getUpdatedObject =(obj) =>{
         if(this.state.selectedItem) {
-           this.updateObject(obj);
+            this.setState({'focusObject': obj});
         }
     };
     render() {

@@ -39,20 +39,24 @@ class UpdateTableForm extends Component {
         });
 
     }
-    deleteObject= ()=>{
+    handleUpdateObject=()=>{
+        this.props.updatedObject(this.props.updateObject);
+    };
+    deleteObject = () => {
         return this.props.deleteObject(this.props.updateObject);
     };
     componentDidMount() {
-        this.setState({'updateObject':this.props.updateObject});
+        this.setState({'updateObject': this.props.updateObject});
         ValidatorForm.addValidationRule('alreadyExist1', (value) => {
             let data = this.props.dataMap;
             let object_names = [];
             data.forEach((el) => {
-                let data= this.props.updateObject;
-                if(value !== data.nom){
-                    object_names.push(el.nom);}
+                let data = this.props.updateObject;
+                if (value !== data.nom) {
+                    object_names.push(el.nom);
+                }
             });
-            if(object_names.includes(value)){
+            if (object_names.includes(value)) {
                 return false;
             }
             return true;
@@ -85,6 +89,7 @@ class UpdateTableForm extends Component {
         });
         event.preventDefault();
     }
+
     render() {
         const tableType = [
             {
@@ -95,7 +100,7 @@ class UpdateTableForm extends Component {
                 value: RONDE,
                 label: 'Ronde',
             }
-        ],object= this.props.updateObject;
+        ], object = this.props.updateObject;
         return (
             <ValidatorForm
                 ref="form"
@@ -103,17 +108,20 @@ class UpdateTableForm extends Component {
                 noValidate autoComplete="off"
             >
                 <div className="p-2 bg-light">
-                    <p>Nom : {object.nom}</p>
-
-                    <p>Type : {object.type}</p>
-                    <p>Nombre de places : {object.number_seats}</p>
+                    <div className={"d-flex d-flex-row"}>
+                        <div className="p-2 bg-light">
+                            <p>Nom : {object.nom}</p>
+                            <p>Type : {object.type}</p>
+                            <p>Nombre de places : {object.number_seats}</p>
+                        </div>
+                    </div>
                     <div className={"p-2 bg-light"}>
                         <div className={"d-flex d-flex-row"}>
                             <div className="p-2 bg-light">
                                 <Button variant="contained"
                                         color="primary"
                                         className={"btn btn-primary"}
-                                        type={"submit"}>
+                                        onClick={this.handleUpdateObject}>
                                     Modifier
                                 </Button>
                             </div>
@@ -121,7 +129,7 @@ class UpdateTableForm extends Component {
                                 <Button variant="contained"
                                         color="secondary"
                                         className={"btn btn-danger pull-right"}
-                                    onClick={this.deleteObject}>
+                                        onClick={this.deleteObject}>
                                     Supprimer
                                 </Button>
                             </div>
