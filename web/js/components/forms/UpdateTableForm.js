@@ -18,7 +18,8 @@ class UpdateTableForm extends Component {
             cols: 5,
             chaises: 5,
             table_type: RECTANGLE,
-            submitted: false
+            submitted: false,
+            updateObject: null
         };
         this.handleChangeRangeForm = this.handleChangeRangeForm.bind(this);
         this.handleSubmitRangeForm = this.handleSubmitRangeForm.bind(this);
@@ -42,6 +43,7 @@ class UpdateTableForm extends Component {
         return this.props.deleteObject(this.props.updateObject);
     };
     componentDidMount() {
+        this.setState({'updateObject':this.props.updateObject});
         ValidatorForm.addValidationRule('alreadyExist1', (value) => {
             let data = this.props.dataMap;
             let object_names = [];
@@ -50,7 +52,7 @@ class UpdateTableForm extends Component {
                 if(value !== data.nom){
                     object_names.push(el.nom);}
             });
-            if (object_names.includes(value)){
+            if(object_names.includes(value)){
                 return false;
             }
             return true;
@@ -79,12 +81,10 @@ class UpdateTableForm extends Component {
                     y: 200
                 });
             }
-
             setTimeout(() => this.setState({submitted: false}), 1000);
         });
         event.preventDefault();
     }
-
     render() {
         const tableType = [
             {
@@ -95,9 +95,7 @@ class UpdateTableForm extends Component {
                 value: RONDE,
                 label: 'Ronde',
             }
-        ];
-        const object = this.props.updateObject;
-
+        ],object= this.props.updateObject;
         return (
             <ValidatorForm
                 ref="form"
@@ -105,17 +103,10 @@ class UpdateTableForm extends Component {
                 noValidate autoComplete="off"
             >
                 <div className="p-2 bg-light">
-                    <TextValidator
-                        validators={["required", "alreadyExist1"]}
-                        errorMessages={['Ce champ est requis', "Ce nom d\'objet existe déjà sur le plan"]}
-                        id="nom"
-                        label="Nom"
-                        className={"form-control secondary"}
-                        value={object.nom}
-                        onChange={this.handleChangeRangeForm}
-                        margin="normal"
-                        name={"nom"}
-                    />
+                    <p>Nom : {object.nom}</p>
+
+                    <p>Type : {object.type}</p>
+                    <p>Nombre de places : {object.number_seats}</p>
                     <div className={"p-2 bg-light"}>
                         <div className={"d-flex d-flex-row"}>
                             <div className="p-2 bg-light">

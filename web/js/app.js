@@ -8,9 +8,7 @@ let container;
 class App extends Component {
     constructor(props) {
         super(props);
-
     }
-
     state = {
         stageScale: 1,
         stageX: 0,
@@ -43,12 +41,10 @@ class App extends Component {
         data.find((el, i) => {
             if (el.nom === object.nom) {
                 data[i] = object;
-                console.log(data[i]);
-                this.setState({'data_map': data});
+                this.setState({'data_map': data},()=>{
+                    this.loadStage(object);});
             }
         });
-        this.loadStage(object);
-
     };
     addNewObjectFromSidebar = (object) => {
 
@@ -59,7 +55,6 @@ class App extends Component {
         this.loadStage();
     };
     addNewObject = (object, transformer) => {
-
         if (object) {
             switch (object.type) {
                 case "section":
@@ -539,13 +534,12 @@ class App extends Component {
                     });
                 }
             });
-            console.log(data);
             this.setState({data_map: data,selectedItem:null},()=>{
+
                 this.loadStage();
             });
     };
     saveStage = () => {
-
         let data = this.state.data_map;
         data = JSON.stringify(data);
         axios.post(
@@ -566,9 +560,8 @@ class App extends Component {
             container: 'stage-container',
             width: window.innerWidth * 3 / 4,
             height: window.innerHeight,
-            scale: this.state.stageScale,
-            scaleX: this.state.scaleX,
-            scaleY: this.state.scaleY
+            scale: {x:this.state.scaleX,y:this.state.scaleY}
+
         });
         let layer = new Konva.Layer();
         let dragLayer = new Konva.Layer();
@@ -593,7 +586,6 @@ class App extends Component {
             });
             layer.add(h_line);
         }
-
         let t_line = new Konva.Line({points: [0, 0, 10, 10]});
         layer.add(t_line);
         for (var j = 0; j < window.innerHeight*2 / padding; j++) {
@@ -604,7 +596,6 @@ class App extends Component {
             });
             layer.add(v_line);
         }
-
         data.forEach((obj) => {
             let newObject = this.addNewObject(obj, transformer);
             newObject.cache();
@@ -675,13 +666,15 @@ class App extends Component {
         stage.scale({x: newScale, y: newScale});
 
         this.setState({
-            stageScale: newScale,
+            stageScale: {x:-(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,y:-(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale},
             stageX:
                 -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
             stageY:
                 -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
+        },()=>{
+            stage.batchDraw();
         });
-        stage.batchDraw();
+
     };
     hoverSeat = e => {
         this.setState({
@@ -691,6 +684,11 @@ class App extends Component {
     handleSelected = e => {
         this.setState({'selectedItem': e});
     };
+    getUpdatedObject =(obj) =>{
+        if(this.state.selectedItem) {
+           this.updateObject(obj);
+        }
+    };
     render() {
         return (
             <div className="row">
@@ -698,7 +696,7 @@ class App extends Component {
                 </div>
                 <div className="col-sm-3 sidebar-right">
                     <ToastContainer ref={ref => container = ref} className="toast-top-right"/>
-                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
+                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas} updatedObject={this.getUpdatedObject}
                                   dataMap={this.state.data_map} updateObject={this.state.selectedItem} deleteObject={this.deleteObject}/>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
