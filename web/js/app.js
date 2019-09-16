@@ -147,10 +147,13 @@ class App extends Component {
                         type: 'section',
                         rotation: section.rotation(),
                         number_seats: object.xSeats*object.ySeats
-                    }
+                    },
+                'focusObject': null
+            },()=>{
+                section.draggable(true);
+                section.getLayer().draw();
             });
-            section.draggable(true);
-            section.getLayer().draw();
+
         });
         section.on('dragend', (e) => {
             let data = {
@@ -366,7 +369,8 @@ class App extends Component {
                         type: 'rectangle',
                         rotation: table.rotation(),
                         number_seats: (object.xSeats * object.ySeats)
-                    }
+                    },
+                'focusObject': null
             }, ()=>{
                 table.draggable(true);
                 table.getLayer().draw();
@@ -486,7 +490,8 @@ class App extends Component {
                         type: 'ronde',
                         rotation: group.rotation(),
                         number_seats: seats
-                    }
+                    },
+                'focusObject': null
             },()=>{
                 group.draggable(true);
                 group.getLayer().draw();
@@ -544,9 +549,16 @@ class App extends Component {
                     });
                 }
             });
+            data=this.reorderDataMap(data);
             this.setState({data_map: data,selectedItem:null},()=>{
                 this.loadStage();
             });
+    };
+    reorderDataMap= (dataMap) =>{
+        dataMap.forEach((element,i)=>{
+            element.id=i;
+        });
+        return dataMap;
     };
     saveStage = () => {
         let data = this.state.data_map;
@@ -570,7 +582,6 @@ class App extends Component {
             width: window.innerWidth * 3 / 4,
             height: window.innerHeight,
             scale: {x:this.state.scaleX,y:this.state.scaleY}
-
         });
         let layer = new Konva.Layer();
         let focusLayer = new Konva.Layer();
@@ -587,7 +598,7 @@ class App extends Component {
         });
         layer.add(transformer);
         let padding = 20;
-        for (var i = 0; i < window.innerWidth*2 / padding; i++) {
+        for (let i = 0; i < window.innerWidth*2 / padding; i++) {
             let h_line = new Konva.Line({
                 points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth*2],
                 stroke: '#ddd',
@@ -597,7 +608,7 @@ class App extends Component {
         }
         let t_line = new Konva.Line({points: [0, 0, 10, 10]});
         layer.add(t_line);
-        for (var j = 0; j < window.innerHeight*2 / padding; j++) {
+        for (let j = 0; j < window.innerHeight*2 / padding; j++) {
             let v_line = new Konva.Line({
                 points: [0, Math.round(j * padding), window.innerWidth*2, Math.round(j * padding)],
                 stroke: '#ddd',
@@ -617,6 +628,7 @@ class App extends Component {
         stage.on('click tap', (e) => {
             if (e.target === stage) {
                 stage.find('Transformer').detach();
+                this.setState({'focusObject':null});
                 let objects = stage.getChildren()[0].getChildren();
                 objects.each((obj) => {
                     if (obj.name !== "Transformer")
@@ -627,9 +639,7 @@ class App extends Component {
                 return;
             }
         });
-        stage.on('wheel', (e) => {
-            this.handleWheel(e);
-        });
+        stage.on('wheel', (e) => {this.handleWheel(e);});
         stage.draw();
     };
     handleLayerChange = () => {
@@ -667,11 +677,8 @@ class App extends Component {
             x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
             y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
         };
-
         const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-
         stage.scale({x: newScale, y: newScale});
-
         this.setState({
             stageScale: {x:-(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,y:-(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale},
             stageX:
@@ -683,7 +690,6 @@ class App extends Component {
         },()=>{
             stage.batchDraw();
         });
-
     };
     hoverSeat = e => {
         this.setState({
