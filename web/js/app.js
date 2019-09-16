@@ -39,7 +39,7 @@ class App extends Component {
         //find object into data_map state
         let data = this.state.data_map;
         data.find((el, i) => {
-            if (el.nom === object.nom) {
+            if (el.id === object.id) {
                 data[i] = object;
                 this.setState({'data_map': data},()=>{
                     this.loadStage(object);});
@@ -47,8 +47,8 @@ class App extends Component {
         });
     };
     addNewObjectFromSidebar = (object) => {
-
         let data_map = this.state.data_map;
+        object.id= data_map.length;
         data_map.push(object);
         this.setState({'data_map': data_map});
         this.addNewObject(object);
@@ -58,19 +58,19 @@ class App extends Component {
         if (object) {
             switch (object.type) {
                 case "section":
-                    return this.renderSectionSeat(object.xSeats, object.ySeats, object.x, object.y, object.rotation, object.nom, transformer);
+                    return this.renderSectionSeat(object, transformer);
                 case "rectangle":
-                    return this.renderTableRect(object.xSeats, object.ySeats, object.x, object.y, object.rotation, object.nom, transformer);
+                    return this.renderTableRect(object, transformer);
                 case "ronde":
-                    return this.renderTableCircle(object.chaises, object.x, object.y, object.rotation, object.nom, transformer);
+                    return this.renderTableCircle(object, transformer);
                 default:
-                    return this.renderSectionSeat(object.xSeats, object.ySeats, object.x, object.y, object.rotation, object.nom, transformer);
+                    return this.renderSectionSeat(object, transformer);
             }
         }
     };
-    renderSectionSeat = (row, col, posX, posY, rotation, nom, transformer = null) => {
-        const rows = row,
-            cols = col,
+    renderSectionSeat = (object,transformer = null) => {
+        const rows = object.xSeats,
+            cols = object.ySeats,
             rad = 10,
             dia = rad * 2,
             gap = 5,
@@ -84,15 +84,15 @@ class App extends Component {
             alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
         let section = new Konva.Group({
             name: this.state.nom,
-            x: posX,
-            y: posY,
+            x: object.x,
+            y: object.y,
             height: parseInt(sizeX),
             width: parseInt(sizeY),
             draggable: false,
-            rotation: rotation
+            rotation: object.rotation
         });
         let text = new Konva.Text({
-            text: nom,
+            text: object.nom,
             x: this.state.posX + 10,
             y: 0,
             width: textWidth,
@@ -135,14 +135,15 @@ class App extends Component {
             this.setState({
                 'selectedItem':
                     {
-                        nom: nom,
+                        id: object.id,
+                        nom: object.nom,
                         x: e.target.x(),
                         y: e.target.y(),
-                        xSeats: row,
-                        ySeats: col,
+                        xSeats: object.xSeats,
+                        ySeats: object.ySeats,
                         type: 'section',
                         rotation: section.rotation(),
-                        number_seats: row*col
+                        number_seats: object.xSeats*object.ySeats
                     }
             });
             section.draggable(true);
@@ -150,20 +151,22 @@ class App extends Component {
         });
         section.on('dragend', (e) => {
             let data = {
-                nom: nom,
+                id: object.id,
+                nom: object.nom,
                 x: e.target.x(),
                 y: e.target.y(),
-                xSeats: row,
-                ySeats: col,
+                xSeats: object.xSeats,
+                ySeats: object.ySeats,
                 type: 'section',
                 rotation: section.rotation(),
-                number_seats: (row * col)
+                number_seats: (object.xSeats * object.ySeats)
             };
             this.updateObject(data);
         });
         return section;
     };
-    renderTableRect = (x, y, posX, posY, rotation, nom, transformer = null) => {
+    renderTableRect = (object, transformer = null) => {
+        let x = object.xSeats,y= object.ySeats;
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
@@ -198,13 +201,13 @@ class App extends Component {
         let leftPos = tablePosX - tableWidth / 2;
         let rightPos = tablePosX + tableWidth / 2 + this.state.gap + this.state.rad + this.state.sideBuff;
         let table = new Konva.Group({
-            x: posX,
-            y: posY,
+            x: object.x,
+            y: object.y,
             height: parseInt(this.state.topBuff * 2 + textWidth + wholeHeight + this.state.bottomBuff),
             width: contWidth,
-            name: nom,
+            name: object.nom,
             draggable: false,
-            rotation
+            rotation: object.rotation
         });
         let tableRect = new Konva.Rect({
             x: leftStart + this.state.sideBuff * 1.5,
@@ -217,7 +220,7 @@ class App extends Component {
             height: tableHeight
         });
         let text = new Konva.Text({
-            text: nom,
+            text: object.nom,
             fontStyle: "arial",
             x: textWidth / 2,
             y: parseInt(wholeHeight / 2 + (this.state.posY + this.state.topBuff)),
@@ -227,7 +230,7 @@ class App extends Component {
         //render top and left seats
         for (let i = 0; i < x; i++) {
             let top_group = new Konva.Group({
-                name: nom + "-" + 1,
+                name: object.nom + "-" + 1,
                 id: numero_chaise++
             });
             let top_circle = new Konva.Circle({
@@ -351,14 +354,15 @@ class App extends Component {
             this.setState({
                 'selectedItem':
                     {
-                        nom: nom,
+                        id: object.id,
+                        nom: object.nom,
                         x: e.target.x(),
                         y: e.target.y(),
-                        xSeats: x,
-                        ySeats: y,
+                        xSeats: object.xSeats,
+                        ySeats: object.ySeats,
                         type: 'rectangle',
                         rotation: table.rotation(),
-                        number_seats: (x * y)
+                        number_seats: (object.xSeats * object.ySeats)
                     }
             }, ()=>{
                 table.draggable(true);
@@ -368,20 +372,22 @@ class App extends Component {
         });
         table.on('dragend', (e) => {
             let data = {
-                nom: nom,
+                id: object.id,
+                nom: object.nom,
                 x: e.target.x(),
                 y: e.target.y(),
-                xSeats: x,
-                ySeats: y,
+                xSeats: object.xSeats,
+                ySeats: object.ySeats,
                 type: 'rectangle',
                 rotation: table.rotation(),
-                number_seats: (x * y)
+                number_seats: (object.xSeats * object.ySeats)
             };
             this.updateObject(data);
         });
         return table;
     };
-    renderTableCircle = (seats, posX, posY, rotation, nom, transformer = null) => {
+    renderTableCircle = (object, transformer = null) => {
+        const seats = object.chaises;
         const deg = (2 * Math.PI) / seats;
         let tableRad = this.state.rad + this.state.gap;
         if (seats >= 4 && seats < 6)
@@ -410,15 +416,15 @@ class App extends Component {
         let tableLeft = this.state.posX + contWidth / 2,
             tableTop = (textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap;
         let group = new Konva.Group({
-            x: posX,
-            y: posY,
+            x: object.x,
+            y: object.y,
             height: this.state.topBuff * 2 + textWidth + this.state.bottomBuff,
             width: contWidth,
             visible: true,
             draggable: false,
             fill: "#A9A8B3",
-            name: nom,
-            rotation: rotation
+            name: object.nom,
+            rotation: object.rotation
         });
         let tableCircle = new Konva.Circle({
             radius: tableRad,
@@ -429,7 +435,7 @@ class App extends Component {
             strokeWidth: 2
         });
         let text = new Konva.Text({
-            text: nom,
+            text: object.nom,
             fontStyle: "arial",
             x: this.state.posX + contWidth / 2 - 12,
             y: (tableRad + textWidth + this.state.topBuff) + this.state.dia + this.state.gap,
@@ -469,7 +475,8 @@ class App extends Component {
             this.setState({
                 'selectedItem':
                     {
-                        nom: nom,
+                        id: object.id,
+                        nom: object.nom,
                         x: e.target.x(),
                         y: e.target.y(),
                         chaises: seats,
@@ -485,7 +492,8 @@ class App extends Component {
         });
         group.on('dragend', (e) => {
             let data = {
-                nom: nom,
+                id: object.id,
+                nom: object.nom,
                 x: e.target.x(),
                 y: e.target.y(),
                 chaises: seats,
@@ -535,7 +543,6 @@ class App extends Component {
                 }
             });
             this.setState({data_map: data,selectedItem:null},()=>{
-
                 this.loadStage();
             });
     };
