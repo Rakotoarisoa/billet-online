@@ -103,6 +103,19 @@ class App extends Component {
         });
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
+                let deleted = object.deleted_seats;
+                let skip=false;
+                if(deleted){
+                    deleted.forEach((del)=>{
+                        if(del === (alphabet[i].toUpperCase())+ (j + 1)){
+                            skip=true;
+                        }
+                    });
+                }
+                if(skip){
+                    skip= !skip;
+                    continue;
+                }
                 let newGroup = new Konva.Group({
                     name: alphabet[i].toUpperCase() + (j + 1)
                 });
@@ -167,12 +180,15 @@ class App extends Component {
                 rotation: section.rotation(),
                 number_seats: (object.xSeats * object.ySeats)
             };
+            if(object.deleted_seats){
+                data.deleted_seats= object.deleted_seats;
+            }
             this.updateObject(data);
         });
         return section;
     };
     renderTableRect = (object, transformer = null) => {
-        let x = object.xSeats,y= object.ySeats;
+        let x = object.xSeats,y= object.ySeats,deleted= object.deleted_seats;
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
@@ -235,6 +251,10 @@ class App extends Component {
         });
         //render top and left seats
         for (let i = 0; i < x; i++) {
+            if(deleted && deleted.includes(i+1)){
+              numero_chaise++;
+              continue;
+            }
             let top_group = new Konva.Group({
                 name: object.nom + "-" + 1,
                 id: numero_chaise++
@@ -264,6 +284,10 @@ class App extends Component {
             table.add(top_group);
         }
         for (let i = 0; i < y; i++) {
+            if(deleted && deleted.includes(numero_chaise+1)){
+                numero_chaise++;
+                continue;
+            }
             let right_group = new Konva.Group({
                 name: nom + "-" + 1,
                 id: numero_chaise++
@@ -295,6 +319,10 @@ class App extends Component {
             table.add(right_group);
         }
         for (let j = x; j > 0; j--) {
+            if(deleted && deleted.includes(numero_chaise+1)){
+                numero_chaise++;
+                continue;
+            }
             let bottom_group = new Konva.Group({
                 name: nom + "-" + 1,
                 id: numero_chaise++
@@ -324,6 +352,10 @@ class App extends Component {
             table.add(bottom_group);
         }
         for (let j = y; j > 0; j--) {
+            if(deleted && deleted.includes(numero_chaise+1)){
+                numero_chaise++;
+                continue;
+            }
             let left_group = new Konva.Group({
                 name: nom + "-" + 1,
 
@@ -389,6 +421,9 @@ class App extends Component {
                 rotation: table.rotation(),
                 number_seats: (object.xSeats * object.ySeats)
             };
+            if(object.deleted_seats){
+                data.deleted_seats= object.deleted_seats;
+            }
             this.updateObject(data);
         });
         return table;
@@ -447,9 +482,14 @@ class App extends Component {
             x: this.state.posX + contWidth / 2 - 12,
             y: (tableRad + textWidth + this.state.topBuff) + this.state.dia + this.state.gap,
             width: textWidth,
-            height: textHeight
+            height: textHeight,
+            rotation: 0
         });
         for (let i = 0; i < seats; i++) {
+            let deleted= object.deleted_seats;
+            if(deleted && deleted.includes(i+1)) {
+                continue;
+            }
             let c_group = new Konva.Group({});
             let circle = new Konva.Circle({
                 x: Math.cos(deg * i) * (tableRad + this.state.gap + this.state.rad) + tableLeft,
@@ -509,6 +549,9 @@ class App extends Component {
                 rotation: group.rotation(),
                 number_seats: seats
             };
+            if(object.deleted_seats){
+                data.deleted_seats=object.deleted_seats;
+            }
             this.updateObject(data);
         });
         return group;
@@ -710,7 +753,7 @@ class App extends Component {
                 <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
                 <div className="col-sm-3 sidebar-right">
-                    <ToastContainer ref={ref => container = ref} className="toast-top-right"/>
+                    <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                     <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas} updatedObject={this.getUpdatedObject}
                                   dataMap={this.state.data_map} updateObject={this.state.selectedItem} deleteObject={this.deleteObject}/>
                 </div>
