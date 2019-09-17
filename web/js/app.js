@@ -4,11 +4,14 @@ import Konva from 'konva';
 import axios from 'axios';
 import RightSidebar from "./components/RightSidebar";
 import {ToastContainer} from "react-toastr";
+
 let container;
+
 class App extends Component {
     constructor(props) {
         super(props);
     }
+
     state = {
         stageScale: 1,
         stageX: 1,
@@ -44,14 +47,15 @@ class App extends Component {
         data.find((el, i) => {
             if (el.id === object.id) {
                 data[i] = object;
-                this.setState({'data_map': data},()=>{
-                    this.loadStage(object);});
+                this.setState({'data_map': data}, () => {
+                    this.loadStage(object);
+                });
             }
         });
     };
     addNewObjectFromSidebar = (object) => {
         let data_map = this.state.data_map;
-        object.id= data_map.length;
+        object.id = data_map.length;
         data_map.push(object);
         this.setState({'data_map': data_map});
         this.addNewObject(object);
@@ -71,7 +75,7 @@ class App extends Component {
             }
         }
     };
-    renderSectionSeat = (object,transformer = null) => {
+    renderSectionSeat = (object, transformer = null) => {
         const rows = object.xSeats,
             cols = object.ySeats,
             rad = 10,
@@ -103,19 +107,32 @@ class App extends Component {
         });
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
+                /** Deleted Seats*/
                 let deleted = object.deleted_seats;
-                let skip=false;
-                if(deleted){
-                    deleted.forEach((del)=>{
-                        if(del === (alphabet[i].toUpperCase())+ (j + 1)){
-                            skip=true;
+                let skip = false;
+                if (deleted) {
+                    deleted.forEach((del) => {
+                        if (del === (alphabet[i].toUpperCase()) + (j + 1)) {
+                            skip = true;
                         }
                     });
                 }
-                if(skip){
-                    skip= !skip;
+                if (skip) {
+                    skip = !skip;
+                    if (j === cols - 1) {
+                        let rowTitle = new Konva.Text({
+                            text: alphabet[i].toUpperCase(),
+                            fontStyle: "arial",
+                            fontSize: 10,
+                            x: (this.state.posX + sideBuff) + rad + (j + 1) * dia + (j + 1) * gap - 10,
+                            y: (textHeight + topBuff) + rad + i * dia + i * gap - 5
+                        });
+                        section.add(rowTitle);
+                    }
                     continue;
                 }
+                /** End Deleted Seats*/
+
                 let newGroup = new Konva.Group({
                     name: alphabet[i].toUpperCase() + (j + 1)
                 });
@@ -142,6 +159,16 @@ class App extends Component {
                 newGroup.add(circle);
                 newGroup.add(text);
                 section.add(newGroup);
+                if (j === cols - 1) {
+                    let rowTitle = new Konva.Text({
+                        text: alphabet[i].toUpperCase(),
+                        fontStyle: "arial",
+                        fontSize: 10,
+                        x: (this.state.posX + sideBuff) + rad + (j + 1) * dia + (j + 1) * gap - 10,
+                        y: (textHeight + topBuff) + rad + i * dia + i * gap - 5
+                    });
+                    section.add(rowTitle);
+                }
             }
         }
         section.add(text);
@@ -159,10 +186,11 @@ class App extends Component {
                         ySeats: object.ySeats,
                         type: 'section',
                         rotation: section.rotation(),
-                        number_seats: object.xSeats*object.ySeats
+                        number_seats: object.xSeats * object.ySeats
                     },
                 'focusObject': null
-            },()=>{
+            }, () => {
+
                 section.draggable(true);
                 section.getLayer().draw();
             });
@@ -180,15 +208,15 @@ class App extends Component {
                 rotation: section.rotation(),
                 number_seats: (object.xSeats * object.ySeats)
             };
-            if(object.deleted_seats){
-                data.deleted_seats= object.deleted_seats;
+            if (object.deleted_seats) {
+                data.deleted_seats = object.deleted_seats;
             }
             this.updateObject(data);
         });
         return section;
     };
     renderTableRect = (object, transformer = null) => {
-        let x = object.xSeats,y= object.ySeats,deleted= object.deleted_seats;
+        let x = object.xSeats, y = object.ySeats, deleted = object.deleted_seats;
         let numero_chaise = 0;
         let tableWidth = (this.state.dia) + (2 * this.state.gap); // 55 by default
         let tableHeight = tableWidth;// 55 by default
@@ -251,9 +279,9 @@ class App extends Component {
         });
         //render top and left seats
         for (let i = 0; i < x; i++) {
-            if(deleted && deleted.includes(i+1)){
-              numero_chaise++;
-              continue;
+            if (deleted && deleted.includes(i + 1)) {
+                numero_chaise++;
+                continue;
             }
             let top_group = new Konva.Group({
                 name: object.nom + "-" + 1,
@@ -284,7 +312,7 @@ class App extends Component {
             table.add(top_group);
         }
         for (let i = 0; i < y; i++) {
-            if(deleted && deleted.includes(numero_chaise+1)){
+            if (deleted && deleted.includes(numero_chaise + 1)) {
                 numero_chaise++;
                 continue;
             }
@@ -319,7 +347,7 @@ class App extends Component {
             table.add(right_group);
         }
         for (let j = x; j > 0; j--) {
-            if(deleted && deleted.includes(numero_chaise+1)){
+            if (deleted && deleted.includes(numero_chaise + 1)) {
                 numero_chaise++;
                 continue;
             }
@@ -328,7 +356,7 @@ class App extends Component {
                 id: numero_chaise++
             });
             let bottom_circle = new Konva.Circle({
-                x: this.state.sideBuff * 2.8 + leftStart + this.state.dia * (j - 1) + this.state.gap * (j - 1),
+                x: this.state.sideBuff * 3 + leftStart + this.state.dia * (j - 1) + this.state.gap * (j - 1),
                 y: bottomPos,
                 width: 20,
                 height: 20,
@@ -352,7 +380,7 @@ class App extends Component {
             table.add(bottom_group);
         }
         for (let j = y; j > 0; j--) {
-            if(deleted && deleted.includes(numero_chaise+1)){
+            if (deleted && deleted.includes(numero_chaise + 1)) {
                 numero_chaise++;
                 continue;
             }
@@ -403,7 +431,7 @@ class App extends Component {
                         number_seats: (object.xSeats * object.ySeats)
                     },
                 'focusObject': null
-            }, ()=>{
+            }, () => {
                 table.draggable(true);
                 table.getLayer().draw();
             });
@@ -421,8 +449,8 @@ class App extends Component {
                 rotation: table.rotation(),
                 number_seats: (object.xSeats * object.ySeats)
             };
-            if(object.deleted_seats){
-                data.deleted_seats= object.deleted_seats;
+            if (object.deleted_seats) {
+                data.deleted_seats = object.deleted_seats;
             }
             this.updateObject(data);
         });
@@ -486,8 +514,8 @@ class App extends Component {
             rotation: 0
         });
         for (let i = 0; i < seats; i++) {
-            let deleted= object.deleted_seats;
-            if(deleted && deleted.includes(i+1)) {
+            let deleted = object.deleted_seats;
+            if (deleted && deleted.includes(i + 1)) {
                 continue;
             }
             let c_group = new Konva.Group({});
@@ -532,7 +560,7 @@ class App extends Component {
                         number_seats: seats
                     },
                 'focusObject': null
-            },()=>{
+            }, () => {
                 group.draggable(true);
                 group.getLayer().draw();
             });
@@ -549,18 +577,19 @@ class App extends Component {
                 rotation: group.rotation(),
                 number_seats: seats
             };
-            if(object.deleted_seats){
-                data.deleted_seats=object.deleted_seats;
+            if (object.deleted_seats) {
+                data.deleted_seats = object.deleted_seats;
             }
             this.updateObject(data);
         });
         return group;
     };
+
     componentDidMount() {
         axios.get(
             '/symfony3.4/web/api/event/get-map/395')
             .then((response) => {
-                this.setState({'data_map': response.data},()=>{
+                this.setState({'data_map': response.data}, () => {
                     this.loadStage();
                 });
             })
@@ -568,38 +597,39 @@ class App extends Component {
                 console.log(error);
             });
     }
+
     componentDidUpdate() {
         if (this.state.stage) {
             let stage = this.state.stage;
             stage.batchDraw();
         }
     }
+
     saveCanvas = (save) => {
-        this.setState({'saveCanvas': save},()=>{
+        this.setState({'saveCanvas': save}, () => {
             this.saveStage();
-            container.success("Carte enregistré aves succès",'Succès',{ closeButton: true});
         });
         setTimeout(() => {
             this.setState({'saveCanvas': !save})
         }, 3000);
     };
-    deleteObject =(object) => {
-            let data = this.state.data_map;
-            data.forEach((el,i)=>{
-                if(el.id === object.id){
-                    data=data.filter(function(ele){
-                        return ele.id !== object.id;
-                    });
-                }
-            });
-            data=this.reorderDataMap(data);
-            this.setState({data_map: data,selectedItem:null},()=>{
-                this.loadStage();
-            });
+    deleteObject = (object) => {
+        let data = this.state.data_map;
+        data.forEach((el, i) => {
+            if (el.id === object.id) {
+                data = data.filter(function (ele) {
+                    return ele.id !== object.id;
+                });
+            }
+        });
+        data = this.reorderDataMap(data);
+        this.setState({data_map: data, selectedItem: null}, () => {
+            this.loadStage();
+        });
     };
-    reorderDataMap= (dataMap) =>{
-        dataMap.forEach((element,i)=>{
-            element.id=i;
+    reorderDataMap = (dataMap) => {
+        dataMap.forEach((element, i) => {
+            element.id = i;
         });
         return dataMap;
     };
@@ -611,10 +641,10 @@ class App extends Component {
                 data_map: JSON.parse(data)
             })
             .then(function (response) {
-                console.log(response);
+                container.success("Carte enregistré aves succès", 'Succès', {closeButton: true});
             })
             .catch(function (error) {
-                    console.log(error);
+                    container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
                 }
             );
     };
@@ -624,7 +654,7 @@ class App extends Component {
             container: 'stage-container',
             width: window.innerWidth * 3 / 4,
             height: window.innerHeight,
-            scale: {x:this.state.scaleX,y:this.state.scaleY}
+            scale: {x: this.state.scaleX, y: this.state.scaleY}
         });
         let layer = new Konva.Layer();
         let focusLayer = new Konva.Layer();
@@ -641,9 +671,9 @@ class App extends Component {
         });
         layer.add(transformer);
         let padding = 20;
-        for (let i = 0; i < window.innerWidth*2 / padding; i++) {
+        for (let i = 0; i < window.innerWidth * 2 / padding; i++) {
             let h_line = new Konva.Line({
-                points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth*2],
+                points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth * 2],
                 stroke: '#ddd',
                 strokeWidth: 1,
             });
@@ -651,9 +681,9 @@ class App extends Component {
         }
         let t_line = new Konva.Line({points: [0, 0, 10, 10]});
         layer.add(t_line);
-        for (let j = 0; j < window.innerHeight*2 / padding; j++) {
+        for (let j = 0; j < window.innerHeight * 2 / padding; j++) {
             let v_line = new Konva.Line({
-                points: [0, Math.round(j * padding), window.innerWidth*2, Math.round(j * padding)],
+                points: [0, Math.round(j * padding), window.innerWidth * 2, Math.round(j * padding)],
                 stroke: '#ddd',
                 strokeWidth: 0.5,
             });
@@ -662,16 +692,16 @@ class App extends Component {
         data.forEach((obj) => {
             let newObject = this.addNewObject(obj, transformer);
             newObject.cache();
-            if(focusObj && focusObj.id === obj.id){
-                    transformer.attachTo(newObject);
-                    newObject.draggable(true);
+            if (focusObj && focusObj.id === obj.id) {
+                transformer.attachTo(newObject);
+                newObject.draggable(true);
             }
             layer.add(newObject);
         });
         stage.on('click tap', (e) => {
             if (e.target === stage) {
                 stage.find('Transformer').detach();
-                this.setState({'focusObject':null});
+                this.setState({'focusObject': null});
                 let objects = stage.getChildren()[0].getChildren();
                 objects.each((obj) => {
                     if (obj.name !== "Transformer")
@@ -682,7 +712,9 @@ class App extends Component {
                 return;
             }
         });
-        stage.on('wheel', (e) => {this.handleWheel(e);});
+        stage.on('wheel', (e) => {
+            this.handleWheel(e);
+        });
         stage.draw();
     };
     handleLayerChange = () => {
@@ -699,7 +731,6 @@ class App extends Component {
             scaleX: 1.1,
             scaleY: 1.1
         });
-        alert('Drag');
     };
     handleDragEnd = e => {
         e.target.to({
@@ -711,7 +742,7 @@ class App extends Component {
             shadowOffsetY: 5
         });
     };
-    handleWheel  = e => {
+    handleWheel = e => {
         e.evt.preventDefault();
         const scaleBy = 1.01;
         const stage = e.target.getStage();
@@ -723,14 +754,17 @@ class App extends Component {
         const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
         stage.scale({x: newScale, y: newScale});
         this.setState({
-            stageScale: {x:-(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,y:-(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale},
+            stageScale: {
+                x: -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
+                y: -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
+            },
             stageX:
                 -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
             stageY:
                 -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
             scaleX: newScale,
             scaleY: newScale
-        },()=>{
+        }, () => {
             stage.batchDraw();
         });
     };
@@ -742,11 +776,12 @@ class App extends Component {
     handleSelected = e => {
         this.setState({'selectedItem': e});
     };
-    getUpdatedObject =(obj) =>{
-        if(this.state.selectedItem) {
+    getUpdatedObject = (obj) => {
+        if (this.state.selectedItem) {
             this.setState({'focusObject': obj});
         }
     };
+
     render() {
         return (
             <div className="row">
@@ -754,8 +789,10 @@ class App extends Component {
                 </div>
                 <div className="col-sm-3 sidebar-right">
                     <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
-                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas} updatedObject={this.getUpdatedObject}
-                                  dataMap={this.state.data_map} updateObject={this.state.selectedItem} deleteObject={this.deleteObject}/>
+                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
+                                  updatedObject={this.getUpdatedObject}
+                                  dataMap={this.state.data_map} updateObject={this.state.selectedItem}
+                                  deleteObject={this.deleteObject}/>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>
