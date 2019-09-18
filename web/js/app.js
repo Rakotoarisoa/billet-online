@@ -765,7 +765,7 @@ class App extends Component {
             stage.getLayers()[0].find(node => {
                 return node.getType() === 'Group'
                     && node.parent.getType() === 'Layer'
-                    && node.getName() === focus_object.nom.toString()
+                    && node.getName() !== focus_object.nom.toString()
                     && node.getName() !== 'Transformer' }).forEach((el)=>{
                         el.off('dragend click tap');
             });

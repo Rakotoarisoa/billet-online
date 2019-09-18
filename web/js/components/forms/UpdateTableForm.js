@@ -18,7 +18,9 @@ class UpdateTableForm extends Component {
     }
     state = {
         nom: '',
-        deleted_seats: []
+        deleted_seats: [],
+        isUpdating: false,
+        updateObject: this.props.updateObject
     };
 
     setUpdate=()=>{
@@ -27,9 +29,12 @@ class UpdateTableForm extends Component {
     handleFocusObject=()=>{
         this.setUpdate();
         this.props.focusedObject(this.props.updateObject);
+        let object= this.props.updateObject;
+        this.setState({'updateObject':this.props.updateObject,'nom':object.nom.toString(),'deleted_seats':object.deleted_seats});
     };
     handleFocusObjectClose=()=>{
         this.setUpdate();
+        this.setState({'updateObject':null,'nom':null,'deleted_seats':null});
         this.props.focusedObject(null);
     };
     deleteObject = () => {
@@ -55,7 +60,6 @@ class UpdateTableForm extends Component {
         });
     }
     componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log(prevProps);
         console.log(this.state.nom);
     }
 
