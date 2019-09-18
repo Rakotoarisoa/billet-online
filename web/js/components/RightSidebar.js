@@ -3,7 +3,6 @@ import CreateRangeForm from "./forms/CreateRangeForm";
 import CreateTableForm from "./forms/CreateTableForm";
 import SaveCanvas from "./forms/SaveCanvas";
 import UpdateTableForm from "./forms/UpdateTableForm";
-import { ToastContainer } from "react-toastr";
 
 class RightSidebar extends Component {
     constructor(props) {
@@ -11,14 +10,6 @@ class RightSidebar extends Component {
     }
 
     state = {
-        newObject: {
-            name: '',
-            type: '',
-            coords: {
-                x: '',
-                y: ''
-            }
-        }
     };
     handleNewObject = (object) => {
         this.props.addNewObject(object);
@@ -26,31 +17,20 @@ class RightSidebar extends Component {
     saveCanvas = (save) => {
         this.props.saveCanvas(save);
     };
-
-    componentDidMount() {
-
-    }
     deleteObject =(object) =>{
         this.props.deleteObject(object);
     };
-    getUpdatedObject =(obj) => {
+    getFocusedObject =(obj) => {
         if(this.props.updateObject) {
+            this.props.focusedObject(obj);
+        }
+    };
+    getUpdatedObject =(obj)=> {
+        if(this.props.updateObject){
             this.props.updatedObject(obj);
         }
     };
-    componentDidUpdate(prevProps) {
-        if(prevProps.dataMap !== this.props.dataMap)
-        {
-
-        }
-    }
-
-    componentWillUnmount() {
-
-    }
-
     render() {
-        let container;
         return (
             <aside>
                 <div className={''}>
@@ -76,8 +56,8 @@ class RightSidebar extends Component {
                             </div>
                         </div>
                     </div>
-                    {this.props.updateObject && <UpdateTableForm deleteObject={this.deleteObject} updatedObject={this.getUpdatedObject} updateObject={this.props.updateObject} dataMap={this.props.dataMap}/>}
-                    <SaveCanvas saveCanvas={this.saveCanvas}/>
+                    {this.props.updateObject && <UpdateTableForm deleteObject={this.deleteObject} focusedObject={this.getFocusedObject} updateObject={this.props.updateObject} updatedObject={this.getUpdatedObject} dataMap={this.props.dataMap}/>}
+                    {!this.props.updateObject && <SaveCanvas saveCanvas={this.saveCanvas} updateObject={this.props.updateObject}/>}
                 </div>
                 <div className={"collapse"} id="sectionCreate">
                     <div className="d-flex p-3 bg-light">

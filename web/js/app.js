@@ -190,8 +190,8 @@ class App extends Component {
                     {
                         id: object.id,
                         nom: object.nom,
-                        x: e.target.x(),
-                        y: e.target.y(),
+                        x: object.x,
+                        y: object.y,
                         xSeats: object.xSeats,
                         ySeats: object.ySeats,
                         type: 'section',
@@ -205,7 +205,6 @@ class App extends Component {
                 section.moveToTop();
                 section.getLayer().draw();
             });
-
         });
         section.on('dragend', (e) => {
             let data = {
@@ -435,8 +434,8 @@ class App extends Component {
                     {
                         id: object.id,
                         nom: object.nom,
-                        x: e.target.x(),
-                        y: e.target.y(),
+                        x: object.x,
+                        y: object.y,
                         xSeats: object.xSeats,
                         ySeats: object.ySeats,
                         type: 'rectangle',
@@ -569,8 +568,8 @@ class App extends Component {
                     {
                         id: object.id,
                         nom: object.nom,
-                        x: e.target.x(),
-                        y: e.target.y(),
+                        x: object.x,
+                        y: object.y,
                         chaises: seats,
                         type: 'ronde',
                         rotation: group.rotation(),
@@ -763,6 +762,14 @@ class App extends Component {
             let object = stage.getLayers()[0].find(node => {
                 return node.getType() === 'Group' && node.getName() === focus_object.nom.toString();
             });
+            stage.getLayers()[0].find(node => {
+                return node.getType() === 'Group'
+                    && node.parent.getType() === 'Layer'
+                    && node.getName() === focus_object.nom.toString()
+                    && node.getName() !== 'Transformer' }).forEach((el)=>{
+                        el.off('dragend click tap');
+            });
+            stage.off('click tap');
             object.draggable(false);
             object.moveTo(focusLayer);
             stage.getLayers()[0].opacity(0.5);
@@ -794,7 +801,7 @@ class App extends Component {
             shadowOffsetY: 5
         });
     };
-    //Gestion scrool Souris sur la carte
+    //Gestion scroll Souris sur la carte
     handleWheel = e => {
         e.evt.preventDefault();
         const scaleBy = 1.01;
@@ -829,12 +836,16 @@ class App extends Component {
     handleSelected = e => {
         this.setState({'selectedItem': e});
     };
-    getUpdatedObject = (obj) => {
+    getFocusedObject = (obj) => {
         if (this.state.selectedItem) {
-            this.setState({'focusObject': obj});
+            this.setState({'focusObject': obj},()=>{this.loadStage(this.state.selectedItem)});
         }
     };
-
+    getUpdatedObject = (obj) => {
+        if (this.state.selectedItem) {
+            this.setState({'focusObject':null},()=>{this.updateObject(obj);});
+        }
+    };
     //rendu du composant
     render() {
         return (
@@ -844,7 +855,7 @@ class App extends Component {
                 <div className="col-sm-3 sidebar-right">
                     <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                     <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
-                                  updatedObject={this.getUpdatedObject}
+                                  focusedObject={this.getFocusedObject} updatedObject={this.getUpdatedObject}
                                   dataMap={this.state.data_map} updateObject={this.state.selectedItem}
                                   deleteObject={this.deleteObject}/>
                 </div>
