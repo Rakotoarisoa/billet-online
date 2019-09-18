@@ -1,12 +1,14 @@
-import React, {Component} from 'react';
+import React, {Component, useContext} from 'react';
 import {ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Button from "@material-ui/core/Button";
 import Fade from "@material-ui/core/Fade";
+import DeleteContext from "./../contexts/DeleteContext";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import Input from "@material-ui/core/Input"
 import MenuItem from '@material-ui/core/MenuItem';
+import UpdateContext from "../contexts/UpdateContext";
 
 /** Class Form By Object*/
 
@@ -110,12 +112,17 @@ class UpdateTableForm extends Component {
                                 </Button>
                             </div>
                             <div className="p-2 bg-light">
-                                <Button variant="contained"
-                                        color="secondary"
-                                        className={"btn btn-danger pull-right"}
-                                        onClick={this.deleteObject}>
-                                    Supprimer
-                                </Button>
+                                <DeleteContext.Consumer>
+                                    { deleteObject => (
+                                        <Button variant="contained"
+                                                color="secondary"
+                                                className={"btn btn-danger pull-right"}
+                                                onClick={()=>deleteObject(this.props.updateObject)}>
+                                            Supprimer
+                                        </Button>
+                                    )
+                                    }
+                                </DeleteContext.Consumer>
                             </div>
                         </div>
                     </div>

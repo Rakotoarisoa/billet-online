@@ -4,6 +4,7 @@ import Konva from 'konva';
 import axios from 'axios';
 import RightSidebar from "./components/RightSidebar";
 import {ToastContainer} from "react-toastr";
+import DeleteContext from "./components/contexts/DeleteContext";
 
 let container;
 
@@ -42,6 +43,7 @@ class App extends Component {
         focusObject: null,
         initWidth: 947,
         initHeight: 947,
+        number_seats: 0,
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -609,12 +611,33 @@ class App extends Component {
             '/symfony3.4/web/api/event/get-map/395')
             .then((response) => {
                 this.setState({'data_map': response.data}, () => {
+                    let data = response.data;
+                    if (data.length > 0) {
+                        let nb_seats = 0;
+                        data.forEach((el) => {
+                            nb_seats += parseInt(el.number_seats);
+                        });
+                        this.setState({'number_seats': nb_seats});
+                    }
                     this.loadStage();
                 });
             })
             .catch(function (error) {
                 container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
             });
+
+    }
+
+    //Nombre total de chaises
+    setTotalSeats() {
+        let data = this.state.data_map;
+        if (data.length > 0) {
+            let nb_seats = 0;
+            data.forEach((el) => {
+                nb_seats += parseInt(el.number_seats);
+            });
+            this.setState({'number_seats': nb_seats});
+        }
     }
 
     //Tache pendant mise à jour du composant
@@ -639,6 +662,7 @@ class App extends Component {
     };
     //Supprimer un objet sur le canvas
     deleteObject = (object) => {
+        console.log(object);
         let data = this.state.data_map;
         data.forEach((el, i) => {
             if (el.id === object.id) {
@@ -678,6 +702,7 @@ class App extends Component {
     //Charger le stage (konva) , initialiser le map
     loadStage = (focusObj) => {
         let data = this.state.data_map;
+        this.setTotalSeats();
         let stage = new Konva.Stage({
             container: 'stage-container',
             width: window.innerWidth * 3 / 4,
@@ -717,15 +742,17 @@ class App extends Component {
             });
             layer.add(v_line);
         }
-        data.forEach((obj) => {
-            let newObject = this.addNewObject(obj, transformer);
-            newObject.cache();
-            if (focusObj && focusObj.id === obj.id) {
-                transformer.attachTo(newObject);
-                newObject.draggable(true);
-            }
-            layer.add(newObject);
-        });
+        if (data.length > 0) {
+            data.forEach((obj) => {
+                let newObject = this.addNewObject(obj, transformer);
+                newObject.cache();
+                if (focusObj && focusObj.id === obj.id) {
+                    transformer.attachTo(newObject);
+                    newObject.draggable(true);
+                }
+                layer.add(newObject);
+            });
+        }
         stage.on('click tap', (e) => {
             if (e.target === stage) {
                 stage.find('Transformer').detach();
@@ -766,8 +793,9 @@ class App extends Component {
                 return node.getType() === 'Group'
                     && node.parent.getType() === 'Layer'
                     && node.getName() !== focus_object.nom.toString()
-                    && node.getName() !== 'Transformer' }).forEach((el)=>{
-                        el.off('dragend click tap');
+                    && node.getName() !== 'Transformer'
+            }).forEach((el) => {
+                el.off('dragend click tap');
             });
             stage.off('click tap');
             object.draggable(false);
@@ -775,31 +803,6 @@ class App extends Component {
             stage.getLayers()[0].opacity(0.5);
             stage.draw();
         }
-    };
-
-    handleLayerChange = () => {
-        this.state.isAddingItem = !this.state.isAddingItem;
-        this.state.newItem = '';
-    };
-    handleDragStart = e => {
-        e.target.setAttrs({
-            shadowOffset: {
-                x: 15,
-                y: 15
-            },
-            scaleX: 1.1,
-            scaleY: 1.1
-        });
-    };
-    handleDragEnd = e => {
-        e.target.to({
-            duration: 0.5,
-            easing: Konva.Easings.ElasticEaseOut,
-            scaleX: 1,
-            scaleY: 1,
-            shadowOffsetX: 5,
-            shadowOffsetY: 5
-        });
     };
     //Gestion scroll Souris sur la carte
     handleWheel = e => {
@@ -838,14 +841,19 @@ class App extends Component {
     };
     getFocusedObject = (obj) => {
         if (this.state.selectedItem) {
-            this.setState({'focusObject': obj},()=>{this.loadStage(this.state.selectedItem)});
+            this.setState({'focusObject': obj}, () => {
+                this.loadStage(this.state.selectedItem)
+            });
         }
     };
     getUpdatedObject = (obj) => {
         if (this.state.selectedItem) {
-            this.setState({'focusObject':null},()=>{this.updateObject(obj);});
+            this.setState({'focusObject': null}, () => {
+                this.updateObject(obj);
+            });
         }
     };
+
     //rendu du composant
     render() {
         return (
@@ -853,11 +861,14 @@ class App extends Component {
                 <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
                 <div className="col-sm-3 sidebar-right">
+                    <span style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</span>
                     <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
+                    <DeleteContext.Provider value={this.deleteObject}>
                     <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
                                   focusedObject={this.getFocusedObject} updatedObject={this.getUpdatedObject}
                                   dataMap={this.state.data_map} updateObject={this.state.selectedItem}
-                                  deleteObject={this.deleteObject}/>
+                                  />
+                    </DeleteContext.Provider>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>
