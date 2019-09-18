@@ -128,7 +128,8 @@ class CreateTableForm extends Component{
                     type:this.state.table_type,
                     number_seats: parseInt(this.state.rows)*parseInt(this.state.cols),
                     x:200,
-                    y:200
+                    y:200,
+                    deleted_seats: []
                 });
             }
             else if(this.state.table_type === RONDE){
@@ -138,7 +139,8 @@ class CreateTableForm extends Component{
                     type:this.state.table_type,
                     number_seats:parseInt(this.state.chaises),
                     x:200,
-                    y:200
+                    y:200,
+                    deleted_seats: []
                 });
             }
 

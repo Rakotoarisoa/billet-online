@@ -46,7 +46,8 @@ class CreateRangeForm extends Component{
                 number_seats: parseInt(this.state.cols)*parseInt(this.state.rows),
                 type:this.state.type,
                 x:200,
-                y:200
+                y:200,
+                deleted_seats: []
             });
             setTimeout(() => this.setState({ submitted: false }), 1000);
         });

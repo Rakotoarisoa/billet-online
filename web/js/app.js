@@ -40,7 +40,10 @@ class App extends Component {
         stage: null,
         tempLayer: null,
         focusObject: null,
+        initWidth: 947,
+        initHeight: 947,
     };
+    //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
         //find object into data_map state
         let data = this.state.data_map;
@@ -53,6 +56,7 @@ class App extends Component {
             }
         });
     };
+    //Ajouter objet via Panneau Latéral
     addNewObjectFromSidebar = (object) => {
         let data_map = this.state.data_map;
         object.id = data_map.length;
@@ -61,6 +65,7 @@ class App extends Component {
         this.addNewObject(object);
         this.loadStage();
     };
+    //Ajouter Object ( selon type)
     addNewObject = (object, transformer) => {
         if (object) {
             switch (object.type) {
@@ -75,6 +80,7 @@ class App extends Component {
             }
         }
     };
+    //Ajouter objet Type Section
     renderSectionSeat = (object, transformer = null) => {
         const rows = object.xSeats,
             cols = object.ySeats,
@@ -90,7 +96,8 @@ class App extends Component {
             textHeight = 10,
             alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
         let section = new Konva.Group({
-            name: this.state.nom,
+            id: object.id,
+            name: object.nom.toString(),
             x: object.x,
             y: object.y,
             height: parseInt(sizeX),
@@ -159,6 +166,9 @@ class App extends Component {
                 newGroup.add(circle);
                 newGroup.add(text);
                 section.add(newGroup);
+                /*newGroup.on('click',(e)=>{
+                    console.log(e.target.parent.getAttr('name'));
+                });*/
                 if (j === cols - 1) {
                     let rowTitle = new Konva.Text({
                         text: alphabet[i].toUpperCase(),
@@ -186,12 +196,13 @@ class App extends Component {
                         ySeats: object.ySeats,
                         type: 'section',
                         rotation: section.rotation(),
-                        number_seats: object.xSeats * object.ySeats
+                        number_seats: (object.xSeats * object.ySeats) - (object.deleted_seats.length),
+                        deleted_seats: object.deleted_seats
                     },
                 'focusObject': null
             }, () => {
-
                 section.draggable(true);
+                section.moveToTop();
                 section.getLayer().draw();
             });
 
@@ -215,6 +226,7 @@ class App extends Component {
         });
         return section;
     };
+    //Ajouter objet Type Table Rectangle
     renderTableRect = (object, transformer = null) => {
         let x = object.xSeats, y = object.ySeats, deleted = object.deleted_seats;
         let numero_chaise = 0;
@@ -251,11 +263,12 @@ class App extends Component {
         let leftPos = tablePosX - tableWidth / 2;
         let rightPos = tablePosX + tableWidth / 2 + this.state.gap + this.state.rad + this.state.sideBuff;
         let table = new Konva.Group({
+            id: object.id,
             x: object.x,
             y: object.y,
             height: parseInt(this.state.topBuff * 2 + textWidth + wholeHeight + this.state.bottomBuff),
             width: contWidth,
-            name: object.nom,
+            name: object.nom.toString(),
             draggable: false,
             rotation: object.rotation
         });
@@ -428,11 +441,13 @@ class App extends Component {
                         ySeats: object.ySeats,
                         type: 'rectangle',
                         rotation: table.rotation(),
-                        number_seats: (object.xSeats * object.ySeats)
+                        number_seats: (object.xSeats * 2 + object.ySeats * 2) - (object.deleted_seats.length),
+                        deleted_seats: object.deleted_seats
                     },
                 'focusObject': null
             }, () => {
                 table.draggable(true);
+                table.moveToTop();
                 table.getLayer().draw();
             });
 
@@ -447,7 +462,7 @@ class App extends Component {
                 ySeats: object.ySeats,
                 type: 'rectangle',
                 rotation: table.rotation(),
-                number_seats: (object.xSeats * object.ySeats)
+                number_seats: (object.xSeats * 2 + object.ySeats * 2) - (object.deleted_seats.length)
             };
             if (object.deleted_seats) {
                 data.deleted_seats = object.deleted_seats;
@@ -456,6 +471,7 @@ class App extends Component {
         });
         return table;
     };
+    //Ajouter objet Type Table Circulaire
     renderTableCircle = (object, transformer = null) => {
         const seats = object.chaises;
         const deg = (2 * Math.PI) / seats;
@@ -486,6 +502,7 @@ class App extends Component {
         let tableLeft = this.state.posX + contWidth / 2,
             tableTop = (textWidth + textHeight + this.state.topBuff) + this.state.dia + this.state.gap;
         let group = new Konva.Group({
+            id: object.id,
             x: object.x,
             y: object.y,
             height: this.state.topBuff * 2 + textWidth + this.state.bottomBuff,
@@ -493,7 +510,7 @@ class App extends Component {
             visible: true,
             draggable: false,
             fill: "#A9A8B3",
-            name: object.nom,
+            name: object.nom.toString(),
             rotation: object.rotation
         });
         let tableCircle = new Konva.Circle({
@@ -557,11 +574,13 @@ class App extends Component {
                         chaises: seats,
                         type: 'ronde',
                         rotation: group.rotation(),
-                        number_seats: seats
+                        number_seats: seats - object.deleted_seats.length,
+                        deleted_seats: object.deleted_seats
                     },
                 'focusObject': null
             }, () => {
                 group.draggable(true);
+                group.moveToTop();
                 group.getLayer().draw();
             });
 
@@ -585,6 +604,7 @@ class App extends Component {
         return group;
     };
 
+    //initialisation pendant Montage du composant
     componentDidMount() {
         axios.get(
             '/symfony3.4/web/api/event/get-map/395')
@@ -594,17 +614,22 @@ class App extends Component {
                 });
             })
             .catch(function (error) {
-                console.log(error);
+                container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
             });
     }
 
+    //Tache pendant mise à jour du composant
     componentDidUpdate() {
         if (this.state.stage) {
             let stage = this.state.stage;
             stage.batchDraw();
         }
+        if (this.state.focusObject) {
+            this.loadStage();
+        }
     }
 
+    //Sauvegarder le canvas
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save}, () => {
             this.saveStage();
@@ -613,6 +638,7 @@ class App extends Component {
             this.setState({'saveCanvas': !save})
         }, 3000);
     };
+    //Supprimer un objet sur le canvas
     deleteObject = (object) => {
         let data = this.state.data_map;
         data.forEach((el, i) => {
@@ -627,12 +653,14 @@ class App extends Component {
             this.loadStage();
         });
     };
+    //Réordonner les objets après suppression
     reorderDataMap = (dataMap) => {
         dataMap.forEach((element, i) => {
             element.id = i;
         });
         return dataMap;
     };
+    //Sauvegarder le stage (konva)
     saveStage = () => {
         let data = this.state.data_map;
         data = JSON.stringify(data);
@@ -644,10 +672,11 @@ class App extends Component {
                 container.success("Carte enregistré aves succès", 'Succès', {closeButton: true});
             })
             .catch(function (error) {
-                    container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
+                    container.error("Une Erreur s'est produite pendant l'enregistrement de la carte", 'Erreur', {closeButton: true});
                 }
             );
     };
+    //Charger le stage (konva) , initialiser le map
     loadStage = (focusObj) => {
         let data = this.state.data_map;
         let stage = new Konva.Stage({
@@ -716,11 +745,34 @@ class App extends Component {
             this.handleWheel(e);
         });
         stage.draw();
+        /** Responsive stage*/
+        /*window.addEventListener('resize',(e)=>{
+            let container = document.querySelector('#stage-container');
+            const stageWidth= this.state.initWidth,stageHeight=this.state.initHeight;
+            let containerWidth = container.offsetWidth;
+            let scale = containerWidth / stageWidth;
+            stage.width(stageWidth * scale);
+            stage.height(stageHeight * scale);
+            stage.scale({ x: scale, y: scale });
+            this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});
+        });*/
+
+        /** Focus on object*/
+        let focus_object = this.state.focusObject;
+        if (focus_object) {
+            let object = stage.getLayers()[0].find(node => {
+                return node.getType() === 'Group' && node.getName() === focus_object.nom.toString();
+            });
+            object.draggable(false);
+            object.moveTo(focusLayer);
+            stage.getLayers()[0].opacity(0.5);
+            stage.draw();
+        }
     };
+
     handleLayerChange = () => {
         this.state.isAddingItem = !this.state.isAddingItem;
         this.state.newItem = '';
-        console.log("Changé");
     };
     handleDragStart = e => {
         e.target.setAttrs({
@@ -742,6 +794,7 @@ class App extends Component {
             shadowOffsetY: 5
         });
     };
+    //Gestion scrool Souris sur la carte
     handleWheel = e => {
         e.evt.preventDefault();
         const scaleBy = 1.01;
@@ -782,6 +835,7 @@ class App extends Component {
         }
     };
 
+    //rendu du composant
     render() {
         return (
             <div className="row">
