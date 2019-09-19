@@ -143,11 +143,13 @@ class App extends Component {
                 /** End Deleted Seats*/
 
                 let newGroup = new Konva.Group({
-                    name: alphabet[i].toUpperCase() + (j + 1)
+                    name: alphabet[i].toUpperCase() + (j + 1),
+                    x: parseInt((this.state.posX + sideBuff) + rad + j * dia + j * gap),
+                    y: parseInt((textHeight + topBuff) + rad + i * dia + i * gap)
                 });
                 let circle = new Konva.Circle({
-                    x: parseInt((this.state.posX + sideBuff) + rad + j * dia + j * gap),
-                    y: parseInt((textHeight + topBuff) + rad + i * dia + i * gap),
+                    x: 0,
+                    y: 0,
                     width: 20,
                     height: 20,
                     stroke: "#888888",
@@ -162,8 +164,8 @@ class App extends Component {
                     text: j + 1,
                     fontStyle: "arial",
                     fontSize: 10,
-                    x: (this.state.posX + sideBuff) + rad + j * dia + j * gap - 3,
-                    y: (textHeight + topBuff) + rad + i * dia + i * gap - 5
+                    x: -3,
+                    y: - 5
                 });
                 newGroup.add(circle);
                 newGroup.add(text);
@@ -298,12 +300,14 @@ class App extends Component {
                 continue;
             }
             let top_group = new Konva.Group({
-                name: object.nom + "-" + 1,
-                id: numero_chaise++
+                name: (numero_chaise+1).toString(),
+                id: numero_chaise++,
+                x: this.state.sideBuff * 3 + leftStart + this.state.dia * i + this.state.gap * i,
+                y: parseInt(topPos)
             });
             let top_circle = new Konva.Circle({
-                x: this.state.sideBuff * 3 + leftStart + this.state.dia * i + this.state.gap * i,
-                y: parseInt(topPos),
+                x: 0,
+                y: 0,
                 width: 20,
                 height: 20,
                 fill: "#A9A8B3",
@@ -318,8 +322,8 @@ class App extends Component {
                 text: numero_chaise,
                 fontStyle: "arial",
                 fontSize: 10,
-                x: this.state.sideBuff * 2.8 + leftStart + this.state.dia * i + this.state.gap * i - 3,
-                y: topPos - 5
+                x: - 3,
+                y: - 5
             });
             top_group.add(top_circle);
             top_group.add(top_text);
@@ -331,14 +335,16 @@ class App extends Component {
                 continue;
             }
             let right_group = new Konva.Group({
-                name: nom + "-" + 1,
-                id: numero_chaise++
+                name: (numero_chaise+1).toString(),
+                id: numero_chaise++,
+                x: rightPos + this.state.sideBuff * 2,
+                y: parseInt(topStart + this.state.topBuff + this.state.dia * i + this.state.gap * i)
 
             });
             let right_circle = new Konva.Circle({
                 key: numero_chaise,
-                x: rightPos + this.state.sideBuff * 2,
-                y: parseInt(topStart + this.state.topBuff + this.state.dia * i + this.state.gap * i),
+                x: 0,
+                y: 0,
                 width: 20,
                 height: 20,
                 fill: "#A9A8B3",
@@ -353,8 +359,8 @@ class App extends Component {
                 text: numero_chaise,
                 fontStyle: "arial",
                 fontSize: 10,
-                x: rightPos + this.state.sideBuff * 2 - 7,
-                y: topStart + this.state.topBuff + this.state.dia * i + this.state.gap * i - 5
+                x: - 7,
+                y: - 5
             });
             right_group.add(right_circle);
             right_group.add(right_text);
@@ -366,12 +372,14 @@ class App extends Component {
                 continue;
             }
             let bottom_group = new Konva.Group({
-                name: nom + "-" + 1,
-                id: numero_chaise++
+                name: (numero_chaise+1).toString(),
+                id: numero_chaise++,
+                x: this.state.sideBuff * 3 + leftStart + this.state.dia * (j - 1) + this.state.gap * (j - 1),
+                y: bottomPos
             });
             let bottom_circle = new Konva.Circle({
-                x: this.state.sideBuff * 3 + leftStart + this.state.dia * (j - 1) + this.state.gap * (j - 1),
-                y: bottomPos,
+                x: 0,
+                y: 0,
                 width: 20,
                 height: 20,
                 fill: "#A9A8B3",
@@ -386,8 +394,8 @@ class App extends Component {
                 text: numero_chaise,
                 fontStyle: "arial",
                 fontSize: 10,
-                x: this.state.sideBuff * 2.7 + leftStart + this.state.dia * (j - 1) + this.state.gap * (j - 1) - 5,
-                y: bottomPos - 5
+                x: - 5,
+                y: - 5
             });
             bottom_group.add(bottom_circle);
             bottom_group.add(bottom_text);
@@ -399,13 +407,16 @@ class App extends Component {
                 continue;
             }
             let left_group = new Konva.Group({
-                name: nom + "-" + 1,
+                name: (numero_chaise+1).toString(),
+                id: numero_chaise++,
+                x: leftPos + 15,
+                y: parseInt(topStart + this.state.topBuff + this.state.dia * (j - 1) + this.state.gap * (j - 1))
 
             });
             let left_circle = new Konva.Circle({
-                key: numero_chaise++,
-                x: leftPos + 15,
-                y: parseInt(topStart + this.state.topBuff + this.state.dia * (j - 1) + this.state.gap * (j - 1)),
+                key: numero_chaise,
+                x: 0,
+                y: 0,
                 width: 20,
                 height: 20,
                 fill: "#A9A8B3",
@@ -420,8 +431,8 @@ class App extends Component {
                 text: numero_chaise,
                 fontStyle: "arial",
                 fontSize: 10,
-                x: leftPos + 10,
-                y: topStart + this.state.topBuff + this.state.dia * (j - 1) + this.state.gap * (j - 1) - 5
+                x: -5,
+                y: - 5
             });
             left_group.add(left_circle);
             left_group.add(left_text);
@@ -536,7 +547,10 @@ class App extends Component {
             if (deleted && deleted.includes(i + 1)) {
                 continue;
             }
-            let c_group = new Konva.Group({});
+            let c_group = new Konva.Group({
+                name: (i+1).toString(),
+                id: i+1
+            });
             let circle = new Konva.Circle({
                 x: Math.cos(deg * i) * (tableRad + this.state.gap + this.state.rad) + tableLeft,
                 y: Math.sin(deg * i) * (tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad),
@@ -645,9 +659,6 @@ class App extends Component {
         if (this.state.stage) {
             let stage = this.state.stage;
             stage.batchDraw();
-        }
-        if (this.state.focusObject) {
-            this.loadStage();
         }
     }
 
@@ -786,10 +797,43 @@ class App extends Component {
         /** Focus on object*/
         let focus_object = this.state.focusObject;
         if (focus_object) {
+            stage.off('dragend click tap');
             let object = stage.getLayers()[0].find(node => {
                 return node.getType() === 'Group' && node.getName() === focus_object.nom.toString();
             });
-            stage.getLayers()[0].find(node => {
+            object[0].moveTo(focusLayer);
+            transformer.moveTo(focusLayer);
+            let seatTranformer=new Konva.Transformer({
+                name: 'SeatTransformer',
+                rotateAnchorOffset: 5,
+                borderStroke: "#007bff",
+                resizeEnabled: false,
+                rotateEnabled: false,
+                borderDash: [2, 2],
+                borderStrokeWidth: 2,
+            });
+            object[0].add(seatTranformer);
+            object[0].draggable(false);
+            transformer.rotateEnabled(false);
+            object[0].off("dragend click tap");//
+            let seats=object[0].find(node =>{
+                return node.parent === object[0] && node.getType() === 'Group';
+            });
+            console.log(seats);
+            object[0].on("click tap",(e)=>{
+                    let group_object=e.target.parent;
+                    if(group_object.parent === object[0]) {
+                        let name=group_object.getAttr('name');
+                        let circle=group_object.getChildren(node=>{ return node.getType() === 'Shape'});
+                        group_object.position(circle[0].position());
+                        group_object.moveTo(focusLayer);
+                        transformer.attachTo(group_object);
+                        focusLayer.batchDraw();
+                    }
+
+
+            });
+            layer.find(node => {
                 return node.getType() === 'Group'
                     && node.parent.getType() === 'Layer'
                     && node.getName() !== focus_object.nom.toString()
@@ -797,10 +841,7 @@ class App extends Component {
             }).forEach((el) => {
                 el.off('dragend click tap');
             });
-            stage.off('click tap');
-            object.draggable(false);
-            object.moveTo(focusLayer);
-            stage.getLayers()[0].opacity(0.5);
+            layer.opacity(0.5);
             stage.draw();
         }
     };

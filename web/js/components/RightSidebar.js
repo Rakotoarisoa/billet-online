@@ -3,33 +3,35 @@ import CreateRangeForm from "./forms/CreateRangeForm";
 import CreateTableForm from "./forms/CreateTableForm";
 import SaveCanvas from "./forms/SaveCanvas";
 import UpdateTableForm from "./forms/UpdateTableForm";
-function RightSidebar(props){
-
-    const handleNewObject = (object) => {
+class RightSidebar extends Component {
+    constructor(props){
+        super(props);
+    }
+    handleNewObject = (object) => {
         this.props.addNewObject(object);
     };
-    const saveCanvas = (save) => {
+    saveCanvas = (save) => {
         this.props.saveCanvas(save);
     };
-    const deleteObject =(object) =>{
+    deleteObject =(object) =>{
         this.props.deleteObject(object);
     };
-    const getFocusedObject =(obj) => {
+    getFocusedObject =(obj) => {
         if(this.props.updateObject) {
             this.props.focusedObject(obj);
         }
     };
-    const getUpdatedObject =(obj)=> {
+    getUpdatedObject =(obj)=> {
         if(this.props.updateObject){
             this.props.updatedObject(obj);
         }
     };
-
+    render() {
         return (
             <aside>
 
                 <div className={''}>
-                    {!props.updateObject && <div className="p-3 bg-light">
+                    {!this.props.updateObject && <div className="p-3 bg-light">
                         <div className={"d-flex d-flex-row"}>
 
                             <div className="p-2 bg-light">
@@ -51,21 +53,26 @@ function RightSidebar(props){
                             </div>
                         </div>
                     </div>}
-                    {props.updateObject && <UpdateTableForm focusedObject={getFocusedObject} updateObject={props.updateObject} updatedObject={getUpdatedObject}/>}
-                    {!props.updateObject && <SaveCanvas saveCanvas={saveCanvas} updateObject={props.updateObject}/>}
+                    {this.props.updateObject &&
+                    <UpdateTableForm focusedObject={this.getFocusedObject} updateObject={this.props.updateObject}
+                                     updatedObject={this.getUpdatedObject} dataMap={this.props.dataMap}/>}
+                    {!this.props.updateObject && <SaveCanvas saveCanvas={this.saveCanvas} updateObject={this.props.updateObject}/>}
                 </div>
                 <div className={"collapse"} id="sectionCreate">
                     <div className="d-flex p-3 bg-light">
-                        <CreateRangeForm dataMap={props.dataMap} newObject={handleNewObject} updateObject={props.updateObject}/>
+                        <CreateRangeForm dataMap={this.props.dataMap} newObject={this.handleNewObject}
+                                         updateObject={this.props.updateObject}/>
                     </div>
                 </div>
                 <div className={"collapse"} id="tableCreate">
                     <div className="d-flex p-3 bg-light">
-                        <CreateTableForm dataMap={props.dataMap} newObject={handleNewObject} updateObject={props.updateObject}/>
+                        <CreateTableForm dataMap={this.props.dataMap} newObject={this.handleNewObject}
+                                         updateObject={this.props.updateObject}/>
                     </div>
                 </div>
             </aside>
         );
+    }
 }
 
 export default RightSidebar;

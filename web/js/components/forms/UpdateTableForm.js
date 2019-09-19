@@ -29,6 +29,7 @@ class UpdateTableForm extends Component {
         this.setState({'isUpdating': !this.state.isUpdating});
     };
     handleFocusObject=()=>{
+        console.log("Test");
         this.setUpdate();
         this.props.focusedObject(this.props.updateObject);
         let object= this.props.updateObject;
@@ -61,10 +62,6 @@ class UpdateTableForm extends Component {
             return true;
         });
     }
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log(this.state.nom);
-    }
-
     handleChangeForm =(event) =>{
         const target = event.target;
         const value = target.value;
@@ -75,6 +72,7 @@ class UpdateTableForm extends Component {
     };
     handleSubmitRangeForm(event) {
         this.setState({submitted: true}, () => {
+            this.setUpdate();
             let object=this.props.updateObject;
             object.nom = this.state.nom;
             object.deleted_seats = this.state.deleted_seats;
