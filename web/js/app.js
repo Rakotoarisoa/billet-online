@@ -618,6 +618,22 @@ class App extends Component {
         });
         return group;
     };
+    //Ajouter objet type Forme
+    renderShape = (object, transformer = null) => {
+        let group = new Konva.Group({
+            id: object.id,
+            x: object.x,
+            y: object.y,
+            height: this.state.topBuff * 2 + textWidth + this.state.bottomBuff,
+            width: contWidth,
+            visible: true,
+            draggable: false,
+            fill: "#A9A8B3",
+            name: object.nom.toString(),
+            rotation: object.rotation
+        });
+
+    };
 
     //initialisation pendant Montage du composant
     componentDidMount() {

@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Button from "@material-ui/core/Button";
 
+
 class CreateRangeForm extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            nom: 'Nom par défaut',
+            nom: 'Section 1',
             cols: 5,
             rows: 5,
             type:'section',

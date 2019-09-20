@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import CreateRangeForm from "./forms/CreateRangeForm";
 import CreateTableForm from "./forms/CreateTableForm";
+import CreateZoneForm from "./forms/CreateZoneForm";
 import SaveCanvas from "./forms/SaveCanvas";
 import UpdateTableForm from "./forms/UpdateTableForm";
 import Fade from "@material-ui/core/Fade";
@@ -85,6 +86,13 @@ class RightSidebar extends Component {
                 <Fade in={this.state.clickedTable && !this.props.updateObject} style={{transitionDelay: this.props.clickedTable ? '50ms' : '50ms'}}>{ <div id="tableCreate" style={{display:(this.state.clickedTable && !this.props.updateObject)?"inherit":"none"}}>
                     <div className="d-flex p-3 bg-light">
                         <CreateTableForm dataMap={this.props.dataMap} newObject={this.handleNewObject}
+                                         updateObject={this.props.updateObject}/>
+                    </div>
+                </div>
+                }</Fade>
+                <Fade in={this.state.clickedZone && !this.props.updateObject} style={{transitionDelay: this.props.clickedZone ? '50ms' : '50ms'}}>{ <div id="zoneCreate" style={{display:(this.state.clickedZone && !this.props.updateObject)?"inherit":"none"}}>
+                    <div className="d-flex p-3 bg-light">
+                        <CreateZoneForm dataMap={this.props.dataMap} newObject={this.handleNewObject}
                                          updateObject={this.props.updateObject}/>
                     </div>
                 </div>
