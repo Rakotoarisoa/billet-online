@@ -5,6 +5,7 @@ import axios from 'axios';
 import RightSidebar from "./components/RightSidebar";
 import {ToastContainer} from "react-toastr";
 import DeleteContext from "./components/contexts/DeleteContext";
+import UpdateContext from "./components/contexts/UpdateContext";
 
 let container;
 
@@ -141,7 +142,6 @@ class App extends Component {
                     continue;
                 }
                 /** End Deleted Seats*/
-
                 let newGroup = new Konva.Group({
                     name: alphabet[i].toUpperCase() + (j + 1),
                     x: parseInt((this.state.posX + sideBuff) + rad + j * dia + j * gap),
@@ -165,7 +165,7 @@ class App extends Component {
                     fontStyle: "arial",
                     fontSize: 10,
                     x: -3,
-                    y: - 5
+                    y: -5
                 });
                 newGroup.add(circle);
                 newGroup.add(text);
@@ -210,7 +210,7 @@ class App extends Component {
                 section.getLayer().draw();
             });
         });
-        section.on('dragend', (e) => {
+        section.on('dragend transformend', (e) => {
             let data = {
                 id: object.id,
                 nom: object.nom,
@@ -220,7 +220,7 @@ class App extends Component {
                 ySeats: object.ySeats,
                 type: 'section',
                 rotation: section.rotation(),
-                number_seats: (object.xSeats * object.ySeats)
+                number_seats: (object.xSeats * object.ySeats) - object.deleted_seats.length
             };
             if (object.deleted_seats) {
                 data.deleted_seats = object.deleted_seats;
@@ -300,7 +300,7 @@ class App extends Component {
                 continue;
             }
             let top_group = new Konva.Group({
-                name: (numero_chaise+1).toString(),
+                name: (numero_chaise + 1).toString(),
                 id: numero_chaise++,
                 x: this.state.sideBuff * 3 + leftStart + this.state.dia * i + this.state.gap * i,
                 y: parseInt(topPos)
@@ -322,8 +322,8 @@ class App extends Component {
                 text: numero_chaise,
                 fontStyle: "arial",
                 fontSize: 10,
-                x: - 3,
-                y: - 5
+                x: -3,
+                y: -5
             });
             top_group.add(top_circle);
             top_group.add(top_text);
@@ -335,7 +335,7 @@ class App extends Component {
                 continue;
             }
             let right_group = new Konva.Group({
-                name: (numero_chaise+1).toString(),
+                name: (numero_chaise + 1).toString(),
                 id: numero_chaise++,
                 x: rightPos + this.state.sideBuff * 2,
                 y: parseInt(topStart + this.state.topBuff + this.state.dia * i + this.state.gap * i)
@@ -359,8 +359,8 @@ class App extends Component {
                 text: numero_chaise,
                 fontStyle: "arial",
                 fontSize: 10,
-                x: - 7,
-                y: - 5
+                x: -7,
+                y: -5
             });
             right_group.add(right_circle);
             right_group.add(right_text);
@@ -372,7 +372,7 @@ class App extends Component {
                 continue;
             }
             let bottom_group = new Konva.Group({
-                name: (numero_chaise+1).toString(),
+                name: (numero_chaise + 1).toString(),
                 id: numero_chaise++,
                 x: this.state.sideBuff * 3 + leftStart + this.state.dia * (j - 1) + this.state.gap * (j - 1),
                 y: bottomPos
@@ -394,8 +394,8 @@ class App extends Component {
                 text: numero_chaise,
                 fontStyle: "arial",
                 fontSize: 10,
-                x: - 5,
-                y: - 5
+                x: -5,
+                y: -5
             });
             bottom_group.add(bottom_circle);
             bottom_group.add(bottom_text);
@@ -407,7 +407,7 @@ class App extends Component {
                 continue;
             }
             let left_group = new Konva.Group({
-                name: (numero_chaise+1).toString(),
+                name: (numero_chaise + 1).toString(),
                 id: numero_chaise++,
                 x: leftPos + 15,
                 y: parseInt(topStart + this.state.topBuff + this.state.dia * (j - 1) + this.state.gap * (j - 1))
@@ -432,7 +432,7 @@ class App extends Component {
                 fontStyle: "arial",
                 fontSize: 10,
                 x: -5,
-                y: - 5
+                y: -5
             });
             left_group.add(left_circle);
             left_group.add(left_text);
@@ -464,7 +464,7 @@ class App extends Component {
             });
 
         });
-        table.on('dragend', (e) => {
+        table.on('dragend transformend', (e) => {
             let data = {
                 id: object.id,
                 nom: object.nom,
@@ -548,8 +548,8 @@ class App extends Component {
                 continue;
             }
             let c_group = new Konva.Group({
-                name: (i+1).toString(),
-                id: i+1
+                name: (i + 1).toString(),
+                id: i + 1
             });
             let circle = new Konva.Circle({
                 x: Math.cos(deg * i) * (tableRad + this.state.gap + this.state.rad) + tableLeft,
@@ -600,7 +600,7 @@ class App extends Component {
             });
 
         });
-        group.on('dragend', (e) => {
+        group.on('dragend transformend', (e) => {
             let data = {
                 id: object.id,
                 nom: object.nom,
@@ -609,7 +609,7 @@ class App extends Component {
                 chaises: seats,
                 type: 'ronde',
                 rotation: group.rotation(),
-                number_seats: seats
+                number_seats: seats - object.deleted_seats.length
             };
             if (object.deleted_seats) {
                 data.deleted_seats = object.deleted_seats;
@@ -639,7 +639,6 @@ class App extends Component {
             .catch(function (error) {
                 container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
             });
-
     }
 
     //Nombre total de chaises
@@ -673,7 +672,6 @@ class App extends Component {
     };
     //Supprimer un objet sur le canvas
     deleteObject = (object) => {
-        console.log(object);
         let data = this.state.data_map;
         data.forEach((el, i) => {
             if (el.id === object.id) {
@@ -794,7 +792,7 @@ class App extends Component {
             this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});
         });*/
 
-        /** Focus on object*/
+        /** Focus on object : executed when this.state.focusObject is not null*/
         let focus_object = this.state.focusObject;
         if (focus_object) {
             stage.off('dragend click tap');
@@ -803,7 +801,7 @@ class App extends Component {
             });
             object[0].moveTo(focusLayer);
             transformer.moveTo(focusLayer);
-            let seatTranformer=new Konva.Transformer({
+            let seatTranformer = new Konva.Transformer({
                 name: 'SeatTransformer',
                 rotateAnchorOffset: 5,
                 borderStroke: "#007bff",
@@ -816,22 +814,31 @@ class App extends Component {
             object[0].draggable(false);
             transformer.rotateEnabled(false);
             object[0].off("dragend click tap");//
-            let seats=object[0].find(node =>{
-                return node.parent === object[0] && node.getType() === 'Group';
+            let unGrouped_object = object[0].find(node => {
+                return node.parent === object[0];
             });
-            console.log(seats);
-            object[0].on("click tap",(e)=>{
-                    let group_object=e.target.parent;
-                    if(group_object.parent === object[0]) {
-                        let name=group_object.getAttr('name');
-                        let circle=group_object.getChildren(node=>{ return node.getType() === 'Shape'});
-                        group_object.position(circle[0].position());
-                        group_object.moveTo(focusLayer);
-                        transformer.attachTo(group_object);
-                        focusLayer.batchDraw();
+            unGrouped_object.forEach((element)=>{
+                element.moveTo(focusLayer);
+                let x=object[0].position().x+element.position().x;
+                let y=object[0].position().y+element.position().y;
+                element.position({x:x,y:y});
+                element.on('click tap',()=>{
+                    if (element.getType() === "Group") {
+                        this.setState({'selectedSeat':element.getAttr('name')},()=>{
+                            seatTranformer.attachTo(element);
+                            focusLayer.draw();
+                        });
+
                     }
-
-
+                    else{
+                        this.setState({'selectedSeat':null},()=>{
+                            seatTranformer.detach();
+                            focusLayer.draw();
+                        });
+                    }
+                });
+                object[0].remove();
+                focusLayer.batchDraw();
             });
             layer.find(node => {
                 return node.getType() === 'Group'
@@ -872,11 +879,6 @@ class App extends Component {
             stage.batchDraw();
         });
     };
-    hoverSeat = e => {
-        this.setState({
-            selectedSeat: e
-        });
-    };
     handleSelected = e => {
         this.setState({'selectedItem': e});
     };
@@ -905,10 +907,12 @@ class App extends Component {
                     <span style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</span>
                     <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                     <DeleteContext.Provider value={this.deleteObject}>
-                    <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
-                                  focusedObject={this.getFocusedObject} updatedObject={this.getUpdatedObject}
-                                  dataMap={this.state.data_map} updateObject={this.state.selectedItem}
-                                  />
+
+                        <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
+                                      focusedObject={this.getFocusedObject} updatedObject={this.getUpdatedObject}
+                                      dataMap={this.state.data_map} updateObject={this.state.selectedItem}
+                                      selectedSeat={this.state.selectedSeat}
+                        />
                     </DeleteContext.Provider>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>

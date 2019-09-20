@@ -3,10 +3,16 @@ import CreateRangeForm from "./forms/CreateRangeForm";
 import CreateTableForm from "./forms/CreateTableForm";
 import SaveCanvas from "./forms/SaveCanvas";
 import UpdateTableForm from "./forms/UpdateTableForm";
+import Fade from "@material-ui/core/Fade";
 class RightSidebar extends Component {
     constructor(props){
         super(props);
     }
+    state = {
+       clickedTable: false,
+       clickedZone: false,
+       clickedSection: false
+    };
     handleNewObject = (object) => {
         this.props.addNewObject(object);
     };
@@ -26,6 +32,21 @@ class RightSidebar extends Component {
             this.props.updatedObject(obj);
         }
     };
+    switchClick =(clicked)=>{
+        switch(clicked.target.id){
+            case "table":
+                this.setState({clickedTable:!this.state.clickedTable});
+                console.log("Table :"+ this.state.clickedTable);
+                break;
+            case "zone":
+                this.setState({clickedZone:!this.state.clickedZone});
+                break;
+            case "section":
+                this.setState({clickedSection:!this.state.clickedSection});
+                break;
+        }
+
+    }
     render() {
         return (
             <aside>
@@ -35,41 +56,39 @@ class RightSidebar extends Component {
                         <div className={"d-flex d-flex-row"}>
 
                             <div className="p-2 bg-light">
-                                <button className={"btn btn-light"} data-toggle={"collapse"}
-                                        data-target={"#tableCreate"}>Table
+                                <button className={"btn btn-light"} id="table" onClick={this.switchClick}>Table
                                 </button>
                             </div>
                             <div className="p-2 bg-light">
-                                <button className={"btn btn-light"} data-toggle={"collapse"}
-                                        data-target={"#zoneCreate"} aria-expanded="false"
-                                        aria-controls="zoneCreate">Zone
+                                <button className={"btn btn-light"} id="zone" onClick={this.switchClick}>Zone
                                 </button>
                             </div>
                             <div className="p-2 bg-light">
-                                <button className={"btn btn-light"} data-toggle={"collapse"}
-                                        data-target={"#sectionCreate"}
-                                        aria-expanded="false" aria-controls="sectionCreate">Rangée
+                                <button className={"btn btn-light"} id="section" onClick={this.switchClick}>Rangée
                                 </button>
                             </div>
                         </div>
                     </div>}
                     {this.props.updateObject &&
                     <UpdateTableForm focusedObject={this.getFocusedObject} updateObject={this.props.updateObject}
-                                     updatedObject={this.getUpdatedObject} dataMap={this.props.dataMap}/>}
+                                     updatedObject={this.getUpdatedObject} dataMap={this.props.dataMap} selectedSeat={this.props.selectedSeat}/>}
                     {!this.props.updateObject && <SaveCanvas saveCanvas={this.saveCanvas} updateObject={this.props.updateObject}/>}
                 </div>
-                <div className={"collapse"} id="sectionCreate">
+
+                <Fade in={this.state.clickedSection && !this.props.updateObject} style={{transitionDelay: this.props.clickedSection ? '50ms' : '50ms'}}>{<div id="sectionCreate" style={{display:(this.state.clickedSection && !this.props.updateObject)?"inherit":"none"}}>
                     <div className="d-flex p-3 bg-light">
                         <CreateRangeForm dataMap={this.props.dataMap} newObject={this.handleNewObject}
                                          updateObject={this.props.updateObject}/>
                     </div>
-                </div>
-                <div className={"collapse"} id="tableCreate">
+                </div>}</Fade>
+
+                <Fade in={this.state.clickedTable && !this.props.updateObject} style={{transitionDelay: this.props.clickedTable ? '50ms' : '50ms'}}>{ <div id="tableCreate" style={{display:(this.state.clickedTable && !this.props.updateObject)?"inherit":"none"}}>
                     <div className="d-flex p-3 bg-light">
                         <CreateTableForm dataMap={this.props.dataMap} newObject={this.handleNewObject}
                                          updateObject={this.props.updateObject}/>
                     </div>
                 </div>
+                }</Fade>
             </aside>
         );
     }

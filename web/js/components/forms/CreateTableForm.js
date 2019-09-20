@@ -126,7 +126,7 @@ class CreateTableForm extends Component{
                     xSeats:parseInt(this.state.rows),
                     ySeats:parseInt(this.state.cols),
                     type:this.state.table_type,
-                    number_seats: parseInt(this.state.rows)*parseInt(this.state.cols),
+                    number_seats: parseInt(this.state.rows)*2 +parseInt(this.state.cols)*2,
                     x:200,
                     y:200,
                     deleted_seats: []
