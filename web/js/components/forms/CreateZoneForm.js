@@ -104,7 +104,7 @@ class CreateZoneForm extends Component {
                     <div className="p-2 bg-light">
                         <TextValidator
                             id="texte"
-                            label="texte"
+                            label="Texte"
                             className={"form-control secondary"}
                             value={this.state.text}
                             onChange={this.handleChangeZoneForm}
@@ -116,7 +116,7 @@ class CreateZoneForm extends Component {
 
                     <div className={"p-2 bg-light"}>
                         <FormControl className={"form-control"}>
-                            <InputLabel htmlFor="icon">Forme</InputLabel>
+                            <InputLabel htmlFor="icon">Icône</InputLabel>
                             <Select
                                 value={this.state.icon}
                                 onChange={this.handleChangeZoneForm}

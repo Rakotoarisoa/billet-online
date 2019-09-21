@@ -5,7 +5,6 @@ import axios from 'axios';
 import RightSidebar from "./components/RightSidebar";
 import {ToastContainer} from "react-toastr";
 import DeleteContext from "./components/contexts/DeleteContext";
-import UpdateContext from "./components/contexts/UpdateContext";
 
 let container;
 
@@ -13,7 +12,6 @@ class App extends Component {
     constructor(props) {
         super(props);
     }
-
     state = {
         stageScale: 1,
         stageX: 1,
@@ -549,11 +547,11 @@ class App extends Component {
             }
             let c_group = new Konva.Group({
                 name: (i + 1).toString(),
-                id: i + 1
+                id: i + 1,
+                x: Math.cos(deg * i) * (tableRad + this.state.gap + this.state.rad) + tableLeft,
+                y: Math.sin(deg * i) * (tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad)
             });
             let circle = new Konva.Circle({
-                x: Math.cos(deg * i) * (tableRad + this.state.gap + this.state.rad) + tableLeft,
-                y: Math.sin(deg * i) * (tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad),
                 width: 20,
                 height: 20,
                 fill: "#A9A8B3",
@@ -568,8 +566,8 @@ class App extends Component {
                 text: i + 1,
                 fontStyle: "Tahoma, Geneva, sans-serif",
                 fontSize: 10,
-                x: Math.cos(deg * i) * (tableRad + this.state.gap + this.state.rad) + tableLeft - 5,
-                y: Math.sin(deg * i) * (tableRad + this.state.gap + this.state.rad) + (tableTop + tableRad - 5)
+                x: - 5,
+                y: - 5
             });
             c_group.add(circle);
             c_group.add(text);
@@ -634,7 +632,6 @@ class App extends Component {
         });
 
     };
-
     //initialisation pendant Montage du composant
     componentDidMount() {
         axios.get(
@@ -656,7 +653,6 @@ class App extends Component {
                 container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
             });
     }
-
     //Nombre total de chaises
     setTotalSeats() {
         let data = this.state.data_map;
@@ -668,7 +664,6 @@ class App extends Component {
             this.setState({'number_seats': nb_seats});
         }
     }
-
     //Tache pendant mise à jour du composant
     componentDidUpdate() {
         if (this.state.stage) {
@@ -676,7 +671,6 @@ class App extends Component {
             stage.batchDraw();
         }
     }
-
     //Sauvegarder le canvas
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save}, () => {
@@ -726,6 +720,7 @@ class App extends Component {
     };
     //Charger le stage (konva) , initialiser le map
     loadStage = (focusObj) => {
+        console.log(window.innerHeight);
         let data = this.state.data_map;
         this.setTotalSeats();
         let stage = new Konva.Stage({
@@ -833,10 +828,13 @@ class App extends Component {
             let unGrouped_object = object[0].find(node => {
                 return node.parent === object[0];
             });
-            unGrouped_object.forEach((element)=>{
+            unGrouped_object.forEach((element,i)=>{
+                console.log(object[0].getAbsolutePosition());
+                console.log(element.getAbsolutePosition());
+                let x=element.getAbsolutePosition().x;
+                let y=element.getAbsolutePosition().y;
                 element.moveTo(focusLayer);
-                let x=object[0].position().x+element.position().x;
-                let y=object[0].position().y+element.position().y;
+
                 element.position({x:x,y:y});
                 element.on('click tap',()=>{
                     if (element.getType() === "Group") {
@@ -912,7 +910,6 @@ class App extends Component {
             });
         }
     };
-
     //rendu du composant
     render() {
         return (
