@@ -5,6 +5,7 @@ import axios from 'axios';
 import RightSidebar from "./components/RightSidebar";
 import {ToastContainer} from "react-toastr";
 import DeleteContext from "./components/contexts/DeleteContext";
+import Button from "@material-ui/core/Button";
 
 let container;
 
@@ -36,6 +37,7 @@ class SetMap extends Component {
         bottomBuff: 10,
         sizeX: 10,
         data_map: [],
+        data_is_empty: true,
         saveCanvas: false,
         stage: null,
         tempLayer: null,
@@ -80,6 +82,12 @@ class SetMap extends Component {
                     return this.renderSectionSeat(object, transformer);
             }
         }
+    };
+    //Switch Data
+    switchData = () => {
+        this.setState({'data_is_empty': !this.state.data_is_empty},()=>{
+            container.success("Commencer à construire votre première table", 'Info', {closeButton: true});
+        });
     };
     //Ajouter objet Type Section
     renderSectionSeat = (object, transformer = null) => {
@@ -645,11 +653,15 @@ class SetMap extends Component {
     //initialisation pendant Montage du composant
     componentDidMount() {
         axios.get(
-            '/symfony3.4/web/api/event/get-map/395')
+            '/symfony3.4/web/api/event/get-map/394')
             .then((response) => {
-                this.setState({'data_map': response.data}, () => {
-                    let data = response.data;
+                let data=[];
+                if(response.data){
+                    data = response.data;
+                }
+                this.setState({'data_map': data}, () => {
                     if (data.length > 0) {
+                        this.setState({'data_is_empty': !this.state.data_is_empty});
                         let nb_seats = 0;
                         data.forEach((el) => {
                             nb_seats += parseInt(el.number_seats);
@@ -717,7 +729,7 @@ class SetMap extends Component {
         let data = this.state.data_map;
         data = JSON.stringify(data);
         axios.post(
-            '/symfony3.4/web/api/event/update-map/395', {
+            '/symfony3.4/web/api/event/update-map/394', {
                 data_map: JSON.parse(data)
             })
             .then(function (response) {
@@ -925,9 +937,11 @@ class SetMap extends Component {
             <div className="row">
                 <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
+                <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
+                {!this.state.data_is_empty &&
                 <div className="col-sm-3 sidebar-right">
+
                     <span style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</span>
-                    <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                     <DeleteContext.Provider value={this.deleteObject}>
 
                         <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
@@ -936,9 +950,20 @@ class SetMap extends Component {
                                       selectedSeat={this.state.selectedSeat}
                         />
                     </DeleteContext.Provider>
-                </div>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>
+                </div>}
+                {this.state.data_is_empty &&
+                <div className="col-sm-3 sidebar-right">
+                    <p className={"text text-danger"}>La carte ne contient aucune donnée</p>
+                    <p className={"text text-secondary"}>Cliquer ci-dessous pour débuter</p>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={"btn btn-primary"}
+                        onClick={this.switchData}
+                    >
+                        Commencer
+                    </Button>
+                </div>}
             </div>
         );
     }

@@ -20,12 +20,16 @@ class CreateRangeForm extends Component{
         ValidatorForm.addValidationRule('alreadyExist', (value) => {
             let data = this.props.dataMap;
             let object_names= [];
-            data.forEach((el)=>{
-                object_names.push(el.nom);
-            });
-            if(object_names.includes(value))
-                return false;
-            return true;
+            if(data.length >0) {
+                data.forEach((el) => {
+                    object_names.push(el.nom);
+                });
+                if (object_names.includes(value))
+                    return false;
+                return true;
+            }
+            else
+                return true;
         });
     }
     handleChangeRangeForm(event) {

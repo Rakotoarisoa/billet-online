@@ -37,7 +37,6 @@ class RightSidebar extends Component {
         switch(clicked.target.id){
             case "table":
                 this.setState({clickedTable:!this.state.clickedTable});
-                console.log("Table :"+ this.state.clickedTable);
                 break;
             case "zone":
                 this.setState({clickedZone:!this.state.clickedZone});

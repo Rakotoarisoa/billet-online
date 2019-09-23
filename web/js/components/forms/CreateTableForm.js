@@ -107,15 +107,19 @@ class CreateTableForm extends Component{
 
     }
     componentDidMount() {
-        ValidatorForm.addValidationRule('alreadyExist1', (value) => {
+        ValidatorForm.addValidationRule('alreadyExist', (value) => {
             let data = this.props.dataMap;
             let object_names= [];
-            data.forEach((el)=>{
-                object_names.push(el.nom);
-            });
-            if(object_names.includes(value))
-                return false;
-            return true;
+            if(data.length >0) {
+                data.forEach((el) => {
+                    object_names.push(el.nom);
+                });
+                if (object_names.includes(value))
+                    return false;
+                return true;
+            }
+            else
+                return true;
         });
     }
     handleSubmitRangeForm(event) {
@@ -186,7 +190,7 @@ class CreateTableForm extends Component{
                         ))}
                     </TextField>
                     <TextValidator
-                        validators={["required","alreadyExist1"]}
+                        validators={["required","alreadyExist"]}
                         errorMessages={['Ce champ est requis',"Ce nom d\'objet existe déjà sur le plan"]}
                         id="nom"
                         label="Nom"
