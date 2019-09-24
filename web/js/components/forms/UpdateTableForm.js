@@ -51,13 +51,12 @@ class UpdateTableForm extends Component {
     deleteSeat = () => {
         let deleted_seats = this.state.deleted_seats;
         let object = this.props.updateObject;
-        let selectedSeat= this.props.selectedSeat;
-        if(object.type !== "section")
-        {
+        let selectedSeat = this.props.selectedSeat;
+        if (object.type !== "section") {
             console.log("parsedInt");
-            selectedSeat=parseInt(selectedSeat);
+            selectedSeat = parseInt(selectedSeat);
         }
-        object.number_seats = object.number_seats-1;
+        object.number_seats = object.number_seats - 1;
         deleted_seats.push(selectedSeat);
         this.setState({'deleted_seats': deleted_seats});
     };
@@ -68,6 +67,7 @@ class UpdateTableForm extends Component {
         });
         return <ul>{list}</ul>;
     };
+
     componentDidMount() {
         let object = this.props.updateObject;
         this.setState({
@@ -106,7 +106,7 @@ class UpdateTableForm extends Component {
             object.nom = this.state.nom;
             object.deleted_seats = this.state.deleted_seats;
             this.props.updatedObject(object);
-            setTimeout(() => this.setState({submitted: false,deleted_seats:[]}), 1000);
+            setTimeout(() => this.setState({submitted: false, deleted_seats: []}), 1000);
         });
         event.preventDefault();
     }
@@ -122,15 +122,13 @@ class UpdateTableForm extends Component {
                 {!this.state.isUpdating &&
                 <Fade in={!this.state.isUpdating} style={{transitionDelay: !this.state.isUpdating ? '50ms' : '50ms'}}>
                     <div className="p-2 bg-light">
-                        <div className={"d-flex d-flex-row"}>
-                            <div className="p-2 bg-light">
-                                <p>Nom : {object.nom}</p>
-                                <p>Type : {object.type}</p>
-                                <p>Nombre de places : {object.number_seats}</p>
-                            </div>
+                        <div className="p-2 bg-light">
+                            <p><b>Identifiant :</b> {object.nom}</p>
+                            <p><b>Type :</b> {object.type}</p>
+                            <p><b>Nombre de places :</b> {object.number_seats}</p>
                         </div>
-                        <div className={"p-2 bg-light"}>
-                            <div className={"d-flex d-flex-row"}>
+
+                        <div className={"d-flex flex-wrap justify-content-center"}>
                                 <div className="p-2 bg-light">
                                     <Button variant="contained"
                                             color="primary"
@@ -152,7 +150,6 @@ class UpdateTableForm extends Component {
                                         }
                                     </DeleteContext.Consumer>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </Fade>}
@@ -178,29 +175,31 @@ class UpdateTableForm extends Component {
                                 />
                             </div>
                         </div>
-                        {this.state.deleted_seats.length>0 &&
-                            <div className="p-2 bg-light">
-                                {
-                                    this.renderDeletedSeats
-                                }
-                            </div>
+                        {this.state.deleted_seats.length > 0 &&
+                        <div className="p-2 bg-light">
+                            {
+                                this.renderDeletedSeats
+                            }
+                        </div>
 
                         }
                         {this.props.selectedSeat &&
-                        <Fade in={this.props.selectedSeat !== null} style={{transitionDelay: this.props.selectedSeat !== null ? '50ms' : '50ms'}}>
-                        <div className="p-2 bg-light">
-                            <Button variant="contained"
-                                                     color="secondary"
-                                                     className={"form-control btn btn-secondary"}
-                                                     onClick={this.deleteSeat}
-                        >
-                            <span className={"fa fa-seat"}></span>Supprimer la chaise n°{this.props.selectedSeat}
-                        </Button>
-                        </div>
+                        <Fade in={this.props.selectedSeat !== null}
+                              style={{transitionDelay: this.props.selectedSeat !== null ? '50ms' : '50ms'}}>
+                            <div className="p-2 bg-light">
+                                <Button variant="contained"
+                                        color="secondary"
+                                        className={"form-control btn btn-secondary"}
+                                        onClick={this.deleteSeat}
+                                >
+                                    <span className={"fa fa-seat"}></span>Supprimer la chaise
+                                    n°{this.props.selectedSeat}
+                                </Button>
+                            </div>
                         </Fade>}
 
-                        <div className={"p-2 bg-light"}>
-                            <div className={"d-flex d-flex-row"}>
+
+                            <div className={"d-flex flex-wrap justify-content-center"}>
                                 <div className="p-2 bg-light">
                                     <Button variant="contained"
                                             color="primary"
@@ -218,7 +217,6 @@ class UpdateTableForm extends Component {
                                     </Button>
                                 </div>
                             </div>
-                        </div>
                     </div>
                 </Fade>}
             </ValidatorForm>

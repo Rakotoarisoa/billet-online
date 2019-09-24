@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import {render} from 'react-dom';
 import Konva from 'konva';
 import axios from 'axios';
-import RightSidebar from "./components/RightSidebar";
 import {ToastContainer} from "react-toastr";
 import DeleteContext from "./components/contexts/DeleteContext";
+import RightSidebarTicket from "./components/RightSidebarTicket";
 
 let container;
 
@@ -924,16 +924,11 @@ class SetTicket extends Component {
                 <div id="stage-container-ticket" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
                 <div className="col-sm-3 sidebar-right">
-                    <span style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</span>
+                    <p style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</p>
+                    <p style={{color: '#eeeeee'}}>Nombre de places assignés (avec billets): </p>
                     <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
-                    <DeleteContext.Provider value={this.deleteObject}>
+                    <RightSidebarTicket/>
 
-                        <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
-                                      focusedObject={this.getFocusedObject} updatedObject={this.getUpdatedObject}
-                                      dataMap={this.state.data_map} updateObject={this.state.selectedItem}
-                                      selectedSeat={this.state.selectedSeat}
-                        />
-                    </DeleteContext.Provider>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>

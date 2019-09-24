@@ -20,9 +20,7 @@ class SetMap extends Component {
         scaleX: 1,
         scaleY: 1,
         selectedItem: null,
-        newItem: '',
         isAddingItem: false,
-        current_map: '',
         selectedSeat: null,
         x: 200,
         y: 200,
@@ -40,7 +38,6 @@ class SetMap extends Component {
         data_is_empty: true,
         saveCanvas: false,
         stage: null,
-        tempLayer: null,
         focusObject: null,
         initWidth: 947,
         initHeight: 947,
@@ -653,7 +650,7 @@ class SetMap extends Component {
     //initialisation pendant Montage du composant
     componentDidMount() {
         axios.get(
-            '/symfony3.4/web/api/event/get-map/394')
+            '/symfony3.4/web/api/event/get-map/395')
             .then((response) => {
                 let data=[];
                 if(response.data){
@@ -729,7 +726,7 @@ class SetMap extends Component {
         let data = this.state.data_map;
         data = JSON.stringify(data);
         axios.post(
-            '/symfony3.4/web/api/event/update-map/394', {
+            '/symfony3.4/web/api/event/update-map/395', {
                 data_map: JSON.parse(data)
             })
             .then(function (response) {
@@ -940,8 +937,7 @@ class SetMap extends Component {
                 <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                 {!this.state.data_is_empty &&
                 <div className="col-sm-3 sidebar-right">
-
-                    <span style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</span>
+                    <p style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</p>
                     <DeleteContext.Provider value={this.deleteObject}>
 
                         <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}

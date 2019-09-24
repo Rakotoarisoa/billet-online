@@ -19,11 +19,12 @@ class BilletController extends AbstractFOSRestController
 {
 
     /**
+     * @Rest\View
      * @Rest\Get("/api/billets/list")
      */
     public function getAllTicket()
     {
-        $restResult = $this->getDoctrine()->getRepository(User::class)->findAll();
+        $restResult = $this->getDoctrine()->getRepository(Billet::class)->findAll();
         if ($restResult === null) {
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
@@ -42,7 +43,7 @@ class BilletController extends AbstractFOSRestController
         if ($restResult === null) {
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
-        return $restResult;
+        return View::create($restResult, Response::HTTP_OK);
     }
     /**
      * @Rest\Get("/api/ticket/update/{id}")
@@ -64,7 +65,7 @@ class BilletController extends AbstractFOSRestController
 
         $id=$request->get('id');
         $sn = $this->getDoctrine()->getManager();
-        $user = $this->getDoctrine()->getRepository(Ticket::class)->find($id);
+        $user = $this->getDoctrine()->getRepository(Billet::class)->find($id);
         if (empty($user)) {
             return new View("Ticket non trouvé", Response::HTTP_NOT_FOUND);
         }
@@ -75,4 +76,25 @@ class BilletController extends AbstractFOSRestController
         return new View("Supprimé", Response::HTTP_OK);
     }
     //TODO: Récupérer données de la carte
+    /**
+     * @Rest\View
+     * @Rest\Get("/api/event/{id}/billet/list")
+     * @param $id
+     * @return View|object|null
+     */
+    public function getTicketByEvent($id){
+        $evenement =$this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        $billet = $this->getDoctrine()->getRepository(Billet::class)->findBy(['evenement'=> $evenement]);
+        if ($billet === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
+        return $billet;
+
+    }
+    /**
+     *
+     */
+    public function create($id){
+
+    }
 }

@@ -24,7 +24,22 @@ class EventController extends Controller
     {
 
     }
+    /**
+     * @Route("/events/list", name="event_shows")
+     */
+    public function showAction()
+    {
 
+        $eventsList = $this->getDoctrine()
+            ->getRepository(Evenement::class)
+            ->findAll();
+        $data = $this->get('jms_serializer')->serialize($eventsList, 'json');
+
+        $response = new Response($data);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
     /**
      * Formulaire de création d'évènements
      * @Route("/{userId}/events/create", name="createEvent")

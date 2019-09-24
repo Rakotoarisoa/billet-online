@@ -23,9 +23,8 @@ class SaveCanvas extends Component {
     render() {
         return (
             <Fade in={!this.state.isUpdatingObject}>
-            <div className={"p-2 bg-light"}>
-                <div className={"d-flex d-flex-row"}>
-                    <div className="p-2 bg-light">
+            <div className={"d-inline-flex p-2"}>
+                    <div className="p-2">
                         <Button variant="contained"
                                 color="primary"
                                 className={"btn btn-primary"}
@@ -34,7 +33,6 @@ class SaveCanvas extends Component {
                             Sauvegarder la carte
                         </Button>
                     </div>
-                </div>
             </div>
             </Fade>
         );

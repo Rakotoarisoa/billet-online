@@ -36,13 +36,14 @@ class TypeBilletController extends AbstractFOSRestController
      * @param $id
      * @return View|object|null
      */
-    public function getTicketTypeById($id)
+    public function getTicketTypeByEvent($id)
     {
-        $restResult = $this->getDoctrine()->getRepository(TypeBillet::class)->find($id);
+        $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        $restResult = $this->getDoctrine()->getRepository(TypeBillet::class)->findBy(["evenement"=>$evenement]);
         if ($restResult === null) {
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
-        return $restResult;
+        return View::create($restResult,Response::HTTP_OK);
     }
     /**
      * @Rest\Get("/api/event/update/{id}")

@@ -5,6 +5,7 @@ namespace AppBundle\Controller\Api;
 use AppBundle\Entity\Evenement;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
@@ -54,7 +55,7 @@ class EventController extends AbstractFOSRestController
         }
         //var_dump(unserialize(json_decode($restResult->getEtatSalle())));
         //var_dump($restResult->getEtatSalle());
-        return unserialize($restResult->getEtatSalle());
+        return JsonResponse::create(unserialize($restResult->getEtatSalle()));
     }
     /**
      * @Rest\Get("/event/get-map2/{id}")
