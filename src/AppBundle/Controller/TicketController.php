@@ -34,8 +34,6 @@ class TicketController extends Controller
      */
     public function getListBillets(Request $request)
     {
-
-
         return $this->render('Tickets/view-buy-list.html.twig', array());
     }
 

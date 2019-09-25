@@ -12,6 +12,7 @@ class SetTicket extends Component {
     constructor(props) {
         super(props);
     }
+
     state = {
         stageScale: 1,
         stageX: 1,
@@ -43,6 +44,7 @@ class SetTicket extends Component {
         initWidth: 947,
         initHeight: 947,
         number_seats: 0,
+        color_seat: ""
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -166,7 +168,7 @@ class SetTicket extends Component {
                     y: -5
 
                 });
-                text.on('transform',()=>{
+                text.on('transform', () => {
                     console.log('tranformed');
                 });
                 newGroup.add(circle);
@@ -229,9 +231,11 @@ class SetTicket extends Component {
             }
             this.updateObject(data);
         });
-        section.on('transform',()=>{
-            let text_list=section.find(node=>{return node.getAttr("text") && !node.hasChildren()});
-            text_list.forEach((text)=>{
+        section.on('transform', () => {
+            let text_list = section.find(node => {
+                return node.getAttr("text") && !node.hasChildren()
+            });
+            text_list.forEach((text) => {
                 text.fill("red");
                 section.getLayer().batchDraw();
             });
@@ -576,8 +580,8 @@ class SetTicket extends Component {
                 text: i + 1,
                 fontStyle: "Tahoma, Geneva, sans-serif",
                 fontSize: 10,
-                x: - 5,
-                y: - 5
+                x: -5,
+                y: -5
             });
             c_group.add(circle);
             c_group.add(text);
@@ -641,27 +645,23 @@ class SetTicket extends Component {
         });
 
     };
+
     //initialisation pendant Montage du composant
     componentDidMount() {
-        axios.get(
-            '/symfony3.4/web/api/event/get-map/395')
-            .then((response) => {
-                this.setState({'data_map': response.data}, () => {
-                    let data = response.data;
-                    if (data.length > 0) {
-                        let nb_seats = 0;
-                        data.forEach((el) => {
-                            nb_seats += parseInt(el.number_seats);
-                        });
-                        this.setState({'number_seats': nb_seats});
-                    }
-                    this.loadStage();
+        let data = this.props.dataMap;
+        this.setState({'data_map': data}, () => {
+            if (data.length > 0) {
+                let nb_seats = 0;
+                data.forEach((el) => {
+                    nb_seats += parseInt(el.number_seats);
                 });
-            })
-            .catch(function (error) {
-                container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
-            });
+                this.setState({'number_seats': nb_seats});
+            }
+            this.loadStage();
+        });
+
     }
+
     //Nombre total de chaises
     setTotalSeats() {
         let data = this.state.data_map;
@@ -673,6 +673,7 @@ class SetTicket extends Component {
             this.setState({'number_seats': nb_seats});
         }
     }
+
     //Tache pendant mise à jour du composant
     componentDidUpdate() {
         if (this.state.stage) {
@@ -680,6 +681,7 @@ class SetTicket extends Component {
             stage.batchDraw();
         }
     }
+
     //Sauvegarder le canvas
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save}, () => {
@@ -835,24 +837,22 @@ class SetTicket extends Component {
             let unGrouped_object = object[0].find(node => {
                 return node.parent === object[0];
             });
-            unGrouped_object.forEach((element,i)=>{
+            unGrouped_object.forEach((element, i) => {
                 console.log(object[0].getAbsolutePosition());
                 console.log(element.getAbsolutePosition());
-                let x=element.getAbsolutePosition().x;
-                let y=element.getAbsolutePosition().y;
+                let x = element.getAbsolutePosition().x;
+                let y = element.getAbsolutePosition().y;
                 element.moveTo(focusLayer);
-
-                element.position({x:x,y:y});
-                element.on('click tap',()=>{
+                element.position({x: x, y: y});
+                element.on('click tap', () => {
                     if (element.getType() === "Group") {
-                        this.setState({'selectedSeat':element.getAttr('name')},()=>{
+                        this.setState({'selectedSeat': element.getAttr('name')}, () => {
                             seatTranformer.attachTo(element);
                             focusLayer.draw();
                         });
 
-                    }
-                    else{
-                        this.setState({'selectedSeat':null},()=>{
+                    } else {
+                        this.setState({'selectedSeat': null}, () => {
                             seatTranformer.detach();
                             focusLayer.draw();
                         });
@@ -917,6 +917,7 @@ class SetTicket extends Component {
             });
         }
     };
+
     //rendu du composant
     render() {
         return (
@@ -936,6 +937,7 @@ class SetTicket extends Component {
         );
     }
 }
+
 export default SetTicket;
 
 

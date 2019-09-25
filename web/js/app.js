@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import reactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
@@ -9,6 +9,9 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import SetMap from "./SetMap";
 import SetTicket from "./SetTicket";
+import axios from "axios";
+import {ToastContainer} from "react-toastr";
+import { EventProvider } from './components/contexts/EventContext';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -47,11 +50,26 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 function App() {
+    let container = null;
     const classes = useStyles();
-    const [value, setValue] = React.useState(0);
-
+    const [data,setData] = React.useState([]);
+    const [tabIndex, setTabIndex] = React.useState(0);
+    const event_data = {event_id:event_id,dataMap:data};
+    const event_id= document.getElementById("root").getAttribute("data-event-id");
+    useEffect(()=>{
+        axios.get(
+            '/api/event/get-map/'+event_id)
+            .then((response) => {
+                if(response.data){
+                    setData(response.data);
+                }
+            })
+            .catch(function (error) {
+                container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
+            });
+    },[]);
     function handleChange(event, newValue) {
-        setValue(newValue);
+        setTabIndex(newValue);
     }
     const handleChangeN =() =>{
         console.log("Clicked");
@@ -59,18 +77,21 @@ function App() {
 
     return (
         <div className={classes.root}>
+            <EventProvider value={event_data}>
+            <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
             <AppBar position="static">
-                <Tabs value={value} onChange={handleChange} aria-label="simple tab">
+                <Tabs value={tabIndex} onChange={handleChange} aria-label="simple tab">
                     <Tab label="Configuration Carte" {...a11yProps(0)} onChange={handleChangeN} />
                     <Tab label="Assigner les billets" {...a11yProps(1)} onChange={handleChangeN} />
                 </Tabs>
             </AppBar>
-            <TabPanel value={value} index={0}>
-                <SetMap/>
+            <TabPanel value={tabIndex} index={0}>
+                <SetMap dataMap={event_data.dataMap} />
             </TabPanel>
-            <TabPanel value={value} index={1}>
-                <SetTicket/>
+            <TabPanel value={tabIndex} index={1}>
+                <SetTicket dataMap={event_data.dataMap}/>
             </TabPanel>
+            </EventProvider>
         </div>
     );
 }

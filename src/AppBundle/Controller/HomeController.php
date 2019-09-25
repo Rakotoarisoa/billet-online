@@ -59,12 +59,12 @@ class HomeController extends Controller
     }
     /**
      * Page création map
-     * @Route("/create-map", name="viewCreateMape")
+     * @Route("/create-map/{id}", name="viewCreateMape")
      * @Security("has_role('ROLE_USER')")
      * TODO:Implémentation Création Map
      */
-    public function vueCreateMap(){
-        return $this->render('event_admin/event/view-map-admin.html.twig');
+    public function vueCreateMap(Evenement $event){
+        return $this->render('event_admin/event/view-map-admin.html.twig',array('event'=>$event));
     }
     /**
      * Page Seatmap , reservation de place

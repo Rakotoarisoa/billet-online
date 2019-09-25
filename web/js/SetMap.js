@@ -12,6 +12,7 @@ let container;
 class SetMap extends Component {
     constructor(props) {
         super(props);
+        console.log(props);
     }
     state = {
         stageScale: 1,
@@ -181,6 +182,7 @@ class SetMap extends Component {
                 type: 'zone',
                 rotation: zone.rotation(),
             };
+            transformer.resizeEnabled(true);
             this.updateObject(data);
         });
         zone.on('resize transform',(e)=>{
@@ -767,28 +769,18 @@ class SetMap extends Component {
     };
     //initialisation pendant Montage du composant
     componentDidMount() {
-        axios.get(
-            '/symfony3.4/web/api/event/get-map/395')
-            .then((response) => {
-                let data=[];
-                if(response.data){
-                    data = response.data;
-                }
-                this.setState({'data_map': data}, () => {
-                    if (data.length > 0) {
-                        this.setState({'data_is_empty': !this.state.data_is_empty});
-                        let nb_seats = 0;
-                        data.forEach((el) => {
-                            nb_seats += parseInt(el.number_seats);
-                        });
-                        this.setState({'number_seats': nb_seats});
-                    }
-                    this.loadStage();
+        let data = this.props.dataMap;
+        this.setState({'data_map': data}, () => {
+            if (data.length > 0) {
+                this.setState({'data_is_empty': !this.state.data_is_empty});
+                let nb_seats = 0;
+                data.forEach((el) => {
+                    nb_seats += parseInt(el.number_seats);
                 });
-            })
-            .catch(function (error) {
-                container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
-            });
+                this.setState({'number_seats': nb_seats});
+            }
+        });
+        this.loadStage();
     }
     //Nombre total de chaises
     setTotalSeats() {
@@ -844,7 +836,7 @@ class SetMap extends Component {
         let data = this.state.data_map;
         data = JSON.stringify(data);
         axios.post(
-            '/symfony3.4/web/api/event/update-map/395', {
+            '/api/event/update-map/395', {
                 data_map: JSON.parse(data)
             })
             .then(function (response) {
@@ -1052,7 +1044,6 @@ class SetMap extends Component {
             <div className="row">
                 <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
-                <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                 {!this.state.data_is_empty &&
                 <div className="col-sm-3 sidebar-right">
                     <p style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</p>
