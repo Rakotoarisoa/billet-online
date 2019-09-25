@@ -75,6 +75,8 @@ class SetMap extends Component {
                     return this.renderTableRect(object, transformer);
                 case "ronde":
                     return this.renderTableCircle(object, transformer);
+                case "zone":
+                    return this.renderZone(object, transformer);
                 default:
                     return this.renderSectionSeat(object, transformer);
             }
@@ -85,6 +87,122 @@ class SetMap extends Component {
         this.setState({'data_is_empty': !this.state.data_is_empty},()=>{
             container.success("Commencer à construire votre première table", 'Info', {closeButton: true});
         });
+    };
+    //Ajouter objet type zone
+    renderZone = (object,transformer,width =200, height=200) => {
+        let zone = new Konva.Group({
+            id: object.id,
+            name: object.nom.toString(),
+            x: object.x,
+            y: object.y,
+            height: height,
+            width: width,
+            draggable: false,
+            rotation: object.rotation
+        });
+        let table =null;
+        if(object.forme === "cercle"){
+            table = new Konva.Circle({
+                x: width/2,
+                y: width/2,
+                radius: 50,
+                fill: object.color.toString(),
+                stroke: "#888888",
+                strokeWidth: 2
+            });
+        }
+        else if(object.forme === "rectangle"){
+            table = new Konva.Rect({
+                x: 0,
+                y: 0,
+                radius: 50,
+                fill: object.color.toString(),
+                stroke: "#888888",
+                strokeWidth: 2,
+                width: 200,
+                height: 200
+            });
+        }
+
+        let text = new Konva.Text({
+            text: object.nom,
+            x: width/2-50/2,
+            y: height/2,
+            width: 50,
+            height: 10,
+        });
+        //Add icon
+        var path = new Konva.Path({
+            x: width/2,
+            y: height/2,
+            data:
+                'M44,28c-0.552,0-1,0.447-1,1v6c0,7.72-6.28,14-14,14s-14-6.28-14-14v-6c0-0.553-0.448-1-1-1s-1,0.447-1,1v6   c0,8.485,6.644,15.429,15,15.949V56h-5c-0.552,0-1,0.447-1,1s0.448,1,1,1h12c0.552,0,1-0.447,1-1s-0.448-1-1-1h-5v-5.051   c8.356-0.52,15-7.465,15-15.949v-6C45,28.447,44.552,28,44,28z',
+            fill: 'black',
+            scale: {
+                x: 1,
+                y: 1
+            }
+        });
+        zone.add(table);
+        zone.add(text);
+        zone.add(path);
+        zone.on('click tap', (e) => {
+            transformer.attachTo(zone);
+            this.setState({
+                'selectedItem':
+                    {
+                        id: object.id,
+                        nom: object.nom,
+                        x: object.x,
+                        y: object.y,
+                        forme: object.forme,
+                        color: object.color,
+                        type: 'zone',
+                        rotation: zone.rotation()
+                    },
+                'focusObject': null
+            }, () => {
+                zone.draggable(true);
+                transformer.resizeEnabled(true);
+                zone.moveToTop();
+                zone.getLayer().draw();
+            });
+        });
+        zone.on('dragend transformend', (e) => {
+            let data = {
+                id: object.id,
+                nom: object.nom,
+                x: e.target.x(),
+                y: e.target.y(),
+                forme: object.forme,
+                color: object.color,
+                width: zone.width(),
+                height: zone.height(),
+                type: 'zone',
+                rotation: zone.rotation(),
+            };
+            this.updateObject(data);
+        });
+        zone.on('resize transform',(e)=>{
+            zone = this.renderZone(object,transformer,zone.getAbsoluteScale().x*zone.width(),zone.getAbsoluteScale().y*zone.height());
+            zone.position({x:e.target.x(),y:e.target.y()});
+            let data = {
+                id: object.id,
+                nom: object.nom,
+                x: e.target.x(),
+                y: e.target.y(),
+                forme: object.forme,
+                color: object.color,
+                width: zone.width(),
+                height: zone.height(),
+                type: 'zone',
+                rotation: zone.rotation(),
+            };
+            this.updateObject(data);
+            zone.getLayer().batchDraw();
+        });
+        return zone;
+
     };
     //Ajouter objet Type Section
     renderSectionSeat = (object, transformer = null) => {

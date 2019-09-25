@@ -16,6 +16,7 @@ class CreateZoneForm extends Component {
             type: 'zone',
             text: 'Texte',
             icon: 'micro',
+            color: '#888888',
             submitted: false
         };
         this.handleChangeZoneForm = this.handleChangeZoneForm.bind(this);
@@ -25,27 +26,32 @@ class CreateZoneForm extends Component {
     componentDidMount() {
         ValidatorForm.addValidationRule('alreadyExist', (value) => {
             let data = this.props.dataMap;
-            let object_names= [];
-            if(data.length >0) {
+            let object_names = [];
+            if (data.length > 0) {
                 data.forEach((el) => {
                     object_names.push(el.nom);
                 });
                 if (object_names.includes(value))
                     return false;
                 return true;
-            }
-            else
+            } else
                 return true;
         });
     }
 
     handleChangeZoneForm(event) {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-        this.setState({
-            [name]: value
-        });
+        if (typeof event.target == "undefined" && event.match(/^#[0-9a-f]{3,6}$/i)) {
+            console.log("color");
+            this.setState({'color': event.toString()});
+        } else {
+            console.log("other");
+            const target = event.target;
+            const value = target.value;
+            const name = target.name;
+            this.setState({
+                [name]: value
+            });
+        }
 
     }
 
@@ -54,6 +60,10 @@ class CreateZoneForm extends Component {
             this.props.newObject({
                 nom: this.state.nom,
                 type: this.state.type,
+                text: this.state.text,
+                forme: this.state.forme,
+                icon: this.state.icon,
+                color: this.state.color,
                 x: 200,
                 y: 200
             });
@@ -140,9 +150,8 @@ class CreateZoneForm extends Component {
                         <InputLabel htmlFor="color">Couleur</InputLabel>
                         <ColorPicker
                             name='color'
-                            defaultValue='#000'
-                            // value={this.state.color} - for controlled component
-                            onChange={color => console.log(color)}
+                            value={this.state.color}
+                            onChange={this.handleChangeZoneForm}
 
                         />
 
