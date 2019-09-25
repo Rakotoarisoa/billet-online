@@ -4,10 +4,12 @@ namespace AppBundle\Entity;
 
 use AppBundle\Utils\Slugger;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\EvenementRepository")
  * @ORM\Table(name="evenement")
+ * @Serializer\ExclusionPolicy("none")
  */
 class Evenement
 {
@@ -133,42 +135,49 @@ class Evenement
     /**
      * @ORM\ManyToOne(targetEntity="CategorieEvenement", inversedBy="evenement")
      * @ORM\JoinColumn(name="id_categorie_evt", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $categorieEvenement;
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="evenements")
      * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $user;
     /**
      * @ORM\ManyToOne(targetEntity="LieuEvenement", inversedBy="evenement")
      * @ORM\JoinColumn(name="id_lieu_evt", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $lieuEvenement;
     /**
      * @ORM\OneToMany(targetEntity="Reservation", mappedBy="evenement")
+     * @Serializer\Exclude
      */
     private $reservation;
     /**
-     * @ORM\OneToMany(targetEntity="Billet", mappedBy="evenement")
+     * @ORM\OneToMany(targetEntity="TypeBillet", mappedBy="evenement")
+     * @Serializer\Exclude
      */
-    private $billets;
+    private $typeBillets;
 
     /**
      * @return mixed
      */
-    public function getBillets()
+    public function getTypeBillets()
     {
-        return $this->billets;
+        return $this->typeBillets;
     }
 
     /**
-     * @param mixed $billets
+     * @param mixed $typeBillets
      */
-    public function setBillets($billets): void
+    public function setTypeBillets($typeBillets): void
     {
-        $this->billets = $billets;
+        $this->typeBillets = $typeBillets;
     }
+
+
     /**
      * @ORM\Column(type="json", length=255,nullable=true)
      */

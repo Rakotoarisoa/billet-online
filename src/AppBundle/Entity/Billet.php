@@ -3,9 +3,12 @@
 
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BilletRepository")
  * @ORM\Table(name = "billet")
+ * @Serializer\ExclusionPolicy("none")
+ *
  */
 class Billet
 {
@@ -23,11 +26,13 @@ class Billet
     /**
      * @ORM\ManyToOne(targetEntity="TypeBillet", inversedBy="billets")
      * @ORM\JoinColumn(name="id_billet", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $typeBillet;
     /**
      * @ORM\ManyToOne(targetEntity="Reservation",inversedBy="billet")
      * @ORM\JoinColumn(name="id_reservation", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $reservation;
     /**
@@ -39,27 +44,6 @@ class Billet
      *
      */
     private $estVendu;
-    /**
-     * @ORM\ManyToOne(targetEntity="Evenement",inversedBy="billets")
-     * @ORM\JoinColumn(name="id_evenement", referencedColumnName="id")
-     */
-    private $evenement;
-
-    /**
-     * @return mixed
-     */
-    public function getEvenement()
-    {
-        return $this->evenement;
-    }
-
-    /**
-     * @param mixed $evenement
-     */
-    public function setEvenement($evenement): void
-    {
-        $this->evenement = $evenement;
-    }
     /**
      * @return mixed
      */
@@ -91,10 +75,6 @@ class Billet
     {
         $this->place_id = $place_id;
     }
-    /**
-     * @ORM\Column(type="decimal",scale=2)
-     */
-    private $prix;
 
     /**
      * @return mixed
@@ -160,20 +140,5 @@ class Billet
         $this->reservation = $reservation;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPrix()
-    {
-        return $this->prix;
-    }
-
-    /**
-     * @param mixed $prix
-     */
-    public function setPrix($prix)
-    {
-        $this->prix = $prix;
-    }
 
 }
