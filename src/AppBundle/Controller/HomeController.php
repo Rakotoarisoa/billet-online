@@ -42,16 +42,13 @@ class HomeController extends Controller
 
     /**
      * Page affichage évènement
-     * @Route("/event/{date}/{slugEvent}", name="viewSingle")
-     * @ParamConverter("event", options={"mapping":{"slugEvent" = "titreEvenementSlug","date"="dateDebutEvenement"}})
+     * @Route("/event/{id}", name="viewSingle")
+     * @ParamConverter("event", options={"mapping":{"id" = "id"}})
      * @param Evenement $event
      * @return Response
      */
     public function showSingleEvent(Evenement $event)
     {
-        //$path = $this->get('kernel')->getRootDir() . '/../web/js/seat-map.json';
-        //$file=file_get_contents($path);
-        //$event->setEtatSalle(serialize(json_encode($file)));
         $repo = $this->getDoctrine()->getRepository(Billet::class);
         $queryTicketsState=$repo->countPurchasedTickets($event);
         $this->getDoctrine()->getRepository(Evenement::class)->initMapEvent($event);
@@ -68,8 +65,8 @@ class HomeController extends Controller
     }
     /**
      * Page Seatmap , reservation de place
-     * @Route("/event/{date}/{slugEvent}/{idEvent}/map", name="viewBuyMap")
-     * @ParamConverter("event", options={"mapping":{"slugEvent" = "titreEvenementSlug","date"="dateDebutEvenement","idEvent"="id"}})
+     * @Route("/event/{idEvent}/map", name="viewBuyMap")
+     * @ParamConverter("event", options={"mapping":{"idEvent"="id"}})
      */
     public function vueMap(Evenement $event){
 
@@ -78,8 +75,8 @@ class HomeController extends Controller
 
     /**
      * Page Seatmap , reservation de place, liste de billets
-     * @Route("/{date}/{slugEvent}/listTicket", name="viewTicketList")
-     * @ParamConverter("event", options={"mapping":{"slugEvent" = "titreEvenementSlug","date"="dateDebutEvenement"}})
+     * @Route("/event/{id}/list-ticket", name="viewTicketList")
+     * @ParamConverter("event", options={"mapping":{"id" = "id"}})
      * @param Request $request
      * @param Evenement $event
      * @return Response

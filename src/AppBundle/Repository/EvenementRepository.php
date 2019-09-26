@@ -16,7 +16,7 @@ class EvenementRepository extends EntityRepository
     public function search($titre=null,$lieu=null,$date=null)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT e.titreEvenementSlug, e.titreEvenement, e.imageEvent, e.dateDebutEvent, e.dateFinEvent, lieu.nomSalle FROM AppBundle:Evenement e
+            ->createQuery('SELECT e.id,e.titreEvenementSlug, e.titreEvenement, e.imageEvent, e.dateDebutEvent, e.dateFinEvent, lieu.nomSalle FROM AppBundle:Evenement e
             LEFT JOIN AppBundle:LieuEvenement lieu WITH e.lieuEvenement=lieu.id
            WHERE e.titreEvenement LIKE :titre AND lieu.nomSalle LIKE :lieu AND e.dateDebutEvent LIKE :date AND e.isPublished = 1')
             ->setParameter('titre', '%'.$titre.'%')

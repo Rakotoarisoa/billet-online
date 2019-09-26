@@ -21,8 +21,6 @@ class SetTicket extends Component {
         scaleY: 1,
         selectedItem: null,
         newItem: '',
-        isAddingItem: false,
-        current_map: '',
         selectedSeat: null,
         x: 200,
         y: 200,
@@ -44,7 +42,7 @@ class SetTicket extends Component {
         initWidth: 947,
         initHeight: 947,
         number_seats: 0,
-        color_seat: ""
+        color_seat: "#EEEEEE"
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -154,7 +152,7 @@ class SetTicket extends Component {
                     height: 20,
                     stroke: "#888888",
                     strokeWidth: 2,
-                    fill: "#A9A8B3",
+                    fill: this.state.color_seat,
                     shadowColor: 'gray',
                     shadowOffsetX: 2,
                     shadowOffsetY: 2,
@@ -323,7 +321,7 @@ class SetTicket extends Component {
                 y: 0,
                 width: 20,
                 height: 20,
-                fill: "#A9A8B3",
+                fill: this.state.color_seat,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -360,7 +358,7 @@ class SetTicket extends Component {
                 y: 0,
                 width: 20,
                 height: 20,
-                fill: "#A9A8B3",
+                fill: this.state.color_seat,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -395,7 +393,7 @@ class SetTicket extends Component {
                 y: 0,
                 width: 20,
                 height: 20,
-                fill: "#A9A8B3",
+                fill: this.state.color_seat,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -432,7 +430,7 @@ class SetTicket extends Component {
                 y: 0,
                 width: 20,
                 height: 20,
-                fill: "#A9A8B3",
+                fill: this.state.color_seat,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -533,7 +531,7 @@ class SetTicket extends Component {
             width: contWidth,
             visible: true,
             draggable: false,
-            fill: "#A9A8B3",
+            fill: this.state.color_seat,
             name: object.nom.toString(),
             rotation: object.rotation
         });
@@ -568,7 +566,7 @@ class SetTicket extends Component {
             let circle = new Konva.Circle({
                 width: 20,
                 height: 20,
-                fill: "#A9A8B3",
+                fill: this.state.color_seat,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -639,7 +637,7 @@ class SetTicket extends Component {
             width: contWidth,
             visible: true,
             draggable: false,
-            fill: "#A9A8B3",
+            fill: this.state.color_seat,
             name: object.nom.toString(),
             rotation: object.rotation
         });
@@ -648,17 +646,26 @@ class SetTicket extends Component {
 
     //initialisation pendant Montage du composant
     componentDidMount() {
-        let data = this.props.dataMap;
-        this.setState({'data_map': data}, () => {
-            if (data.length > 0) {
-                let nb_seats = 0;
-                data.forEach((el) => {
-                    nb_seats += parseInt(el.number_seats);
-                });
-                this.setState({'number_seats': nb_seats});
-            }
-            this.loadStage();
-        });
+        axios.get(
+            '/api/event/get-map/'+this.props.eventId)
+            .then((response) => {
+                if(response.data){
+                    this.setState({'data_map':response.data});
+                    let data=this.state.data_map;
+                    if (data.length > 0) {
+                        this.setState({'data_is_empty': !this.state.data_is_empty});
+                        let nb_seats = 0;
+                        data.forEach((el) => {
+                            nb_seats += parseInt(el.number_seats);
+                        });
+                        this.setState({'number_seats': nb_seats});
+                    }
+                    this.loadStage();
+                }
+            })
+            .catch(function (error) {
+                container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
+            });
 
     }
 
@@ -718,7 +725,7 @@ class SetTicket extends Component {
         let data = this.state.data_map;
         data = JSON.stringify(data);
         axios.post(
-            '/symfony3.4/web/api/event/update-map/395', {
+            '/symfony3.4/web/api/event/update-map/'+this.props.eventId, {
                 data_map: JSON.parse(data)
             })
             .then(function (response) {
@@ -922,12 +929,12 @@ class SetTicket extends Component {
     render() {
         return (
             <div className="row">
+                <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                 <div id="stage-container-ticket" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
                 <div className="col-sm-3 sidebar-right">
                     <p style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</p>
                     <p style={{color: '#eeeeee'}}>Nombre de places assignés (avec billets): </p>
-                    <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                     <RightSidebarTicket/>
 
                 </div>

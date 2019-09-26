@@ -54,7 +54,7 @@
                                 <a href="#" class="event-place">{{   item.nomSalle }}</a>
                                 <a href="#" class="event-date">{{ item.dateDebutEvent|date("m/d/Y") }}</a>
                             </div>
-                            <a href="{{ path('viewSingle',{'slugEvent':item.titreEvenementSlug,'date':item.dateDebutEvent|date("Y-m-d")}) }}" class="btn see-more-btn">Détails</a>
+                            <a href="{{ path('viewSingle',{'id':item.id}) }}" class="btn see-more-btn">Détails</a>
                         </div>
                     </div>
                 </div>

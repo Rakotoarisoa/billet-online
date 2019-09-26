@@ -6,14 +6,15 @@ import RightSidebar from "./components/RightSidebar";
 import {ToastContainer} from "react-toastr";
 import DeleteContext from "./components/contexts/DeleteContext";
 import Button from "@material-ui/core/Button";
+import {EventProvider} from "./components/contexts/EventContext";
 
 let container;
 
 class SetMap extends Component {
     constructor(props) {
         super(props);
-        console.log(props);
     }
+
     state = {
         stageScale: 1,
         stageX: 1,
@@ -85,12 +86,12 @@ class SetMap extends Component {
     };
     //Switch Data
     switchData = () => {
-        this.setState({'data_is_empty': !this.state.data_is_empty},()=>{
+        this.setState({'data_is_empty': !this.state.data_is_empty}, () => {
             container.success("Commencer à construire votre première table", 'Info', {closeButton: true});
         });
     };
     //Ajouter objet type zone
-    renderZone = (object,transformer,width =200, height=200) => {
+    renderZone = (object, transformer, width = 200, height = 200) => {
         let zone = new Konva.Group({
             id: object.id,
             name: object.nom.toString(),
@@ -101,18 +102,17 @@ class SetMap extends Component {
             draggable: false,
             rotation: object.rotation
         });
-        let table =null;
-        if(object.forme === "cercle"){
+        let table = null;
+        if (object.forme === "cercle") {
             table = new Konva.Circle({
-                x: width/2,
-                y: width/2,
+                x: width / 2,
+                y: width / 2,
                 radius: 50,
                 fill: object.color.toString(),
                 stroke: "#888888",
                 strokeWidth: 2
             });
-        }
-        else if(object.forme === "rectangle"){
+        } else if (object.forme === "rectangle") {
             table = new Konva.Rect({
                 x: 0,
                 y: 0,
@@ -127,15 +127,15 @@ class SetMap extends Component {
 
         let text = new Konva.Text({
             text: object.nom,
-            x: width/2-50/2,
-            y: height/2,
+            x: width / 2 - 50 / 2,
+            y: height / 2,
             width: 50,
             height: 10,
         });
         //Add icon
         var path = new Konva.Path({
-            x: width/2,
-            y: height/2,
+            x: width / 2,
+            y: height / 2,
             data:
                 'M44,28c-0.552,0-1,0.447-1,1v6c0,7.72-6.28,14-14,14s-14-6.28-14-14v-6c0-0.553-0.448-1-1-1s-1,0.447-1,1v6   c0,8.485,6.644,15.429,15,15.949V56h-5c-0.552,0-1,0.447-1,1s0.448,1,1,1h12c0.552,0,1-0.447,1-1s-0.448-1-1-1h-5v-5.051   c8.356-0.52,15-7.465,15-15.949v-6C45,28.447,44.552,28,44,28z',
             fill: 'black',
@@ -185,9 +185,9 @@ class SetMap extends Component {
             transformer.resizeEnabled(true);
             this.updateObject(data);
         });
-        zone.on('resize transform',(e)=>{
-            zone = this.renderZone(object,transformer,zone.getAbsoluteScale().x*zone.width(),zone.getAbsoluteScale().y*zone.height());
-            zone.position({x:e.target.x(),y:e.target.y()});
+        zone.on('resize transform', (e) => {
+            zone = this.renderZone(object, transformer, zone.getAbsoluteScale().x * zone.width(), zone.getAbsoluteScale().y * zone.height());
+            zone.position({x: e.target.x(), y: e.target.y()});
             let data = {
                 id: object.id,
                 nom: object.nom,
@@ -290,8 +290,8 @@ class SetMap extends Component {
                     x: -3,
                     y: -5
                 });
-                text.on('transform',()=>{
-                   console.log('tranformed');
+                text.on('transform', () => {
+                    console.log('tranformed');
                 });
                 newGroup.add(circle);
                 newGroup.add(text);
@@ -353,9 +353,11 @@ class SetMap extends Component {
             }
             this.updateObject(data);
         });
-        section.on('transform',()=>{
-            let text_list=section.find(node=>{return node.getAttr("text") && !node.hasChildren()});
-            text_list.forEach((text)=>{
+        section.on('transform', () => {
+            let text_list = section.find(node => {
+                return node.getAttr("text") && !node.hasChildren()
+            });
+            text_list.forEach((text) => {
                 text.fill("red");
                 section.getLayer().batchDraw();
             });
@@ -701,8 +703,8 @@ class SetMap extends Component {
                 text: i + 1,
                 fontStyle: "Tahoma, Geneva, sans-serif",
                 fontSize: 10,
-                x: - 5,
-                y: - 5
+                x: -5,
+                y: -5
             });
             c_group.add(circle);
             c_group.add(text);
@@ -767,21 +769,31 @@ class SetMap extends Component {
         });
 
     };
+
     //initialisation pendant Montage du composant
     componentDidMount() {
-        let data = this.props.dataMap;
-        this.setState({'data_map': data}, () => {
-            if (data.length > 0) {
-                this.setState({'data_is_empty': !this.state.data_is_empty});
-                let nb_seats = 0;
-                data.forEach((el) => {
-                    nb_seats += parseInt(el.number_seats);
-                });
-                this.setState({'number_seats': nb_seats});
-            }
+        axios.get(
+            '/api/event/get-map/' + this.props.eventId)
+            .then((response)=> {
+                if (response.data) {
+                    this.setState({'data_map': response.data});
+                    let data = this.state.data_map;
+                    if (data.length > 0) {
+                        this.setState({'data_is_empty': !this.state.data_is_empty});
+                        let nb_seats = 0;
+                        data.forEach((el) => {
+                            nb_seats += parseInt(el.number_seats);
+                        });
+                        this.setState({'number_seats': nb_seats});
+                    }
+                    this.loadStage();
+                }
+            })
+        .catch(function (error) {
+            container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
         });
-        this.loadStage();
     }
+
     //Nombre total de chaises
     setTotalSeats() {
         let data = this.state.data_map;
@@ -793,13 +805,7 @@ class SetMap extends Component {
             this.setState({'number_seats': nb_seats});
         }
     }
-    //Tache pendant mise à jour du composant
-    componentDidUpdate() {
-        if (this.state.stage) {
-            let stage = this.state.stage;
-            stage.batchDraw();
-        }
-    }
+
     //Sauvegarder le canvas
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save}, () => {
@@ -836,7 +842,7 @@ class SetMap extends Component {
         let data = this.state.data_map;
         data = JSON.stringify(data);
         axios.post(
-            '/api/event/update-map/395', {
+            '/api/event/update-map/' + this.props.eventId, {
                 data_map: JSON.parse(data)
             })
             .then(function (response) {
@@ -956,24 +962,23 @@ class SetMap extends Component {
             let unGrouped_object = object[0].find(node => {
                 return node.parent === object[0];
             });
-            unGrouped_object.forEach((element,i)=>{
+            unGrouped_object.forEach((element, i) => {
                 console.log(object[0].getAbsolutePosition());
                 console.log(element.getAbsolutePosition());
-                let x=element.getAbsolutePosition().x;
-                let y=element.getAbsolutePosition().y;
+                let x = element.getAbsolutePosition().x;
+                let y = element.getAbsolutePosition().y;
                 element.moveTo(focusLayer);
 
-                element.position({x:x,y:y});
-                element.on('click tap',()=>{
+                element.position({x: x, y: y});
+                element.on('click tap', () => {
                     if (element.getType() === "Group") {
-                        this.setState({'selectedSeat':element.getAttr('name')},()=>{
+                        this.setState({'selectedSeat': element.getAttr('name')}, () => {
                             seatTranformer.attachTo(element);
                             focusLayer.draw();
                         });
 
-                    }
-                    else{
-                        this.setState({'selectedSeat':null},()=>{
+                    } else {
+                        this.setState({'selectedSeat': null}, () => {
                             seatTranformer.detach();
                             focusLayer.draw();
                         });
@@ -1038,10 +1043,12 @@ class SetMap extends Component {
             });
         }
     };
+
     //rendu du composant
     render() {
         return (
             <div className="row">
+                <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                 <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
                 {!this.state.data_is_empty &&
@@ -1073,6 +1080,7 @@ class SetMap extends Component {
         );
     }
 }
+
 export default SetMap;
 
 

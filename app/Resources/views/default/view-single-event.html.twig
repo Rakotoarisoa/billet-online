@@ -107,7 +107,7 @@
                                     </div>
                                     <div class="modal-body">
                                         {% if event.isUsingSeatMap == 1 %}
-                                            <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"
+                                            <a href="{{ url('viewBuyMap',{'idEvent':event.id}) }}"
                                                class="btn oneMusic-btn m-2" style="text-transform: none;">Sur le plan de
                                                 salle
                                                 <i class="fa fa-circle"></i></a>
@@ -115,7 +115,7 @@
                                             <p href="#" class="text m-2 text-danger"
                                                style="text-transform: none;">{{ 'events.map_not_available'|trans }}</p>
                                         {% endif %}
-                                        <a href="{{ url('viewTicketList',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d")}) }}"
+                                        <a href="{{ url('viewTicketList',{'id':event.id}) }}"
                                            class="btn oneMusic-btn m-2" style="text-transform: none;">Lister les billets<i
                                                     class="fa fa-list"></i></a>
                                     </div>

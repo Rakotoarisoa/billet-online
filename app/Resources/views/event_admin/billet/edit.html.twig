@@ -28,7 +28,7 @@
                 <p class="alert alert-info pull-right"> Le billet sera relié avec votre évènement : {{ event.titreEvenement }}</p>
     <div class="row">
         <div class="col">
-            <a class="page-link" href="{{ path('billet_index',{ 'userId':app.user.username,'event':event.titreEvenementSlug}) }}">Retour vers la liste des billets</a>
+            <a class="page-link" href="{{ path('billet_index',{ 'userId':app.user.id,'event':event.id}) }}">Retour vers la liste des billets</a>
 
         </div>
         <div class="col">

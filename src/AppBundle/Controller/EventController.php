@@ -43,7 +43,7 @@ class EventController extends Controller
     /**
      * Formulaire de création d'évènements
      * @Route("/{userId}/events/create", name="createEvent")
-     * @ParamConverter("user",options={"mapping":{"userId" = "usernameCanonical"}})
+     * @ParamConverter("user",options={"mapping":{"userId" = "id"}})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
@@ -107,7 +107,7 @@ class EventController extends Controller
                 $entityManager->persist($event);
                 $entityManager->flush();
                 $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez vos billets ici');
-                return $this->redirectToRoute('billet_index',array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUserNameCanonical()));
+                return $this->redirectToRoute('billet_index',array('event' => $event->getId(), 'userId' => $this->getUser()->getId()));
             }
             else{
                 $entityManager = $this->getDoctrine()->getManager();
@@ -130,7 +130,7 @@ class EventController extends Controller
     /**
      * Gestion des évènements de l'utilisateur
      * @Route("/{userId}/events/list", name="viewListUser")
-     * @ParamConverter("user",options={"mapping":{"userId" = "usernameCanonical"}})
+     * @ParamConverter("user",options={"mapping":{"userId" = "id"}})
      * @param Request $request
      * @param User $user
      * @return Response
@@ -226,7 +226,7 @@ class EventController extends Controller
 
                     $this->getDoctrine()->getManager()->flush();
                     $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez vos billets ici');
-                    return $this->redirectToRoute('billet_index', array('event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUsername()));
+                    return $this->redirectToRoute('billet_index', array('event' => $event->getId(), 'userId' => $this->getUser()->getId()));
                 } catch (\ErrorException $e) {
                     $this->addFlash('error','Erreur pendant l\'enregistrement');
                 }

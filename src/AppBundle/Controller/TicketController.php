@@ -40,8 +40,8 @@ class TicketController extends Controller
     /**
      * Displays a form to edit an existing billet entity.
      *
-     * @Route("/{userId}/{event}/tickets/edit/{id}", name="billet_edit")
-     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug","id"="id"}})
+     * @Route("/{userId}/tickets/edit/{id}", name="billet_edit")
+     * @ParamConverter("event", options={"mapping":{"userId" = "user.id","id"="id"}})
      * @Security("has_role('ROLE_USER')")
      * @Method({"GET", "POST"})
      */
@@ -53,7 +53,7 @@ class TicketController extends Controller
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-            return $this->redirectToRoute('billet_show', array('id' => $billet->getId(), 'userId' => $this->getUser()->getUserName(), 'event' => $billet->getEvenement()->getTitreEvenementSlug()));
+            return $this->redirectToRoute('billet_show', array('id' => $billet->getId(), 'userId' => $this->getUser()->getId(), 'event' => $billet->getEvenement()->getId()));
         }
 
         return $this->render('event_admin/billet/edit.html.twig', array(
@@ -67,8 +67,8 @@ class TicketController extends Controller
     /**
      * Deletes a billet entity.
      *
-     * @Route("/{userId}/{event}/tickets/delete/{id}", name="billet_delete")
-     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug","id"="id"}})
+     * @Route("/{userId}/event/{event}/tickets/delete/{id}", name="billet_delete")
+     * @ParamConverter("event", options={"mapping":{"userId" = "user.id","event"="id","id"="id"}})
      * @Method("DELETE")
      * @Security("has_role('ROLE_USER')")
      */
@@ -83,14 +83,14 @@ class TicketController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute('billet_index', array('userId' => $this->getUser()->getUserName(), 'event' => $billet->getEvenement()->getTitreEvenementSlug()));
+        return $this->redirectToRoute('billet_index', array('userId' => $this->getUser()->getId(), 'event' => $billet->getEvenement()->getId()));
     }
 
     /**
      * Finds and displays a billet entity.
      *
      * @Route("/{userId}/{event}/tickets/{id}", name="billet_show")
-     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug","id"="id"}})
+     * @ParamConverter("event", options={"mapping":{"userId" = "user.id","id"="id"}})
      * @Method("GET")
      * @Security("has_role('ROLE_USER')")
      */
@@ -108,8 +108,8 @@ class TicketController extends Controller
     /**
      * Creates a new billet entity.
      *
-     * @Route("/{userId}/{event}/billets/create", name="billet_new")
-     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug"}})
+     * @Route("/{userId}/event/{event}/billets/create", name="billet_new")
+     * @ParamConverter("event", options={"mapping":{"userId" = "user.id","event"="id"}})
      * @Method({"GET", "POST"})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
@@ -127,7 +127,7 @@ class TicketController extends Controller
             $billet->setEvenement($event);
             $em->persist($billet);
             $em->flush();
-            return $this->redirectToRoute('billet_show', array('id' => $billet->getId(), 'event' => $event->getTitreEvenementSlug(), 'userId' => $this->getUser()->getUserName()));
+            return $this->redirectToRoute('billet_show', array('id' => $billet->getId(), 'event' => $event->getId(), 'userId' => $this->getUser()->getId()));
         }
         return $this->render('event_admin/billet/new.html.twig', array(
             'billet' => $billet,
@@ -137,8 +137,8 @@ class TicketController extends Controller
     }
 
     /**
-     * @Route("/{userId}/{event}/billets/list", name="billet_index")
-     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug"}})
+     * @Route("/{userId}/event/{event}/billets/list", name="billet_index")
+     * @ParamConverter("event", options={"mapping":{"userId" = "user.id","event"="id"}})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param Evenement $event
@@ -216,7 +216,7 @@ class TicketController extends Controller
                 $prix=(float)$request->request->get('prix');
                 $repo->generateTickets($prix,$nbr_b,$type_b,$event);
                 $this->addFlash('success','Billets Ajouté avec succès');
-                return $this->redirectToRoute('billet_index',array('userId'=>$this->getUser()->getUserName(),'event'=>$event->getTitreEvenementSlug()));
+                return $this->redirectToRoute('billet_index',array('userId'=>$this->getUser()->getId(),'event'=>$event->getId()));
             }
 
         return $this->render('event_admin/billet/view-billet-generate.html.twig',array('event'=>$event,'ticketState'=>$queryTicketsState));

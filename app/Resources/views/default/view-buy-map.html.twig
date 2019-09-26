@@ -21,7 +21,7 @@
             </div>
         </div>
         <p>
-            <a href="{{ url('viewSingle',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
+            <a href="{{ url('viewSingle',{'id':event.id}) }}"><span class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
         </p>
     {% endblock %}
     {% block contact %}{% endblock %}

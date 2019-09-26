@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 import Button from "@material-ui/core/Button";
+import EventContext from "./contexts/EventContext";
 
 function RightSidebarTicket(props) {
     const [billet, setBillet] = useState([]);
@@ -8,18 +9,29 @@ function RightSidebarTicket(props) {
     const addTicket = () => {
 
     };
+    const {colors,setColors} = React.useState([]);
+    function generateColor() {
+        const nb=20;
+        let listColors=[];
+        for(let i=0;i<nb;i++)
+        {
+            listColors.push('#' +  Math.random().toString(16).substr(-6));
+        }
+        setColors(listColors);
+        console.log(colors);
+    };
+    const event_id = useContext(EventContext);
     const list = billet.map((ticket, i) =>
         <li className="list-group-item d-flex justify-content-between align-items-center" key={i}>
-            <p ><span className={"fa fa-plus-circle fa-3x"} onClick={()=>{console.log("clicked")}}></span></p>
+            <p ><span className={"fa fa-plus-circle fa-3x"} onClick={()=>{console.log("clicked")}} style={{color : "#EEE"}}></span></p>
             <p>{ticket.libelle}</p>
             <p>{ticket.quantite} billets</p>
         </li>
     );
     useEffect(() => {
-        let url = "http://localhost:8000";
         const fetchData = async () => {
             const result = await axios(
-                url + '/api/typeBillet/395',
+                '/api/typeBillet/'+event_id
             );
             setBillet(result.data);
         };
@@ -27,7 +39,7 @@ function RightSidebarTicket(props) {
     }, []);
     return (
         <aside>
-            <div className={''}>
+            <div className={''} onClick={generateColor}>
                 <div className="d-flex d-flex-row">
                     <ul className="col-sm-12 list-group">
                         {list}
