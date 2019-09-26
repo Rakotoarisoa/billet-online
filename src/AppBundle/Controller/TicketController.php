@@ -201,7 +201,7 @@ class TicketController extends Controller
     /**
      * Générer des billets
      * @Route("/{userId}/{event}/tickets/generate/", name="generateTickets")
-     * @ParamConverter("event", options={"mapping":{"userId" = "usernameCanonical","event"="titreEvenementSlug"}})
+     * @ParamConverter("event", options={"mapping":{"userId" = "user.id","event"="id"}})
      * @param Request $request
      * @param Evenement $event
      */

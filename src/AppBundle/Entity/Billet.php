@@ -40,6 +40,26 @@ class Billet
      */
     private $place_id;
     /**
+     * @ORM\Column(type="string", length=10)
+     */
+    private $section_id;
+
+    /**
+     * @return mixed
+     */
+    public function getSectionId()
+    {
+        return $this->section_id;
+    }
+
+    /**
+     * @param mixed $section_id
+     */
+    public function setSectionId($section_id): void
+    {
+        $this->section_id = $section_id;
+    }
+    /**
      * @ORM\Column(type="boolean")
      *
      */
