@@ -36,14 +36,33 @@ class Billet
      */
     private $reservation;
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="string", length=10,nullable=true)
      */
     private $place_id;
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="string", length=10,nullable=true)
      */
     private $section_id;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isMapped;
 
+    /**
+     * @return mixed
+     */
+    public function getIsMapped()
+    {
+        return $this->isMapped;
+    }
+
+    /**
+     * @param mixed $isMapped
+     */
+    public function setIsMapped($isMapped): void
+    {
+        $this->isMapped = $isMapped;
+    }
     /**
      * @return mixed
      */

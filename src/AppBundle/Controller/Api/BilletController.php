@@ -91,10 +91,20 @@ class BilletController extends AbstractFOSRestController
         return $billet;
 
     }
+    //TODO: Récupérer données de la carte
     /**
-     *
+     * @Rest\View
+     * @Rest\Get("/api/event/{id}/billet/mapped/list/")
+     * @param $id
+     * @return View|object|null
      */
-    public function create($id){
+    public function getMappedTicketSeatMap($id){
+        $billet =$this->getDoctrine()->getRepository(Billet::class)->getMappedSeatMapTickets($id);
+        if ($billet === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
+        return $billet;
 
     }
+
 }

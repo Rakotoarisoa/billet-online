@@ -14,6 +14,7 @@ class SetTicket extends Component {
     }
 
     state = {
+        total_assigned: 0,
         stageScale: 1,
         stageX: 1,
         stageY: 1,
@@ -37,12 +38,13 @@ class SetTicket extends Component {
         data_map: [],
         saveCanvas: false,
         stage: null,
-        tempLayer: null,
+        ticket_colors: [],
         focusObject: null,
         initWidth: 947,
         initHeight: 947,
         number_seats: 0,
-        color_seat: "#EEEEEE"
+        color_seat: "#EEEEEE",
+        liste_billet: []
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -165,9 +167,6 @@ class SetTicket extends Component {
                     x: -3,
                     y: -5
 
-                });
-                text.on('transform', () => {
-                    console.log('tranformed');
                 });
                 newGroup.add(circle);
                 newGroup.add(text);
@@ -552,10 +551,25 @@ class SetTicket extends Component {
             height: textHeight,
             rotation: 0
         });
+        /* manage mapped */
+        /* end mapped */
         for (let i = 0; i < seats; i++) {
+            /* manage deleted seats */
             let deleted = object.deleted_seats;
             if (deleted && deleted.includes(i + 1)) {
                 continue;
+            }
+            /* end manage delete */
+            let circle_color = this.state.color_seat;
+            if (object.mapping !== undefined) {
+                let colors = this.state.ticket_colors;
+                let mapped = object.mapping;
+                mapped.forEach((el) => {
+                    if (el.seat_id === i+1)
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) circle_color = color.color;
+                        })
+                });
             }
             let c_group = new Konva.Group({
                 name: (i + 1).toString(),
@@ -566,7 +580,7 @@ class SetTicket extends Component {
             let circle = new Konva.Circle({
                 width: 20,
                 height: 20,
-                fill: this.state.color_seat,
+                fill: circle_color,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -643,32 +657,56 @@ class SetTicket extends Component {
         });
 
     };
-
     //initialisation pendant Montage du composant
     componentDidMount() {
-        axios.get(
-            '/api/event/get-map/'+this.props.eventId)
-            .then((response) => {
-                if(response.data){
-                    this.setState({'data_map':response.data});
-                    let data=this.state.data_map;
-                    if (data.length > 0) {
-                        this.setState({'data_is_empty': !this.state.data_is_empty});
-                        let nb_seats = 0;
-                        data.forEach((el) => {
-                            nb_seats += parseInt(el.number_seats);
-                        });
-                        this.setState({'number_seats': nb_seats});
-                    }
+        function initColors(nb, billets) {
+            let listColors = [];
+            for (let i = 0; i < nb; i++) {
+                let color = '#' + Math.random().toString(16).substr(-6);
+                let billet = billets[i].libelle;
+                listColors.push({color, billet});
+                //document.getElementById("billet-"+i).setAttribute("style","color:"+color+';');
+            }
+            return listColors;
+        };
+        const fetchData = async () => {
+            try {
+                await axios.get(
+                    '/api/event/get-map/' + this.props.eventId)
+                    .then((response) => {
+                        if (response.data) {
+                            this.setState({'data_map': response.data});
+                            let data = this.state.data_map;
+                            if (data.length > 0) {
+                                this.setState({'data_is_empty': !this.state.data_is_empty});
+                                let nb_seats = 0;
+                                data.forEach((el) => {
+                                    nb_seats += parseInt(el.number_seats);
+                                });
+                                this.setState({'number_seats': nb_seats});
+                            }
+
+                        }
+                    })
+                    .catch(function (error) {
+                        container.error("Une Erreur s'est produite pendant le chargement de la carte:" + error.message, 'Erreur', {closeButton: true});
+                    });
+                await axios.get(
+                    '/api/typeBillet/' + this.props.eventId
+                ).then((response) => {
+                    this.setState({
+                        'liste_billet': response.data,
+                        'ticket_colors': initColors(response.data.length, response.data)
+                    });
                     this.loadStage();
-                }
-            })
-            .catch(function (error) {
-                container.error("Une Erreur s'est produite pendant le chargement de la carte", 'Erreur', {closeButton: true});
-            });
+                });
+            } catch (error) {
+                container.error("Une erreur s'est produite: " + error.message, "Erreur", {closeButton: true});
+            }
+        };
+        fetchData();
 
     }
-
     //Nombre total de chaises
     setTotalSeats() {
         let data = this.state.data_map;
@@ -680,7 +718,6 @@ class SetTicket extends Component {
             this.setState({'number_seats': nb_seats});
         }
     }
-
     //Tache pendant mise à jour du composant
     componentDidUpdate() {
         if (this.state.stage) {
@@ -688,7 +725,6 @@ class SetTicket extends Component {
             stage.batchDraw();
         }
     }
-
     //Sauvegarder le canvas
     saveCanvas = (save) => {
         this.setState({'saveCanvas': save}, () => {
@@ -725,7 +761,7 @@ class SetTicket extends Component {
         let data = this.state.data_map;
         data = JSON.stringify(data);
         axios.post(
-            '/symfony3.4/web/api/event/update-map/'+this.props.eventId, {
+            '/symfony3.4/web/api/event/update-map/' + this.props.eventId, {
                 data_map: JSON.parse(data)
             })
             .then(function (response) {
@@ -818,9 +854,7 @@ class SetTicket extends Component {
             stage.scale({ x: scale, y: scale });
             this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});
         });*/
-
-        /** Focus on object : executed when this.state.focusObject is not null*/
-        let focus_object = this.state.focusObject;
+        let focus_object = this.state.selectedItem;
         if (focus_object) {
             stage.off('dragend click tap');
             let object = stage.getLayers()[0].find(node => {
@@ -845,8 +879,6 @@ class SetTicket extends Component {
                 return node.parent === object[0];
             });
             unGrouped_object.forEach((element, i) => {
-                console.log(object[0].getAbsolutePosition());
-                console.log(element.getAbsolutePosition());
                 let x = element.getAbsolutePosition().x;
                 let y = element.getAbsolutePosition().y;
                 element.moveTo(focusLayer);
@@ -879,6 +911,7 @@ class SetTicket extends Component {
             layer.opacity(0.5);
             stage.draw();
         }
+
     };
     //Gestion scroll Souris sur la carte
     handleWheel = e => {
@@ -924,7 +957,9 @@ class SetTicket extends Component {
             });
         }
     };
-
+    getColors = (colors) => {
+        this.setState({'ticket_colors': colors});
+    };
     //rendu du composant
     render() {
         return (
@@ -933,10 +968,10 @@ class SetTicket extends Component {
                 <div id="stage-container-ticket" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
                 <div className="col-sm-3 sidebar-right">
-                    <p style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</p>
-                    <p style={{color: '#eeeeee'}}>Nombre de places assignés (avec billets): </p>
-                    <RightSidebarTicket/>
-
+                    <p style={{color: '#eeeeee'}}>{this.state.total_assigned}/{this.state.number_seats} places
+                        assignées</p>
+                    <RightSidebarTicket selectedItem={this.state.selectedItem} colors={this.state.ticket_colors}
+                                        liste_billet={this.state.liste_billet}/>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>

@@ -42,7 +42,7 @@
                         <a href="{# path('billet_new',{'userId':app.user.username,'event':event.titreEvenementSlug}) }}">{{ 'events.table_view.event_create_ticket'|trans #}</a>
                     </li>-->
                     <li>
-                        <a href="{{ path('generateTickets',{'event':event.getTitreEvenementSlug,'userId':app.user.usernameCanonical}) }}">{{ 'events.table_view.event_generate_tickets'|trans }}</a>
+                        <a href="{{ path('generateTickets',{'event':event.id,'userId':app.user.id}) }}">{{ 'events.table_view.event_generate_tickets'|trans }}</a>
                     </li>
                 </ul>
                 <br/>

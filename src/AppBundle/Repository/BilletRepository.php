@@ -153,7 +153,7 @@ class BilletRepository extends EntityRepository
             ')
                 ->setParameter('idEvent', $event->getId());
         } else {
-            $id=$request->request->has('identifiant');
+            $id = $request->request->has('identifiant');
             $identifiant = trim($id);
             $type_billet = $request->request->has($id);
             $est_vendu = $request->request->has($id);
@@ -191,7 +191,6 @@ ORDER BY b.id ASC')
             ->setParameter('libelle', $type_billet)
             ->setMaxResults($nbr)
             ->getResult();
-        var_dump($rs);
         if ($updateBillet) {
             foreach ($rs as $item) {
                 $this->getEntityManager()->createQuery('UPDATE AppBundle:Billet b SET b.estVendu=1 WHERE b.id=:id')->setParameter('id', $item['id'])->execute();
@@ -203,6 +202,19 @@ ORDER BY b.id ASC')
     private function stripAccents($str)
     {
         return strtr(utf8_decode($str), utf8_decode('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');
+    }
+
+    /** Liste des billets assignés sur la carte* */
+    public function getMappedSeatMapTickets($id)
+    {
+        $rs = $queryBillet = $this->getEntityManager()->createQuery('SELECT b.id as id ,b.identifiant as identifiant,tb.prix as prix,b.place_id as place,b.section_id as section,tb.libelle as type FROM AppBundle:Billet b 
+JOIN AppBundle:Typebillet tb WITH tb.id=b.typeBillet 
+JOIN AppBundle:Evenement e WITH e.id=tb.evenement 
+WHERE e.id=:idEvent and b.isMapped=1
+ORDER BY b.id ASC')
+            ->setParameter('idEvent', (integer)$id)
+            ->getResult();
+        return $rs;
     }
 
 }

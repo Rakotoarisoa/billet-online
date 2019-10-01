@@ -88,11 +88,11 @@ class EventController extends AbstractFOSRestController
             $event->setEtatSalle(serialize($data_map));
             $em->persist($event);
             $em->flush($event);
+            return View::create($data_map, Response::HTTP_OK);
         }
         catch (\Exception $e){
             return 'Cannot create Map';
         }
-
     }
     /**
      * @Rest\Post("/api/event/delete/{id}")
