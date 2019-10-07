@@ -201,12 +201,12 @@ class SetTicket extends Component {
                         ySeats: object.ySeats,
                         type: 'section',
                         rotation: section.rotation(),
+                        mapping: (object.mapping?object.mapping:[]),
                         number_seats: (object.xSeats * object.ySeats) - (object.deleted_seats.length),
                         deleted_seats: object.deleted_seats
                     },
                 'focusObject': null
             }, () => {
-                section.draggable(true);
                 section.moveToTop();
                 section.getLayer().draw();
             });
@@ -463,6 +463,7 @@ class SetTicket extends Component {
                         ySeats: object.ySeats,
                         type: 'rectangle',
                         rotation: table.rotation(),
+                        mapping: (object.mapping?object.mapping:[]),
                         number_seats: (object.xSeats * 2 + object.ySeats * 2) - (object.deleted_seats.length),
                         deleted_seats: object.deleted_seats
                     },
@@ -614,6 +615,7 @@ class SetTicket extends Component {
                         type: 'ronde',
                         rotation: group.rotation(),
                         number_seats: seats - object.deleted_seats.length,
+                        mapping: (object.mapping?object.mapping:[]),
                         deleted_seats: object.deleted_seats
                     },
                 'focusObject': null

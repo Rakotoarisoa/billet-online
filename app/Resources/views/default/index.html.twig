@@ -1,8 +1,45 @@
 {% extends 'base.html.twig' %}
+{% block breadcrumb %}
+    <section class="breadcumb-area"> <!--style="background-image: url({# asset('img/cover.jpg') #})"-->
+        <div id="carousel-index" class="carousel slide" data-ride="carousel">
+             <!--Indicators-->
+            <ul class="carousel-indicators">
+                <li data-target="#carousel-index" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-index" data-slide-to="1"></li>
+                <li data-target="#carousel-index" data-slide-to="2"></li>
+            </ul>
 
+             <!--The slideshow-->
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="{{ asset('img/cover.jpg') }}" alt="Mage 4" width="100%" height="100%">
+                </div>
+                <div class="carousel-item">
+                    <img src="{{ asset('img/cover.jpg') }}" alt="Mage 4" width="100%" height="100%">
+                </div>
+                <div class="carousel-item">
+                    <img src="{{ asset('img/cover.jpg') }}" alt="Mage 4" width="100%" height="100%">
+                </div>
+            </div>
+
+
+            <a class="carousel-control-prev" href="#carousel-index" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#carousel-index" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>
+        </div>
+            {% block breadcrumb_content %}
+            {% endblock %}
+    </section>
+{% endblock %}
 {% block body %}
-    <section class="" style="padding:20px;">
-        <div class="row">
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+        {{ parent() }}
+    <section class="events-area">
+        <div id="sticky-wrapper" class="sticky-wrapper row ml-50 mr-50">
             <div class="col-12">
                 <!-- Contact Form Area -->
                 <div class="filter-form-area">
@@ -32,10 +69,6 @@
                 </div>
             </div>
         </div>
-    </section>
-    <!-- ##### Events Area Start ##### -->
-    {% block content %}
-    <section class="events-area section-padding-100">
         <div class="container">
             {% if (nbEvents > 0)  %}
             <p>{{ 'filter_events.countResults'|transchoice(nbEvents) }}</p>

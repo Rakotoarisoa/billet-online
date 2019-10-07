@@ -55,76 +55,31 @@ class EventController extends Controller
             $this->redirect('/login?src=create');
         };
         $event = new Evenement();
-        $form = $this->createForm(EventType::class, $event);
-        $slug=new Slugger();
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('save_create_map')->isClicked()) {
-                /** @var UploadedFile $imageFile */
-                $entityManager = $this->getDoctrine()->getManager();
-                $event->setImageEvent('img/e2.jpg');
-                $event->setIsPublished(1);
-                $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
-                $event->setUser($user);
-                $event->setEtatSalle(json_encode(array('objects'=>array())));
-
-                /** @var UploadedFile $imageFile */
-                $imageFile = $form['imageEvent']->getData();
-                // this condition is needed because the 'brochure' field is not required
-                // so the PDF file must be processed only when a file is uploaded
-                if ($imageFile) {
-                    $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                    // this is needed to safely include the file name as part of the URL
-                    $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
-                    $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
-
-                    // Move the file to the directory where brochures are stored
-                    try {
-                        $imageFile->move(
-                            $this->getParameter('image_events'),
-                            $newFilename
-                        );
-                    } catch (FileException $e) {
-                        $this->addFlash('error','Erreur pendant l\'upload du fichier');
-                    }
-                    $event->setImageEvent($newFilename);
-                }
-                $entityManager->persist($event);
-                $entityManager->flush();
-                $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez votre carte ici');
-                return $this->redirectToRoute('viewCreateMap',array('event'=>$event,'slugEvent'=>$event->getTitreEvenementSlug(),'id'=>$event->getId(),'userId'=>$this->getUser()->getUserNameCanonical()));
-
-
-
+        $flow = $this->get('app.form.flow.create_event'); // must match the flow's service id
+        $flow->bind($event);
+        $form = $flow->createForm();
+        if ($flow->isValid($form)) {
+            $flow->saveCurrentStepData($form);
+            if ($flow->nextStep()) {
+                // form for the next step
+                $form = $flow->createForm();
             }
-            else if ($form->get('save_create_billet')->isClicked()) {
-                /** @var UploadedFile $imageFile */
-                $entityManager = $this->getDoctrine()->getManager();
-                $event->setImageEvent('img/e2.jpg');
-                $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
-                $event->setIsPublished(1);
+            else {
+                // flow finished
+                $em = $this->getDoctrine()->getManager();
                 $event->setUser($user);
-                $entityManager->persist($event);
-                $entityManager->flush();
-                $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès, créez ou visualisez vos billets ici');
-                return $this->redirectToRoute('billet_index',array('event' => $event->getId(), 'userId' => $this->getUser()->getId()));
-            }
-            else{
-                $entityManager = $this->getDoctrine()->getManager();
-                $event->setImageEvent('img/e2.jpg');
-                $event->setIsPublished(1);
-                $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
-                $event->setUser($user);
-                $entityManager->persist($event);
-                $entityManager->flush();
-                $this->addFlash('success','Evènement '.$event->getTitreEvenement().' créé avec succès');
-                return $this->redirectToRoute('viewEventAdmin',array('userId'=>$event->getUser()->getUserName(),'slugEvent'=>(string)$event->getTitreEvenementSlug(),'event'=>$event));
+                $slugger=new Slugger();
+                $event->setTitreEvenementSlug($slugger->slugify($event->getTitreEvenement()));
+                $em->persist($event);
+                $em->flush();
+                $flow->reset(); // remove step data from the session
+                return $this->redirectToRoute('viewEventAdmin',array('userId'=>$user->getId(),'slugEvent'=>(string)$event->getTitreEvenementSlug(),'event'=>$event));// redirect when done
             }
         }
         else{
             $this->addFlash('error','Erreur lors de l\'ajout de l\'évènement');
         }
-        return $this->render('event_admin/event/event-register.html.twig',array('form'=> $form->createView(), 'user'=>$user,'event'=>$event));
+        return $this->render('event_admin/event/event-register.html.twig',array('form'=> $form->createView(),'flow' => $flow, 'user'=>$user,'event'=>$event));
     }
 
     /**

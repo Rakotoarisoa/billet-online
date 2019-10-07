@@ -8,6 +8,7 @@
 {% endblock %}
 {% block body %}
     {% block content %}
+        {{ parent() }}
         <div id="vue-app-user" class="container-fluid">
             <!-- Vertical toolbar -->
             <p class="font-weight-light text-justify">Sélectionner une place pour pouvoir réserver .</p>

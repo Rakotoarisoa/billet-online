@@ -16,7 +16,6 @@
                                         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                                     </div>
                                 {% endif %}
-
                                     {% if app.request.hasPreviousSession %}
                                         {% for type, messages in app.session.flashbag.all() %}
                                             {% for message in messages %}
@@ -28,7 +27,6 @@
                                             {% endfor %}
                                         {% endfor %}
                                     {% endif %}
-
                                 <div class="form-group">
                                     <label for="username">{{ 'security.login.username'|trans }}</label>
                                     <input name="_username" type="text" class="form-control" id="username"

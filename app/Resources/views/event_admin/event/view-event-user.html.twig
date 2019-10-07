@@ -48,6 +48,7 @@
     </section>
     <!-- ##### Events Area Start ##### -->
     {% block content %}
+        {{ parent() }}
         <section class="events-area section-padding-100">
             <div class="container">
                 {% if (nbEvents > 0) %}

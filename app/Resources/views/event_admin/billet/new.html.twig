@@ -17,24 +17,24 @@
 {% block body %}
     {% block content %}
         {{ parent() }}
-<section class="section-padding-100">
-    <div class="container">
-
-        <h1>Création de billet</h1>
-
-        {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input class="btn btn-success" type="submit" value="Créer"/>
-        {{ form_end(form) }}
-        <br/>
-        <p class="alert alert-info pull-right"> Le billet sera relié avec votre évènement : {{ event.titreEvenement }}</p>
-        <ul>
-            <li>
-                <a href="{{ path('billet_index',{ 'userId':app.user.id,'event':event.id}) }}">Retourner vers la liste</a>
-            </li>
-        </ul>
-    </div>
-</section>
+        <section class="section-padding-100">
+            <div class="container">
+                <h1>Création de billet</h1>
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <input class="btn btn-success" type="submit" value="Créer"/>
+                {{ form_end(form) }}
+                <br/>
+                <p class="alert alert-info pull-right"> Le billet sera relié avec votre évènement
+                    : {{ event.titreEvenement }}</p>
+                <ul>
+                    <li>
+                        <a href="{{ path('billet_index',{ 'userId':app.user.id,'event':event.id}) }}">Retourner vers la
+                            liste</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
     {% endblock %}
     {% block javascripts %}
         {{ parent() }}

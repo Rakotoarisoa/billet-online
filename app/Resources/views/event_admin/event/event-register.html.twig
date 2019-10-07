@@ -3,106 +3,199 @@
 {% block title %}
     Création d'évènement | {{ app.user.username }}
 {% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+    <link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}" />
+{% endblock %}
 {% block breadcrumb %}
-    <section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
-        <div class="bradcumbContent">
-            {% block breadcrumb_content %}
-                <h2>Créer un évènement</h2>
-            {% endblock %}
-        </div>
-    </section>
 {% endblock %}
 {% block body %}
     {% block content %}
         <!-- ##### Event Registration Area Start ##### -->
-        <section class="section-padding-100">
-            <div class="container">
-                <div class="col-12 col-lg-12">
-                    <div class="login-content">
-                        {{ form_start(form, {'method': 'post', 'action':  path('createEvent',{'userId':app.user.username}), 'attr': {'class': 'form'}}) }}
-                        <p class="alert-danger">{{ form_errors(form) }}</p>
-                        <div class="form-group col-md-10 col-sm-10">
-                            {{ 'create_event_field_label.title_event'|trans }}
-                            {{ form_widget(form.titreEvenement) }}
-                        </div>
-                        <hr/>
-                        <div class="form-group col-md-10 col-sm-10">
-                            {{ 'create_event_field_label.date_start'|trans }}
-                            {{ form_widget(form.dateDebutEvent) }}
-                        </div>
-                        <div class="form-group col-md-10 col-sm-10">
-                            {{ 'create_event_field_label.date_end'|trans }}
-                            {{ form_widget(form.dateFinEvent) }}
-                        </div>
-                        <hr/>
-                        <div class="form-group col-md-10 col-sm-10">
-                            {{ 'create_event_field_label.image_event'|trans }}
-                            {{ form_widget(form.imageEvent) }}
-                            <br/>
-                            <!--<div class="form-control-file">
-                                <div class="row">
-                                    <div class="col-sm-6 imgUp">
-                                        <div class="imagePreview"></div>
-                                        <label class="btn btn-outline-dark">
-                                            Uploader une image<input  type="file" class="uploadFile img" value="Téléverser" style="width: 0px;height: 0px;overflow: hidden;">
-                                        </label>
+        <section class="section-padding-0-0">
+            <div class="row">
+                <div class="col-sm-3  bg-light">
+                    <ul class="nav nav-tabs flex-column" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link text-info" data-toggle="tab" href="#info_event">Données de l'évènement</a>
+
+                            {% if flow.getCurrentStepNumber() == 2 %}
+                                <div class="card">
+                                    <div class="card-body">
+                                        <ul>
+                                            <li><h4 class="lead">{{ event.titreEvenement }}</h4></li>
+                                            <li><small class="text text-muted">{{ event.dateDebutEvent|date('d M Y') }}</small> </li>
+                                        </ul>
                                     </div>
-                                </div> row
-                            </div> container -->
-                        </div>
-                        <div class="form-group col-md-10 col-sm-10">
-                            {{ 'create_event_field_label.description'|trans }}
-                            {{ form_widget(form.description) }}
-                        </div>
-                        <hr/>
-                        <div class="form-group col-md-10 col-sm-10">
-                            {{ 'create_event_field_label.categorie'|trans }}
-                            {{ form_widget(form.categorieEvenement) }}
-                            <p>La catégorie de l'évènement n'est pas dans la liste? <a href="#">Ajouter</a></p>
-                        </div>
+                                </div>
+                            {% endif %}
+                            {% include '@CraueFormFlow/FormFlow/stepList.html.twig' %}
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-info" data-toggle="tab" href="#commande">Formulaire de  commande</a>
+                        </li>
 
-                        <div class="form-row col-md-10 col-sm-10">
-                                {{ 'create_event_field_label.lieu'|trans }}
-                                {{ form_widget(form.lieuEvenement) }}
-                            <p>Le lieu n'est pas dans la liste? <a href="#">Ajouter</a></p>
-                        </div>
-                        <div class="form-row col-md-10 col-sm-10">
-                            <label>Utiliser la carte pour sélectionner des billets</label>
-                            {{ form_widget(form.isUsingSeatMap) }}
-                        </div>
-                        <div class="form-row col-md-2 col-sm-2">
-                            <label>Publier l'évènement</label>
-                            {{ form_widget(form.isPublished) }}
-                        </div>
-                        <hr/>
-                        <div class="form-group col-md-10 col-sm-10">
-                            {{ form_label(form.organisation)  }}
-                            {{ form_widget(form.organisation) }}
-                        </div>
-                        <hr/>
-                        <div class="form-row col-md-10 col-sm-10">
-                            <div class="col">
-                                {{ form_widget(form.save_create_map) }}
-                            </div>
-                            <div class="col">
-                                {{ form_widget(form.save_create_billet) }}
-                            </div>
-                        </div>
-                        <hr/>
-                        <div class="form-group col-md-10 col-sm-10">
-                            {{ form_label(form.save) }}
-                            {{ form_widget(form.save) }}
-                        </div>
+                    </ul>
+                </div>
+                <div class="col-sm-9">
+                   {{ parent() }}
+                    <div class="tab-content">
+                        <div id="info_event" class="container tab-pane fade section-padding-0-100 active"><br>
+                            {{ form_start(form, {'method': 'post', 'action':  path('createEvent',{'userId':app.user.id}), 'attr': {'class': 'form'}}) }}
+                            <p class="alert-danger">{{ form_errors(form) }}</p>
+                            {% if flow.getCurrentStepNumber() == 1 %}
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <h4 class="lead">{{ 'create_event_field_label.title_event'|trans }}<span class="fa fa-align-left"></span></h4>
+                                    {{ form_widget(form.titreEvenement) }}
+                                    <div class="row">
+                                        <small id="title-help" class="form-text text-muted col-sm-10">Entrer le titre de votre évènement</small>
+                                        <small id="word-count" class="form-text text-muted col-sm-1">0/75</small></div>
+                                </div>
+                                <br/><hr/><br/>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <h4 class="lead">{{ 'create_event_field_label.categorie'|trans }}</h4>
+                                    {{ form_widget(form.categorieEvenement) }}
+                                    <small id="lieu" class="form-text text-muted">La catégorie de l'évènement n'est pas dans la liste? <a class="text-muted" href="#">Ajouter</a></small>
+                                </div>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <h4 class="lead">{{ 'create_event_field_label.lieu'|trans }}   <span class="fa fa-map-marker"></span></h4>
+                                    {{ form_widget(form.lieuEvenement) }}
+                                    <small id="lieu" class="form-text text-muted">Le lieu n'est pas dans la liste? <a class="text-muted" href="#">Ajouter</a></small>
+                                </div>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <h4 class="lead">{{ form_label(form.organisation)  }}</h4>
+                                    {{ form_widget(form.organisation) }}
+                                </div>
+                                <br/><hr/><br/>
+                                <h4>Date et heure  <span class="fa fa-calendar"></span></h4>
+                                <p>Indiquez aux participants potentiels quand votre événement commence et se termine pour qu'ils puissent planifier au mieux leur venue.</p>
+                                <div class="form-group col-md-3 col-sm-6">
+                                    <h4 class="lead">{{ 'create_event_field_label.date_start'|trans}} </h4>
+                                    {{ form_widget(form.dateDebutEvent) }}
+                                </div>
+                                <div class="form-group col-md-3 col-sm-6">
+                                    <h4 class="lead">{{ 'create_event_field_label.date_end'|trans }}</h4>
+                                    {{ form_widget(form.dateFinEvent) }}
+                                </div>
+                            {% endif %}
+                            {% if flow.getCurrentStepNumber() == 2 %}
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <h4 class="lead">{{ 'create_event_field_label.image_event'|trans }}</h4>
+                                    {{ form_widget(form.imageEvent) }}
+                                    <br/>
+                                    <div class="form-control-file">
+                                        <div class="row">
+                                            <div class="col-sm-6 imgUp">
+                                                <div class="imagePreview"></div>
+                                                <label class="btn btn-outline-dark">
+                                                    Uploader une image<input  type="file" class="uploadFile img" value="Téléverser" style="width: 0px;height: 0px;overflow: hidden;">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12 col-sm-12">
+                                    <h4 class="lead">{{ 'create_event_field_label.description'|trans }}</h4>
+                                    {{ form_widget(form.description) }}
+                                </div>
+                            {% endif %}
+                            {% if flow.getCurrentStepNumber() == 3 %}
+                                <div class="form-row col-md-2 col-sm-10">
+                                    <h4 class="lead">Utiliser la carte pour sélectionner des billets</h4>
+                                    {{ form_widget(form.isUsingSeatMap) }}
+                                </div>
+                                <div class="form-row col-md-2 col-sm-2">
+                                    <h4 class="lead">Publier l'évènement</h4>
+                                    {{ form_widget(form.isPublished) }}
+                                    <small class="text text-muted">L'évènement est publié par défaut</small>
+                                </div>
+                            {% endif %}
+                            {% if flow.getCurrentStepNumber() == 4 %}
+                                <p class="display-4">Vous avez saisis les informations concernant votre nouvel évènement </p>
+                                <p>Appuyer sur <small class="text-danger">Sauvegarder et confirmer</small> pour valider.  </p>
+                            {% endif %}
+                            {{ form_rest(form) }}
+                            <hr/>
+                            {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
+                                craue_formflow_button_label_last: 'Sauvegarder et continuer',
+                                craue_formflow_button_class_last: 'btn btn-outline-danger',
+                                craue_formflow_button_label_back: 'Précédent',
+                                craue_formflow_button_class_back: 'btn btn-outline-secondary',
+                                craue_formflow_button_label_reset: 'Recommencer',
+                                craue_formflow_button_class_reset: 'btn btn-outline-dark',
+                                craue_formflow_button_label_finish: 'Valider',
 
-                        {{ form_end(form) }}
+                            }%}
+                            {{ form_end(form) }}
+                        </div>
+                        <div id="commande" class="container tab-pane fade"><br>
+                            <h3>Formulaire de commande</h3>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </section>
     {% endblock %}
     {% block javascripts %}
         {{  parent()}}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/fr.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
         <script type="text/javascript">
+            $(document).ready(function() {
+                $('.nav-tabs a[href="#info_event"]').tab('show');
+                $('#appbundle_event_titreEvenement').on('input',function(e){
+                    maxLength=75;
+                    document.getElementById("word-count").innerHTML = this.value.length+"/"+maxLength;
+                });
+                $('.dateDebut').datetimepicker({
+                    format:'DD-MM-YYYY H:m',
+                    defaultDate:new Date(),
+                    sideBySide: true,
+                    showTodayButton: true,
+                    ignoreReadonly: true,
+
+                    // Your Icons
+                    // as Bootstrap 4 is not using Glyphicons anymore
+                    icons: {
+                        time: 'fa fa-clock-o',
+                        date: 'fa fa-calendar',
+                        up: 'fa fa-chevron-up',
+                        down: 'fa fa-chevron-down',
+                        previous: 'fa fa-chevron-left',
+                        next: 'fa fa-chevron-right',
+                        today: 'fa fa-check',
+                        clear: 'fa fa-trash',
+                        close: 'fa fa-times'
+                    }
+                });
+                $('.dateFin').datetimepicker({
+                    format:'DD-MM-YYYY H:m',
+                    sideBySide: true,
+                    ignoreReadonly: true,
+                    // Your Icons
+                    // as Bootstrap 4 is not using Glyphicons anymore
+                    icons: {
+                    time: 'fa fa-clock-o',
+                        date: 'fa fa-calendar',
+                        up: 'fa fa-chevron-up',
+                        down: 'fa fa-chevron-down',
+                        previous: 'fa fa-chevron-left',
+                        next: 'fa fa-chevron-right',
+                        today: 'fa fa-check',
+                        clear: 'fa fa-trash',
+                        close: 'fa fa-times'
+                }}
+                );
+                $(".dateDebut").on("dp.change", function (e) {
+                    $('.dateFin').data("DateTimePicker").minDate(e.date);
+                });
+                $(".dateFin").on("dp.change", function (e) {
+                    $('.dateDebut').data("DateTimePicker").maxDate(e.date);
+                });
+            });
             $(document).on("click", "i.del" , function() {
                 $(this).parent().remove();
             });
