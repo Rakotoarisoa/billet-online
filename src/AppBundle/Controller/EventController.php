@@ -86,7 +86,6 @@ class EventController extends Controller
                     }
             }
         }
-        var_dump('');
         return $this->render('event_admin/event/event-register.html.twig', array('form' => $form->createView(), 'flow' => $flow, 'user' => $user, 'event' => $event));
     }
 
