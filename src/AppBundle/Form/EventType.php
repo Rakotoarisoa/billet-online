@@ -14,7 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Image;
 
 class EventType extends AbstractType
 {
@@ -29,14 +29,20 @@ class EventType extends AbstractType
                             'placeholder' => 'Soyez clair et précis',
                             'maxLength' => 75
                         ],
-                        'constraints' => new NotBlank(),
+                        'constraints' => new NotBlank(array(
+                            'groups' => 'flow_registration_step1'
+                        )),
                         'required' => true,
                     ))
                     ->add('dateDebutEvent', DateTimeType::class, array(
                         'required' => true,
                         'widget' => 'single_text',
                         'html5' => false,
-                        'constraints' => new NotBlank(),
+                        'constraints' => new NotBlank(
+                            array(
+                                'groups' => 'flow_registration_step1'
+                            )
+                        ),
                         'attr' => [
                             'class' => 'form-control dateDebut',
                             'readOnly' => true
@@ -50,6 +56,7 @@ class EventType extends AbstractType
                             'class' => 'form-control dateFin',
                             'readOnly' => true
                         ],
+                        //'constraints' => new NotBlank(),
                     ))
                     ->add('categorieEvenement', EntityType::class, array(
                         'class' => 'AppBundle\Entity\CategorieEvenement',
@@ -71,24 +78,13 @@ class EventType extends AbstractType
                     ));
                 break;
             case 2:
-                $builder->add('imageEvent', FileType::class, [
+                $builder->add('image_event', FileType::class, [
                     'label' => 'Image',
                     // unmapped means that this field is not associated to any entity property
                     'mapped' => true,
                     'required' => true,
-
-                    // unmapped fields can't define their validation using annotations
-                    // in the associated entity, so you can use the PHP constraint classes
                     'constraints' => [
-                        new File([
-                            'maxSize' => '1024k',
-                            'mimeTypes' => [
-                                'image/png',
-                                'image/jpg',
-                                'image/jpeg',
-                            ],
-                            'mimeTypesMessage' => 'Enregistrez une image valide',
-                        ])
+                        new Image()
                     ],
                 ])
                     ->add('description', CKEditorType::class, array(
@@ -105,9 +101,13 @@ class EventType extends AbstractType
                                 'Oui' => true,
                                 'Non' => false,
                             ],
-                            'expanded' => true,
+                            'expanded' => false,
                             'multiple' => false,
-                            'label' => 'Utiliser le plan de salle'
+                            'label' => 'Utiliser le plan de salle',
+                            'empty_data' => true,
+                            'attr' => [
+                                'class' => 'custom-select mr-sm-2 col-sm-2'
+                            ]
                         ]
 
                     )
@@ -118,23 +118,14 @@ class EventType extends AbstractType
                             ],
                             'expanded' => false,
                             'multiple' => false,
+                            'attr' => [
+                                'class' => 'custom-select mr-sm-2 col-sm-2'
+                            ],
                             'label' => 'Publier',
                         ]
 
                     )
-
-                    /*->add('salle',       EntityType::class, array(
-                        'class'         => 'Nexthope\IvencoBundle\Entity\Salle',
-                        'placeholder'=>'Sélectionnez la salle',
-                        'choice_label'  => 'libelle',
-                        'query_builder' => function (SalleRepository $sr) {
-                            return $sr
-                                ->createQueryBuilder('s')
-                                ->where('s.isLibre = true')
-                                ;
-                        },
-                    ))*/
-                    ;
+                ;
                 break;
         }
 
@@ -147,7 +138,8 @@ class EventType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'AppBundle\Entity\Evenement',
-            'flow_step' => 1
+            'flow_step' => 1,
+            'validation_groups' => ['Default','registration']
         ));
     }
 

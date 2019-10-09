@@ -2,21 +2,25 @@
 
 namespace AppBundle\Form;
 use Craue\FormFlowBundle\Form\FormFlow;
-use Craue\FormFlowBundle\Form\FormFlowInterface;
 
 class CreateEventFormFlow extends FormFlow {
     protected $allowDynamicStepNavigation = true;
-
 
     protected function loadStepsConfig() {
         return [
             [
                 'label' => 'Information de base',
                 'form_type' => EventType::class,
+                'form_options' => [
+                    'validation_groups' => ['Default'],
+                ],
             ],
             [
-                'label' => 'Information',
+                'label' => 'Information visuelle',
                 'form_type' => EventType::class,
+                'form_options' => [
+                    'validation_groups' => ['Default'],
+                ],
                 /*'skip' => function($estimatedCurrentStepNumber, FormFlowInterface $flow) {
                     return $estimatedCurrentStepNumber > 1;
                 },*/
@@ -24,6 +28,9 @@ class CreateEventFormFlow extends FormFlow {
             [
                 'label' => 'Plan de Salle',
                 'form_type' => EventType::class,
+                'form_options' => [
+                    'validation_groups' => ['Default'],
+                ],
                 /*'skip' => function($estimatedCurrentStepNumber, FormFlowInterface $flow) {
                     return $estimatedCurrentStepNumber > 2 ;
                 },*/

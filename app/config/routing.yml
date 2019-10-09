@@ -6,3 +6,5 @@ fos_user:
 fos_user_registration_register:
     path: /inscription
     controller: AppBundle\Controller\RegistrationController::registerAction
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.yaml"
