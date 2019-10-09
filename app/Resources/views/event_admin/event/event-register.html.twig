@@ -8,6 +8,29 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
     <link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ asset('css/croppie.css') }}"/>
+    <style type="text/css">
+        .upload-msg {
+            text-align: center;
+            padding: 50px;
+            font-size: 22px;
+            color: #aaa;
+            width: 400px;
+            height:400px;
+            margin: 50px auto;
+            border: 1px solid #aaa;
+        }
+        #upload-demo{
+            text-align: center;
+            padding: 0;
+            font-size: 22px;
+            color: #aaa;
+            width: 400px;
+            height:400px;
+            margin: 50px auto;
+            border: 1px solid #aaa;
+        }
+    </style>
 {% endblock %}
 {% block breadcrumb %}
 {% endblock %}
@@ -47,6 +70,7 @@
                     <div class="tab-content">
                         <div id="info_event" class="container tab-pane fade section-padding-0-100 active"><br>
                             {{ form_start(form, {'method': 'post', 'action':  path('createEvent',{'userId':app.user.id}), 'attr': {'class': 'form'}}) }}
+
                             {% if flow.getCurrentStepNumber() == 1 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
@@ -93,28 +117,25 @@
                                     {{ form_widget(form.dateFinEvent) }}
                                 </div>
                             {% endif %}
+
                             {% if flow.getCurrentStepNumber() == 2 %}
                                 <p class="alert-danger">{{ form_errors(form.image_event) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ 'create_event_field_label.image_event'|trans }}</label>
                                     {{ form_widget(form.image_event) }}
+                                    <div class="upload-msg">
+                                        Uploader un fichier de type jpg, ou png
+                                        avec une taille d'au moins 2000x1500 pour une meilleure qualité
+                                    </div>
+                                    <div class="upload-demo" id="upload-demo" style="display:none;"></div>
                                     <br/>
-                                    <!--<div class="form-control-file">
-                                        <div class="row">
-                                            <div class="col-sm-6 imgUp">
-                                                <div class="imagePreview"></div>
-                                                <label class="btn btn-outline-dark">
-                                                    Uploader une image<input  type="file" class="uploadFile img" value="Téléverser" style="width: 0px;height: 0px;overflow: hidden;">
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>-->
                                 </div>
                                 <div class="form-group col-md-12 col-sm-12">
                                     <label class="">{{ 'create_event_field_label.description'|trans }}</label>
                                     {{ form_widget(form.description) }}
                                 </div>
                             {% endif %}
+
                             {% if flow.getCurrentStepNumber() == 3 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <div class="row align-items-center">
@@ -138,6 +159,7 @@
                                     <small class="col-12 text text-muted">L'évènement est publié par défaut</small>
                                 </div>
                             {% endif %}
+
                             {% if flow.getCurrentStepNumber() == 4 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <p class="text">Vous avez saisis les informations concernant votre nouvel évènement </p>
@@ -146,6 +168,7 @@
                                     pour valider.
                                 </p>
                             {% endif %}
+
                             {{ form_rest(form) }}
                             <hr/>
                             {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
@@ -174,6 +197,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/fr.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+        <script src="{{ asset('js/croppie.js') }}"></script>
         <script type="text/javascript">
             $(document).ready(function () {
                 $('.nav-tabs a[href="#info_event"]').tab('show');
@@ -231,26 +255,31 @@
                 {% endif %}
             });
             {% if flow.currentStepNumber == 2 %}
-            $(document).on("click", "i.del", function () {
-                $(this).parent().remove();
-            });
-            $(function () {
-                $(document).on("change", ".uploadFile", function () {
-                    var uploadFile = $(this);
-                    var files = !!this.files ? this.files : [];
-                    if (!files.length || !window.FileReader) return; // no file selected, or no FileReader support
-
-                    if (/^image/.test(files[0].type)) { // only image file
-                        var reader = new FileReader(); // instance of the FileReader
-                        reader.readAsDataURL(files[0]); // read the local file
-
-                        reader.onloadend = function () { // set image data as background of div
-                            //alert(uploadFile.closest(".upimage").find('.imagePreview').length);
-                            uploadFile.closest(".imgUp").find('.imagePreview').css("background-image", "url(" + this.result + ")");
-                        }
-                    }
-
-                });
+            $('.image-event').on('change',function(e){
+                var file=this.files[0];
+                var valid_extensions=['png','jpg','jpeg'];
+                if(valid_extensions.includes(file.name.split(".")[1])) {
+                    $('.upload-msg').hide();
+                    $('#upload-demo').show();
+                    $('#upload-demo').croppie({
+                        showZoomer: false,
+                        enableExif: true,
+                        viewport: {
+                            width: 350,
+                            height: 350,
+                            type: 'square'
+                        },
+                        boundary: {
+                            width: 400,
+                            height: 400
+                        },
+                        mouseWheelZoom: false
+                    });
+                }
+                else{
+                    $('.upload-msg').show();
+                    $('#upload-demo').hide();
+                }
             });
             {% endif %}
         </script>

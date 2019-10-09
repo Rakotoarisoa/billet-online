@@ -165,54 +165,41 @@ class EventController extends Controller
     public function updateEvent(Request $request, Evenement $event)
     {
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event->getId());
-        $deleteForm = $this->createDeleteForm($event);
-        $editForm = $this->createForm('AppBundle\Form\EventType', $event);
-        $editForm->handleRequest($request);
-        $slug = new Slugger();
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            if ($editForm->get('save_create_map')->isClicked()) {
-                try {
-                    $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
-                    if (!$event->getImageEvent()) {
-                        $event->setImageEvent('/web/img/events/e2.jpg');
-                    }
-                    $this->getDoctrine()->getManager()->persist($event);
-                    $this->getDoctrine()->getManager()->flush();
-                    $this->addFlash('success', 'Evènement ' . $event->getTitreEvenement() . ' créé avec succès, créez ou visualisez le plan de salle');
-                    return $this->redirectToRoute('viewCreateMap', array('id' => $event->getId(), 'userId' => $this->getUser()->getUsername(), 'slugEvent' => $event->getTitreEvenementSlug()));
-                } catch (\ErrorException $e) {
-                    $this->addFlash('error', 'Erreur pendant l\'enregistrement');
-                }
-            } else if ($editForm->get('save_create_billet')->isClicked()) {
-                try {
-                    $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
-                    if (!$event->getImageEvent()) {
-                        $event->setImageEvent('/web/img/events/e2.jpg');
-                    }
-                    $this->getDoctrine()->getManager()->persist($event);
-
-                    $this->getDoctrine()->getManager()->flush();
-                    $this->addFlash('success', 'Evènement ' . $event->getTitreEvenement() . ' créé avec succès, créez ou visualisez vos billets ici');
-                    return $this->redirectToRoute('billet_index', array('event' => $event->getId(), 'userId' => $this->getUser()->getId()));
-                } catch (\ErrorException $e) {
-                    $this->addFlash('error', 'Erreur pendant l\'enregistrement');
-                }
+        $flow = $this->get('app.form.flow.create_event'); // must match the flow's service id
+        $flow->bind($event);
+        $form = $flow->createForm();
+        if ($flow->isValid($form)) {
+            $flow->saveCurrentStepData($form);
+            if ($flow->nextStep()) {
+                var_dump($event);
+                // form for the next step
+                $form = $flow->createForm();
             } else {
-                $entityManager = $this->getDoctrine()->getManager();
-                $event->setImageEvent('/web/img/events/e2.jpg');
-                $event->setIsPublished(1);
-                $event->setTitreEvenementSlug($slug->slugify($event->getTitreEvenement()));
-                $entityManager->persist($event);
-                $entityManager->flush();
-                $this->addFlash('success', 'Evènement ' . $event->getTitreEvenement() . ' crée avec suuccès');
-                return $this->redirectToRoute('viewEventAdmin', array('user' => $this->getUser()->getUserName(), 'id' => $event->getId(), 'event' => $event));
+                try {
+                    // flow finished
+                    $em = $this->getDoctrine()->getManager();
+                    if( null != $event->getImageEvent())
+                    {
+                        $uploaded_image=new ImageEventUploader($event->getImageEvent(),$this->container);
+                        $event->setImageEvent($uploaded_image->upload());
+                    }
+                    $slugger = new Slugger();
+                    $event->setTitreEvenementSlug($slugger->slugify($event->getTitreEvenement()));
+                    $em->persist($event);
+                    $em->flush();
+                    $flow->reset(); // remove step data from the session
+                    $this->addFlash('success', 'Evènement enregistré avec succès.');
+                    return $this->redirectToRoute('viewEventAdmin', array('user' => $event->getUser()->getId(), 'id' => (string)$event->getId(), 'event' => $event));// redirect when done
+                } catch (\Exception $e)
+                {
+                    $this->addFlash('error','Une erreur s\'est produite : '+$e->getMessage());
+                }
             }
-
         }
         return $this->render('event_admin/event/event-update.html.twig', array(
             'event' => $event,
-            'form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
+            'flow' => $flow,
+            'form' => $form->createView()
         ));
 
 
