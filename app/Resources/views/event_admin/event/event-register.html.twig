@@ -16,17 +16,18 @@
             font-size: 22px;
             color: #aaa;
             width: 400px;
-            height:400px;
+            height: 400px;
             margin: 50px auto;
             border: 1px solid #aaa;
         }
-        #upload-demo{
+
+        #upload-demo {
             text-align: center;
             padding: 0;
             font-size: 22px;
             color: #aaa;
             width: 400px;
-            height:400px;
+            height: 400px;
             margin: 50px auto;
             border: 1px solid #aaa;
         }
@@ -123,11 +124,6 @@
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ 'create_event_field_label.image_event'|trans }}</label>
                                     {{ form_widget(form.image_event) }}
-                                    <div class="upload-msg">
-                                        Uploader un fichier de type jpg, ou png
-                                        avec une taille d'au moins 2000x1500 pour une meilleure qualité
-                                    </div>
-                                    <div class="upload-demo" id="upload-demo" style="display:none;"></div>
                                     <br/>
                                 </div>
                                 <div class="form-group col-md-12 col-sm-12">
@@ -145,16 +141,18 @@
                                         {{ form_widget(form.isUsingSeatMap) }}
                                     </div>
                                 </div>
-                            <div class="row align-items-center">
-                                <small class="col-12 text text-muted">L'évènement peut utiliser la carte intéractive pour la sélection des places</small>
-                            </div>
-                                <hr/>
-                            <div class="row align-items-center">
-                                <div class="col-12 my-1">
-                                    <label for="appbundle_event_isPublished">Publier l'évènement</label>
-                                    {{ form_widget(form.isPublished) }}
+                                <div class="row align-items-center">
+                                    <small class="col-12 text text-muted">L'évènement peut utiliser la carte intéractive
+                                        pour la sélection des places
+                                    </small>
                                 </div>
-                            </div>
+                                <hr/>
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <label for="appbundle_event_isPublished">Publier l'évènement</label>
+                                        {{ form_widget(form.isPublished) }}
+                                    </div>
+                                </div>
                                 <div class="row align-items-center">
                                     <small class="col-12 text text-muted">L'évènement est publié par défaut</small>
                                 </div>
@@ -162,13 +160,13 @@
 
                             {% if flow.getCurrentStepNumber() == 4 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
-                                <p class="text">Vous avez saisis les informations concernant votre nouvel évènement </p>
+                                <p class="text">Vous avez saisis les informations concernant l'évènement <b>{{ event.titreEvenement }}</b> qui déroulera le {{ event.dateDebutEvent|date('d m Y') }} </p>
+
                                 <p>Appuyer sur
                                     <small class="text-danger">Sauvegarder et confirmer</small>
-                                    pour valider.
+                                    pour confirmer.
                                 </p>
                             {% endif %}
-
                             {{ form_rest(form) }}
                             <hr/>
                             {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
@@ -254,34 +252,58 @@
                 });
                 {% endif %}
             });
-            {% if flow.currentStepNumber == 2 %}
-            $('.image-event').on('change',function(e){
-                var file=this.files[0];
-                var valid_extensions=['png','jpg','jpeg'];
-                if(valid_extensions.includes(file.name.split(".")[1])) {
-                    $('.upload-msg').hide();
-                    $('#upload-demo').show();
-                    $('#upload-demo').croppie({
-                        showZoomer: false,
-                        enableExif: true,
-                        viewport: {
-                            width: 350,
-                            height: 350,
-                            type: 'square'
-                        },
-                        boundary: {
-                            width: 400,
-                            height: 400
-                        },
-                        mouseWheelZoom: false
-                    });
+
+            //var $uploadCrop;
+
+            /*function readFile(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('.upload-msg').hide();
+                        $('#upload-demo').show();
+                        $('.upload-demo').addClass('ready');
+                        $uploadCrop.croppie('bind', {
+                            url: e.target.result
+                        }).then(function () {
+                            console.log('jQuery bind complete');
+                        });
+
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
                 }
-                else{
-                    $('.upload-msg').show();
-                    $('#upload-demo').hide();
-                }
+            }
+
+            $('.image-event').on('change', function () {
+                readFile(this);
             });
-            {% endif %}
+            $uploadCrop = $('#upload-demo').croppie({
+                showZoomer: true,
+                enableExif: true,
+                viewport: {
+                    width: 350,
+                    height: 350,
+                    type: 'square'
+                },
+                boundary: {
+                    width: 400,
+                    height: 400
+                },
+                mouseWheelZoom: false
+            });
+            $('#upload-demo').on('click', function (ev) {
+                $uploadCrop.croppie('result', {
+                    type: 'html',
+                    size: 'viewport'
+                }).then(function (resp) {
+                    console.log(resp);
+                    $uploadCrop.croppie('bind', {
+                        url: resp
+                    }).then(function () {
+                        console.log('jQuery bind complete');
+                    });
+                });
+            });*/
         </script>
     {% endblock %}
 {% endblock %}

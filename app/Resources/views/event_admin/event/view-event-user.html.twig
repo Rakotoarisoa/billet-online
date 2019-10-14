@@ -3,14 +3,14 @@
     Administration | {{ app.user.username }}
 {% endblock %}
 {% block breadcrumb %}
-    <section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
+    <!--<section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
         <div class="bradcumbContent">
             {% block breadcrumb_content %}
                 <h2>Liste des évènements</h2>
                 <h3>Administration</h3>
             {% endblock %}
         </div>
-    </section>
+    </section>-->
 {% endblock %}
 {% block body %}
     <section class="" style="padding:20px;">
@@ -61,7 +61,7 @@
                                     <p class="isPublished">{% if item.isPublished %}Publié{% else %}<i
                                                 class="fa fa-close"></i>Non publié {% endif %}</p>
                                     <div class="event-thumbnail">
-                                        <img src="{{ asset(item.imageEvent) }}" width="350px" height="436.33px">
+                                        <img src="{{ asset(item.imageEvent) }}" width="350px" height="436.33px" alt="{{ item.titreEvenement }}">
                                     </div>
                                     <div class="event-text">
                                         <h4>{{ item.titreEvenement }}</h4>
@@ -70,12 +70,11 @@
                                             <a href="#" class="event-date">{{ item.dateDebutEvent|date("m/d/Y") }}</a>
                                         </div>
                                         <div class="btn-group">
-
-                                            <a href="{{ path('viewEventAdmin',{'user':app.user.id,'id':item.id}) }}"
-                                               class="btn btn-light">Infos</a>
+                                            <a href="{{ path('viewEventMapAdmin',{'id':item.id,'userId':app.user.id}) }}" class="btn btn-light">{{ 'events.table_view.event_seatmap'|trans }}</a>
                                             <a href="{{ path('billet_index',{'userId':app.user.id,'event':item.id}) }}"
-                                               class="btn btn-light">Liste des billets</a>
-                                            <a class="btn btn-light" href="{{ path('viewEventUpdate',{'user':app.user.id,'id':item.id}) }}">Modifier</a>
+                                               class="btn btn-light">Billets</a>
+                                            <a href="{{ path('viewEventAdmin',{'user':app.user.id,'id':item.id}) }}"
+                                               class="btn btn-light">Détails</a>
 
                                         </div>
                                         <hr/>

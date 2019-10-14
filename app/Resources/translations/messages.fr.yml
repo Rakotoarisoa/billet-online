@@ -30,7 +30,7 @@ events:
         event_cat: "Catégorie"
         event_lieu: "Lieu"
         event_publish : "Publié"
-        event_image: "Image"
+        event_image: "Bannière"
         event_org: "Organisateur"
         event_seatmap: "Plan de salle"
         event_billets: "Billets"

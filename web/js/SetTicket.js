@@ -54,19 +54,10 @@ class SetTicket extends Component {
             if (el.id === object.id) {
                 data[i] = object;
                 this.setState({'data_map': data}, () => {
-                    this.loadStage(object);
+                    this.loadStage();
                 });
             }
         });
-    };
-    //Ajouter objet via Panneau Latéral
-    addNewObjectFromSidebar = (object) => {
-        let data_map = this.state.data_map;
-        object.id = data_map.length;
-        data_map.push(object);
-        this.setState({'data_map': data_map});
-        this.addNewObject(object);
-        this.loadStage();
     };
     //Ajouter Object ( selon type)
     addNewObject = (object, transformer) => {
@@ -142,6 +133,20 @@ class SetTicket extends Component {
                     continue;
                 }
                 /** End Deleted Seats*/
+                /** assigned seat representation*/
+                let circle_color = this.state.color_seat;
+                if (object.mapping !== undefined) {
+                    let colors = this.state.ticket_colors;
+                    let mapped = object.mapping;
+                    console.log(mapped);
+                    mapped.forEach((el) => {
+                        if (el.seat_id === i+1)
+                            colors.forEach((color) => {
+                                if (color.billet === el.type) circle_color = color.color;
+                            })
+                    });
+                }
+                /** end assigned  seat representation */
                 let newGroup = new Konva.Group({
                     name: alphabet[i].toUpperCase() + (j + 1),
                     x: parseInt((this.state.posX + sideBuff) + rad + j * dia + j * gap),
@@ -309,6 +314,19 @@ class SetTicket extends Component {
                 numero_chaise++;
                 continue;
             }
+            /** assigned seat representation*/
+            let circle_color = this.state.color_seat;
+            if (object.mapping !== undefined) {
+                let colors = this.state.ticket_colors;
+                let mapped = object.mapping;
+                mapped.forEach((el) => {
+                    if (el.seat_id === (numero_chaise + 1).toString())
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) circle_color = color.color;
+                        })
+                });
+            }
+            /** end assigned  seat representation */
             let top_group = new Konva.Group({
                 name: (numero_chaise + 1).toString(),
                 id: numero_chaise++,
@@ -344,6 +362,20 @@ class SetTicket extends Component {
                 numero_chaise++;
                 continue;
             }
+            /** assigned seat representation*/
+            let circle_color = this.state.color_seat;
+            if (object.mapping !== undefined) {
+                let colors = this.state.ticket_colors;
+                let mapped = object.mapping;
+
+                mapped.forEach((el) => {
+                    if (el.seat_id === (numero_chaise + 1).toString())
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) circle_color = color.color;
+                        })
+                });
+            }
+            /** end assigned  seat representation */
             let right_group = new Konva.Group({
                 name: (numero_chaise + 1).toString(),
                 id: numero_chaise++,
@@ -381,6 +413,20 @@ class SetTicket extends Component {
                 numero_chaise++;
                 continue;
             }
+            /** assigned seat representation*/
+            let circle_color = this.state.color_seat;
+            if (object.mapping !== undefined) {
+                let colors = this.state.ticket_colors;
+                let mapped = object.mapping;
+                console.log(mapped);
+                mapped.forEach((el) => {
+                    if (el.seat_id === (numero_chaise + 1).toString())
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) circle_color = color.color;
+                        })
+                });
+            }
+            /** end assigned  seat representation */
             let bottom_group = new Konva.Group({
                 name: (numero_chaise + 1).toString(),
                 id: numero_chaise++,
@@ -416,6 +462,20 @@ class SetTicket extends Component {
                 numero_chaise++;
                 continue;
             }
+            /** assigned seat representation*/
+            let circle_color = this.state.color_seat;
+            if (object.mapping !== undefined) {
+                let colors = this.state.ticket_colors;
+                let mapped = object.mapping;
+                console.log(mapped);
+                mapped.forEach((el) => {
+                    if (el.seat_id === (numero_chaise + 1).toString())
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) circle_color = color.color;
+                        })
+                });
+            }
+            /** end assigned  seat representation */
             let left_group = new Konva.Group({
                 name: (numero_chaise + 1).toString(),
                 id: numero_chaise++,
@@ -561,6 +621,7 @@ class SetTicket extends Component {
                 continue;
             }
             /* end manage delete */
+            /** assigned seat representation*/
             let circle_color = this.state.color_seat;
             if (object.mapping !== undefined) {
                 let colors = this.state.ticket_colors;
@@ -572,6 +633,7 @@ class SetTicket extends Component {
                         })
                 });
             }
+            /** end assigned  seat representation */
             let c_group = new Konva.Group({
                 name: (i + 1).toString(),
                 id: i + 1,
@@ -682,10 +744,12 @@ class SetTicket extends Component {
                             if (data.length > 0) {
                                 this.setState({'data_is_empty': !this.state.data_is_empty});
                                 let nb_seats = 0;
+                                let nb_seats_assigned = 0;
                                 data.forEach((el) => {
                                     nb_seats += parseInt(el.number_seats);
+                                    (el.mapping?nb_seats_assigned+=el.mapping.length:nb_seats_assigned+=0);
                                 });
-                                this.setState({'number_seats': nb_seats});
+                                this.setState({'number_seats': nb_seats,'total_assigned': nb_seats_assigned});
                             }
 
                         }
@@ -763,11 +827,11 @@ class SetTicket extends Component {
         let data = this.state.data_map;
         data = JSON.stringify(data);
         axios.post(
-            '/symfony3.4/web/api/event/update-map/' + this.props.eventId, {
+            '/api/event/update-map/' + this.props.eventId, {
                 data_map: JSON.parse(data)
             })
             .then(function (response) {
-                container.success("Carte enregistré aves succès", 'Succès', {closeButton: true});
+                container.success("Carte enregistré avec succès", 'Succès', {closeButton: true});
             })
             .catch(function (error) {
                     container.error("Une Erreur s'est produite pendant l'enregistrement de la carte", 'Erreur', {closeButton: true});
@@ -945,6 +1009,13 @@ class SetTicket extends Component {
     handleSelected = e => {
         this.setState({'selectedItem': e});
     };
+    handleAssign = (list) => {
+        let selected = this.state.selectedItem;
+        selected.mapping = list;
+        this.setState({'selectedItem':null});
+        this.updateObject(selected);
+
+    };
     getFocusedObject = (obj) => {
         if (this.state.selectedItem) {
             this.setState({'focusObject': obj}, () => {
@@ -973,7 +1044,7 @@ class SetTicket extends Component {
                     <p style={{color: '#eeeeee'}}>{this.state.total_assigned}/{this.state.number_seats} places
                         assignées</p>
                     <RightSidebarTicket selectedItem={this.state.selectedItem} colors={this.state.ticket_colors}
-                                        liste_billet={this.state.liste_billet}/>
+                                        liste_billet={this.state.liste_billet} assignTicket={this.handleAssign} saveMap={this.saveCanvas}/>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>

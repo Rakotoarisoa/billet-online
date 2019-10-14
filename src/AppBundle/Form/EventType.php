@@ -8,7 +8,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\AbstractType;
@@ -84,8 +83,18 @@ class EventType extends AbstractType
                     'mapped' => true,
                     'required' => true,
                     'constraints' => [
-                        new Image()
+                        new Image(
+                            [
+                                'minHeight' => 300,
+                                'minWidth' => 600
+                            ]
+                        )
                     ],
+                    'attr' => [
+                        'class' => 'image-event',
+                        'accept' => '.jpg,.jpeg,.png'
+                    ],
+                    'data_class' => null
                 ])
                     ->add('description', CKEditorType::class, array(
                         'config' => array(
@@ -124,8 +133,7 @@ class EventType extends AbstractType
                             'label' => 'Publier',
                         ]
 
-                    )
-                ;
+                    );
                 break;
         }
 
@@ -139,7 +147,7 @@ class EventType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => 'AppBundle\Entity\Evenement',
             'flow_step' => 1,
-            'validation_groups' => ['Default','registration']
+            'validation_groups' => ['Default', 'registration']
         ));
     }
 

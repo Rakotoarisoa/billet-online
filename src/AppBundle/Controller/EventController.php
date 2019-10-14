@@ -171,7 +171,6 @@ class EventController extends Controller
         if ($flow->isValid($form)) {
             $flow->saveCurrentStepData($form);
             if ($flow->nextStep()) {
-                var_dump($event);
                 // form for the next step
                 $form = $flow->createForm();
             } else {

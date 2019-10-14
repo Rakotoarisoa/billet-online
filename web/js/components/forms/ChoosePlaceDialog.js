@@ -52,6 +52,7 @@ export default function ChoosePlaceDialog(props) {
     const [typeBillet, setTypeBillet] = React.useState(null);
     const [listOfSeat, setListOfSeat] = React.useState([]);
     const [selectedSeat, setSelectedSeat] = React.useState([]);
+    const [mappedSelectedSeat, setMappedSelectedSeat] = React.useState([]);
 
     const handleClose = () => {
         props.close(true);
@@ -68,17 +69,26 @@ export default function ChoosePlaceDialog(props) {
             if (selectedItem.type === "section") {
                 for (let j = 0; j < selectedItem.ySeats; j++) {
                     for (let i = 0; i < selectedItem.xSeats; i++) {
-                        if (selectedItem.deleted_seats.includes((alphabet[j]) + (i + 1))){
+                        let name = ((alphabet[j]) + (i + 1)).toString().toUpperCase();
+                        if (selectedItem.deleted_seats.includes(name)){
                             continue;
                         }
-                        formattedSeat.push({value: (alphabet[j]) + (i + 1), name: (alphabet[j]) + (i + 1)});
+
+                        formattedSeat.push({value: name, name: name});
                     }
                 }
-            } else {
-                for (let i = 0; i < nbSeats; i++) {
-                    if (selectedItem.deleted_seats.includes(i + 1)){
+            }
+            else if(selectedItem.type === "rectangle"){
+                for (let i = 0; i < ((selectedItem.xSeats*2)+(selectedItem.ySeats*2)); i++) {
+                    if (selectedItem.deleted_seats.includes(parseInt(i + 1)))
                         continue;
-                    }
+                    formattedSeat.push({value: i + 1, name: i + 1});
+                }
+            }
+            else if(selectedItem.type === "circle") {
+                for (let i = 0; i < selectedItem.chaises; i++) {
+                    if (selectedItem.deleted_seats.includes(parseInt(i + 1)))
+                        continue;
                     formattedSeat.push({value: i + 1, name: i + 1});
                 }
             }
@@ -87,6 +97,29 @@ export default function ChoosePlaceDialog(props) {
     };
     const handleChange = (event) => {
         setSelectedSeat(event.target.value);
+        let selected = props.selectedItem;
+        let value= event.target.value;
+        let result= [];
+        if(props.selectedItem.mapping){
+            let mapping = props.selectedItem.mapping;
+            if(mapping && mapping.length >0 )
+                result=mapping;
+        }
+        if(value){
+            value.forEach((seat,i)=>{
+                if(value.find( ({ seat_id }) => seat_id === seat )){
+                    value.splice(i,0,{'seat_id': parseInt(seat), 'type': props.type.libelle})
+                }
+                else {
+                    result.push({'seat_id': parseInt(seat), 'type': props.type.libelle});
+                }
+            });
+        }
+        setMappedSelectedSeat(result);
+    };
+    const handleSubmit = () => {
+        props.listAssign(mappedSelectedSeat);
+        handleClose();
     };
     useEffect(() => {
         if (props.open !== open) {
@@ -135,12 +168,12 @@ export default function ChoosePlaceDialog(props) {
                                     </MenuItem>
                                 ))}
                             </Select>
-                            <FormHelperText>Chaises à assigner au billet "<b></b>"</FormHelperText>
+                            <FormHelperText>Chaises à assigner au billet <b>{props.type.libelle}</b></FormHelperText>
                         </FormControl>
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <Button color="primary" type={"submit"}>
+                    <Button color="primary" type={"submit"} onClick={handleSubmit}>
                         Valider
                     </Button>
                     <Button onClick={handleClose} color="secondary">

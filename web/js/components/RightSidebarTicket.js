@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import EventContext from "./contexts/EventContext";
 import {ToastContainer} from "react-toastr";
 import ChoosePlaceDialog from "./forms/ChoosePlaceDialog";
+import SaveCanvas from "./forms/SaveCanvas";
 
 let container;
 
@@ -43,6 +44,9 @@ function RightSidebarTicket(props) {
         setTypeBilletSelected(billet);
         setOpenSeatDialog(true);
     };
+    const handleAssign = (list) => {
+        props.assignTicket(list);
+    };
     useEffect(() => {
         if (props.selectedItem !== objectSelected) {
             setObjectSelected(props.selectedItem);
@@ -64,11 +68,15 @@ function RightSidebarTicket(props) {
 
 
     }, [props.selectedItem, props.liste_billet]);
+    const saveCanvas = (save) =>{
+        props.saveMap(save);
+    };
+
     return (
         <aside>
             <div className={classes.root}>
                 <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
-                <Fade in={hasObjectSelected} style={{transitionDelay: '50ms'}}>
+                <Fade in={hasObjectSelected} style={{transitionDelay: '50ms',display: (hasObjectSelected) ? "inherit" : "none"}}>
                     <Grid container spacing={2} justify="center" direction="row">
                         {billet.map((item, i) =>
                             <Paper className={classes.paper} key={i}>
@@ -90,7 +98,8 @@ function RightSidebarTicket(props) {
                             </Paper>)}
                     </Grid>
                 </Fade>
-                {openSeatDialog && <ChoosePlaceDialog open={openSeatDialog} close={closeSeatDialog} selectedItem={props.selectedItem} type={typeBilletSelected}/>}
+                {!hasObjectSelected && <SaveCanvas saveCanvas={saveCanvas} updateObject={props.updateObject}/>}
+                {openSeatDialog && <ChoosePlaceDialog open={openSeatDialog} close={closeSeatDialog} selectedItem={props.selectedItem} type={typeBilletSelected} listAssign={handleAssign}/>}
             </div>
 
         </aside>

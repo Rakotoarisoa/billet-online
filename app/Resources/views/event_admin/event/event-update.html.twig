@@ -67,9 +67,10 @@
                 </div>
                 <div class="col-sm-9">
                     {{ parent() }}
+                    <p class="text text-danger">Mise à jour l' évènement {{ event.titreEvenement }}</p>
                     <div class="tab-content">
                         <div id="info_event" class="container tab-pane fade section-padding-0-100 active"><br>
-                            {{ form_start(form, {'method': 'post', 'action':  path('createEvent',{'userId':app.user.id}), 'attr': {'class': 'form'}}) }}
+                            {{ form_start(form, {'method': 'post', 'action':  path('viewEventUpdate',{'user':app.user.id,'id':event.id}), 'attr': {'class': 'form'}}) }}
 
                             {% if flow.getCurrentStepNumber() == 1 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
@@ -123,10 +124,13 @@
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ 'create_event_field_label.image_event'|trans }}</label>
                                     {{ form_widget(form.image_event) }}
-                                    <div class="upload-msg">
-                                        2000x1500
+                                    <small class="text text-muted">Veuiller ajouter un fichier pour remplacer l'image</small>
+                                    <div class="">
+                                        <img src="{{ asset(event.imageEvent) }}"/>
                                     </div>
-                                    <div class="upload-demo" id="upload-demo" style="display:none;"></div>
+                                    <div class="upload-demo" id="upload-demo" style="display:none;">
+
+                                    </div>
                                     <br/>
                                 </div>
                                 <div class="form-group col-md-12 col-sm-12">
@@ -161,10 +165,10 @@
 
                             {% if flow.getCurrentStepNumber() == 4 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
-                                <p class="text">Vous avez saisis les informations concernant votre nouvel évènement </p>
+                                <p class="text">Vous avez saisis les informations concernant l'évènement <b>{{ event.titreEvenement }}</b> qui déroulera le <b>{{ event.dateDebutEvent|date('d m Y') }}</b> </p>
                                 <p>Appuyer sur
                                     <small class="text-danger">Sauvegarder et confirmer</small>
-                                    pour valider.
+                                    pour confirmer.
                                 </p>
                             {% endif %}
 
@@ -201,6 +205,7 @@
             $(document).ready(function () {
                 $('.nav-tabs a[href="#info_event"]').tab('show');
                 {% if flow.currentStepNumber == 1 %}
+                document.getElementById("word-count").innerHTML =  $('#appbundle_event_titreEvenement').val().length + "/" + 75;
                 $('#appbundle_event_titreEvenement').on('input', function (e) {
                     maxLength = 75;
                     document.getElementById("word-count").innerHTML = this.value.length + "/" + maxLength;
@@ -254,6 +259,7 @@
                 {% endif %}
             });
             {% if flow.currentStepNumber == 2 %}
+            $('#appbundle_event_image_event').removeAttr('required');
             $('.image-event').on('change',function(e){
                 var file=this.files[0];
                 var valid_extensions=['png','jpg','jpeg'];

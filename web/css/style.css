@@ -1208,9 +1208,9 @@ img {
   .footer-area .copywrite-text {
     font-size: 12px;
     margin-bottom: 0;
-    color: rgba(166, 165, 165, 0.54); }
+    color: #FFF; }
     .footer-area .copywrite-text a {
-      color: rgba(166, 165, 165, 0.54);
+      color: #FFF;/* Andry Edit rgba(166, 165, 165, 0.54);*/
       font-size: 12px; }
       .footer-area .copywrite-text a:hover, .footer-area .copywrite-text a:focus {
         color: #fff; }
@@ -1232,9 +1232,10 @@ img {
         justify-content: center;
         margin-top: 30px; } }
   .footer-area .footer-nav li a {
-    color: #898888;
+    color: #FFF;/* Andry edit #898888*/;
     font-size: 16px;
-    padding: 0 20px; }
+    padding: 0 20px;
+    font-weight: inherit;}
     @media only screen and (min-width: 768px) and (max-width: 991px) {
       .footer-area .footer-nav li a {
         padding: 0 10px;

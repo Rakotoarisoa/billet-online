@@ -132,21 +132,8 @@ class SetMap extends Component {
             width: 50,
             height: 10,
         });
-        //Add icon
-        var path = new Konva.Path({
-            x: width / 2,
-            y: height / 2,
-            data:
-                'M44,28c-0.552,0-1,0.447-1,1v6c0,7.72-6.28,14-14,14s-14-6.28-14-14v-6c0-0.553-0.448-1-1-1s-1,0.447-1,1v6   c0,8.485,6.644,15.429,15,15.949V56h-5c-0.552,0-1,0.447-1,1s0.448,1,1,1h12c0.552,0,1-0.447,1-1s-0.448-1-1-1h-5v-5.051   c8.356-0.52,15-7.465,15-15.949v-6C45,28.447,44.552,28,44,28z',
-            fill: 'black',
-            scale: {
-                x: 1,
-                y: 1
-            }
-        });
         zone.add(table);
         zone.add(text);
-        zone.add(path);
         zone.on('click tap', (e) => {
             transformer.attachTo(zone);
             this.setState({
@@ -812,8 +799,8 @@ class SetMap extends Component {
             this.saveStage();
         });
         setTimeout(() => {
-            this.setState({'saveCanvas': !save})
-        }, 3000);
+            this.setState({'saveCanvas': !save});
+        }, 1500);
     };
     //Supprimer un objet sur le canvas
     deleteObject = (object) => {
@@ -847,6 +834,9 @@ class SetMap extends Component {
             })
             .then(function (response) {
                 container.success("Carte enregistré aves succès", 'Succès', {closeButton: true});
+                setTimeout(() => {
+                    location.reload();
+                },1500);
             })
             .catch(function (error) {
                     container.error("Une Erreur s'est produite pendant l'enregistrement de la carte", 'Erreur', {closeButton: true});
