@@ -138,9 +138,8 @@ class SetTicket extends Component {
                 if (object.mapping !== undefined) {
                     let colors = this.state.ticket_colors;
                     let mapped = object.mapping;
-                    console.log(mapped);
                     mapped.forEach((el) => {
-                        if (el.seat_id === i+1)
+                        if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString())
                             colors.forEach((color) => {
                                 if (color.billet === el.type) circle_color = color.color;
                             })
@@ -159,7 +158,7 @@ class SetTicket extends Component {
                     height: 20,
                     stroke: "#888888",
                     strokeWidth: 2,
-                    fill: this.state.color_seat,
+                    fill: circle_color,
                     shadowColor: 'gray',
                     shadowOffsetX: 2,
                     shadowOffsetY: 2,
@@ -308,6 +307,8 @@ class SetTicket extends Component {
             width: textWidth,
             height: textHeight,
         });
+        let colors = this.state.ticket_colors;
+        let mapped = object.mapping;
         //render top and left seats
         for (let i = 0; i < x; i++) {
             if (deleted && deleted.includes(i + 1)) {
@@ -317,10 +318,8 @@ class SetTicket extends Component {
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
             if (object.mapping !== undefined) {
-                let colors = this.state.ticket_colors;
-                let mapped = object.mapping;
                 mapped.forEach((el) => {
-                    if (el.seat_id === (numero_chaise + 1).toString())
+                    if (el.seat_id === parseInt(numero_chaise + 1))
                         colors.forEach((color) => {
                             if (color.billet === el.type) circle_color = color.color;
                         })
@@ -338,7 +337,7 @@ class SetTicket extends Component {
                 y: 0,
                 width: 20,
                 height: 20,
-                fill: this.state.color_seat,
+                fill: circle_color,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -365,11 +364,8 @@ class SetTicket extends Component {
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
             if (object.mapping !== undefined) {
-                let colors = this.state.ticket_colors;
-                let mapped = object.mapping;
-
                 mapped.forEach((el) => {
-                    if (el.seat_id === (numero_chaise + 1).toString())
+                    if (el.seat_id === parseInt(numero_chaise + 1))
                         colors.forEach((color) => {
                             if (color.billet === el.type) circle_color = color.color;
                         })
@@ -389,7 +385,7 @@ class SetTicket extends Component {
                 y: 0,
                 width: 20,
                 height: 20,
-                fill: this.state.color_seat,
+                fill: circle_color,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -416,11 +412,8 @@ class SetTicket extends Component {
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
             if (object.mapping !== undefined) {
-                let colors = this.state.ticket_colors;
-                let mapped = object.mapping;
-                console.log(mapped);
                 mapped.forEach((el) => {
-                    if (el.seat_id === (numero_chaise + 1).toString())
+                    if (el.seat_id === parseInt(numero_chaise + 1))
                         colors.forEach((color) => {
                             if (color.billet === el.type) circle_color = color.color;
                         })
@@ -438,7 +431,7 @@ class SetTicket extends Component {
                 y: 0,
                 width: 20,
                 height: 20,
-                fill: this.state.color_seat,
+                fill: circle_color,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -465,11 +458,8 @@ class SetTicket extends Component {
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
             if (object.mapping !== undefined) {
-                let colors = this.state.ticket_colors;
-                let mapped = object.mapping;
-                console.log(mapped);
                 mapped.forEach((el) => {
-                    if (el.seat_id === (numero_chaise + 1).toString())
+                    if (el.seat_id === parseInt(numero_chaise + 1))
                         colors.forEach((color) => {
                             if (color.billet === el.type) circle_color = color.color;
                         })
@@ -489,7 +479,7 @@ class SetTicket extends Component {
                 y: 0,
                 width: 20,
                 height: 20,
-                fill: this.state.color_seat,
+                fill: circle_color,
                 stroke: "#888888",
                 strokeWidth: 2,
                 shadowColor: 'gray',
@@ -774,6 +764,16 @@ class SetTicket extends Component {
 
     }
     //Nombre total de chaises
+    setTotalAssignedSeats(){
+        let data = this.state.data_map;
+        if (data.length > 0) {
+            let nb_seats_assigned = 0;
+            data.forEach((el) => {
+                (el.mapping?nb_seats_assigned+=el.mapping.length:nb_seats_assigned+=0);
+            });
+            this.setState({'total_assigned': nb_seats_assigned});
+        }
+    }
     setTotalSeats() {
         let data = this.state.data_map;
         if (data.length > 0) {
@@ -790,6 +790,7 @@ class SetTicket extends Component {
             let stage = this.state.stage;
             stage.batchDraw();
         }
+
     }
     //Sauvegarder le canvas
     saveCanvas = (save) => {
@@ -842,6 +843,7 @@ class SetTicket extends Component {
     loadStage = (focusObj) => {
         let data = this.state.data_map;
         this.setTotalSeats();
+        this.setTotalAssignedSeats();
         let stage = new Konva.Stage({
             container: 'stage-container-ticket',
             width: window.innerWidth * 3 / 4,
@@ -1009,12 +1011,20 @@ class SetTicket extends Component {
     handleSelected = e => {
         this.setState({'selectedItem': e});
     };
-    handleAssign = (list) => {
+    handleReInitAll =(reInit) =>{
+        if(reInit) {
+            let data = this.state.data_map;
+            data.forEach((el) => {
+                if (el.mapping) el.mapping = [];
+            });
+            this.setState({'data_map':data},()=>{this.loadStage()});
+        }
+    };
+    handleAssign = (list = []) => {
         let selected = this.state.selectedItem;
         selected.mapping = list;
         this.setState({'selectedItem':null});
         this.updateObject(selected);
-
     };
     getFocusedObject = (obj) => {
         if (this.state.selectedItem) {
@@ -1044,7 +1054,7 @@ class SetTicket extends Component {
                     <p style={{color: '#eeeeee'}}>{this.state.total_assigned}/{this.state.number_seats} places
                         assignées</p>
                     <RightSidebarTicket selectedItem={this.state.selectedItem} colors={this.state.ticket_colors}
-                                        liste_billet={this.state.liste_billet} assignTicket={this.handleAssign} saveMap={this.saveCanvas}/>
+                                        liste_billet={this.state.liste_billet} assignTicket={this.handleAssign} saveMap={this.saveCanvas} reInit={this.handleReInitAll}/>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>

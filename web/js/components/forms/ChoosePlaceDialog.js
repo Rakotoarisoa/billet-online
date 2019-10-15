@@ -63,32 +63,27 @@ export default function ChoosePlaceDialog(props) {
     const seatList = () => {
         if (props.selectedItem) {
             let selectedItem = props.selectedItem;
-            let nbSeats = selectedItem.number_seats;
+            //let nbSeats = selectedItem.number_seats;
             let formattedSeat = [];
             const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
             if (selectedItem.type === "section") {
                 for (let j = 0; j < selectedItem.ySeats; j++) {
                     for (let i = 0; i < selectedItem.xSeats; i++) {
                         let name = ((alphabet[j]) + (i + 1)).toString().toUpperCase();
-                        if (selectedItem.deleted_seats.includes(name)){
-                            continue;
-                        }
-
+                        if (selectedItem.deleted_seats.includes(name)) continue;
                         formattedSeat.push({value: name, name: name});
                     }
                 }
             }
             else if(selectedItem.type === "rectangle"){
                 for (let i = 0; i < ((selectedItem.xSeats*2)+(selectedItem.ySeats*2)); i++) {
-                    if (selectedItem.deleted_seats.includes(parseInt(i + 1)))
-                        continue;
+                    if (selectedItem.deleted_seats.includes(parseInt(i + 1))) continue;
                     formattedSeat.push({value: i + 1, name: i + 1});
                 }
             }
-            else if(selectedItem.type === "circle") {
+            else if(selectedItem.type === "ronde") {
                 for (let i = 0; i < selectedItem.chaises; i++) {
-                    if (selectedItem.deleted_seats.includes(parseInt(i + 1)))
-                        continue;
+                    if (selectedItem.deleted_seats.includes(parseInt(i + 1)))  continue;
                     formattedSeat.push({value: i + 1, name: i + 1});
                 }
             }
@@ -96,22 +91,28 @@ export default function ChoosePlaceDialog(props) {
         }
     };
     const handleChange = (event) => {
+        console.log("begin handle change");
         setSelectedSeat(event.target.value);
         let selected = props.selectedItem;
         let value= event.target.value;
         let result= [];
         if(props.selectedItem.mapping){
+
             let mapping = props.selectedItem.mapping;
             if(mapping && mapping.length >0 )
                 result=mapping;
         }
         if(value){
             value.forEach((seat,i)=>{
-                if(value.find( ({ seat_id }) => seat_id === seat )){
-                    value.splice(i,0,{'seat_id': parseInt(seat), 'type': props.type.libelle})
+                if(props.selectedItem.type !== 'section') seat = parseInt(seat);
+                else seat = seat.toString();
+                if(result.find( ({ seat_id }) => seat_id === seat )){
+                    console.log("matched");
+                    result.splice(result.findIndex( ({ seat_id }) => seat_id === seat ),1,{'seat_id': seat, 'type': props.type.libelle});
                 }
                 else {
-                    result.push({'seat_id': parseInt(seat), 'type': props.type.libelle});
+                    console.log("not matched");
+                    result.push({'seat_id': seat, 'type': props.type.libelle});
                 }
             });
         }
