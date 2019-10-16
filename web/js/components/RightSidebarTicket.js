@@ -13,7 +13,6 @@ import SaveCanvas from "./forms/SaveCanvas";
 import ReInitSeat from "./forms/ReInitSeat";
 
 let container;
-
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,

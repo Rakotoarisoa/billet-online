@@ -1,28 +1,25 @@
 {% extends 'base.html.twig' %}
-{% block title%}
-   {{  event.titreEvenement }} | Plan de salle
+{% block title %}
+    {{ event.titreEvenement }} | Plan de salle
 {% endblock %}
-{% block breadcrumb_content %}
-    <p>{{  event.titreEvenement }}</p>
-    <h2>Plan de salle</h2>
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset(event.imageEvent) }})">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <p>{{ event.titreEvenement }}</p>
+                <h2>Plan de salle</h2>
+            {% endblock %}
+        </div>
+    </section>
 {% endblock %}
 {% block body %}
     {% block content %}
         {{ parent() }}
-        <div id="vue-app-user" class="container-fluid">
-            <!-- Vertical toolbar -->
-            <p class="font-weight-light text-justify">Sélectionner une place pour pouvoir réserver .</p>
-            <div class="row">
-                <div class="col-sm-10">
-                    <canvas-element-user></canvas-element-user>
-                </div>
-                <div class="col-sm-2">
-                    <sidebar-right-user></sidebar-right-user>
-                </div>
-            </div>
+        <div id="root" data-event-id="{{ event.id }}" data-is-front="true" class="container-fluid">
         </div>
         <p>
-            <a href="{{ url('viewSingle',{'id':event.id}) }}"><span class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
+            <a href="{{ url('viewSingle',{'id':event.id}) }}"><span
+                        class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
         </p>
     {% endblock %}
     {% block contact %}{% endblock %}
@@ -38,11 +35,7 @@
         <script src="{{ asset('js/plugins/plugins.js') }}"></script>
         <!-- Active js -->
         <script src="{{ asset('js/active.js') }}"></script>
-
-        <script type="text/javascript" src="{{ asset('js/fabric.js') }}"></script>
-        <!-- Vue js -->
+        <!-- Build js -->
         <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
-
-
     {% endblock %}
 {% endblock %}

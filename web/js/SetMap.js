@@ -916,7 +916,7 @@ class SetMap extends Component {
         });
         stage.draw();
         /** Responsive stage*/
-        /*window.addEventListener('resize',(e)=>{
+        window.addEventListener('resize',(e)=>{
             let container = document.querySelector('#stage-container');
             const stageWidth= this.state.initWidth,stageHeight=this.state.initHeight;
             let containerWidth = container.offsetWidth;
@@ -925,7 +925,7 @@ class SetMap extends Component {
             stage.height(stageHeight * scale);
             stage.scale({ x: scale, y: scale });
             this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});
-        });*/
+        });
 
         /** Focus on object : executed when this.state.focusObject is not null*/
         let focus_object = this.state.focusObject;
