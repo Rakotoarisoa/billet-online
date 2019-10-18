@@ -10,11 +10,17 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\Reservation;
+use AppBundle\Entity\TypeBillet;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Billet;
 use AppBundle\Utils\Cart;
 use AppBundle\Utils\CartItem;
+use FOS\UserBundle\Event\GetResponseUserEvent;
+use FOS\UserBundle\Form\Factory\FactoryInterface;
+use FOS\UserBundle\FOSUserEvents;
+use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
@@ -50,9 +56,18 @@ class CartController extends Controller
         $cart = $this->cart->getItems();
         $this->session->set('quantity', count($this->cart->getItems()));
         $array = array();
-
-
-        return $this->render('default/cart.html.twig', ['cart' => $cart]);
+        /** @var $formFactory FactoryInterface */
+        $formFactory = $this->get('fos_user.registration.form.factory');
+        /** @var $userManager UserManagerInterface */
+        $userManager = $this->get('fos_user.user_manager');
+        /** @var $dispatcher EventDispatcherInterface */
+        $dispatcher = $this->get('event_dispatcher');
+        $user= $userManager->createUser();
+        $form = $formFactory->createForm();
+        $event = new GetResponseUserEvent($user);
+        $dispatcher->dispatch(FOSUserEvents::REGISTRATION_INITIALIZE, $event);
+        $form->setData($user);
+        return $this->render('default/cart.html.twig', ['cart' => $cart,'form' => $form->createView()]);
     }
 
     /**
@@ -105,17 +120,20 @@ class CartController extends Controller
             throw new \Exception('Erreur lors de l\'ajout au panier');
         }
         //Récupérer les billets à vendre
-        $result = $this->getDoctrine()->getRepository(Billet::class)->getTicketsToBuy($event_id, $nbr_billets, $type_billet);
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event_id);
-        if (count($result) > 0) {
+        $type_billet= $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $type_billet,'evenement' => $event]);
+        $result = $this->getDoctrine()->getRepository(Billet::class)->getTicketsToBuy($event_id, $nbr_billets, $type_billet);
+        for($i=0;$i<count($result) ;$i++) {
             $item = new CartItem([
-                'id' => $result[0]['id'],
-                'name' => strtolower($type_billet) . "-" . $result[0]['identifiant'] . "-" . $event->getTitreEvenementSlug(),
-                'price' => $result[0]['prix'],
-                'event' => $event_id
+                'id' => $i,
+                'name' => $result[$i]->getIdentifiant(),
+                'price' => $type_billet->getPrix(),
+                'event' => $event->getTitreEvenement(),
+                'seat' => $result[$i]->getPlaceId(),
+                'section' => $result[$i]->getSectionId(),
             ]);
-            $item->setQuantity((integer)$nbr_billets); // defaults to 1
-            $item->setCategoryStr($type_billet);
+            $item->setQuantity(1); // defaults to 1
+            $item->setCategoryStr($type_billet->getLibelle());
             $this->cart->addItem($item);
         }
 
@@ -154,13 +172,10 @@ class CartController extends Controller
         $em = $this->getDoctrine()->getManager();
         $repo = $this->getDoctrine()->getRepository(Billet::class);
         $reservation = new Reservation();
-
         foreach ($cartItems as $cart) {
             $repo->getTicketToBuy($cart->getEvent(), $cart->getQuantity(), $cart->getCategoryStr(),true);
         }
         $firstUser = $em->getRepository(User::class)->findOneBy([]); // current user id needs to be set after sign up
-
-
         try {
             //TODO: Ajouter les données de reservation
             $em->persist($reservation);

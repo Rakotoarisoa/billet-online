@@ -75,7 +75,7 @@ layout:
     logout: Déconnexion
     login: Connexion
     register: Inscription
-    logged_in_as: 'Connecté en tant que %username%'
+    logged_in_as: '%username%'
 form:
     group_name: 'Nom du groupe'
     username: 'Nom d''utilisateur'

@@ -25,14 +25,6 @@
             <div class="container">
                 <p style="font-size: 20px;" class="pull-right">
                     {% if ticketState is not empty %}
-                        {% if ticketState['vendus'] is defined %}
-                            <span
-                                    class="badge badge-danger">{{ ticketState['vendus'] }}</span> billets
-                            vendus
-                        {% endif %}
-                        {% if ticketState['vendus'] is defined and  ticketState['restants'] is defined %}
-                            ,
-                        {% endif %}
                         {% if ticketState['restants'] is defined %}
                             <span class="badge badge-success">{{ ticketState['restants'] }}</span> billets restants
                         {% endif %}

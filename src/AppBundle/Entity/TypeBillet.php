@@ -17,7 +17,6 @@ class TypeBillet
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
     /**
      * @return mixed
      */
@@ -34,7 +33,6 @@ class TypeBillet
      * @ORM\JoinColumn(name="id_evenement", referencedColumnName="id")
      */
     private $evenement;
-
     /**
      * @return mixed
      */
@@ -58,7 +56,6 @@ class TypeBillet
     {
         return $this->libelle;
     }
-
     /**
      * @param mixed $libelle
      */
@@ -73,7 +70,6 @@ class TypeBillet
     {
         return $this->billets;
     }
-
     /**
      * @param mixed $billets
      */
@@ -97,7 +93,6 @@ class TypeBillet
     {
         return $this->prix;
     }
-
     /**
      * @param mixed $prix
      */

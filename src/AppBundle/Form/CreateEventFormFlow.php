@@ -36,6 +36,13 @@ class CreateEventFormFlow extends FormFlow {
                 },*/
             ],
             [
+                'label' => 'Billets',
+                'form_type' => BilletType::class,
+                'form_options' => [
+                    'validation_groups' => ['Default'],
+                ],
+            ],
+            [
                 'label' => 'Confirmation',
             ],
         ];

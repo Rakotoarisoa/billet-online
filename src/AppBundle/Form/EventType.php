@@ -65,7 +65,7 @@ class EventType extends AbstractType
                     ))
                     ->add('lieuEvenement', EntityType::class, array(
                         'class' => 'AppBundle\Entity\LieuEvenement',
-                        'placeholder' => 'Sélectionnez le lieu ',
+                        'placeholder' => 'Sélectionnez le lieu',
                         'choice_label' => 'nomSalle',
                         'required' => true
                     ))
@@ -135,6 +135,9 @@ class EventType extends AbstractType
 
                     );
                 break;
+            case 4:
+                $builder
+                    ->add('typeBillet', BilletType::class);
         }
 
     }

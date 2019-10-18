@@ -179,10 +179,24 @@ class BilletRepository extends EntityRepository
      * @param $nbr nombre de billets
      * @param $type_billets
      */
-    public function getTicketsToBuy($event_id, $nbr, $type_billet, $updateBillet = false)
+    public function getTicketsToBuy($event_id, $nbr = 1, $type_billet, $updateBillet = false)
     {
-        var_dump("before");
-        $rs = $queryBillet = $this->getEntityManager()->createQuery('SELECT b.id,b.identifiant,tb.prix,b.place_id,tb.libelle FROM AppBundle:Billet b 
+        $emBillet=$this->getEntityManager()->getRepository(Billet::class);
+        $event = $this->getEntityManager()->getRepository(Evenement::class)->find($event_id);
+        $result=array();
+        for($i=0;$i<$nbr;$i++ )
+        {
+            $billet=new Billet();
+            $identifiant = $i."-".date("ddmmY")."-".$event->getTitreEvenementSlug();//format nb-ddmmYYYY-event-slug
+            $billet->setTypeBillet($type_billet);
+            $billet->setIdentifiant($identifiant);
+            $billet->setPlaceId("-");
+            $billet->setSectionId("-");
+            array_push($result,$billet);
+        }
+        return $result;
+
+        /*$rs = $queryBillet = $this->getEntityManager()->createQuery('SELECT b.id,b.identifiant,tb.prix,b.place_id,tb.libelle FROM AppBundle:Billet b
 JOIN AppBundle:Typebillet tb WITH tb.id=b.typeBillet 
 JOIN AppBundle:Evenement e WITH e.id=tb.evenement 
 WHERE e.id=:idEvent and b.estVendu=0 and tb.libelle=:libelle
@@ -196,7 +210,7 @@ ORDER BY b.id ASC')
                 $this->getEntityManager()->createQuery('UPDATE AppBundle:Billet b SET b.estVendu=1 WHERE b.id=:id')->setParameter('id', $item['id'])->execute();
             }
         }
-        return $rs;
+        return $rs;*/
     }
 
     private function stripAccents($str)

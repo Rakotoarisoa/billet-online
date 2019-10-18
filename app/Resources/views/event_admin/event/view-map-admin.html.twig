@@ -3,17 +3,17 @@
    {{  event.titreEvenement }} | Plan de salle
 {% endblock %}
 {% block breadcrumb%}
-    <section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
+    <!--<section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
         <div class="bradcumbContent">
             {% block breadcrumb_content %}
-                <h2>PLAN DE SALLE : {{ event.titreEvenement }}</h2>
             {% endblock %}
         </div>
-    </section>
+    </section>-->
 {% endblock %}
 {% block body %}
     {% block content %}
         {{ parent() }}
+        <h4>Plan de salle : {{ event.titreEvenement }}</h4>
         <div id="root" data-event-id="{{ event.id }}">
         </div>
     {% endblock %}

@@ -23,13 +23,49 @@ class CartItem
     protected $category;
     /** @var string category of item */
     protected $category_str;
-    /** @var id event */
+    /** @var string event */
     protected $event;
+    /** @var string section*/
+    protected $section;
+
+    /**
+     * @return string
+     */
+    public function getSection(): string
+    {
+        return $this->section;
+    }
+
+    /**
+     * @param string $section
+     */
+    public function setSection(string $section): void
+    {
+        $this->section = $section;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeat(): string
+    {
+        return $this->seat;
+    }
+
+    /**
+     * @param string $seat
+     */
+    public function setSeat(string $seat): void
+    {
+        $this->seat = $seat;
+    }
+    /** @var string seat*/
+    protected $seat;
 
     /**
      * @return id
      */
-    public function getEvent(): id
+    public function getEvent(): string
     {
         return $this->event;
     }
