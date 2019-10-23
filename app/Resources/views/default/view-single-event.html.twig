@@ -30,7 +30,7 @@
                                 <!-- Post Date -->
                                 <div class="post-date">
                                     <span>{{ event.dateDebutEvent|date('d') }}</span>
-                                    <span>{{ event.dateDebutEvent|date('m') }} {{ event.dateDebutEvent|date('Y') }}</span>
+                                    <span>{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,'MMM Y') }}</span>
                                 </div>
                             </div>
 

@@ -157,7 +157,7 @@
                                     <small class="col-12 text text-muted">L'évènement est publié par défaut</small>
                                 </div>
                             {% endif %}
-                            {% if flow.getCurrentStepNumber() == 4 %}
+                            {# if flow.getCurrentStepNumber() == 4 %}
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ 'create_event_field_label.title_event'|trans }} <span
                                                 class="fa fa-align-left"></span></label>
@@ -169,13 +169,13 @@
                                         <small id="word-count" class="form-text text-muted col-sm-1">0/75</small>
                                     </div>
                                 </div>
-                            {% endif %}
-                            {% if flow.getCurrentStepNumber() == 5 %}
+                            {% endif #}
+                            {% if flow.getCurrentStepNumber() == 4 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <p class="text">Vous avez saisis les informations concernant l'évènement
                                     <b>{{ event.titreEvenement }}</b> qui déroulera
                                     le {{ event.dateDebutEvent|date('d m Y') }} </p>
-
+                                <p class="test">Vous serez invités à ajouter <b>vos premiers billets</b> et créer <b>votre plan de salle</b> si vous avez activé la fonctionnalité </p>
                                 <p>Appuyer sur
                                     <small class="text-danger">Sauvegarder et confirmer</small>
                                     pour confirmer.

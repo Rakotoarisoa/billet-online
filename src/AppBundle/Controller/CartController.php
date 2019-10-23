@@ -195,7 +195,6 @@ class CartController extends Controller
             $this->addFlash('success', 'Validation de la reservation complétée. Vous serez notifié par e-mail');
             //$this->cart->clear();
         } catch (\Exception $exception) {
-            var_dump($exception->getMessage());
             $this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }

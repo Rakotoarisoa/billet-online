@@ -35,13 +35,13 @@ class CreateEventFormFlow extends FormFlow {
                     return $estimatedCurrentStepNumber > 2 ;
                 },*/
             ],
-            [
+            /*[
                 'label' => 'Billets',
                 'form_type' => BilletType::class,
                 'form_options' => [
                     'validation_groups' => ['Default'],
                 ],
-            ],
+            ],*/
             [
                 'label' => 'Confirmation',
             ],

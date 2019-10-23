@@ -135,9 +135,9 @@ class EventType extends AbstractType
 
                     );
                 break;
-            case 4:
-                $builder
-                    ->add('typeBillet', BilletType::class);
+            //case 4:
+                //$builder
+                   // ->add('typeBillet', BilletType::class);
         }
 
     }

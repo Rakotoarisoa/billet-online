@@ -20,7 +20,12 @@
         <section class="section-padding-100">
             <div class="container">
                 {{ parent() }}
-                <p style="font-size: 20px;" class="pull-right">
+                <div id="ticketList" class="row">Loading...</div>
+                <div class="row">
+                    <div class="col pull-left">
+                        <h1>Administration de billets</h1>
+                    </div>
+                <!--<div style="font-size: 20px;" class="col pull-right">
                     {% if ticketState is not empty %}
                         {% if ticketState['vendus'] is defined %}
                             <span
@@ -34,7 +39,8 @@
                             <span class="badge badge-success">{{ ticketState['restants'] }}</span> billets restants
                         {% endif %}
                     {% endif %}
-                </p>
+                </div>-->
+                </div>
                 <!--<form class="form-inline" id="billets_form">
                     <div id="billets_fields">
 
@@ -91,7 +97,7 @@
                     <p class="text text-muted">Exemple : 15.00, si le type de billet est "Gratuit",le prix sera
                         configuré automatiquement</p>
                     <div class="form-group">
-                        <button type="submit" id="form_register" name="register" class="btn-secondary btn">
+                        <button type="submit" id="form_register" name="register" class="btn-success btn">
                             Enregistrer
                         </button>
                     </div>
@@ -105,9 +111,25 @@
     {% endblock %}
     {% block javascripts %}
         {{ parent() }}
+        <script type="text/javascript"  src="https://cdn.datatables.net/v/bs4/dt-1.10.18/r-2.2.2/sl-1.3.0/datatables.min.js"></script>
+        <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
         <script type="text/javascript">
+            $(function () {
+                $('#ticketList').initDataTables({{ datatable_settings(datatable) }}, {
+                    createdRow: function (row, data, index) {//
+                        let id_colonne_billet_restant = 3, id_colonne_billets_total = 0, id_type_billet = 1;// changer cette valeur si modification datatables
+                        let billets_total = parseInt($('td', row).eq(id_colonne_billets_total).text());
+                        $('td', row).eq(id_colonne_billets_total).html('<h5 ><span class="badge badge-success"> ' + billets_total + '</span></h5> ');
+                        let billets_type = $('td', row).eq(id_type_billet).text();
+                        let billets_restants = parseInt($('td', row).eq(id_colonne_billet_restant).text());
+                        if (billets_restants > 0) // si le nombre de billets restants est > 0
+                            $('td', row).eq(id_colonne_billet_restant).html('<h5>' + billets_restants + ' &nbsp; <button class="btn btn-success" data-id="" data-nbr="' + billets_restants + '" data-type="' + billets_type + '" data-toggle="modal" data-target="#nbrBillets">{{ 'events.buy_tickets'|trans }}</button></h5>');
+                        else
+                            $('td', row).eq(id_colonne_billet_restant).html('<span class="badge badge">' + billets_restants + '</span>');
+                    }
+                });
+            });
             var type = 1;
-
             function billets_fields() {
 
                 type++;

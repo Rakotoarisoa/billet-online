@@ -8,6 +8,8 @@ use AppBundle\Entity\Billet;
 use AppBundle\Entity\Place;
 use AppBundle\Entity\TypeBillet;
 use AppBundle\Form\RechercheBilletType;
+use Omines\DataTablesBundle\Adapter\ArrayAdapter;
+use Omines\DataTablesBundle\Column\TextColumn;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Omines\DataTablesBundle\Controller\DataTablesTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -208,7 +210,20 @@ class TicketController extends Controller
     public function generate(Request $request,Evenement $event)
     {
         $repo = $this->getDoctrine()->getRepository(Billet::class);
-        $queryTicketsState = $repo->countPurchasedTickets($event);
+        $queryDt=$repo->getDataForDatatables($event);
+        $queryTicketsState=$repo->countPurchasedTickets($event);
+        $datatable = $this->createDataTable()
+            ->add('nombreBillets', TextColumn::class,['label'=>'Nombre total de billets'])
+            ->add('libelle', TextColumn::class,['label'=>'Type'])
+            ->add('prix',TextColumn::class,['label'=>'Prix du billet'])
+            ->createAdapter(ArrayAdapter::class,
+                $queryDt
+            )
+            ->handleRequest($request);
+
+        if ($datatable->isCallback()) {
+            return $datatable->getResponse();
+        }
             $repo=$this->getDoctrine()->getRepository(Billet::class);
             if($request->request->has('type_billet') && $request->request->has('nombre') && $request->request->has('prix')){
                 $nbr_b=(int)$request->request->get('nombre');
@@ -219,7 +234,7 @@ class TicketController extends Controller
                 return $this->redirectToRoute('billet_index',array('userId'=>$this->getUser()->getId(),'event'=>$event->getId()));
             }
 
-        return $this->render('event_admin/billet/view-billet-generate.html.twig',array('event'=>$event,'ticketState'=>$queryTicketsState));
+        return $this->render('event_admin/billet/view-billet-generate.html.twig',array('event'=>$event,'ticketState'=>$queryTicketsState,'datatable'=>$datatable));
     }
 
     /**

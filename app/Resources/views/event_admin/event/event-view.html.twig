@@ -18,6 +18,7 @@
         {{ parent() }}
         <section class="section-padding-100">
             <div class="container">
+                <div id="ticketList">Loading...</div>
                 <div class="col-6 col-lg-12">
                     <div class="card">
                         <div class="card-header">
@@ -64,11 +65,25 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-6">{{ 'events.table_view.event_publish'|trans }}</div>
-                                <div class="col-sm-6">{% if event.isPublished %}Oui <span class="fa fa-check"></span><p class="text-muted">{{ 'events.table_view.event_published_info'|trans }}</p>{% else %}Non <span class="fa fa-2x fa-close"></span><p class="text-muted">{{ 'events.table_view.event_no_published_info'|trans }}</p>{% endif %}</div>
+                                <div class="col-sm-6">{% if event.isPublished %}Oui <span class="fa fa-check"></span><p
+                                            class="text-muted">{{ 'events.table_view.event_published_info'|trans }}</p>{% else %}Non
+                                        <span class="fa fa-2x fa-close"></span><p
+                                                class="text-muted">{{ 'events.table_view.event_no_published_info'|trans }}</p>{% endif %}
+                                </div>
                             </div>
 
-                        <div class="card-footer text-muted">
-                            <a class="btn btn-light pull-left" href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}">Modifier les informations</a>
+                            <div class="card-footer text-muted justify-content-center">
+                                <a class="btn btn-success"
+                                   href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}">Modifier les
+                                    informations</a>
+                                {% if event.isUsingSeatMap %}
+                                    <a class="btn btn-secondary"
+                                       href="{{ path('viewCreateMap',{'userId':app.user.id,'id':event.id}) }}">Plan de
+                                        salle</a>
+                                {% endif %}
+                                <a class="btn btn-info"
+                                   href="{{ path('generateTickets',{'userId':app.user.id,'event':event.id}) }}">Billets</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,7 +91,7 @@
         </section>
     {% endblock %}
     {% block javascripts %}
-        {{  parent()}}
+        {{ parent() }}
     {% endblock %}
 {% endblock %}
 {% block contact %}{% endblock %}
