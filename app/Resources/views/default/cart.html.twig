@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% trans_default_domain 'FOSUserBundle' %}
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" type="text/css"
@@ -12,25 +13,26 @@
 {% block body %}
     <!-- ##### Events Area Start ##### -->
     {% block content %}
-        <div class="row justify-content-center"><h2>Commande de billets</h2></div>
         <section class="section-padding-0-100">
             {{ parent() }}
             {% if (cart|length >0) %}
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active" aria-current="page">Commander</li>
-                        <li class="breadcrumb-item">Informations Acheteur</li>
-                        <li class="breadcrumb-item">Validation</li>
+                    <ol class="breadcrumb" id="breadcrumbSteps">
+                        <li class="breadcrumb-item active" aria-current="step" id="step1">Commande</li>
+                        <li class="breadcrumb-item" id="step2">Informations Acheteur (optionnel)</li>
+                        <li class="breadcrumb-item" id="step3">Réception des billets</li>
+                        <li class="breadcrumb-item" id="step4">Validation</li>
                     </ol>
                 </nav>
+                <div class="row justify-content-center"><h6>Commande de billets</h6></div>
                 <div class="accordion" id="checkoutAccordion">
                     <div class="card">
                         <div class="card-header" id="headingOne">
                             <h2 class="mb-0">
-                                <button class="btn btn-link" type="button" data-toggle="collapse"
-                                        data-target="#checkoutStep1" aria-expanded="true" aria-controls="collapseOne">
+                                <a class="btn btn-link" type="button" aria-expanded="true"
+                                   aria-controls="collapseOne">
                                     1. Commande <span class="fa fa-shopping-cart"></span>
-                                </button>
+                                </a>
                             </h2>
                         </div>
                         <div id="checkoutStep1" class="collapse show" aria-labelledby="headingOne"
@@ -38,7 +40,7 @@
                             <div class="card-body">
                                 <div class="container">
                                     <div class="row">
-                                        <div class="card-text ">
+                                        <div class="card-text">
                                             <p>
                                                 <small>Vous pouvez modifier votre commande en ajoutant ou <span
                                                             class="text text-warning">en supprimant</span> quelques
@@ -114,7 +116,7 @@
                             </tr>-->
                                                 </tfoot>
                                             </table>
-                                            <div class="row mb-30 justify-content-center">
+                                            <div class="row mb-30 justify-content-between">
                                                 <div class="col-sm-4"><a href="{{ path('viewList') }}"><i
                                                                 class="fa fa-angle-left"></i>
                                                         Retourner à la page d'accueil</a></div>
@@ -122,7 +124,9 @@
                                                                          href="{{ path('cart_clear') }}">Vider le panier
                                                         <i class="fa fa-refresh"></i></a></div>
                                                 <div class="col-sm-4">
-                                                    <a id="validateStep1" class="btn btn-success text-light">Valider et
+                                                    <a id="validateStep1" data-toggle="collapse"
+                                                       data-target="#checkoutStep2"
+                                                       class="btn btn-success text-light pull-right">Valider et
                                                         continuer</a>
                                                 </div>
                                             </div>
@@ -135,186 +139,306 @@
                     <div class="card">
                         <div class="card-header" id="headingTwo">
                             <h2 class="mb-0">
-                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
-                                        data-target="#checkoutStep2" aria-expanded="false" aria-controls="collapseTwo">
+                                <a class="btn btn-link collapsed" type="button" aria-controls="collapseTwo">
                                     2. Informations Acheteur (optionnel) <span class="fa fa-info"></span>
-                                </button>
+                                </a>
                             </h2>
                         </div>
-                        <div id="checkoutStep2" class="collapse" aria-labelledby="headingThree"
+                        <div id="checkoutStep2" class="collapse" aria-labelledby="headingTwo"
                              data-parent="#checkoutAccordion">
                             <div class="card-body">
-                                <div class="section-padding-0-100">
-                                    {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register','enctype':'multipart/form-data'}}) }}
-                                    <p class="alert-danger">{{ form_errors(form) }}</p>
+                                <div class="section-padding-0">
                                     <div class="row">
                                         <div class="col">
-                                            <hr/>
-                                        </div>
-                                        <div class="col-auto">Informations personnelles</div>
+                                            <a class="btn btn-outline-info" data-toggle="collapse"
+                                               data-target="#checkoutStep1"><span class="fa fa-chevron-left"></span>
+                                                Revenir
+                                                à l' étape précédente</a></div>
                                         <div class="col">
-                                            <hr/>
+                                            <a class="btn btn-outline-danger pull-right" id="ignoreStep2"
+                                               data-toggle="collapse"
+                                               data-target="#checkoutStep3">Ignorer cette étape</a>
                                         </div>
                                     </div>
-
-                                    <div class="form-group col-md-6">
-                                        <div class="row">
-                                            {{ form_label(form.nom) }}
-                                        </div>
-                                        <div class="row">
-                                            {{ form_widget(form.nom) }}
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <div class="row">
-                                            {{ form_label(form.prenom) }}
-                                        </div>
-                                        <div class="row">
-                                            {{ form_widget(form.prenom) }}
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <div class="row">
-                                            {{ form_label(form.sexe) }}
-                                        </div>
-                                        <div class="row">
-                                            {{ form_widget(form.sexe) }}
-                                        </div>
-                                        <div class="row">
-                                            {{ form_errors(form.sexe) }}
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-md-6">
-                                        <div class="row">
-                                            {{ form_label(form.date_de_naissance) }}</div>
-                                        <div class="row">
-                                            {{ form_widget(form.date_de_naissance) }}
-                                        </div>
-                                        <div class="row">
-                                            {{ form_errors(form.date_de_naissance) }}
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <hr/>
-                                        </div>
-                                        <div class="col-auto">Informations de connexion</div>
-                                        <div class="col">
-                                            <hr/>
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        {{ form_label(form.username) }}
-                                        {{ form_widget(form.username) }}
-                                        {{ form_errors(form.username) }}
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        {{ form_widget(form.plainPassword) }}
-                                        {{ form_errors(form.plainPassword) }}
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        {{ form_label(form.email) }}
-                                        {{ form_widget(form.email) }}
-                                        {{ form_errors(form.email) }}
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <hr/>
-                                        </div>
-                                        <div class="col-auto">Contacts</div>
-                                        <div class="col">
-                                            <hr/>
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        {{ form_label(form.adresse) }}
-                                        {{ form_widget(form.adresse) }}
-                                        {{ form_errors(form.adresse) }}
-                                    </div>
-                                    <div class="form-row col-md-6">
-                                        <div class="col">
-                                            {{ form_label(form.region) }}
-                                            {{ form_widget(form.region) }}
-                                        </div>
-                                        <div class="col">
-                                            {{ form_label(form.pays) }}
-                                            {{ form_widget(form.pays) }}
-                                        </div>
-                                        <div class="col">
-                                            {{ form_label(form.code_postal) }}
-                                            {{ form_widget(form.code_postal) }}
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-md-6 col-sm-10">
-                                        {{ form_label(form.mobile_phone) }}
-                                        {{ form_widget(form.mobile_phone) }}
-                                    </div>
-                                    <hr/>
-                                    <div class="form-group col-md-6 col-sm-10">
-                                        {{ form_label(form.phone) }}
-                                        {{ form_widget(form.phone) }}
-                                    </div>
-
-                                    <div class="form-group col-md-6 col-sm-10">
-                                        {{ form_label(form.website) }}
-                                        {{ form_widget(form.website) }}
-                                        {{ form_errors(form.website) }}
-                                    </div>
-                                    <div class="form-group col-md-6 col-sm-10">
-                                        {{ form_label(form.blog) }}
-                                        {{ form_widget(form.blog) }}
-                                        {{ form_errors(form.blog) }}
-                                    </div>
-                                    <div class="form-group col-md-6 col-sm-10">
-                                        {{ form_label(form.image) }}
-                                        {{ form_widget(form.image) }}
-                                        {{ form_errors(form.image) }}
-                                        <small class="text text-muted">L'image ne doit pas dépasser 1024Mo. L'image
-                                            servira de couverture pour votre organisation
-                                        </small>
-                                    </div>
-                                    <div class="form-group col-md-6 col-sm-10">
-                                        <input class="btn  mt-30" type="submit"
-                                               value="{{ 'registration.submit'|trans }}"/>
-                                    </div>
-                                    {{ form_end(form) }}
                                 </div>
+                                <p>Cette étape est optionnelle, inscrivez vous sur notre site ou déposer votre
+                                    adresse e-mail pour vos envoyer des nouvelles</p>
+                                <br/>
+                                <div class="row" id="registerForm">
+                                    <div class="col-sm-6">
+                                        <div class="card">
+                                            <div class="card-header">Formulaire d'inscription</div>
+                                            <div class="card-body">
+                                                {{ form_start(form, {'method': 'post', 'action': path('fos_user_registration_register'), 'attr': {'class': 'fos_user_registration_register','enctype':'multipart/form-data'}}) }}
+                                                <p class="alert-danger">{{ form_errors(form) }}</p>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <hr/>
+                                                    </div>
+                                                    <div class="col-auto">Informations personnelles</div>
+                                                    <div class="col">
+                                                        <hr/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-md-6">
+                                                    <div class="row">
+                                                        {{ form_label(form.nom) }}
+                                                    </div>
+                                                    <div class="row">
+                                                        {{ form_widget(form.nom) }}
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <div class="row">
+                                                        {{ form_label(form.prenom) }}
+                                                    </div>
+                                                    <div class="row">
+                                                        {{ form_widget(form.prenom) }}
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <div class="row">
+                                                        {{ form_label(form.sexe) }}
+                                                    </div>
+                                                    <div class="row">
+                                                        {{ form_widget(form.sexe) }}
+                                                    </div>
+                                                    <div class="row">
+                                                        {{ form_errors(form.sexe) }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-md-6">
+                                                    <div class="row">
+                                                        {{ form_label(form.date_de_naissance) }}</div>
+                                                    <div class="row">
+                                                        {{ form_widget(form.date_de_naissance) }}
+                                                    </div>
+                                                    <div class="row">
+                                                        {{ form_errors(form.date_de_naissance) }}
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <hr/>
+                                                    </div>
+                                                    <div class="col-auto">Informations de connexion</div>
+                                                    <div class="col">
+                                                        <hr/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    {{ form_label(form.username) }}
+                                                    {{ form_widget(form.username) }}
+                                                    {{ form_errors(form.username) }}
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    {{ form_widget(form.plainPassword) }}
+                                                    {{ form_errors(form.plainPassword) }}
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    {{ form_label(form.email) }}
+                                                    {{ form_widget(form.email) }}
+                                                    {{ form_errors(form.email) }}
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <hr/>
+                                                    </div>
+                                                    <div class="col-auto">Contacts</div>
+                                                    <div class="col">
+                                                        <hr/>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    {{ form_label(form.adresse) }}
+                                                    {{ form_widget(form.adresse) }}
+                                                    {{ form_errors(form.adresse) }}
+                                                </div>
+                                                <div class="form-row col-md-6">
+                                                    <div class="col">
+                                                        {{ form_label(form.region) }}
+                                                        {{ form_widget(form.region) }}
+                                                    </div>
+                                                    <div class="col">
+                                                        {{ form_label(form.pays) }}
+                                                        {{ form_widget(form.pays) }}
+                                                    </div>
+                                                    <div class="col">
+                                                        {{ form_label(form.code_postal) }}
+                                                        {{ form_widget(form.code_postal) }}
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-6 col-sm-10">
+                                                    {{ form_label(form.mobile_phone) }}
+                                                    {{ form_widget(form.mobile_phone) }}
+                                                </div>
+                                                <hr/>
+                                                <div class="form-group col-md-6 col-sm-10">
+                                                    {{ form_label(form.phone) }}
+                                                    {{ form_widget(form.phone) }}
+                                                </div>
+
+                                                <div class="form-group col-md-6 col-sm-10">
+                                                    {{ form_label(form.website) }}
+                                                    {{ form_widget(form.website) }}
+                                                    {{ form_errors(form.website) }}
+                                                </div>
+                                                <div class="form-group col-md-6 col-sm-10">
+                                                    {{ form_label(form.blog) }}
+                                                    {{ form_widget(form.blog) }}
+                                                    {{ form_errors(form.blog) }}
+                                                </div>
+                                                <div class="form-group col-md-6 col-sm-10">
+                                                    {{ form_label(form.image) }}
+                                                    {{ form_widget(form.image) }}
+                                                    {{ form_errors(form.image) }}
+                                                    <small class="text text-muted">L'image ne doit pas dépasser 1024Mo.
+                                                        L'image
+                                                        servira de couverture pour votre organisation
+                                                    </small>
+                                                </div>
+                                                <div class="form-group col-md-6 col-sm-10">
+                                                    <input class="btn  mt-30 btn-success" type="submit"
+                                                           value="{{ 'registration.submit'|trans }}"/>
+                                                </div>
+                                                {{ form_end(form) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="card">
+                                            <div class="card-header">E-mail</div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <form id="registerEmail" class="form-inline">
+                                                        <div class="form-group mx-sm-3 mb-2">
+                                                            <input type="email" class="form-control" id="emailRegister"
+                                                                   placeholder="Addresse e-mail">
+                                                        </div>
+                                                        <button id="buttonEmailRegister" type="submit"
+                                                                class="btn btn-success mb-2">Confirmer et
+                                                            continuer
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <div class="row">
+                                                    <small class="card-text email-error text-danger"
+                                                           style="display: none;">Veuiller passer une adresse valide
+                                                    </small>
+                                                </div>
+                                                <div class="row">
+                                                    <small class="card-text email-success text-success"
+                                                           style="display: none;">Votre e-mail sera associé avec
+                                                        votre
+                                                        commande
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
                     <div class="card">
                         <div class="card-header" id="headingThree">
                             <h2 class="mb-0">
-                                <button class="btn btn-link" type="button" data-toggle="collapse"
-                                        data-target="#checkoutStep3" aria-expanded="true" aria-controls="collapseThree">
-                                    3. Envoi des billets <span class="fa fa-shopping-cart"></span>
-                                </button>
+                                <a class="btn btn-link" type="button" data-toggle="collapse"
+                                   aria-controls="collapseThree">
+                                    3. Reception des billets <span class="fa fa-ticket"></span>
+                                </a>
                             </h2>
                         </div>
                         <div id="checkoutStep3" class="collapse" aria-labelledby="headingThree"
                              data-parent="#checkoutAccordion">
                             <div class="card-body">
-                                <div class="container">
-
+                                <div class="section-padding-0">
+                                    <div class="row">
+                                        <div class="col">
+                                            <a class="btn btn-outline-info" data-toggle="collapse"
+                                               data-target="#checkoutStep2"><span class="fa fa-chevron-left"></span>Revenir
+                                                à l'étape précédente</a>
+                                        </div>
+                                    </div>
                                 </div>
+                                <br/>
+                                <div class="card-text">Nous pouvez recevoir vos billets via e-mail</div>
+                                <div class="card-text"></div>
+                                <form class="" novalidate>
+                                    <div class="form-group">
+                                        <div class="row mb-2 mr-2">
+                                            <div class="col-sm-6">
+                                                <input type="email" class="form-control" id="email_send"
+                                                       placeholder="Addresse e-mail">
+                                                <small class="text text-muted">Vous pouvez changer pour une autre
+                                                    adresse
+                                                    e-mail
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <p class="text text-danger">Attention : Les billets commandés sont
+                                                    uniques et comporte un QR code spécifique, tout billet vérifié à
+                                                    l'entrée ne peut plus être réutilisé</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <button id="validateStep3" type="submit" class="btn btn-success mb-2"
+                                                        data-toggle="collapse"
+                                                        data-target="#checkoutStep4">Confirmer et continuer
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                     <div class="card">
-                        <div class="card-header" id="headingThree">
+                        <div class="card-header" id="headingFour">
                             <h2 class="mb-0">
-                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
-                                        data-target="#checkoutStep4" aria-expanded="false" aria-controls="collapseFour">
-                                    4. Paiement <span class="fa fa-paypal"></span>
-                                </button>
+                                <a class="btn btn-link collapsed" type="button"
+                                   aria-expanded="false" aria-controls="collapseFour">
+                                    4. Mode de paiement <span class="fa fa-paypal"></span>
+                                </a>
                             </h2>
                         </div>
-                        <div id="checkoutStep4" class="collapse" aria-labelledby="headingThree"
+                        <div id="checkoutStep4" class="collapse" aria-labelledby="headingFour"
                              data-parent="#checkoutAccordion">
                             <div class="card-body">
-                                <div class="" id="paymentMode">
-                                    <div id="btnPay" class="card card-body col-sm-3">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <a class="btn btn-outline-info" data-toggle="collapse"
+                                           data-target="#checkoutStep2"><span class="fa fa-chevron-left"></span>Revenir
+                                            à l'étape précédente</a>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row" id="paymentMode">
+                                    <div class="col-sm-3">
+                                        <form novalidate>
+                                            <div class="radio">
+                                                <label><input type="radio" value="paypal" name="optPayment" checked> Paypal <span class="fa fa-paypal"></span></label>
+                                            </div>
+                                            <div class="radio disabled">
+                                                <label><input type="radio" value="mvola" name="optPayment" disabled> Mvola</label>
+                                            </div>
+                                            <div class="radio disabled">
+                                                <label><input type="radio" value="airtelMoney" name="optPayment" disabled> Airtel Money</label>
+                                            </div>
+                                            <button id="validatePaymentMode" type="button" class="btn btn-success">
+                                                Procéder au paiement
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <br/>
+                                    <div id="btnPaypal" class="col-sm-3" style="display:none;">
+                                        <p class="text text-info">Cliquer sur le bouton ci-dessus pour continuer</p>
                                         <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency=EUR"></script>
                                         <script>paypal.Buttons({
                                                 style: {
@@ -340,9 +464,7 @@
                                                                 value: "{{ not app.session.get('totalPrice') ? "0" : app.session.get('totalPrice') }}"
                                                             },
                                                             items:
-
                                                                 [
-
                                                                     {% for item in cart %}
                                                                     {
                                                                         name: "{{ item.name }}",
@@ -356,8 +478,6 @@
                                                                     {% endfor %}
 
                                                                 ]
-
-
                                                         }],
 
                                                     });
@@ -369,7 +489,7 @@
                                                         alert('Transaction completed by ' + details.payer.name.given_name);
                                                     });
                                                 }
-                                            }).render('#btnPay');</script>
+                                            }).render('#btnPaypal');</script>
                                     </div>
                                 </div>
                             </div>
@@ -378,7 +498,7 @@
                 </div>
             {% else %}
                 <div class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-12 text-center">
                         <h4>Aucun billet à commander</h4>
                         <a href="{{ path('viewList') }}" class="btn btn-warning"><i class="fa fa-angle-left"></i>
                             Retourner à la

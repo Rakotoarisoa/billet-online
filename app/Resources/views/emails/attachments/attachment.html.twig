@@ -1,0 +1,81 @@
+
+<div cellpadding="0" cellspacing="0" height="100%" width="100%" bgcolor="#F8F7FA"
+     style="page-break-after:always;margin:15px; padding:5px;border: 1px solid #000;">
+    <table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#FFF">
+        <tbody>
+        <tr>
+            <td>
+                <table style="width:100%;" cellspacing="0" cellpadding="0" border="0" bgcolor="#F8F7FA" align="center">
+                    <tbody>
+                    <tr>
+                        <td colspan="2" style="background:#fff;border-radius:8px">
+                            <table width="100%" cellspacing="0" cellpadding="0" border="">
+                                <tbody>
+                                <tr>
+                                    <td style="font-family:-apple-system,BlinkMacSystemFont,Roboto,'Helvetica neue',Helvetica,Tahoma,Arial,sans-serif;padding:32px 40px;border-radius:0 0 6px 6px"
+                                        align="">
+                                        <table style="width:260px;line-height:1.67;font-size:13px" cellspacing="0"
+                                               cellpadding="0" border="0" align="left">
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <h2 style="color:#404040;font-weight:300;margin:0 0 12px 0;font-size:24px;line-height:30px;font-family:-apple-system,BlinkMacSystemFont,Roboto,'Helvetica neue',Helvetica,Tahoma,Arial,sans-serif">
+                                                        {{ event.titreEvenement }}
+                                                    </h2>
+                                                    <table width="100%" cellspacing="0" cellpadding="0" align="">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td style="vertical-align:top;padding-right:10px"
+                                                                colspan="1" width="20" valign="" height="" align="">
+                                                                <img src="https://ci5.googleusercontent.com/proxy/8tSEBISK_ZYTRDpIVGSB6MWI_707OolhsNUdqzHFaWM8TmiZ7p13s42DzEyLsIS_-y3QwLn1IttmoG_KySIhyPUSCTaXyx5NpwuyN6oVGxsd1cKK2a5NHkoUy4fXRNqSVm-9NeXk=s0-d-e1-ft#https://cdn.evbstatic.com/s3-s3/marketing/emails/order_confirmation/date-iconx2.png"
+                                                                     title="date" alt="date"
+                                                                     style="width:20px;height:20px;vertical-align:-2px"
+                                                                     class="CToWUd" width="20" height="20" border="0">
+                                                            <td colspan="1" width="" valign="" height="" align="">
+                                                                <div style="color:#666666;font-weight:400;font-size:15px;line-height:21px;font-family:-apple-system,BlinkMacSystemFont,Roboto,'Helvetica neue',Helvetica,Tahoma,Arial,sans-serif">
+                                                                    {{ event.dateDebutEvent|date('d F Y') }} à {{ event.dateDebutEvent|date('h:i') }}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="vertical-align:top;padding-right:10px"
+                                                                colspan="1" width="20" valign="" height="" align="">
+                                                                <img src="https://ci3.googleusercontent.com/proxy/qI1YU84wvQSeHKl2S0Uw4xvqkosj3h364iMHQSZVkCJfXvRQSwNUvEhg3cH72oUsCFuEfumy9Oxma7hlVji36LLj61LpSpv13UPpX0Vst9zPtyk0VBZMhCfB68JHrY2v1mkrX4O8alyblcPLmF4=s0-d-e1-ft#https://cdn.evbstatic.com/s3-s3/marketing/emails/order_confirmation/location-pin-iconx2.png"
+                                                                     title="date" alt="date"
+                                                                     style="width:20px;height:20px;vertical-align:-4px"
+                                                                     class="CToWUd" width="20" height="20" border="0">
+                                                            </td>
+                                                            <td style="padding-bottom:10px" colspan="1" width=""
+                                                                valign="" height="" align="">
+                                                                {{ event.lieuEvenement.nomSalle }}
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <table style="width:240px;text-align:center;margin-top:16px" cellspacing="0"
+                                               cellpadding="0" border="0" align="right">
+                                            <tbody>
+                                            <tr>
+                                                <td>
+                                                    <img src="{{ qr }}"/>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

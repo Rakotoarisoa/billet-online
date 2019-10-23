@@ -129,10 +129,8 @@ class HomeController extends Controller
             'height' => 10,
             'color'  => array(0,0,0),
         );
-
         $barcode =
             $this->get('skies_barcode.generator')->generate($options);
-
         return new Response('<img src="data:image/png;base64,'.$barcode.'" />');
     }
 }

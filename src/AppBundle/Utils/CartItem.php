@@ -1,5 +1,7 @@
 <?php
 namespace AppBundle\Utils;
+use AppBundle\Entity\Evenement;
+
 /**
  * Class CartItem
  * Represents a item in car which in turn can be passed to the Cart class
@@ -27,6 +29,24 @@ class CartItem
     protected $event;
     /** @var string section*/
     protected $section;
+    /** @var Evenement evenement */
+    protected $evenement;
+
+    /**
+     * @return Evenement
+     */
+    public function getEvenement(): Evenement
+    {
+        return $this->evenement;
+    }
+
+    /**
+     * @param Evenement $evenement
+     */
+    public function setEvenement(Evenement $evenement): void
+    {
+        $this->evenement = $evenement;
+    }
 
     /**
      * @return string

@@ -32,6 +32,8 @@ class AppKernel extends Kernel
             new Omines\DataTablesBundle\DataTablesBundle(),
             new Craue\FormFlowBundle\CraueFormFlowBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
+            new Core23\DompdfBundle\Core23DompdfBundle()
+
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

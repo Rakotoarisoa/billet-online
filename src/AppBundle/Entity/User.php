@@ -11,7 +11,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 /**
  * @ORM\Entity
  * @ORM\Table(name="users")
- * @UniqueEntity(fields="email", message="L'adresse email est déjà utilisé")
+ * @UniqueEntity(fields="email")
  */
 class User extends BaseUser
 {

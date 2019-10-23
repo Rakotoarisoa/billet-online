@@ -75,7 +75,6 @@ class RegistrationController extends BaseController
                         // ... handle exception if something happens during file upload
                     }
 
-                    // updates the 'brochureFilename' property to store the PDF file name
                     // instead of its contents
                     $user->setRoles(array('ROLE_USER'));
 
@@ -92,13 +91,11 @@ class RegistrationController extends BaseController
                     );
 
                     if (null === $response = $event->getResponse()) {
-                        $this->addFlash('success',"Profil enregistré avec succès");
                         $url = $this->generateUrl('viewListUser', array('userId'=> $user->getId()));
                         $response = new RedirectResponse($url);
                     }
 
                     $dispatcher->dispatch(FOSUserEvents::REGISTRATION_COMPLETED, new FilterUserResponseEvent($user, $request, $response));
-
                     return $response;
                 }
 

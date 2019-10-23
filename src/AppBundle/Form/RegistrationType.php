@@ -32,13 +32,14 @@ RegistrationType extends  AbstractType
             'Homme' => '1',
             'Femme' => '2',
             ),
-            'choices_as_values' => true,'multiple'=>false,'expanded'=>true));
+            'choices_as_values' => true,
+            'multiple'=>false,
+            'expanded'=>true,
+            'data' => '1'
+        ));
         $builder->add('date_de_naissance', BirthdayType::class,array(
             'widget'=>'single_text',
             'attr'=>['class'=>'form-row'],
-            'placeholder' => [
-                'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour',
-            ],
             'required' => true,
             'empty_data' => '01/01/1900'
         ));
