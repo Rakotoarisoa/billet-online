@@ -117,6 +117,38 @@ class HomeController extends Controller
         return $this->render('default/view-support.html.twig');
     }
     /**
+     * @Route("/send_mail", name="send_mail_support")
+     * @return Response
+     */
+    public function sendMail(Request $request){
+        if($request->isMethod('POST') && $request->request->has('nom')
+            && $request->request->has('email')
+            && $request->request->has('sujet')
+            && $request->request->has('message')
+            && $request->request->has('current_uri')
+        ){
+            $mail_admin=$this->getParameter('mailer_user');
+            $mailer = $this->get('mailer');
+            $data=$request->request;
+        $message = (new \Swift_Message('Votre commande'))
+            ->setSubject($request->request->get('sujet'))
+            ->setFrom(array($request->request->get('email') => "Support Ivenco - Message de ".$data->get('nom')))
+            ->setTo(array(
+                $mail_admin => $mail_admin
+            ))
+            ->setBody(
+                $data->get("message")."<br>ContactMail :".$data->get("email")
+            );
+        $mailer->send($message);
+        $this->addFlash('success','Merci de nous avoir contacté, votre e-mail est envoyé au support');
+        return $this->redirect($request->request->get('current_uri'));
+        }
+        else{
+            $this->addFlash('error','Un erreur s\'est produite pendant l\'envoi de l\'email');
+        }
+        return $this->redirect($request->request->get('current_uri'));
+    }
+    /**
      * @Route("/testQrCode", name="qc")
      * TODO:Implémentation QR Code
      */

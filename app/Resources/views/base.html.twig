@@ -251,21 +251,21 @@
                 <div class="col-12">
                     <!-- Contact Form Area -->
                     <div class="contact-form-area">
-                        <form action="#" method="post">
+                        <form action="{{ path('send_mail_support') }}" method="post">
                             <div class="row">
                                 <div class="col-md-6 col-lg-4">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" id="name" placeholder="Nom">
+                                        <input name="nom" type="text" class="form-control" id="name" placeholder="Nom">
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-lg-4">
                                     <div class="form-group">
-                                        <input type="email" class="form-control" id="email" placeholder="E-mail">
+                                        <input name="email" type="email" class="form-control" id="email" placeholder="E-mail">
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" id="subject" placeholder="Sujer">
+                                        <input name="sujet" type="text" class="form-control" id="subject" placeholder="Sujet">
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -274,6 +274,7 @@
                                                   placeholder="Message"></textarea>
                                     </div>
                                 </div>
+                                <input type="hidden" value="{{ app.request.uri }}" name="current_uri"/>
                                 <div class="col-12 text-center">
                                     <button class="btn oneMusic-btn mt-30" type="submit">Envoyer <i
                                                 class="fa fa-angle-double-right"></i></button>

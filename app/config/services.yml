@@ -48,6 +48,9 @@ services:
             - { name: form.type, alias: app_user_registration }
 
         # ...
-
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - { name: twig.extension }
 
 
