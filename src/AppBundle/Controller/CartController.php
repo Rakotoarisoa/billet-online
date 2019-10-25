@@ -83,9 +83,7 @@ class CartController extends Controller
     {
         $this->session->set('quantity', count($this->cart->getItems()));
         $this->cart->clear();
-
         $this->addFlash('success', 'Panier vidé');
-
         return $this->redirect('/res_billet/list');
     }
 
@@ -97,14 +95,12 @@ class CartController extends Controller
     public function addCouponAction(Request $request)
     {
         $coupon = $request->get('coupon', null);
-
         if (!empty($coupon)) {
             $this->cart->setCoupon($coupon);
             $this->addFlash('success', 'Coupon redeemed successfully.');
         } else {
             $this->addFlash('danger', 'Coupon code cannot be empty.');
         }
-
         return $this->redirectToRoute('cart_index');
     }
 
@@ -171,29 +167,27 @@ class CartController extends Controller
     {
 
         $cartItems = $this->cart->getItems();
-
         $cartTotal = $this->cart->getDiscountTotal();
         $discount = $this->cart->getAppliedDiscount();
         $em = $this->getDoctrine()->getManager();
         $repo = $this->getDoctrine()->getRepository(Billet::class);
-        $reservation = new Reservation();
-        foreach ($cartItems as $cart) {
-            //$repo->getTicketToBuy($cart->getEvent(), $cart->getQuantity(), $cart->getCategoryStr(),true);
-        }
         //$firstUser = $em->getRepository(User::class)->findOneBy([]); // current user id needs to be set after sign up
         try {
+            $reservation = new Reservation();
+            $reservation->setNomReservation('commande-'.date('d F Y'));
             //TODO: Ajouter les données de reservation
             //$em->persist($reservation);
             //$em->flush();
-            $this->sendEmailToBuyer($tplEngine);
+
             foreach ($this->cart->getItems() as $item) {
                 //TODO: Ajouter les billets
                 //$em->persist();
                 //$em->flush();
             }
-
-            $this->addFlash('success', 'Validation de la reservation complétée. Vous serez notifié par e-mail');
-            //$this->cart->clear();
+            $this->sendEmailToBuyer();
+            $this->addFlash('success', 'Validation de la reservation complétée. Vous serez notifié par e-mail avec votre commande');
+            $this->cart->clear();
+            return $this->redirectToRoute('viewList');
         } catch (\Exception $exception) {
             $this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

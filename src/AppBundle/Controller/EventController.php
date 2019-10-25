@@ -113,7 +113,7 @@ class EventController extends Controller
 
     /**
      * @Route("/{userId}/event/create-map/{id}", name="viewCreateMap")
-     * @ParamConverter("event",options={"mapping":{"id" = "id","slugEvent":"titreEvenementSlug"}})
+     * @ParamConverter("event",options={"mapping":{"id" = "id","userId":"user.id"}})
      * @param Evenement $event
      * @return Response
      */

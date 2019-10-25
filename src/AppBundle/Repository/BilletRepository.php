@@ -94,6 +94,11 @@ class BilletRepository extends EntityRepository
         } else {
             $new_tb = new TypeBillet();
             $new_tb->setLibelle($typeBillet);
+            $new_tb->setPrix($prix);
+            $new_tb->setDescription('Nom :'.$typeBillet);
+            $new_tb->setQuantite((int)$number);
+            $new_tb->setActive(true);
+            $new_tb->setEvenement($event);
             $em->persist($new_tb);
             $em->flush();
             $type_billet_object = $new_tb;
@@ -101,18 +106,18 @@ class BilletRepository extends EntityRepository
 
         for ($i = 0; $i < $number; $i++) {
             $ticketLeft = $em->getRepository(Billet::class)->countPurchasedTickets($event);
-            if (isset($ticketLeft['vendus'])) {
+            /*if (isset($ticketLeft['vendus'])) {
                 $nbr = (int)$ticketLeft['vendus'] + $ticketLeft['restants'];
             } else {
                 $nbr = (int)$ticketLeft['restants'];
-            }
+            }*/
             $newTicket = new Billet();
             $newTicket->setEstVendu(0);
-            $newTicket->setPrix($prix);
-            $id_billet = $event->getTitreEvenementSlug() . '-' . date_format($event->getDateDebutEvent(), 'Y-m-d-H-i-s') . '-' . strtolower($this->stripAccents($typeBillet) . '-' . ($nbr + 1));
+            $id_billet = $event->getTitreEvenementSlug() . '-' . date_format($event->getDateDebutEvent(), 'YmdHis') . '-' . strtolower($this->stripAccents($typeBillet) . '-' . ($i + 1));
             $newTicket->setIdentifiant($id_billet);
-            $newTicket->setPlaceId('N/A');
-            $newTicket->setEvenement($event);
+            $newTicket->setPlaceId('-');
+            $newTicket->setSectionId('-');
+            $newTicket->setIsMapped(false);
             $newTicket->setTypeBillet($type_billet_object);
             $em->persist($newTicket);
             $em->flush();
@@ -187,7 +192,7 @@ class BilletRepository extends EntityRepository
         for($i=0;$i<$nbr;$i++ )
         {
             $billet=new Billet();
-            $identifiant = $i."-".date("ddmmY")."-".$event->getTitreEvenementSlug();//format nb-ddmmYYYY-event-slug
+            $identifiant = $i."-".date("d-m-Y")."-".$event->getTitreEvenementSlug();//format nb-ddmmYYYY-event-slug
             $billet->setTypeBillet($type_billet);
             $billet->setIdentifiant($identifiant);
             $billet->setPlaceId("-");

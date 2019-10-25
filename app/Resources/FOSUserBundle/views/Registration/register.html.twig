@@ -1,5 +1,13 @@
 {% extends "FOSUserBundle::layout.html.twig" %}
-
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/cover.jpg') }})">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <h2>Inscription</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
 {% block fos_user_content %}
 {% include "@FOSUser/Registration/register_content.html.twig" %}
 {% endblock fos_user_content %}

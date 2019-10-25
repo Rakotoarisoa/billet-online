@@ -16,8 +16,8 @@ class BilletType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('identifiant')->add('place_id',TextType::class , array('label'=>'Identifiant Place'))->add('estVendu')->add('prix')->add('typeBillet',EntityType::class, array(
-            'class'         => 'AppBundle\Entity\TypeBillet',
+        $builder->add('identifiant')->add('place_id',TextType::class , array('label'=>'Identifiant Place'))->add('estVendu')->add('typeBillet',EntityType::class, array(
+            'class' => 'AppBundle\Entity\TypeBillet',
             'placeholder'=>'Sélectionnez le type du billet',
             'choice_label'  => 'libelle',
             'label' => 'Type du billet',

@@ -55,11 +55,11 @@ class TicketController extends Controller
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
-            return $this->redirectToRoute('billet_show', array('id' => $billet->getId(), 'userId' => $this->getUser()->getId(), 'event' => $billet->getEvenement()->getId()));
+            return $this->redirectToRoute('billet_show', array('id' => $billet->getId(), 'userId' => $this->getUser()->getId(), 'event' => $billet->getTypeBillet()->getEvenement()->getId()));
         }
 
         return $this->render('event_admin/billet/edit.html.twig', array(
-            'event' => $billet->getEvenement(),
+            'event' => $billet->getTypeBillet()->getEvenement(),
             'billet' => $billet,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
@@ -67,7 +67,7 @@ class TicketController extends Controller
     }
 
     /**
-     * Deletes a billet entity.
+     * Delete a billet entity.
      *
      * @Route("/{userId}/event/{event}/tickets/delete/{id}", name="billet_delete")
      * @ParamConverter("event", options={"mapping":{"userId" = "user.id","event"="id","id"="id"}})
@@ -85,7 +85,7 @@ class TicketController extends Controller
             $em->flush();
         }
 
-        return $this->redirectToRoute('billet_index', array('userId' => $this->getUser()->getId(), 'event' => $billet->getEvenement()->getId()));
+        return $this->redirectToRoute('billet_index', array('userId' => $this->getUser()->getId(), 'event' => $billet->getTypeBillet()->getEvenement()->getId()));
     }
 
     /**
@@ -101,7 +101,7 @@ class TicketController extends Controller
         $deleteForm = $this->createDeleteForm($billet);
 
         return $this->render('event_admin/billet/show.html.twig', array(
-            'event' => $billet->getEvenement(),
+            'event' => $billet->getTypeBillet()->getEvenement(),
             'billet' => $billet,
             'delete_form' => $deleteForm->createView(),
         ));
@@ -248,7 +248,7 @@ class TicketController extends Controller
     {
 
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('billet_delete', array('id' => $billet->getId(), 'userId' => $this->getUser()->getUserName(), 'event' => $billet->getEvenement()->getTitreEvenementSlug())))
+            ->setAction($this->generateUrl('billet_delete', array('id' => $billet->getId(), 'userId' => $this->getUser()->getUserName(), 'event' => $billet->getTypeBillet()->getEvenement()->getTitreEvenementSlug())))
             ->setMethod('DELETE')
             ->getForm();
     }

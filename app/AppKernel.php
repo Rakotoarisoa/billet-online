@@ -32,8 +32,12 @@ class AppKernel extends Kernel
             new Omines\DataTablesBundle\DataTablesBundle(),
             new Craue\FormFlowBundle\CraueFormFlowBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
-            new Core23\DompdfBundle\Core23DompdfBundle()
-
+            new Core23\DompdfBundle\Core23DompdfBundle(),
+            new Sonata\CoreBundle\SonataCoreBundle(),
+            new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
+            new Sonata\BlockBundle\SonataBlockBundle(),
+            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
+            new Sonata\AdminBundle\SonataAdminBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

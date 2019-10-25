@@ -36,7 +36,6 @@ security:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin/, role: ROLE_ADMIN }
 
     role_hierarchy:
         ROLE_USER_MEMBER: ROLE_USER_MEMBER
@@ -60,7 +59,6 @@ services:
             # you can exclude directories or files
             # but if a service is unused, it's removed anyway
         exclude: '../../src/AppBundle/{Entity,Repository}'
-
     app.form_login_authenticator:
         class: AppBundle\Security\FormLoginAuthenticator
         arguments: ["@router", "@security.password_encoder"]

@@ -16,8 +16,7 @@
 {% block body %}
     {% block content %}
         {{ parent() }}
-        <div id="root">
-
+        <div id="root" data-event-id="{{ event.id }}">
         </div>
     {% endblock %}
     {% block contact %}{% endblock %}
