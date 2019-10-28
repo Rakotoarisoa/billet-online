@@ -199,4 +199,9 @@ sonata_block:
         # enable the SonataAdminBundle block
         sonata.admin.block.admin_list:
             contexts: [admin]
+        sonata.admin.block.search_result:
+          contexts: [admin]
+sonata_admin:
+    title: 'Administration'
+    title_logo: 'img/ivenco_admin.png'
 

@@ -56,11 +56,11 @@ services:
         class: AppBundle\Admin\BilletAdmin
         arguments: [~, AppBundle\Entity\Billet, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, label: Billet }
+            - { name: sonata.admin, manager_type: orm, group: 'Billets', label: Billet }
     admin.typebillet:
         class: AppBundle\Admin\TypeBilletAdmin
         arguments: [~, AppBundle\Entity\TypeBillet, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, label: 'Type Billet' }
+            - { name: sonata.admin, manager_type: orm, group: 'Billets', label: 'Type Billet' }
 
 

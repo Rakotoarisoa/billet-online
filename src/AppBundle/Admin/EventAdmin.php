@@ -15,18 +15,18 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
-final class TypeBilletAdmin extends AbstractAdmin
+final class EventAdmin extends AbstractAdmin
 {
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('libelle')
+            ->add('titreEvenement')
             ->add('prix',NumberType::class , array('label'=>'Prix'))
             ->add('quantite',NumberType::class,array('label' =>'Quantité'))
             ->add('evenement.titreEvenement', EntityType::class,array(
                 'label' => 'Evenement',
                 'class' => 'AppBundle\Entity\Evenement'));
-            
+
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
