@@ -134,18 +134,23 @@ class SeatMap extends Component {
                 /** End Deleted Seats*/
                 /** assigned seat representation*/
                 let circle_color = this.state.color_seat;
+                let seat_type='-';
                 if (object.mapping !== undefined) {
                     let colors = this.state.ticket_colors;
                     let mapped = object.mapping;
                     mapped.forEach((el) => {
                         if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString())
                             colors.forEach((color) => {
-                                if (color.billet === el.type) circle_color = color.color;
+                                if (color.billet === el.type) {
+                                    circle_color = color.color;
+                                    seat_type=el.type;
+                                }
                             })
                     });
                 }
                 /** end assigned  seat representation */
                 let newGroup = new Konva.Group({
+                    type: seat_type,
                     name: alphabet[i].toUpperCase() + (j + 1),
                     x: parseInt((this.state.posX + sideBuff) + rad + j * dia + j * gap),
                     y: parseInt((textHeight + topBuff) + rad + i * dia + i * gap)
@@ -208,16 +213,16 @@ class SeatMap extends Component {
                         tooltipLayer.add(tooltip);
                         newGroup.getStage().add(tooltipLayer);
                         let mousePos = newGroup.getAbsolutePosition();
-                        console.log(mousePos);
                         tooltip.position({
                             x: mousePos.x,
                             y: mousePos.y - 5
                         });
                         tooltip
                             .getText()
-                            .text('<input type="text">');
+                            .text('Seat type= '+seat_type+' '+newGroup.getAttr('name'));
                         tooltip.show();
                         tooltipLayer.batchDraw();
+                        //$('#exampleModal').modal({show: true});
                     }
                     );
                 section.add(newGroup);
@@ -680,7 +685,8 @@ class SeatMap extends Component {
         function initColors(nb, billets) {
             let listColors = [];
             for (let i = 0; i < nb; i++) {
-                let color = '#' + Math.random().toString(16).substr(-6);
+                let colors_palette= ['#decfd0','#feb6b1','#b4b8cf','#94c9a9','#c6ecae','#f6d8ae','#f8e398','#ea97ac','#dec3be','#c6a29d'];
+                let color = colors_palette[i];
                 let billet = billets[i].libelle;
                 listColors.push({color, billet});
                 //document.getElementById("billet-"+i).setAttribute("style","color:"+color+';');
@@ -783,6 +789,25 @@ class SeatMap extends Component {
             rotateEnabled: false,
         });
         layer.add(transformer);
+        let padding = 20;
+        for (let i = 0; i < window.innerWidth * 2 / padding; i++) {
+            let h_line = new Konva.Line({
+                points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth * 2],
+                stroke: '#ddd',
+                strokeWidth: 1,
+            });
+            layer.add(h_line);
+        }
+        let t_line = new Konva.Line({points: [0, 0, 10, 10]});
+        layer.add(t_line);
+        for (let j = 0; j < window.innerHeight * 2 / padding; j++) {
+            let v_line = new Konva.Line({
+                points: [0, Math.round(j * padding), window.innerWidth * 2, Math.round(j * padding)],
+                stroke: '#ddd',
+                strokeWidth: 0.5,
+            });
+            layer.add(v_line);
+        }
         if (data.length > 0) {
             data.forEach((obj) => {
                 let newObject = this.addNewObject(obj, transformer);
@@ -915,7 +940,6 @@ class SeatMap extends Component {
     getColors = (colors) => {
         this.setState({'ticket_colors': colors});
     };
-
     //rendu du composant
     render() {
         return (
