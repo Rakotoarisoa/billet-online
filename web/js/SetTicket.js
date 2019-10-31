@@ -135,13 +135,17 @@ class SetTicket extends Component {
                 /** End Deleted Seats*/
                 /** assigned seat representation*/
                 let circle_color = this.state.color_seat;
+                let seat_id= '-';
                 if (object.mapping !== undefined) {
                     let colors = this.state.ticket_colors;
                     let mapped = object.mapping;
                     mapped.forEach((el) => {
                         if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString())
                             colors.forEach((color) => {
-                                if (color.billet === el.type) circle_color = color.color;
+                                if (color.billet === el.type) {
+                                    circle_color = color.color;
+                                    seat_id=el.seat_id;
+                                }
                             })
                     });
                 }
@@ -149,7 +153,8 @@ class SetTicket extends Component {
                 let newGroup = new Konva.Group({
                     name: alphabet[i].toUpperCase() + (j + 1),
                     x: parseInt((this.state.posX + sideBuff) + rad + j * dia + j * gap),
-                    y: parseInt((textHeight + topBuff) + rad + i * dia + i * gap)
+                    y: parseInt((textHeight + topBuff) + rad + i * dia + i * gap),
+                    seat_id: seat_id
                 });
                 let circle = new Konva.Circle({
                     x: 0,
@@ -162,7 +167,7 @@ class SetTicket extends Component {
                     shadowColor: 'gray',
                     shadowOffsetX: 2,
                     shadowOffsetY: 2,
-                    shadowBlur: 5
+                    shadowBlur: 5,
                 });
                 let text = new Konva.Text({
                     text: j + 1,
@@ -716,7 +721,8 @@ class SetTicket extends Component {
         function initColors(nb, billets) {
             let listColors = [];
             for (let i = 0; i < nb; i++) {
-                let color = '#' + Math.random().toString(16).substr(-6);
+                let colors_palette= ['#decfd0','#feb6b1','#b4b8cf','#94c9a9','#c6ecae','#f6d8ae','#f8e398','#ea97ac','#dec3be','#c6a29d'];
+                let color = colors_palette[i];
                 let billet = billets[i].libelle;
                 listColors.push({color, billet});
                 //document.getElementById("billet-"+i).setAttribute("style","color:"+color+';');
@@ -1046,7 +1052,7 @@ class SetTicket extends Component {
     //rendu du composant
     render() {
         return (
-            <div className="row">
+            <div className="row mr-0">
                 <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                 <div id="stage-container-ticket" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>

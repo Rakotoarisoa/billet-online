@@ -56,7 +56,6 @@ function App() {
     const [tabIndex, setTabIndex] = React.useState(0);
     const event_id = document.getElementById("root").getAttribute("data-event-id");
     const is_front = document.getElementById("root").getAttribute("data-is-front");
-    console.log(is_front);
     function handleChange(event, newValue) {
         setTabIndex(newValue);
     }

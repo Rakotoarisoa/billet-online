@@ -44,6 +44,10 @@ class SetMap extends Component {
         initWidth: 947,
         initHeight: 947,
         number_seats: 0,
+        max_leftX:window.innerWidth*3/4,
+        min_leftX:0,
+        max_leftY:window.innerHeight,
+        min_leftY:0
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -283,9 +287,7 @@ class SetMap extends Component {
                 newGroup.add(circle);
                 newGroup.add(text);
                 section.add(newGroup);
-                /*newGroup.on('click',(e)=>{
-                    console.log(e.target.parent.getAttr('name'));
-                });*/
+                this.setStageDimensions(newGroup);
                 if (j === cols - 1) {
                     let rowTitle = new Konva.Text({
                         text: alphabet[i].toUpperCase(),
@@ -449,6 +451,7 @@ class SetMap extends Component {
             });
             top_group.add(top_circle);
             top_group.add(top_text);
+            this.setStageDimensions(top_group);
             table.add(top_group);
         }
         for (let i = 0; i < y; i++) {
@@ -486,6 +489,7 @@ class SetMap extends Component {
             });
             right_group.add(right_circle);
             right_group.add(right_text);
+            this.setStageDimensions(right_group);
             table.add(right_group);
         }
         for (let j = x; j > 0; j--) {
@@ -521,6 +525,7 @@ class SetMap extends Component {
             });
             bottom_group.add(bottom_circle);
             bottom_group.add(bottom_text);
+            this.setStageDimensions(bottom_group);
             table.add(bottom_group);
         }
         for (let j = y; j > 0; j--) {
@@ -558,6 +563,7 @@ class SetMap extends Component {
             });
             left_group.add(left_circle);
             left_group.add(left_text);
+            this.setStageDimensions(left_group);
             table.add(left_group);
         }
         table.add(tableRect);
@@ -695,6 +701,7 @@ class SetMap extends Component {
             });
             c_group.add(circle);
             c_group.add(text);
+            this.setStageDimensions(c_group);
             group.add(c_group);
         }
         group.add(tableCircle);
@@ -792,6 +799,35 @@ class SetMap extends Component {
             this.setState({'number_seats': nb_seats});
         }
     }
+    //set stage dimensions
+    setStageDimensions(object){
+        const PADDING = 20;
+        let x_object=object.getAbsolutePosition().x;
+        let y_object=object.getAbsolutePosition().y;
+        if(x_object <= this.state.min_leftX){
+            let scale= window.innerWidth/(window.innerWidth + (x_object*-1) + PADDING);
+            console.log(object);
+            console.log(scale);
+            this.setState({'scaleX': scale,'scaleY': scale});
+        }
+        if(x_object >= this.state.max_leftX){
+            let scale= window.innerWidth/(window.innerWidth + (x_object) + PADDING);
+            console.log(x_object);
+            console.log(scale);
+            this.setState({'scaleX': scale,'scaleY': scale});
+        }
+        if(y_object <= this.state.min_leftY){
+            let scale= window.innerHeight/(window.innerHeight + (y_object*-1) + PADDING);
+            console.log(scale);
+            this.setState({'scaleX': scale,'scaleY': scale});
+        }
+        if(y_object >= this.state.max_leftY){
+            let scale= window.innerHeight/(window.innerHeight + (y_object) + PADDING);
+            console.log(scale);
+            this.setState({'scaleX': scale,'scaleY': scale});
+        }
+
+    };
 
     //Sauvegarder le canvas
     saveCanvas = (save) => {
@@ -851,6 +887,8 @@ class SetMap extends Component {
             container: 'stage-container',
             width: window.innerWidth * 3 / 4,
             height: window.innerHeight,
+            x:0,
+            y:0,
             scale: {x: this.state.scaleX, y: this.state.scaleY}
         });
         let layer = new Konva.Layer();
@@ -1037,7 +1075,7 @@ class SetMap extends Component {
     //rendu du composant
     render() {
         return (
-            <div className="row">
+            <div className="row mr-0">
                 <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                 <div id="stage-container" className={"col-sm-9"} style={{paddingLeft: 0}}>
                 </div>
