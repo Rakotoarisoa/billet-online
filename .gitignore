@@ -34,6 +34,11 @@
 #node_modules
 /node_modules/
 
+#composer
+composer.lock
+
+#yarn
+yarn.lock
 
 # PHPUnit
 /app/phpunit.xml
