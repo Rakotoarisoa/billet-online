@@ -62,5 +62,37 @@ services:
         arguments: [~, AppBundle\Entity\TypeBillet, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: 'Billets', label: 'Type Billet' }
+    admin.categorieevenement:
+        class: AppBundle\Admin\CategorieEvenementAdmin
+        arguments: [~, AppBundle\Entity\CategorieEvenement, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Evenement', label: 'Catégorie evenement' }
+    admin.lieuevenement:
+        class: AppBundle\Admin\LieuEvenementAdmin
+        arguments: [~, AppBundle\Entity\LieuEvenement, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Evenement', label: 'Lieu Evenement' }
+    admin.evenement:
+        class: AppBundle\Admin\EvenementAdmin
+        arguments: [~, AppBundle\Entity\Evenement, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Evenement', label: 'Evenement' }
+    admin.user:
+        class: AppBundle\Admin\UserAdmin
+        arguments: [~, AppBundle\Entity\User, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Utilisateurs et Droits', label: 'Utilisateurs' }
+    admin.pays:
+        class: AppBundle\Admin\PaysAdmin
+        arguments: [~, AppBundle\Entity\Pays, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Configurations generales', label: 'Pays' }
+    admin.devise:
+        class: AppBundle\Admin\DeviseAdmin
+        arguments: [~, AppBundle\Entity\Devise, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Configurations generales', label: 'Devise' }
+    
+            
 
 
