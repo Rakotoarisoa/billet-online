@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use FOS\UserBundle\Model\User as BaseUser;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 /**
@@ -13,7 +14,7 @@ use FOS\UserBundle\Model\User as BaseUser;
  * @ORM\Table(name="users")
  * @UniqueEntity(fields="email")
  */
-class User extends BaseUser
+class User extends BaseUser implements UserInterface
 {
     /**
      * @ORM\Id;
@@ -35,6 +36,35 @@ class User extends BaseUser
      * @ORM\Column(type="string", length=100)
      */
     protected $adresse;
+
+    
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addRole($role)
+    {
+        
+        $role = strtoupper($role);
+        if ($role === static::ROLE_DEFAULT) {
+            return $this;
+        }
+
+        $tabRole = array();
+        if(!$this->roles){
+            $this->roles = array();
+        }
+
+
+        if (!in_array($role, $this->roles, true)) {
+        
+            $this->roles[] = $role;
+        }
+
+        return $this;
+    }
+
 
     /**
      * @return mixed

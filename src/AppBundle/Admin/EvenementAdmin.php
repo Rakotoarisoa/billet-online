@@ -29,8 +29,8 @@ final class EvenementAdmin extends AbstractAdmin
         $formMapper
             ->add('titreEvenement')
             ->add('titreEvenementSlug')
-            ->add('dateDebutEvent')
-            ->add('dateFinEvent')
+            //->add('dateDebutEvent')
+            //->add('dateFinEvent')
             ->add('user',EntityType::class, array(
                 'class' => 'AppBundle\Entity\User',
                 'placeholder'=>'Utilisateur lié',

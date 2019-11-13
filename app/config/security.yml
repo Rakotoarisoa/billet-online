@@ -36,10 +36,12 @@ security:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: '^/admin', roles: ROLE_ADMIN }
 
     role_hierarchy:
+        ROLE_USER:        ROLE_USER
         ROLE_USER_MEMBER: ROLE_USER_MEMBER
-        ROLE_ADMIN:       ROLE_USER
+        ROLE_ADMIN:       [ROLE_USER, ROLE_USER_MEMBER]
         ROLE_SUPER_ADMIN: ROLE_ADMIN
     # Learn more about services, parameters and containers at
     # http://symfony.com/doc/current/book/service_container.html

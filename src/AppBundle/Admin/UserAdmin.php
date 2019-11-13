@@ -13,6 +13,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bridge\Doctrine\Form\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 final class UserAdmin extends AbstractAdmin
@@ -34,7 +35,18 @@ final class UserAdmin extends AbstractAdmin
             ->add('date_de_naissance')
             ->add('sexe')
             ->add('pays')
-            ->add('code_postal');           
+            ->add('code_postal')
+            ->add('roles','choice',[
+                'multiple' => true,
+                'expanded' => true,
+                'mapped' => true,
+                'choices' => [
+                    'Simple utilisateur' => 'ROLE_USER',
+                    'Utilisateurs membre' => 'ROLE_USER_MEMBER',
+                    'Administrateur' => 'ROLE_ADMIN'
+                ]
+            ]); 
+            //->add('roles', [], array('required' => false,'attr'=>array('class'=>'mapCoordinate')))  ;        
 
     }
 

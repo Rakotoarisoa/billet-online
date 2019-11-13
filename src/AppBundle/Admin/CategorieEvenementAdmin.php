@@ -17,7 +17,22 @@ final class CategorieEvenementAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('libelle');
+            ->add('libelle')
+            ->add('evenement', 'sonata_type_collection', array(
+                'by_reference' => false,
+            ), array(
+                'edit' => 'inline',
+                'inline' => 'table',
+               
+            ));
+
+            // $formMapper->add('scores', CollectionType::class, [
+            //     'by_reference' => false, // Use this because of reasons
+            //     'allow_add' => true, // True if you want allow adding new entries to the collection
+            //     'allow_delete' => true, // True if you want to allow deleting entries
+            //     'prototype' => true, // True if you want to use a custom form type
+            //     'entry_type' => ScoreType::class, // Form type for the Entity that is being attached to the object
+            // ]);
             
     }
 
