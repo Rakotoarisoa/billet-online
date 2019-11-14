@@ -3,25 +3,21 @@
     {{ event.titreEvenement }} | Plan de salle
 {% endblock %}
 {% block breadcrumb %}
-    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset(event.imageEvent) }})">
-        <div class="bradcumbContent">
-            {% block breadcrumb_content %}
-                <p>{{ event.titreEvenement }}</p>
-                <h2>Plan de salle</h2>
-            {% endblock %}
-        </div>
-    </section>
 {% endblock %}
 {% block body %}
     {% block content %}
         {{ parent() }}
         <section>
+            <div class="row mr-15 mt-15 ml-15 mb-15">
+                <div class="col">
+                    <h4>{{ event.titreEvenement }}</h4>
+                </div>
+                <div class="col-3">
+                    <a href="{{ url('viewSingle',{'id':event.id}) }}" class="btn btn-danger">{{ 'events.return_to_event'|trans }}</a>
+                </div>
+            </div>
         <div id="root" data-event-id="{{ event.id }}" data-is-front="true" class="container-fluid">
         </div>
-        <p>
-            <a href="{{ url('viewSingle',{'id':event.id}) }}"><span
-                        class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
-        </p>
         </section>
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-sm" role="document">

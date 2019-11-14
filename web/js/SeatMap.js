@@ -181,48 +181,31 @@ class SeatMap extends Component {
                 newGroup.on('click',
                     () => {
                         // update tooltip
+                        $('#tooltip_wrapper').remove();
+                        circle.stroke(circle_color);
                         let tooltipLayer = new Konva.Layer();
-                        let tooltip = new Konva.Label({
-                            opacity: 0.75,
-                            visible: false,
-                            listening: false
-                        });
-                        tooltip.add(
-                            new Konva.Tag({
-                                fill: 'white',
-                                pointerDirection: 'down',
-                                pointerWidth: 20,
-                                pointerHeight: 20,
-                                lineJoin: 'round',
-                                shadowColor: 'black',
-                                shadowBlur: 10,
-                                shadowOffset: 10,
-                                shadowOpacity: 0.9
-                            })
-                        );
-                        tooltip.add(
-                            new Konva.Text({
-                                text: '',
-                                fontFamily: 'Calibri',
-                                fontSize: 18,
-                                padding: 5,
-                                fill: 'black'
-                            })
-
-                        );
-                        tooltipLayer.add(tooltip);
-                        newGroup.getStage().add(tooltipLayer);
-                        let mousePos = newGroup.getAbsolutePosition();
-                        tooltip.position({
-                            x: mousePos.x,
-                            y: mousePos.y - 5
-                        });
-                        tooltip
-                            .getText()
-                            .text('Seat type= '+seat_type+' '+newGroup.getAttr('name'));
-                        tooltip.show();
-                        tooltipLayer.batchDraw();
+                        let card_body =$("<div></div>").attr('class','card-body');
+                        let card_text=$("<p></p>").attr('class','card-text').text('Test');
+                        let button_section = $("<div></div>").attr('class','row');
+                        let col_button_section1=$('<div></div>').attr('attr','col-3');
+                        let col_button_section2=$('<div></div>').attr('attr','col-3');
+                        let close_link = $('<a></a>').attr('class','btn btn-secondary').text('Fermer');
+                        let buy_link = $('<a></a>').attr('class','btn btn-primary').text('Réserver');
+                        col_button_section1.append(buy_link);
+                        col_button_section2.append(close_link);
+                        button_section.append(col_button_section1);
+                        button_section.append(col_button_section2);
+                        card_body.append(card_text);
+                        card_body.append(button_section);
+                        let el=$("<div></div>").attr('class','card').attr('id','tooltip_wrapper').css({'position':'absolute','top':newGroup.getAbsolutePosition().y-150,'left':newGroup.getAbsolutePosition().x- 100}).append(card_body);
+                        $('#stage-container-front').append(el);
+                        //tooltipLayer.add(el);
+                        //tooltipLayer.batchDraw();
                         //$('#exampleModal').modal({show: true});
+                        console.log(newGroup);
+                        newGroup.setAttr('is_selected',!newGroup.getAttr('is_selected'));
+                        console.log(newGroup);
+
                     }
                     );
                 section.add(newGroup);
@@ -821,6 +804,7 @@ class SeatMap extends Component {
         }
         stage.on('click tap', (e) => {
             if (e.target === stage) {
+                $('#tooltip_wrapper').remove();
                 stage.find('Transformer').detach();
                 this.setState({'focusObject': null});
                 let objects = stage.getChildren()[0].getChildren();
@@ -838,16 +822,17 @@ class SeatMap extends Component {
         });
         stage.draw();
         /** Responsive stage*/
-        /*window.addEventListener('resize',(e)=>{
-            let container = document.querySelector('#stage-container');
+        window.addEventListener('resize',(e)=>{
+            /*let container = document.querySelector('#stage-container');
             const stageWidth= this.state.initWidth,stageHeight=this.state.initHeight;
             let containerWidth = container.offsetWidth;
             let scale = containerWidth / stageWidth;
             stage.width(stageWidth * scale);
             stage.height(stageHeight * scale);
             stage.scale({ x: scale, y: scale });
-            this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});
-        });*/
+            this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});*/
+            $('#tooltip_wrapper').remove();
+        });
         let focus_object = this.state.selectedItem;
         if (focus_object) {
             stage.off('dragend click tap');
