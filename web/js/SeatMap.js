@@ -201,20 +201,34 @@ class SeatMap extends Component {
                         row_title.append(card_text_seat);
                         row_value.append(table_value);
                         row_value.append(seat_value);
-                        let buy_link = $('<a></a>').attr('class','card-link btn btn-danger').attr('href','#').text('Réserver');
+                        let buy_link= $('<a></a>');
+                        if(seat_type != '-') {
+                            buy_link.attr('class', 'card-link btn btn-danger').attr('href', '#').attr('id', 'submit-seat').text('Commander');
+                        }
+                        else{
+                            buy_link.attr('class', 'card-link btn btn-danger').attr('href', '#').text('Place non disponible');
+                        }
                         card_body.append(card_title);
                         card_body.append(row_type);
                         card_body.append(row_title);
                         card_body.append(row_value);
                         card_body.append(buy_link);
-                        let el=$("<div></div>").attr('class','card').attr('id','tooltip_wrapper').css({'width':'24%','position':'absolute','top':newGroup.getAbsolutePosition().y-220,'left':newGroup.getAbsolutePosition().x- 100}).append(card_body);
+                        let el=$("<div></div>").attr('class','card').attr('id','tooltip_wrapper').css({'width':'24%','position':'absolute','top':newGroup.getAbsolutePosition().y-250,'left':newGroup.getAbsolutePosition().x- 100}).append(card_body);
                         $('#stage-container-front').append(el);
                         //tooltipLayer.add(el);
                         //tooltipLayer.batchDraw();
                         //$('#exampleModal').modal({show: true});
-                        console.log(newGroup);
                         newGroup.setAttr('is_selected',!newGroup.getAttr('is_selected'));
-                        console.log(newGroup);
+                        $("#submit-seat").on('click',function(e){
+                            $.ajax({
+                               type: "POST",
+                               url:"/res_billet/add/",
+                               data:{select_nb_billets:1,type_billet:seat_type,event_id:395,redirect:"/"},
+
+                            }).done(function(){
+                                alert('done');
+                            });
+                        });
 
                     }
                     );
