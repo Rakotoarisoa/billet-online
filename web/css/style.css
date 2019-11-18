@@ -1729,3 +1729,35 @@ p.isPublished{
 /* ====== The End ====== */
 
 /*# sourceMappingURL=style.css.map */
+
+
+/*======== Admin event by HH ========== */
+.sub-media{
+  position: relative;    
+  padding-left: 25px;    
+  font-size: 13px;
+}
+.day{
+  font-weight: 200; 
+  display: block; 
+  color: #1e1e1f;
+  line-height: 1em; 
+  white-space: nowrap; 
+  text-align: center;    
+  font-size: 40px;
+}
+.month{
+  font-family: arial; 
+  font-weight: bold;   
+  font-size: 14px;  
+  letter-spacing: 2px; 
+  text-transform: uppercase;    
+  white-space: nowrap;
+  color: #b11a43;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+
+/*======== Admin event by HH =========  */
