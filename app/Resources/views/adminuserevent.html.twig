@@ -25,9 +25,29 @@
                 pointer-events: none;
                 color: #aaa;
             }
+            #flip-flap{
+                display:none;
+            }
         </style>
     {% endblock %}
     {% block head_javasripts %}
+        <!-- jQuery-2.2.4 js -->
+        <script src="{{ asset('js/jquery/jquery-2.2.4.min.js') }}"></script>
+        <!-- Popper js -->
+        <script src="{{ asset('js/bootstrap/popper.min.js') }}"></script>
+        <!-- Bootstrap js -->
+        <script src="{{ asset('js/bootstrap/bootstrap.min.js') }}"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $(".rakoto").each(function(){                    
+                    $(this).click(function(){                        
+                        $(this).next().slideToggle();
+                    })
+                });     
+            });
+
+                       
+        </script>
     {% endblock %}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
 </head>

@@ -58,4 +58,35 @@ class EvenementRepository extends EntityRepository
         }
         return false;
     }
+
+    /**
+     * get Event with search and user
+     */
+
+    public function getSearchEvent($event_name=null,$event_creator=null,$user=null){ 
+        
+        $qbEvent = $this->createQueryBuilder('e')
+                        ->andWhere('1 = 1')
+                        ->andWhere('e.user = :user')
+                        ->setParameter('user',$user);                        
+            
+        if($event_name){
+            $qbEvent->andWhere('e.titreEvenement LIKE :titreEvenement')
+                    ->setParameter('titreEvenement','%'.$event_name.'%');
+
+        }
+        // if($event_state){
+        //     $qbEvent->andWhere('e.titreEvenement LIKE :titreEvenement')
+        //             ->setParameter('titreEvenement','%'.$event_state.'%');
+
+        // }*/
+        if($event_creator){
+            $qbEvent->andWhere('e.organisation LIKE :organisation')
+                    ->setParameter('organisation','%'.$event_creator.'%');
+
+        }            
+        return $qbEvent->getQuery()
+                       ->execute();
+                    
+    }
 }

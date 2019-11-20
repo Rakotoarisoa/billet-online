@@ -47,9 +47,23 @@ class AdminUserEventController extends Controller
     public function listAction(Request $request){
         //entity manager
         $em = $this->getDoctrine()->getManager();
+        $repository = $this->getDoctrine()->getRepository(Evenement::class);
         $user = $request->get('userId');
-        $tabUser = compact('user');
-        $event = $this->getDoctrine()->getRepository(Evenement::class)->findBy($tabUser);        
-        return $this->render('admin_user_event/view.html.twig',['events'=>$event]);
+        $event_name = $request->get('event_name');
+        $event_state = $request->get('event_state');
+        $event_creator = $request->get('event_creator');
+        if($event_name or $event_state or $event_creator){
+            $event = $repository->getSearchEvent($event_name,$event_creator,$user);            
+        }else{
+            $tabUser = compact('user');
+            $event = $repository->findBy($tabUser);  
+        }
+        $event_all = $this->get('knp_paginator')->paginate($event,$request->query->get('page',1),4);     
+              
+        return $this->render('admin_user_event/view.html.twig',[
+            'events'=>$event_all,
+            'event_name'=>$event_name,
+            'event_state'=> $event_state,
+            'event_creator'=> $event_creator]);
     }
 }
