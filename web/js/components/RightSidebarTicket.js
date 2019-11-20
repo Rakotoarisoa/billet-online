@@ -52,8 +52,8 @@ function RightSidebarTicket(props) {
             let formattedSeat = [];
             const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
             if (selectedItem.type === "section") {
-                for (let j = 0; j < selectedItem.ySeats; j++) {
-                    for (let i = 0; i < selectedItem.xSeats; i++) {
+                for (let j = 0; j < selectedItem.xSeats; j++) {
+                    for (let i = 0; i < selectedItem.ySeats; i++) {
                         let name = ((alphabet[j]) + (i + 1)).toString().toUpperCase();
                         if (selectedItem.deleted_seats.includes(name)) continue;
                         formattedSeat.push({seat_id: name, type: billet});
