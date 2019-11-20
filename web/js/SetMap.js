@@ -287,7 +287,7 @@ class SetMap extends Component {
                 newGroup.add(circle);
                 newGroup.add(text);
                 section.add(newGroup);
-                this.setStageDimensions(newGroup);
+                //this.setStageDimensions(newGroup);
                 if (j === cols - 1) {
                     let rowTitle = new Konva.Text({
                         text: alphabet[i].toUpperCase(),
@@ -451,7 +451,7 @@ class SetMap extends Component {
             });
             top_group.add(top_circle);
             top_group.add(top_text);
-            this.setStageDimensions(top_group);
+            //this.setStageDimensions(top_group);
             table.add(top_group);
         }
         for (let i = 0; i < y; i++) {
@@ -489,7 +489,7 @@ class SetMap extends Component {
             });
             right_group.add(right_circle);
             right_group.add(right_text);
-            this.setStageDimensions(right_group);
+            //this.setStageDimensions(right_group);
             table.add(right_group);
         }
         for (let j = x; j > 0; j--) {
@@ -525,7 +525,7 @@ class SetMap extends Component {
             });
             bottom_group.add(bottom_circle);
             bottom_group.add(bottom_text);
-            this.setStageDimensions(bottom_group);
+            //this.setStageDimensions(bottom_group);
             table.add(bottom_group);
         }
         for (let j = y; j > 0; j--) {
@@ -563,7 +563,7 @@ class SetMap extends Component {
             });
             left_group.add(left_circle);
             left_group.add(left_text);
-            this.setStageDimensions(left_group);
+            //this.setStageDimensions(left_group);
             table.add(left_group);
         }
         table.add(tableRect);
@@ -701,7 +701,7 @@ class SetMap extends Component {
             });
             c_group.add(circle);
             c_group.add(text);
-            this.setStageDimensions(c_group);
+            //this.setStageDimensions(c_group);
             group.add(c_group);
         }
         group.add(tableCircle);
