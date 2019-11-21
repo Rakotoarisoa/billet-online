@@ -69,10 +69,115 @@ class SetTicket extends Component {
                     return this.renderTableRect(object, transformer);
                 case "ronde":
                     return this.renderTableCircle(object, transformer);
+                case "zone":
+                    return this.renderZone(object, transformer);
                 default:
                     return this.renderSectionSeat(object, transformer);
             }
         }
+    };
+    //Ajouter objet type zone
+    renderZone = (object, transformer, width = 200, height = 200) => {
+        let zone = new Konva.Group({
+            id: object.id,
+            name: object.nom.toString(),
+            x: object.x,
+            y: object.y,
+            height: height,
+            width: width,
+            draggable: false,
+            rotation: object.rotation
+        });
+        let table = null;
+        if (object.forme === "cercle") {
+            table = new Konva.Circle({
+                x: width / 2,
+                y: width / 2,
+                radius: 50,
+                fill: object.color.toString(),
+                stroke: "#888888",
+                strokeWidth: 2
+            });
+        } else if (object.forme === "rectangle") {
+            table = new Konva.Rect({
+                x: 0,
+                y: 0,
+                radius: 50,
+                fill: object.color.toString(),
+                stroke: "#888888",
+                strokeWidth: 2,
+                width: 200,
+                height: 200
+            });
+        }
+
+        let text = new Konva.Text({
+            text: object.nom,
+            x: width / 2 - 50 / 2,
+            y: height / 2,
+            width: 50,
+            height: 10,
+        });
+        zone.add(table);
+        zone.add(text);
+        zone.on('click tap', (e) => {
+            transformer.attachTo(zone);
+            this.setState({
+                'selectedItem':
+                    {
+                        id: object.id,
+                        nom: object.nom,
+                        x: object.x,
+                        y: object.y,
+                        forme: object.forme,
+                        color: object.color,
+                        type: 'zone',
+                        rotation: zone.rotation()
+                    },
+                'focusObject': null
+            }, () => {
+                zone.draggable(true);
+                transformer.resizeEnabled(true);
+                zone.moveToTop();
+                zone.batchDraw();
+            });
+        });
+        zone.on('dragend transformend', (e) => {
+            let data = {
+                id: object.id,
+                nom: object.nom,
+                x: e.target.x(),
+                y: e.target.y(),
+                forme: object.forme,
+                color: object.color,
+                width: zone.width(),
+                height: zone.height(),
+                type: 'zone',
+                rotation: zone.rotation(),
+            };
+            transformer.resizeEnabled(true);
+            this.updateObject(data);
+        });
+        zone.on('resize transform', (e) => {
+            zone = this.renderZone(object, transformer, zone.getAbsoluteScale().x * zone.width(), zone.getAbsoluteScale().y * zone.height());
+            zone.position({x: e.target.x(), y: e.target.y()});
+            let data = {
+                id: object.id,
+                nom: object.nom,
+                x: e.target.x(),
+                y: e.target.y(),
+                forme: object.forme,
+                color: object.color,
+                width: zone.width(),
+                height: zone.height(),
+                type: 'zone',
+                rotation: zone.rotation(),
+            };
+            this.updateObject(data);
+            zone.getLayer().batchDraw();
+        });
+        return zone;
+
     };
     //Ajouter objet Type Section
     renderSectionSeat = (object, transformer = null) => {

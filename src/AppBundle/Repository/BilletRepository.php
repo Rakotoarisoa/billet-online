@@ -85,7 +85,7 @@ class BilletRepository extends EntityRepository
     {
         $em = $this->getEntityManager();
         $type_billet_object = null;
-        $object_type_billets = $em->getRepository(TypeBillet::class)->findOneBy(['libelle' => $typeBillet]);
+        $object_type_billets = $em->getRepository(TypeBillet::class)->findOneBy(['libelle' => $typeBillet,'evenement' => $event]);
         if ($object_type_billets) {
             if ($typeBillet == "Gratuit") {
                 $prix = 0;
@@ -113,7 +113,7 @@ class BilletRepository extends EntityRepository
             }*/
             $newTicket = new Billet();
             $newTicket->setEstVendu(0);
-            $id_billet = $event->getTitreEvenementSlug() . '-' . date_format($event->getDateDebutEvent(), 'YmdHis') . '-' . strtolower($this->stripAccents($typeBillet) . '-' . ($i + 1));
+            $id_billet = $event->getId() . '-' . date_format($event->getDateDebutEvent(), 'YmdHis') . '-' . strtolower($this->stripAccents($typeBillet) . '-' . uniqid());
             $newTicket->setIdentifiant($id_billet);
             $newTicket->setPlaceId('-');
             $newTicket->setSectionId('-');

@@ -17,8 +17,8 @@ class SeatMap extends Component {
         stageScale: 1,
         stageX: 1,
         stageY: 1,
-        scaleX: 1,
-        scaleY: 1,
+        scaleX: 0.4,
+        scaleY: 0.4,
         selectedItem: null,
         newItem: '',
         selectedSeat: null,
@@ -68,11 +68,62 @@ class SeatMap extends Component {
                     return this.renderTableRect(object, transformer);
                 case "ronde":
                     return this.renderTableCircle(object, transformer);
+                case "zone":
+                    return this.renderZone(object);
                 default:
                     return this.renderSectionSeat(object, transformer);
             }
         }
     };
+    //Ajouter objet type zone
+    renderZone = (object) => {
+        let zone = new Konva.Group({
+            id: object.id,
+            name: object.nom.toString(),
+            x: object.x,
+            y: object.y,
+            height: object.height,
+            width: object.width,
+            draggable: false,
+            rotation: object.rotation
+        });
+        let table = null;
+        if (object.forme === "cercle") {
+            table = new Konva.Circle({
+                x: object.width / 2,
+                y: object.width / 2,
+                radius: 50,
+                fill: object.color.toString(),
+                stroke: "#888888",
+                strokeWidth: 2
+            });
+        } else if (object.forme === "rectangle") {
+            table = new Konva.Rect({
+                x: 0,
+                y: 0,
+                radius: 50,
+                fill: object.color.toString(),
+                stroke: "#888888",
+                strokeWidth: 2,
+                width: 200,
+                height: 200
+            });
+        }
+
+        let text = new Konva.Text({
+            text: object.nom,
+            x: object.width / 2 - 50 / 2,
+            y: object.height / 2,
+            width: 50,
+            height: 10,
+        });
+        zone.add(table);
+        zone.add(text);
+        return zone;
+
+    };
+
+
     //Ajouter objet Type Section
     renderSectionSeat = (object, transformer = null) => {
         const rows = object.xSeats,
@@ -179,7 +230,7 @@ class SeatMap extends Component {
                 newGroup.add(circle);
                 newGroup.add(text);
                 newGroup.on('click',
-                    () => {
+                    (e) => {
                         // update tooltip
                         $('#tooltip_wrapper').remove();
                         circle.stroke(circle_color);
@@ -219,11 +270,11 @@ class SeatMap extends Component {
                         //tooltipLayer.batchDraw();
                         //$('#exampleModal').modal({show: true});
                         newGroup.setAttr('is_selected',!newGroup.getAttr('is_selected'));
-                        $("#submit-seat").on('click',function(e){
+                        $("#submit-seat").click(function(e){
                             $.ajax({
                                type: "POST",
                                url:"/res_billet/add/",
-                               data:{select_nb_billets:1,type_billet:seat_type,event_id:395,redirect:"/"},
+                               data:{select_nb_billets:1,type_billet:seat_type,event_id:395,redirect:"/",section_id:table_value, place_id:seat_value},
 
                             }).done(function(){
                                 alert('done');
@@ -233,9 +284,6 @@ class SeatMap extends Component {
                     }
                     );
                 section.add(newGroup);
-                /*newGroup.on('click',(e)=>{
-                    console.log(e.target.parent.getAttr('name'));
-                });*/
                 if (j === cols - 1) {
                     let rowTitle = new Konva.Text({
                         text: alphabet[i].toUpperCase(),
@@ -274,6 +322,12 @@ class SeatMap extends Component {
             });
         });*/
         return section;
+    };
+    //initScale : 0.4
+    reInitScale = (stage) =>{
+        stage.scale({x:0.4,y:0.4});
+        stage.position({x:0,y:0});
+        stage.draw();
     };
     //Ajouter objet Type Table Rectangle
     renderTableRect = (object, transformer = null) => {
@@ -828,6 +882,7 @@ class SeatMap extends Component {
         }
         stage.on('click tap', (e) => {
             if (e.target === stage) {
+                this.reInitScale(stage);
                 $('#tooltip_wrapper').remove();
                 stage.find('Transformer').detach();
                 this.setState({'focusObject': null});
@@ -855,6 +910,7 @@ class SeatMap extends Component {
             stage.height(stageHeight * scale);
             stage.scale({ x: scale, y: scale });
             this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});*/
+            this.reInitScale(stage);
             $('#tooltip_wrapper').remove();
         });
         let focus_object = this.state.selectedItem;
@@ -927,22 +983,27 @@ class SeatMap extends Component {
             x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
             y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
         };
+        const MAX_SCALE= 1;
+        const MIN_SCALE=0.4;
         const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-        stage.scale({x: newScale, y: newScale});
-        this.setState({
-            stageScale: {
-                x: -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
-                y: -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
-            },
-            stageX:
-                -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
-            stageY:
-                -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
-            scaleX: newScale,
-            scaleY: newScale
-        }, () => {
-            stage.batchDraw();
-        });
+        if(newScale >= MIN_SCALE || newScale <= MAX_SCALE) {
+            stage.scale({x: newScale, y: newScale});
+            this.setState({
+                stageScale: {
+                    x: -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
+                    y: -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
+                },
+                stageX:
+                    -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
+                stageY:
+                    -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
+                scaleX: newScale,
+                scaleY: newScale
+            }, () => {
+                stage.position(this.state.stageScale);
+                stage.batchDraw();
+            });
+        }
     };
     handleSelected = e => {
         this.setState({'selectedItem': e});

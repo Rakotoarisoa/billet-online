@@ -123,14 +123,21 @@ class CartController extends Controller
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event_id);
         $type_billet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $type_billet, 'evenement' => $event]);
         $result = $this->getDoctrine()->getRepository(Billet::class)->getTicketsToBuy($event_id, $nbr_billets, $type_billet);
+        $section_id='-';
+        $place_id='-';
+        if($request->request->has('section_id') && $request->request->has('place_id'))
+        {
+            $section_id=$request->request->get('section_id');
+            $place_id=$request->request->get('place_id');
+        }
         for ($i = 0; $i < count($result); $i++) {
             $item = new CartItem([
                 'id' => $i,
                 'name' => $result[$i]->getIdentifiant(),
                 'price' => $type_billet->getPrix(),
                 'event' => $event->getTitreEvenement(),
-                'seat' => $result[$i]->getPlaceId(),
-                'section' => $result[$i]->getSectionId(),
+                'seat' =>$place_id,
+                'section' => $section_id,
                 'evenement' => $event
             ]);
             $item->setQuantity(1); // defaults to 1
