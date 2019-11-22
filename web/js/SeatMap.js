@@ -270,14 +270,10 @@ class SeatMap extends Component {
                         //tooltipLayer.batchDraw();
                         //$('#exampleModal').modal({show: true});
                         newGroup.setAttr('is_selected',!newGroup.getAttr('is_selected'));
-                        $("#submit-seat").click(function(e){
-                            $.ajax({
-                               type: "POST",
-                               url:"/res_billet/add/",
-                               data:{select_nb_billets:1,type_billet:seat_type,event_id:395,redirect:"/",section_id:table_value, place_id:seat_value},
-
-                            }).done(function(){
-                                alert('done');
+                        $("#submit-seat").on('click',function(e){
+                            alert('onclick');
+                            $.post("/res_billet/add/",{select_nb_billets:1,type_billet:seat_type,event_id:395,redirect:"/",section_id:table_value, place_id:seat_value},function(data){
+                                alert(data);
                             });
                         });
 
@@ -970,7 +966,16 @@ class SeatMap extends Component {
             layer.opacity(0.5);
             stage.draw();
         }
-
+        /*function downloadURI(uri, name) {
+            var link = document.createElement('a');
+            link.download = name;
+            link.href = uri;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        var dataURL = stage.toDataURL({ pixelRatio: 3 });
+        downloadURI(dataURL, 'stage.png');*/
     };
     //Gestion scroll Souris sur la carte
     handleWheel = e => {

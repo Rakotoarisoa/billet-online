@@ -90,15 +90,17 @@
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ 'create_event_field_label.categorie'|trans }}</label>
                                     {{ form_widget(form.categorieEvenement) }}
-                                    <small id="lieu" class="form-text text-muted">La catégorie de l'évènement n'est pas
-                                        dans la liste? <a class="text-muted" href="#">Ajouter</a></small>
+                                    <small id="lieu" class="form-text text-muted">Préciser la catégorie de
+                                        l'évènement
+                                    </small>
                                 </div>
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ 'create_event_field_label.lieu'|trans }} <span
                                                 class="fa fa-map-marker"></span></label>
                                     {{ form_widget(form.lieuEvenement) }}
-                                    <small id="lieu" class="form-text text-muted">Le lieu n'est pas dans la liste? <a
-                                                class="text-muted" href="#">Ajouter</a></small>
+                                    <small id="lieu" class="form-text text-muted">Ajouter le lieu ou se déroulera
+                                        l'évènement
+                                    </small>
                                 </div>
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ form_label(form.organisation) }}</label>
@@ -148,6 +150,34 @@
                                 </div>
                                 <hr/>
                                 <div class="row align-items-center">
+                                    <div class="col-5 my-1">
+                                        <label for="appbundle_event_isUsingSeatMap">Démarrer avec un plan de salle
+                                            prédéfini</label>
+                                    </div>
+
+
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-5 my-1">
+                                        <select id="appbundle_event_templateSeatmap"
+                                                name="appbundle_event[templateSeatMap]"
+                                                class="custom-select mr-sm-2 col-sm-8 form-control">
+                                            <option selected value="no_template">Démarrer sans plan de salle</option>
+                                            <option selected value="template_antsahamanitra">Antsahamanitra</option>
+                                            <option value="template_palais">Palais des sports Mahamasina</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-7 my-1">
+                                        <img id="template_antsahamanitra" src="{{ asset('img/map/template_antsahamanitra.jpg') }}" width="500" height="500">
+                                        <!--<img id="template_palais" src="{{ asset('img/map/template_palais.jpg') }}" width="500" height="500">-->
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <small class="col-12 text text-muted">Commencer rapidement avec un plan de salle
+                                    </small>
+                                </div>
+                                <hr/>
+                                <div class="row align-items-center">
                                     <div class="col-12 my-1">
                                         <label for="appbundle_event_isPublished">Publier l'évènement</label>
                                         {{ form_widget(form.isPublished) }}
@@ -175,7 +205,8 @@
                                 <p class="text">Vous avez saisis les informations concernant l'évènement
                                     <b>{{ event.titreEvenement }}</b> qui déroulera
                                     le {{ event.dateDebutEvent|date('d m Y') }} </p>
-                                <p class="test">Vous serez invités à ajouter <b>vos premiers billets</b> et créer <b>votre plan de salle</b> si vous avez activé la fonctionnalité </p>
+                                <p class="test">Vous serez invités à ajouter <b>vos premiers billets</b> et créer <b>votre
+                                        plan de salle</b> si vous avez activé la fonctionnalité </p>
                                 <p>Appuyer sur
                                     <small class="text-danger">Sauvegarder et confirmer</small>
                                     pour confirmer.
@@ -265,6 +296,9 @@
                     $('.dateDebut').data("DateTimePicker").maxDate(e.date);
                 });
                 {% endif %}
+            });
+            $('#appbundle_event_templateSeatmap').on('change',function(e){
+                $('#'.$(this).children("option:selected").val()).show();
             });
 
             //var $uploadCrop;

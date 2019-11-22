@@ -107,7 +107,7 @@
                 var nbr_billets = $(e.relatedTarget).data('nbr'), type_billet = $(e.relatedTarget).data('type');
                 $("#select_nb_billets").empty();
                 //populate the select option
-                for (var i = 1; i <= nbr_billets; i++) {
+                for (var i = 1; i <= 10/*nbr_billets*/; i++) {
                     $("#select_nb_billets").append('<option value="' + i + '">' + i + '</option>');
                 }
                 $("input[name|='type_billet']").val(type_billet);
