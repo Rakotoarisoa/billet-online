@@ -47,23 +47,26 @@ function RightSidebarFront(props) {
     return (
         <aside>
             <div className={classes.root}>
+                <br/>
             <Fade in={true} style={{transitionDelay: '50ms', display: "inherit" }}>
                 <Grid container spacing={2} justify="center" direction="row">
                     {billet.map((item, i) =>
-                        <Paper className={classes.paper} key={i}>
+                        <Paper className={classes.paper} key={i} >
                             <Grid container direction={"row"}>
                                 <Grid item xs={12} sm={4}>
                                     <ButtonBase key={item.libelle}>
-                                        <span id={"billet-" + i} className={"btn fa fa-circle"}
+                                        <span id={"billet-" + i} className={"btn fa fa-circle fa-3x"}
                                               style={{color: colors[i].color.toString()}}></span>
                                     </ButtonBase></Grid>
                                 <Grid item xs={12} sm={4}>
-                                    <Typography variant="subtitle1">{item.libelle}</Typography></Grid>
+                                    <Typography variant="subtitle1">{item.libelle}</Typography>
+                                </Grid>
                                 <Grid item xs={12} sm={4}>
-                                    <Typography variant="body2"
-                                                style={{cursor: 'pointer'}}>{item.quantite} billets</Typography></Grid>
+                                    <Typography variant="body2" style={{cursor: 'pointer'}}>{item.quantite} billets</Typography>
+                                </Grid>
                             </Grid>
-                        </Paper>)}
+                        </Paper>
+                    )}
                 </Grid>
             </Fade>
             </div>

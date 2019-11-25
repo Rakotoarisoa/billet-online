@@ -203,6 +203,7 @@ class SeatMap extends Component {
                 let newGroup = new Konva.Group({
                     type: seat_type,
                     name: alphabet[i].toUpperCase() + (j + 1),
+                    is_selected: false,
                     x: parseInt((this.state.posX + sideBuff) + rad + j * dia + j * gap),
                     y: parseInt((textHeight + topBuff) + rad + i * dia + i * gap)
                 });
@@ -233,7 +234,10 @@ class SeatMap extends Component {
                     (e) => {
                         // update tooltip
                         $('#tooltip_wrapper').remove();
-                        circle.stroke(circle_color);
+                        circle=newGroup.getLayer().getChildren(function(node){
+                            return node.hasName(object.nom.toString());});
+                        console.log(circle);
+                        newGroup.getStage().batchDraw();
                         let tooltipLayer = new Konva.Layer();
                         let card_body =$("<div></div>").attr('class','card-body');
                         let card_title =$('<h6></h6>').attr('class','card-title').text('X unité sélectionnée');
@@ -253,7 +257,7 @@ class SeatMap extends Component {
                         row_value.append(table_value);
                         row_value.append(seat_value);
                         let buy_link= $('<a></a>');
-                        if(seat_type != '-') {
+                        if(seat_type !== '-') {
                             buy_link.attr('class', 'card-link btn btn-danger').attr('href', '#').attr('id', 'submit-seat').text('Commander');
                         }
                         else{
@@ -270,10 +274,10 @@ class SeatMap extends Component {
                         //tooltipLayer.batchDraw();
                         //$('#exampleModal').modal({show: true});
                         newGroup.setAttr('is_selected',!newGroup.getAttr('is_selected'));
-                        $("#submit-seat").on('click',function(e){
-                            alert('onclick');
-                            $.post("/res_billet/add/",{select_nb_billets:1,type_billet:seat_type,event_id:395,redirect:"/",section_id:table_value, place_id:seat_value},function(data){
-                                alert(data);
+                        $("#submit-seat").on('click',(e)=>{
+                            $.post("/res_billet/add/",{select_nb_billets:1,type_billet:seat_type,event_id:this.props.eventId,redirect:"/",section_id:object.nom.toString(), place_id:alphabet[i].toUpperCase() + (j + 1)},function(data){
+                                $(el).remove();
+                                container.success('Votre commande a été ajouté avec succès','Ajout panier');
                             });
                         });
 
@@ -991,7 +995,7 @@ class SeatMap extends Component {
         const MAX_SCALE= 1;
         const MIN_SCALE=0.4;
         const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-        if(newScale >= MIN_SCALE || newScale <= MAX_SCALE) {
+        if(newScale >= MIN_SCALE && newScale <= MAX_SCALE) {
             stage.scale({x: newScale, y: newScale});
             this.setState({
                 stageScale: {
