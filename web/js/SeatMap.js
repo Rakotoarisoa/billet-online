@@ -43,7 +43,8 @@ class SeatMap extends Component {
         initHeight: 947,
         number_seats: 0,
         color_seat: "#EEEEEE",
-        liste_billet: []
+        liste_billet: [],
+        booked_circle_color:"#DDDDDD"
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -185,18 +186,23 @@ class SeatMap extends Component {
                 /** End Deleted Seats*/
                 /** assigned seat representation*/
                 let circle_color = this.state.color_seat;
-                let seat_type='-';
+                let stroke_color="#888888";
+                let seat_type = '-';
                 if (object.mapping !== undefined) {
                     let colors = this.state.ticket_colors;
                     let mapped = object.mapping;
                     mapped.forEach((el) => {
-                        if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString())
+                        if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString() && !el.is_booked)
                             colors.forEach((color) => {
-                                if (color.billet === el.type) {
+                                 if (color.billet === el.type) {
                                     circle_color = color.color;
-                                    seat_type=el.type;
+                                    seat_type = el.type;
                                 }
-                            })
+                            });
+                        else if(el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString() && el.is_booked){
+                            circle_color = this.state.booked_circle_color;
+                            stroke_color = this.state.booked_circle_color;
+                        }
                     });
                 }
                 /** end assigned  seat representation */
@@ -212,7 +218,7 @@ class SeatMap extends Component {
                     y: 0,
                     width: 20,
                     height: 20,
-                    stroke: "#888888",
+                    stroke: stroke_color,
                     strokeWidth: 2,
                     fill: circle_color,
                     shadowColor: 'gray',
@@ -234,33 +240,35 @@ class SeatMap extends Component {
                     (e) => {
                         // update tooltip
                         $('#tooltip_wrapper').remove();
-                        circle=newGroup.getLayer().getChildren(function(node){
-                            return node.hasName(object.nom.toString());});
-                        console.log(circle);
-                        newGroup.getStage().batchDraw();
-                        let tooltipLayer = new Konva.Layer();
-                        let card_body =$("<div></div>").attr('class','card-body');
-                        let card_title =$('<h6></h6>').attr('class','card-title').text('X unité sélectionnée');
-                        let row_type =$("<div></div>").attr('class','row');
-                        let row_title =$("<div></div>").attr('class','row');
-                        let row_value=$("<div></div>").attr('class','row');
-                        let card_text_table=$("<small></small>").attr('class','card-text col-6').text('Table/Section');
-                        let card_text_seat=$("<small></small>").attr('class','card-text col-6').text('Chaise');
-                        let card_text_type=$("<small></small>").attr('class','card-text col-6').text('Type');
-                        let table_value=$("<p></p>").attr('class','card-text col-6').text(object.nom.toString());
-                        let seat_value=$("<p></p>").attr('class','card-text col-6').text(alphabet[i].toUpperCase() + (j + 1));
-                        let type_value=$("<p></p>").attr('class','card-text col-12').text(seat_type);
+                        circle = newGroup
+                            .getChildren(function (node) {
+                                return node.getType() === 'Shape' && node.getClassName() === 'Circle';
+                            })[0]
+                        ;
+                        circle.fill('red');
+                        circle.draw();
+                        newGroup.getStage().remove();
+                        let card_body = $("<div></div>").attr('class', 'card-body');
+                        let card_title = $('<h6></h6>').attr('class', 'card-title').text('X unité sélectionnée');
+                        let row_type = $("<div></div>").attr('class', 'row');
+                        let row_title = $("<div></div>").attr('class', 'row');
+                        let row_value = $("<div></div>").attr('class', 'row');
+                        let card_text_table = $("<small></small>").attr('class', 'card-text col-6').text('Table/Section');
+                        let card_text_seat = $("<small></small>").attr('class', 'card-text col-6').text('Chaise');
+                        let card_text_type = $("<small></small>").attr('class', 'card-text col-6').text('Type');
+                        let table_value = $("<p></p>").attr('class', 'card-text col-6').text(object.nom.toString());
+                        let seat_value = $("<p></p>").attr('class', 'card-text col-6').text(alphabet[i].toUpperCase() + (j + 1));
+                        let type_value = $("<p></p>").attr('class', 'card-text col-12').text(seat_type);
                         row_type.append(card_text_type);
                         row_type.append(type_value);
                         row_title.append(card_text_table);
                         row_title.append(card_text_seat);
                         row_value.append(table_value);
                         row_value.append(seat_value);
-                        let buy_link= $('<a></a>');
-                        if(seat_type !== '-') {
-                            buy_link.attr('class', 'card-link btn btn-danger').attr('href', '#').attr('id', 'submit-seat').text('Commander');
-                        }
-                        else{
+                        let buy_link = $('<a></a>');
+                        if (seat_type !== '-') {
+                            buy_link.attr('class', 'card-link btn btn-danger').attr('href', '#').attr('id', 'submit-seat').text('Ajouter');
+                        } else {
                             buy_link.attr('class', 'card-link btn btn-danger').attr('href', '#').text('Place non disponible');
                         }
                         card_body.append(card_title);
@@ -268,21 +276,31 @@ class SeatMap extends Component {
                         card_body.append(row_title);
                         card_body.append(row_value);
                         card_body.append(buy_link);
-                        let el=$("<div></div>").attr('class','card').attr('id','tooltip_wrapper').css({'width':'24%','position':'absolute','top':newGroup.getAbsolutePosition().y-250,'left':newGroup.getAbsolutePosition().x- 100}).append(card_body);
+                        let el = $("<div></div>").attr('class', 'card').attr('id', 'tooltip_wrapper').css({
+                            'width': '24%',
+                            'position': 'absolute',
+                            'top': newGroup.getAbsolutePosition().y - 250,
+                            'left': newGroup.getAbsolutePosition().x - 100
+                        }).append(card_body);
                         $('#stage-container-front').append(el);
-                        //tooltipLayer.add(el);
-                        //tooltipLayer.batchDraw();
-                        //$('#exampleModal').modal({show: true});
-                        newGroup.setAttr('is_selected',!newGroup.getAttr('is_selected'));
-                        $("#submit-seat").on('click',(e)=>{
-                            $.post("/res_billet/add/",{select_nb_billets:1,type_billet:seat_type,event_id:this.props.eventId,redirect:"/",section_id:object.nom.toString(), place_id:alphabet[i].toUpperCase() + (j + 1)},function(data){
+                        newGroup.setAttr('is_selected', !newGroup.getAttr('is_selected'));
+                        $("#submit-seat").on('click', (e) => {
+                            $.post("/res_billet/add/", {
+                                select_nb_billets: 1,
+                                type_billet: seat_type,
+                                event_id: this.props.eventId,
+                                redirect: "/",
+                                section_id: object.nom.toString(),
+                                place_id: alphabet[i].toUpperCase() + (j + 1)
+                            }, function (data) {
                                 $(el).remove();
-                                container.success('Votre commande a été ajouté avec succès','Ajout panier');
+                                this.generateCartInfo();
+                                container.success('Votre commande a été ajouté avec succès', 'Ajout panier');
                             });
                         });
 
                     }
-                    );
+                );
                 section.add(newGroup);
                 if (j === cols - 1) {
                     let rowTitle = new Konva.Text({
@@ -298,35 +316,12 @@ class SeatMap extends Component {
         }
         section.add(text);
         section.cache();
-        /*section.on('click tap', (e) => {
-            transformer.attachTo(section);
-            this.setState({
-                'selectedItem':
-                    {
-                        id: object.id,
-                        nom: object.nom,
-                        x: object.x,
-                        y: object.y,
-                        xSeats: object.xSeats,
-                        ySeats: object.ySeats,
-                        type: 'section',
-                        rotation: section.rotation(),
-                        mapping: (object.mapping ? object.mapping : []),
-                        number_seats: (object.xSeats * object.ySeats) - (object.deleted_seats.length),
-                        deleted_seats: object.deleted_seats
-                    },
-                'focusObject': null
-            }, () => {
-                section.moveToTop();
-                section.getLayer().draw();
-            });
-        });*/
         return section;
     };
     //initScale : 0.4
-    reInitScale = (stage) =>{
-        stage.scale({x:0.4,y:0.4});
-        stage.position({x:0,y:0});
+    reInitScale = (stage) => {
+        stage.scale({x: 0.4, y: 0.4});
+        stage.position({x: 0, y: 0});
         stage.draw();
     };
     //Ajouter objet Type Table Rectangle
@@ -700,7 +695,6 @@ class SeatMap extends Component {
         group.add(tableCircle);
         group.add(text);
         group.on('click tap', (e) => {
-            transformer.attachTo(group);
             this.setState({
                 'selectedItem':
                     {
@@ -746,7 +740,7 @@ class SeatMap extends Component {
         function initColors(nb, billets) {
             let listColors = [];
             for (let i = 0; i < nb; i++) {
-                let colors_palette= ['#decfd0','#feb6b1','#b4b8cf','#94c9a9','#c6ecae','#f6d8ae','#f8e398','#ea97ac','#dec3be','#c6a29d'];
+                let colors_palette = ['#decfd0', '#feb6b1', '#b4b8cf', '#94c9a9', '#c6ecae', '#f6d8ae', '#f8e398', '#ea97ac', '#dec3be', '#c6a29d'];
                 let color = colors_palette[i];
                 let billet = billets[i].libelle;
                 listColors.push({color, billet});
@@ -828,55 +822,26 @@ class SeatMap extends Component {
     }
 
     //Charger le stage (konva) , initialiser le map
-    loadStage = (focusObj) => {
+    loadStage = (focusObj= null) => {
         let data = this.state.data_map;
-
         let stage = new Konva.Stage({
             container: 'stage-container-front',
-            width: window.innerWidth * 3 / 4,
+            width: window.innerWidth * 10 / 12,
             height: window.innerHeight,
-            scale: {x: this.state.scaleX, y: this.state.scaleY}
+            scale: {x: this.state.scaleX, y: this.state.scaleY},
         });
         let layer = new Konva.Layer();
         let focusLayer = new Konva.Layer();
         stage.add(layer);
         stage.add(focusLayer);
-        let transformer = new Konva.Transformer({
-            name: 'Transformer',
-            borderStroke: "#007bff",
-            resizeEnabled: false,
-            borderDash: [2, 2],
-            borderStrokeWidth: 2,
-            rotateEnabled: false,
-        });
-        layer.add(transformer);
-        let padding = 20;
-        for (let i = 0; i < window.innerWidth * 2 / padding; i++) {
-            let h_line = new Konva.Line({
-                points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, window.innerWidth * 2],
-                stroke: '#ddd',
-                strokeWidth: 1,
-            });
-            layer.add(h_line);
-        }
-        let t_line = new Konva.Line({points: [0, 0, 10, 10]});
-        layer.add(t_line);
-        for (let j = 0; j < window.innerHeight * 2 / padding; j++) {
-            let v_line = new Konva.Line({
-                points: [0, Math.round(j * padding), window.innerWidth * 2, Math.round(j * padding)],
-                stroke: '#ddd',
-                strokeWidth: 0.5,
-            });
-            layer.add(v_line);
-        }
         if (data.length > 0) {
             data.forEach((obj) => {
-                let newObject = this.addNewObject(obj, transformer);
+                let newObject = this.addNewObject(obj);
                 newObject.cache();
-                if (focusObj && focusObj.id === obj.id) {
-                    transformer.attachTo(newObject);
-                    newObject.draggable(true);
-                }
+                /*if (focusObj && focusObj.id === obj.id) {
+                    //transformer.attachTo(newObject);
+                    //newObject.draggable(true);
+                }*/
                 layer.add(newObject);
             });
         }
@@ -884,24 +849,39 @@ class SeatMap extends Component {
             if (e.target === stage) {
                 this.reInitScale(stage);
                 $('#tooltip_wrapper').remove();
-                stage.find('Transformer').detach();
+                //stage.find('Transformer').detach();
                 this.setState({'focusObject': null});
-                let objects = stage.getChildren()[0].getChildren();
+                /*let objects = stage.getChildren()[0].getChildren();
                 objects.each((obj) => {
                     if (obj.name !== "Transformer")
                         obj.draggable(false);
-                });
+                });*/
                 this.setState({'selectedItem': null});
-                layer.draw();
+                //layer.draw();
                 return;
+            }
+        });
+        stage.on('mousedown', (e) => {
+            if (e.target === stage) {
+                stage.container().style.cursor = 'move';
+                stage.draggable(true);
+                stage.draw();
+            }
+        });
+        stage.on('mouseup', (e) => {
+            if (e.target === stage) {
+                stage.container().style.cursor = 'default';
+                stage.draggable(false);
+                stage.draw();
             }
         });
         stage.on('wheel', (e) => {
             this.handleWheel(e);
         });
+        this.generateCartInfo();
         stage.draw();
         /** Responsive stage*/
-        window.addEventListener('resize',(e)=>{
+        window.addEventListener('resize', (e) => {
             /*let container = document.querySelector('#stage-container');
             const stageWidth= this.state.initWidth,stageHeight=this.state.initHeight;
             let containerWidth = container.offsetWidth;
@@ -913,63 +893,7 @@ class SeatMap extends Component {
             this.reInitScale(stage);
             $('#tooltip_wrapper').remove();
         });
-        let focus_object = this.state.selectedItem;
-        if (focus_object) {
-            stage.off('dragend click tap');
-            let object = stage.getLayers()[0].find(node => {
-                return node.getType() === 'Group' && node.getName() === focus_object.nom.toString();
-            });
-            object[0].moveTo(focusLayer);
-            transformer.moveTo(focusLayer);
-            let seatTranformer = new Konva.Transformer({
-                name: 'SeatTransformer',
-                rotateAnchorOffset: 5,
-                borderStroke: "#007bff",
-                resizeEnabled: false,
-                rotateEnabled: false,
-                borderDash: [2, 2],
-                borderStrokeWidth: 2,
-            });
-            object[0].add(seatTranformer);
-            object[0].draggable(false);
-            transformer.rotateEnabled(false);
-            object[0].off("dragend click tap");//
-            let unGrouped_object = object[0].find(node => {
-                return node.parent === object[0];
-            });
-            unGrouped_object.forEach((element, i) => {
-                let x = element.getAbsolutePosition().x;
-                let y = element.getAbsolutePosition().y;
-                element.moveTo(focusLayer);
-                element.position({x: x, y: y});
-                element.on('click tap', () => {
-                    if (element.getType() === "Group") {
-                        this.setState({'selectedSeat': element.getAttr('name')}, () => {
-                            seatTranformer.attachTo(element);
-                            focusLayer.draw();
-                        });
 
-                    } else {
-                        this.setState({'selectedSeat': null}, () => {
-                            seatTranformer.detach();
-                            focusLayer.draw();
-                        });
-                    }
-                });
-                object[0].remove();
-                focusLayer.batchDraw();
-            });
-            layer.find(node => {
-                return node.getType() === 'Group'
-                    && node.parent.getType() === 'Layer'
-                    && node.getName() !== focus_object.nom.toString()
-                    && node.getName() !== 'Transformer'
-            }).forEach((el) => {
-                el.off('dragend click tap');
-            });
-            layer.opacity(0.5);
-            stage.draw();
-        }
         /*function downloadURI(uri, name) {
             var link = document.createElement('a');
             link.download = name;
@@ -980,6 +904,32 @@ class SeatMap extends Component {
         }
         var dataURL = stage.toDataURL({ pixelRatio: 3 });
         downloadURI(dataURL, 'stage.png');*/
+    };
+    //Générer div carte
+    generateCartInfo = () =>{
+        let count=0;
+        axios.get('/api/cart/count').then((response)=>{
+            count=response.data;
+            if(count>0) {
+                $('#tootip_card').remove();
+                let card_body = $("<div></div>").attr('class', 'card-body');
+                let row = $("<div></div>").attr('class', 'row');
+                let cart_icon = $("<div></div>").attr('id', 'cart_icon').attr('class', 'col').append('<span class="p1 fa-stack fa-lg has-badge" data-count="' + count + '"><i class="p3 fa fa-shopping-cart fa-stack-1x xfa-inverse" data-count="4b"></i></span>');
+                row.append(cart_icon);
+                let command_text=$('<div></div>').attr('class','col').text('réservations');
+                row.append(command_text);
+                let purchase_button = $('<a></a>').attr('class', 'card-link text text-danger col').attr('href', '#').attr('id', 'submit-seat').text('Commander');
+                row.append(purchase_button);
+                card_body.append(row);
+                let el = $("<div></div>").attr('class', 'card').attr('id', 'tooltip_card').css({
+                    'width': '24%',
+                    'position': 'absolute'
+                }).append(card_body);
+                $('#stage-container-front').append(el.css({'top':10,'left':500}));
+            }
+        });
+
+
     };
     //Gestion scroll Souris sur la carte
     handleWheel = e => {
@@ -992,10 +942,10 @@ class SeatMap extends Component {
             x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
             y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
         };
-        const MAX_SCALE= 1;
-        const MIN_SCALE=0.4;
+        const MAX_SCALE = 1;
+        const MIN_SCALE = 0.4;
         const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-        if(newScale >= MIN_SCALE && newScale <= MAX_SCALE) {
+        if (newScale >= MIN_SCALE && newScale <= MAX_SCALE) {
             stage.scale({x: newScale, y: newScale});
             this.setState({
                 stageScale: {
@@ -1020,15 +970,15 @@ class SeatMap extends Component {
     getColors = (colors) => {
         this.setState({'ticket_colors': colors});
     };
+
     //rendu du composant
     render() {
         return (
             <div className="row">
                 <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
-                <div id="stage-container-front" className={"col-sm-9"} style={{paddingLeft: 0}}>
-                    <p>Stage container front</p>
+                <div id="stage-container-front" className={"col-sm-10"} style={{paddingLeft: 0,backgroundColor: '#f8f8fa'}}>
                 </div>
-                <div className="col-sm-3 sidebar-right">
+                <div className="col-sm-2 sidebar-right">
                     <RightSidebarFront colors={this.state.ticket_colors} liste_billet={this.state.liste_billet}/>
                 </div>
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>

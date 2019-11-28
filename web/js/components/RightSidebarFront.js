@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
         textAlign: 'center',
         color: theme.palette.text.secondary,
+        margin: theme.spacing(1)
     },
     underlined: {
         textDecoration: 'underline',
@@ -49,16 +50,16 @@ function RightSidebarFront(props) {
             <div className={classes.root}>
                 <br/>
             <Fade in={true} style={{transitionDelay: '50ms', display: "inherit" }}>
-                <Grid container spacing={2} justify="center" direction="row">
+                <Grid container spacing={2} direction="row">
                     {billet.map((item, i) =>
                         <Paper className={classes.paper} key={i} >
-                            <Grid container direction={"row"}>
-                                <Grid item xs={12} sm={4}>
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={12} sm={2}>
                                     <ButtonBase key={item.libelle}>
-                                        <span id={"billet-" + i} className={"btn fa fa-circle fa-3x"}
+                                        <span id={"billet-" + i} className={"btn fa fa-circle fa-2x"}
                                               style={{color: colors[i].color.toString()}}></span>
                                     </ButtonBase></Grid>
-                                <Grid item xs={12} sm={4}>
+                                <Grid item xs={12} sm={6}>
                                     <Typography variant="subtitle1">{item.libelle}</Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={4}>
