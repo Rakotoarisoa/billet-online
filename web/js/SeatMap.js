@@ -285,6 +285,7 @@ class SeatMap extends Component {
                         $('#stage-container-front').append(el);
                         newGroup.setAttr('is_selected', !newGroup.getAttr('is_selected'));
                         $("#submit-seat").on('click', (e) => {
+                            console.log('cliked');
                             $.post("/res_billet/add/", {
                                 select_nb_billets: 1,
                                 type_billet: seat_type,
@@ -294,7 +295,7 @@ class SeatMap extends Component {
                                 place_id: alphabet[i].toUpperCase() + (j + 1)
                             }, function (data) {
                                 $(el).remove();
-                                this.generateCartInfo();
+                                //this.generateCartInfo();
                                 container.success('Votre commande a été ajouté avec succès', 'Ajout panier');
                             });
                         });
@@ -781,6 +782,7 @@ class SeatMap extends Component {
                     });
                     this.loadStage();
                 });
+
             } catch (error) {
                 container.error("Une erreur s'est produite: " + error.message, "Erreur", {closeButton: true});
             }
@@ -914,11 +916,10 @@ class SeatMap extends Component {
                 $('#tootip_card').remove();
                 let card_body = $("<div></div>").attr('class', 'card-body');
                 let row = $("<div></div>").attr('class', 'row');
-                let cart_icon = $("<div></div>").attr('id', 'cart_icon').attr('class', 'col').append('<span class="p1 fa-stack fa-lg has-badge" data-count="' + count + '"><i class="p3 fa fa-shopping-cart fa-stack-1x xfa-inverse" data-count="4b"></i></span>');
+                let cart_icon = $("<div></div>").attr('id', 'cart_icon').attr('class', 'col my-auto').append('<span class="p1 fa-stack fa-lg has-badge" data-count="' + count + '"><i class="p3 fa fa-shopping-cart fa-stack-1x xfa-inverse" data-count="4b"></i></span>').append(' réservations');
                 row.append(cart_icon);
-                let command_text=$('<div></div>').attr('class','col').text('réservations');
-                row.append(command_text);
-                let purchase_button = $('<a></a>').attr('class', 'card-link text text-danger col').attr('href', '#').attr('id', 'submit-seat').text('Commander');
+                //let command_text=$('<div></div>').attr('class','col').text('réservations');
+                let purchase_button = $('<a></a>').attr('class', 'card-link text text-danger col my-auto').attr('id', 'submit_command').text('Commander');
                 row.append(purchase_button);
                 card_body.append(row);
                 let el = $("<div></div>").attr('class', 'card').attr('id', 'tooltip_card').css({
@@ -926,6 +927,9 @@ class SeatMap extends Component {
                     'position': 'absolute'
                 }).append(card_body);
                 $('#stage-container-front').append(el.css({'top':10,'left':500}));
+                $('#submit_command').on('click',function(e){
+                    $('#checkout_command').modal('show');
+                });
             }
         });
 
@@ -981,8 +985,7 @@ class SeatMap extends Component {
                 <div className="col-sm-2 sidebar-right">
                     <RightSidebarFront colors={this.state.ticket_colors} liste_billet={this.state.liste_billet}/>
                 </div>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"/>
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.css"/>
+
             </div>
         );
     }

@@ -66,9 +66,26 @@ class CartController extends AbstractFOSRestController
         $count = $this->cart->count();
         $this->session->set('quantity', count($this->cart->getItems()));
         if ($count === null) {
+
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
         return View::create($count,Response::HTTP_OK);
+    }
+
+    /**
+     * Takes the user to the cart list
+     * @Rest\View
+     * @Rest\Get("/api/cart/clear", name="cart_clear")
+     * @return View|object|null
+     */
+    public function clearItems()
+    {
+        $this->session->set('quantity', count($this->cart->getItems()));
+        $this->cart->clear();
+        if (200 === null) {
+            return new View("Panier vidé", Response::HTTP_NOT_FOUND);
+        }
+        return View::create("Panier vidé",Response::HTTP_OK);
     }
 
     /**
