@@ -153,7 +153,8 @@
             topSpacing: 0
         });*/
         $(".top-filters").sticky({
-            topSpacing: 0
+            topSpacing: 0,
+            zIndex: 999
         });
     }
 
