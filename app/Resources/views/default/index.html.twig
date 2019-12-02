@@ -81,7 +81,7 @@
                                             <div class="form-group">
                                                 <input type="date" class="form-control" id="date" placeholder="Date"
                                                        name="date"
-                                                       value="{{  app.request.get('date')  }}">
+                                                       value="{{  "now"|date('YYYY-MM-DD') }}">
                                             </div>
                                         </li>
                                         <li class="nav-item">
@@ -108,16 +108,23 @@
                             <!-- Single Event Area -->
                             <div class="col-12 col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="100ms">
                                 <div class="single-event-area mb-30">
+                                    <div class="date-single-event">
+                                        <p class="day">{{  item.dateDebutEvent|localizeddate('none', 'none', null, null,"d")}}</p>
+                                        <p class="month">{{item.dateDebutEvent|localizeddate('none', 'none', null, null,"MMM")}}</p>
+                                        <p class="year">{{item.dateDebutEvent|localizeddate('none', 'none', null, null,"Y")}}</p>
+                                    </div>
                                     <div class="event-thumbnail">
+
                                         <img width="350px" height="436.33px" src="{{ asset(item.imageEvent) }}"
                                              alt="{{ item.imageEvent }}">
                                     </div>
                                     <div class="event-text">
                                         <h4>{{ item.titreEvenement }}</h4>
                                         <div class="event-meta-data">
-                                            <a href="#" class="event-place">{{ item.nomSalle }}</a>
+                                            <a href="#" class="event-place"><b>{{ item.nomSalle }}</b></a>
+
                                             <a href="#"
-                                               class="event-date">{{ item.dateDebutEvent|localizeddate('none', 'none', null, null,"d MMM Y") }}</a>
+                                               class="event-date">à {{ item.dateDebutEvent|localizeddate('none', 'none', null, null,"HH:mm") }}</a>
                                         </div>
                                         <a href="{{ path('viewSingle',{'id':item.id}) }}" class="btn see-more-btn">Détails</a>
                                     </div>
@@ -146,5 +153,6 @@
     <!-- ##### Events Area End ##### -->
     {% block javascripts %}
         {{ parent() }} {% endblock %}
+    {% block contact %}{% endblock %}
 {% endblock %}
 
