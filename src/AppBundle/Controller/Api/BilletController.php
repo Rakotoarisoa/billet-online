@@ -91,6 +91,7 @@ class BilletController extends AbstractFOSRestController
         return $billet;
 
     }
+
     //TODO: Récupérer données de la carte
     /**
      * @Rest\View

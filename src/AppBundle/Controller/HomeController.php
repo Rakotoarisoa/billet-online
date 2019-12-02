@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Billet;
 
+use AppBundle\Entity\CategorieEvenement;
 use AppBundle\Repository\BilletRepository;
 use Doctrine\ORM\Query;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -37,7 +38,11 @@ class HomeController extends Controller
         $eventsList = $this->getDoctrine()
             ->getRepository(Evenement::class)
             ->search($titre,$lieu,$date);
-        return $this->render('default/index.html.twig', array('dataSearch'=>$request->request,'events' => $eventsList,'lieu'=>$lieu,'nbEvents'=>count($eventsList)));
+        $categoryList= $this->getDoctrine()
+            ->getRepository(CategorieEvenement::class)
+            ->searchUsedCategories();
+        $events_paginated = $this->get('knp_paginator')->paginate($eventsList,$request->query->get('page',1),15);
+        return $this->render('default/index.html.twig', array('catList'=>$categoryList,'dataSearch'=>$request->request,'events' => $events_paginated,'lieu'=>$lieu,'nbEvents'=>count($eventsList)));
     }
 
     /**

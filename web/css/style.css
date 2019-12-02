@@ -1,6 +1,6 @@
 /* [Master Stylesheet - v1.0] */
 /* :: 1.0 Import Fonts */
-@import url("https://cdn.evbstatic.com/s3-build/46807-rc2019-09-23_16.04-c470a83/js/node_modules/eventbrite_design_system/css/eds.css");
+@import url(eds.css);
 /*@import url("https://fonts.googleapis.com/css?family=Archivo+Narrow:400,400i,500,500i,600,600i,700,700i");*/
 /* :: 2.0 Import All CSS */
 @import url(bootstrap.min.css);
@@ -513,6 +513,9 @@ img {
     z-index: 9999;
     background-color: /*Andry Edit */#333;
     box-shadow: 0 5px 50px 15px rgba(0, 0, 0, 0.2); }
+.is-sticky{
+  z-index:9999;
+}
     @media only screen and (max-width: 767px) {
       .header-area .is-sticky .oneMusic-main-menu {
         height: 70px; } }
@@ -806,7 +809,7 @@ img {
 
 .browse-by-catagories {
   position: relative;
-  z-index: 1; }
+  z-index: 2; }
   .browse-by-catagories a {
     display: inline-block;
     background-color: #f4f4f4;
@@ -834,7 +837,7 @@ img {
     .browse-by-catagories a:hover, .browse-by-catagories a:focus, .browse-by-catagories a.active {
       border: 2px solid #000000; }
     .browse-by-catagories a:first-child {
-      border-color: transparent;
+      /*border-color: transparent;*/
       background-color: transparent; }
 
 .single-album {
@@ -1761,3 +1764,7 @@ p.isPublished{
 
 
 /*======== Admin event by HH =========  */
+/*----Pagination -----*/
+.previous-link,.next-link{
+  width:100px !important;
+}

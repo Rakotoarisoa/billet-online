@@ -186,7 +186,7 @@ class BilletRepository extends EntityRepository
      */
     public function getTicketsToBuy($event_id, $nbr = 1, $type_billet, $updateBillet = false)
     {
-        $emBillet=$this->getEntityManager()->getRepository(Billet::class);
+        $bR=$this->getEntityManager()->getRepository(Billet::class);
         $event = $this->getEntityManager()->getRepository(Evenement::class)->find($event_id);
         $result=array();
         for($i=0;$i<$nbr;$i++ )
