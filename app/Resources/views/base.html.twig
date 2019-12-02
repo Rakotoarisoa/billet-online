@@ -56,10 +56,12 @@
                         <!-- Nav brand -->
                         <a href="" class="nav-brand"><img width="156" heigth="17" src="{{ asset('img/ivenco.png') }}" alt=""></a>
                             <!-- Actual search box -->
-                            <div class="has-search mb-2 mt-2 ml-2 mr-2" style="width: 30%;">
+                        <form action="/" method="post">
+                            <div class="has-search mb-2 mt-2 ml-2 mr-2" style="width: 100%;">
                                 <span class="fa fa-search form-control-feedback"></span>
-                                <input type="text" class="form-control" placeholder="Recherche d'évènements">
+                                <input name="titre" type="text" class="form-control" placeholder="Recherche d'évènements">
                             </div>
+                        </form>
                         <!-- Navbar Toggler -->
                         <div class="classy-navbar-toggler ml-auto">
                             <span class="navbarToggler"

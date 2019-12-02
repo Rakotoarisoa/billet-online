@@ -50,7 +50,6 @@
                                 <a class="nav-link" href="#">{{ cat.libelle }}</a>
                             </li>
                         {% endfor %}
-
                     </ul>
                 </div>
                 <div class="col-1">
@@ -68,21 +67,21 @@
                                             <div class="form-group">
                                                 <input type="text" class="form-control" id="name" placeholder="Titre"
                                                        name="titre"
-                                                       value="{{ dataSearch.parameters.titre|default('') }}">
+                                                       value="{{ app.request.get('titre') }}">
                                             </div>
                                         </li>
                                         <li class="nav-item">
                                             <div class="form-group">
                                                 <input type="text" class="form-control" id="email" placeholder="Lieu"
                                                        name="lieu"
-                                                       value="{{ dataSearch.lieu|default('Antananarivo') }}">
+                                                       value="{{ app.request.get('lieu') }}">
                                             </div>
                                         </li>
                                         <li class="nav-item">
                                             <div class="form-group">
                                                 <input type="date" class="form-control" id="date" placeholder="Date"
                                                        name="date"
-                                                       value="{{ dataSearch.date|default() }}">
+                                                       value="{{  app.request.get('date')  }}">
                                             </div>
                                         </li>
                                         <li class="nav-item">
@@ -102,7 +101,7 @@
             </div>
             <div class="container">
                 {% if (nbEvents > 0) %}
-                    <p>{{ 'filter_events.countResults'|transchoice(nbEvents) }}</p>
+                    <p>{{ 'filter_events.countResults'|transchoice(nbEvents) }}{% if app.request.get('titre') != null %} pour la recherche <b>{{ app.request.get('titre') }}</b>{% endif %}</p>
 
                     <div class="row">
                         {% for item in events %}
