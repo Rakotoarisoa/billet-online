@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>HTML to API - event tickets</title>
+  
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900' rel='stylesheet' type='text/css'>
+  <!-- <link rel="stylesheet" href="styles/main.css" media="screen" charset="utf-8"/> -->
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta http-equiv="content-type" content="text-html; charset=utf-8">
+</head>
+
+<style>
+  body {
+    width: 795px;
+    margin: 0 auto;
+    color: #333;
+    font-family: "Roboto", cursive;
+    font-weight: 400;
+    font-size: 25px;
+    background-color: #333;
+  }
+    .vl1 {
+  border-left: 3px dashed #444;
+  height: 500px;
+  position: absolute;
+  left: 22%;
+  margin-left: -3px;
+  top: 0;
+}
+.vl2 {
+  border-left: 3px dashed #444;
+  height: 500px;
+  position: absolute;
+  left: 72%;
+  margin-left: -3px;
+  top: 0;
+}
+  .container {
+    width: 100%;
+     background-color: #EEE;
+  }
+
+  section {
+    position: relative;
+    height: 280px;
+    width: 100%;
+    background-color: #EEE;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    border: 1px solid;
+  }
+  section .left {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    float: left;
+    width: 170px;
+    padding: 50px;
+    text-align: center;
+  }
+  section .right {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    float: left;
+    width: 172px;
+    padding: 26px;
+  }
+  section .event {
+    font-weight: 700;
+    font-size: 1.6em;
+    line-height: 35px;
+  }
+  section .title {
+    margin-bottom: 20px;
+    color: #19868a;
+    font-size: 3em;
+    line-height: 72px;
+  }
+  section .info {
+    font-size: 0.65em;
+    /*text-transform: uppercase;*/
+  }
+  section .seats {
+    width: 100px;
+    margin-bottom: 15px;
+    color: #19868a;
+    font-family: "Roboto", serif;
+    font-size: 0.50em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  section .seats:last-child {
+    margin-bottom: 0;
+  }
+  section .middle{
+    width:370px;
+    padding:20px;
+    float:left;
+  }
+  section .seats span {
+    display: block;
+    margin-bottom: 5px;
+    padding: 10px 0;
+    color: #fff;
+    background: #19868a;
+    font-size: 2.777em;
+  }
+  section .middle .commande {
+      font-size:0.5em;
+  }
+  .code{
+    font-size:0.3em;
+    text-align: center;
+  }
+  p.small{
+    font-size:0.45em;
+    padding: 0;
+    margin:0;
+  }
+  .qrcode{
+    width:100%;
+  }
+</style>
+
+<body>
+  <div class="container">
+    <section>
+      <div class="left">
+        <div class="seats"><span>A</span>section</div>
+        <div class="seats"><span>120</span>Place</div>
+      </div>
+      <div class="vl1"></div>
+      <div class="middle">
+        <div class="title">'Zay</div>
+        <div class="event">Billet Simple</div>
+        <p class="small">Ar 10 000</p>
+        <div class="info">Dimanche ,1er Décembre 2019 à 15h23<br>Palais des sports , Mahamasina </div>
+        <br/>
+        <div class="commande">
+          Commande n° 1224345354 par <b>John Doe</b>
+        </div>
+      </div>
+            <div class="vl2"></div>
+
+      <div class="right">
+        <div class="qrcode">
+          <img width="147px" src="https://upload.wikimedia.org/wikipedia/commons/7/78/Qrcode_wikipedia_fr_v2clean.png"/>
+          <p class="code">122243545EZT5TRGEZ</p>
+        </div>
+          <div><img src="logo.png" width="147px"/></div>
+      </div>
+    </section>
+  </div>
+</body>
+
+</html>

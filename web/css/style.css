@@ -1314,7 +1314,7 @@ img {
     position: relative;
     z-index: 1; }
     .single-blog-post .blog-post-thumb .post-date {
-      width: 76px;
+      width: 100px;
       height: 106px;
       border: 1px solid #000000;
       text-align: center;

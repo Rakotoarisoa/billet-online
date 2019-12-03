@@ -3,7 +3,7 @@
     {{ event.titreEvenement }} | {{ event.dateDebutEvent|date('d-m-Y') }}
 {% endblock %}
 {% block breadcrumb %}
-   <!-- <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+    <!-- <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
         <div class="bradcumbContent">
             {% block breadcrumb_content %}
                 <p>Parcourir</p>
@@ -24,73 +24,69 @@
                         <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
                             <!-- Post Thumb -->
                             <div class="blog-post-thumb mt-30">
-                                <a href="#"><img src="{{ asset(event.imageEvent) }}" alt="{{ event.titreEvenement }}"></a>
+                                <a href="#"><img src="{{ asset(event.imageEvent) }}"
+                                                 alt="{{ event.titreEvenement }}"></a>
                                 <!-- Post Date -->
                                 <div class="post-date">
-                                    <span>{{ event.dateDebutEvent|date('d') }}</span>
-                                    <span>{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,'MMM Y') }}</span>
+                                    <span class="day">{{ event.dateDebutEvent|date('d') }}</span>
+                                    <span class="month">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,'MMM Y') }}</span>
                                 </div>
                             </div>
                             <!-- Blog Content -->
                             <div class="blog-content">
                                 <!-- Post Title -->
-                                <a href="#" class="post-title">{{ event.titreEvenement }}</a>
-                                <!-- Post Meta -->
-                                <div class="post-meta d-flex mb-30">
-                                    Par &nbsp;&nbsp;<h6 class="post-author"><a href="#">{{ event.organisation }}</a>
-                                    </h6>
-                                    &nbsp;|&nbsp; au&nbsp;&nbsp; <h6 class="tags"><a
-                                                href="#"> {{ event.lieuEvenement.nomSalle }}</a></h6>
-                                    &nbsp;|&nbsp;
+                                <div class="row">
+                                    <div class="col">
+                                        <a href="#" class="post-title">{{ event.titreEvenement }}</a>
+                                        <!-- Post Meta -->
+                                        <div class="post-meta d-flex mb-30">
+                                            Par &nbsp<h6 class="post-author"><a
+                                                        href="#">{{ event.organisation }}</a>
+                                            </h6>
+                                            &nbsp;|&nbsp; au&nbsp;&nbsp; <h6 class="tags"><a
+                                                        href="#"> {{ event.lieuEvenement.nomSalle }}</a></h6>
+                                        </div>
+                                    </div>
+                                    <div class="col">
                                     {% if (ticketState != null) %}
-                                        <h6 class="tags"><a href="#"><span
-                                                        class="badge badge-success">{{ ticketState['restants'] }}</span>
-                                                Billets
-                                                restants</a></h6>
-                                    {% endif %}
-                                </div>
-                                <!-- Post Excerpt -->
+                                        {% if ticketState['restants'] > 0 %}
+                                            <a class="btn btn-success text text-white pull-right" style="text-transform: none;"
+                                               data-toggle="modal"
+                                               data-target="#choixVue">{{ 'events.buy_tickets'|trans }} <i
+                                                        class="fa fa-ticket"></i></a>
+                                        {% else %}
+                                            <a class="btn oneMusic-btn m-2 pull-right" style="text-transform: none;"
+                                               data-toggle="modal"
+                                               data-target="#choixVue">{{ 'events.ticket_off'|trans }} <i
+                                                        class="fa fa-ticket"></i></a>
 
-                                <p>{{ event.description|raw }}</p>
-                                {% if (ticketState != null) %}
-                                    {% if ticketState['restants'] > 0 %}
-                                        <a class="btn oneMusic-btn m-2" style="text-transform: none;"
-                                           data-toggle="modal"
-                                           data-target="#choixVue">{{ 'events.buy_tickets'|trans }} <i
-                                                    class="fa fa-ticket"></i></a>
+                                        {% endif %}
                                     {% else %}
-                                        <a class="btn oneMusic-btn m-2" style="text-transform: none;"
-                                           data-toggle="modal"
-                                           data-target="#choixVue">{{ 'events.ticket_off'|trans }} <i
-                                                    class="fa fa-ticket"></i></a>
-
+                                        <p class="info text-danger pull-right">Pas de billets disponibles</p>
                                     {% endif %}
-                                {% else %}
-                                    <p class="info text-danger">Pas de billets disponibles</p>
-                                {% endif %}
-
-                                <!--<script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU"></script>
-                                <script>paypal.Buttons({
-                                        createOrder: function(data, actions) {
-                                            // Set up the transaction
-                                            return actions.order.create({
-                                                purchase_units: [{
-                                                    amount: {
-                                                        currency_code:'EUR',
-                                                        value: '300'
-                                                    }
-                                                }],
-
-                                            });
-                                        },
-                                        onApprove: function(data, actions) {
-                                            // Capture the funds from the transaction
-                                            return actions.order.capture().then(function(details) {
-                                                // Show a success message to your buyer
-                                                alert('Transaction completed by ' + details.payer.name.given_name);
-                                            });
-                                        }
-                                    }).render('body');</script>-->
+                                    </div>
+                                </div>
+                                    <div id="clockdiv " class="row mb-30">
+                                        <div class="col">
+                                            <p id="day" class="days display-4"></p>
+                                            <div class="font-weight-bold ">Jours</div>
+                                        </div>
+                                        <div class="col">
+                                            <p class="hours display-4 " id="hour"></p>
+                                            <div class="font-weight-bold">Heures</div>
+                                        </div>
+                                        <div class="col">
+                                            <p class="minutes display-4" id="minute"></p>
+                                            <div class="font-weight-bold">Minutes</div>
+                                        </div>
+                                        <div class="col">
+                                            <p class="seconds display-4" id="second"></p>
+                                            <div class="font-weight-bold">Secondes</div>
+                                        </div>
+                                    </div>
+                                <!-- Post Excerpt -->
+                                <hr/>
+                                <p>{{ event.description|raw }}</p>
                             </div>
                         </div>
                         <div class="modal fade" id="choixVue" tabindex="-1" role="dialog"
@@ -126,7 +122,33 @@
         </div>
     {% endblock %}
     {% block javascripts %}
-        {{ parent() }} {% endblock %}
+        {{ parent() }}
+
+            <script>
+                var deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
+                var x = setInterval(function () {
+
+                    var now = new Date().getTime();
+                    var t = deadline - now;
+                    var days = Math.floor(t / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((t % (1000 * 60)) / 1000);
+                    document.getElementById("day").innerHTML = days;
+                    document.getElementById("hour").innerHTML = hours;
+                    document.getElementById("minute").innerHTML = minutes;
+                    document.getElementById("second").innerHTML = seconds;
+                    if (t < 0) {
+                        clearInterval(x);
+                        //document.getElementById("clockdiv").innerHTML = "L' évènement est passé";
+                        document.getElementById("day").innerHTML = '0';
+                        document.getElementById("hour").innerHTML = '0';
+                        document.getElementById("minute").innerHTML = '0';
+                        document.getElementById("second").innerHTML = '0';
+                    }
+                }, 1000);
+            </script>
+    {% endblock %}
 {% endblock %}
 {% block contact %}{% endblock %}
 
