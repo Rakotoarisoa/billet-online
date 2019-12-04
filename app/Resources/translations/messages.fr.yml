@@ -17,7 +17,7 @@ events:
     return_to_seat_map: 'Retourner vers la visualisation de plan de salle'
     return_to_billet_list: 'Retourner vers la liste des billets'
     return_to_event: "Retourner vers la page de l'évènement"
-    buy_tickets: 'Commander des billets'
+    buy_tickets: 'Billets'
     commander: 'Commander'
     tickets: 'billets'
     map_not_available: 'Plan de salle non disponible'
