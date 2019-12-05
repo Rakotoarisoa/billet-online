@@ -38,9 +38,9 @@
     <!-- ##### Events Area Start ##### -->
     {% block content %}
         {{ parent() }}
-        <section class="events-area section-padding-100">
+        <section class="events-area section-padding-0-100">
             <div class="container-fluid top-filters  browse-by-catagories row p-2 bg bg-white" style="z-index: 999 !important;">
-                <div class="col">
+                <div class="col-sm-11">
                     <ul class="nav">
                         <li class="nav-item">
                             <a class="nav-link active" href="#">Toutes les catégories</a>
@@ -52,7 +52,7 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <div class="col-1">
+                <div class="col-sm-1">
                     <div class="btn-group dropleft">
                         <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown"
                                 aria-haspopup="true" aria-expanded="false">

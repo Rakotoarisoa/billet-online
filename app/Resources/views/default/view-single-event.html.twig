@@ -16,7 +16,7 @@
     <!-- ##### Events Area Start ##### -->
     {% block content %}
         {{ parent() }}
-        <div class="blog-area section-padding-100">
+        <div class="blog-area section-padding-0-100">
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-lg-12">
@@ -35,57 +35,93 @@
                             <!-- Blog Content -->
                             <div class="blog-content">
                                 <!-- Post Title -->
-                                <div class="row">
-                                    <div class="col">
-                                        <a href="#" class="post-title">{{ event.titreEvenement }}</a>
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
                                         <!-- Post Meta -->
-                                        <div class="post-meta d-flex mb-30">
-                                            Par &nbsp<h6 class="post-author"><a
-                                                        href="#">{{ event.organisation }}</a>
-                                            </h6>
-                                            &nbsp;|&nbsp; au&nbsp;&nbsp; <h6 class="tags"><a
-                                                        href="#"> {{ event.lieuEvenement.nomSalle }}</a></h6>
+                                        <div class="row">
+                                            <div class="col">
+                                                <a href="#" class="post-title">{{ event.titreEvenement }}</a>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row">
+                                            <div class="col col-md-auto">
+                                                <p>Organisé par : <b>{{ event.organisation }}</b></p>
+                                            </div>
+                                            <div class="col col-md-auto">
+                                                <p><i class="fa fa-map-marker"></i> {{ event.lieuEvenement.nomSalle }}
+                                                </p>
+                                            </div>
+                                            <div class="col col-md-auto">
+                                                <p>
+                                                    <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|date('H:i') }}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col">
-                                    {% if (ticketState != null) %}
-                                        {% if ticketState['restants'] > 0 %}
-                                            <a class="btn btn-success text text-white pull-right" style="text-transform: none;"
-                                               data-toggle="modal"
-                                               data-target="#choixVue">{{ 'events.buy_tickets'|trans }} <i
-                                                        class="fa fa-ticket"></i></a>
-                                        {% else %}
-                                            <a class="btn oneMusic-btn m-2 pull-right" style="text-transform: none;"
-                                               data-toggle="modal"
-                                               data-target="#choixVue">{{ 'events.ticket_off'|trans }} <i
-                                                        class="fa fa-ticket"></i></a>
+                                    <div class="col-md-6">
+                                        {% if (ticketState != null) %}
+                                            {% if ticketState['restants'] > 0 %}
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <a class="btn btn-success text text-white pull-right"
+                                                           style="text-transform: none;"
+                                                           data-toggle="modal"
+                                                           data-target="#checkout_command">{{ 'events.buy_tickets'|trans }}
+                                                            <i
+                                                                    class="fa fa-ticket"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        {% set maxPrice,minPrice=0,999999999 %}
+                                                        {% for type in event.typeBillets %}
+                                                            {% set maxPrice = max(type.prix, maxPrice) %}
+                                                            {% set minPrice = min(type.prix, minPrice) %}
+                                                        {% endfor %}
+                                                        <mark class="text text-light-blue pull-right">
+                                                            <span class="text text-danger">*</span>
+                                                            entre MGA
+                                                            <span>{{ minPrice|number_format(2, '.', ' ') }}</span>
+                                                            - MGA
+                                                            <span>{{ maxPrice|number_format(2, '.', ' ') }}</span>
+                                                        </mark>
+                                                    </div>
+                                                </div>
 
+                                            {% else %}
+                                                <a class="btn oneMusic-btn m-2 pull-right" style="text-transform: none;"
+                                                   data-toggle="modal"
+                                                   data-target="#choixVue">{{ 'events.ticket_off'|trans }} <i
+                                                            class="fa fa-ticket"></i></a>
+
+                                            {% endif %}
+                                        {% else %}
+                                            <p class="info text-danger pull-right">Pas de billets disponibles</p>
                                         {% endif %}
-                                    {% else %}
-                                        <p class="info text-danger pull-right">Pas de billets disponibles</p>
-                                    {% endif %}
                                     </div>
                                 </div>
-                                    <div id="clockdiv " class="row mb-30">
-                                        <div class="col">
-                                            <p id="day" class="days display-4"></p>
-                                            <div class="font-weight-bold ">Jours</div>
-                                        </div>
-                                        <div class="col">
-                                            <p class="hours display-4 " id="hour"></p>
-                                            <div class="font-weight-bold">Heures</div>
-                                        </div>
-                                        <div class="col">
-                                            <p class="minutes display-4" id="minute"></p>
-                                            <div class="font-weight-bold">Minutes</div>
-                                        </div>
-                                        <div class="col">
-                                            <p class="seconds display-4" id="second"></p>
-                                            <div class="font-weight-bold">Secondes</div>
-                                        </div>
-                                    </div>
-                                <!-- Post Excerpt -->
                                 <hr/>
+                                <div id="clockdiv " class="row d-none d-sm-flex">
+                                    <div class="col-sm col-md-3">
+                                        <p id="day" class="days display-4"></p>
+                                        <div class="font-weight-bold ">Jours</div>
+                                    </div>
+                                    <div class="col-sm col-md-3">
+                                        <p class="hours display-4 " id="hour"></p>
+                                        <div class="font-weight-bold">Heures</div>
+                                    </div>
+                                    <div class="col-sm col-md-3">
+                                        <p class="minutes display-4" id="minute"></p>
+                                        <div class="font-weight-bold">Minutes</div>
+                                    </div>
+                                    <div class="col-sm col-md-3">
+                                        <p class="seconds display-4" id="second"></p>
+                                        <div class="font-weight-bold">Secondes</div>
+                                    </div>
+                                </div>
+                                <!-- Post Excerpt -->
+                                <hr class="d-none d-sm-flex"/>
                                 <p>{{ event.description|raw }}</p>
                             </div>
                         </div>
@@ -116,6 +152,118 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="modal" id="checkout_command" tabindex="-1" role="dialog"
+                             aria-labelledby="exampleModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <div class="col"></div>
+                                        <div class="col">
+                                            <div class="row"><p class="modal-title mx-auto" id="exampleModalLabel">
+                                                    Commander</p></div>
+                                            <div class="row">
+                                                <small class="mx-auto">Temps restant pour commander: <span
+                                                            class="time_left">00:00</span></small>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Fermer">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <!-- Panel 1 body -->
+                                            <div class="col-lg-7">
+                                                <div class="container-fluid">
+                                                    <h6 class="mx-auto">Choisissez des articles</h6>
+                                                    <hr/>
+                                                    <div class="list-group">
+                                                        {% for type in event.typeBillets %}
+                                                            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                                                                <div class="d-flex w-100 justify-content-between">
+                                                                    <h5 class="mb-1">{{ type.libelle }}</h5>
+                                                                    <select class="form-control col-3"
+                                                                            name="{{ type }}">
+                                                                        <option selected></option>
+                                                                        {% if  type.billets|length > 0 %}
+
+                                                                            <option value="1">1</option>
+                                                                            <option value="2">2</option>
+                                                                        {% endif %}
+                                                                    </select>
+                                                                </div>
+                                                                <small>Ar {{ type.prix }}</small>
+                                                                <br/>
+                                                                <small>{{ type.description }}</small>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                    <br/>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <button class="btn btn-danger pull-right" type="button"
+                                                                    disabled>Continuer
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Panel 2 body-->
+                                            <div class="col-lg-5">
+                                                <div class="container-fluid">
+
+                                                    <h6 class="mx-auto">Résumé de la commande</h6>
+                                                    <hr/>
+                                                    <div class="row">
+                                                        <div class="col-8">3x Billet "Simple"</div>
+                                                        <div class="col">
+                                                            <span class="currency">Ar</span> 10.000
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-8">1x Billet "Reservation"</div>
+                                                        <div class="col">
+                                                            <span class="currency">Ar</span> 20.000
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-8">2x Billet "VIP"</div>
+                                                        <div class="col">
+                                                            <span class="currency">Ar</span> 100.000
+                                                        </div>
+                                                    </div>
+                                                    <hr/>
+                                                    <div class="row">
+                                                        <div class="col-8">Sous-total</div>
+                                                        <div class="col">
+                                                            <span class="currency">Ar</span> 130.000
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-8">Frais</div>
+                                                        <div class="col">
+                                                            <span class="currency">Ar</span> 10000
+                                                        </div>
+                                                    </div>
+                                                    <hr/>
+                                                    <div class="row">
+                                                        <div class="col-8"><h6>Total</h6></div>
+                                                        <div class="col">
+                                                            <span class="currency">Ar</span> 140.000
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Panels end -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,30 +272,30 @@
     {% block javascripts %}
         {{ parent() }}
 
-            <script>
-                var deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
-                var x = setInterval(function () {
+        <script>
+            var deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
+            var x = setInterval(function () {
 
-                    var now = new Date().getTime();
-                    var t = deadline - now;
-                    var days = Math.floor(t / (1000 * 60 * 60 * 24));
-                    var hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((t % (1000 * 60)) / 1000);
-                    document.getElementById("day").innerHTML = days;
-                    document.getElementById("hour").innerHTML = hours;
-                    document.getElementById("minute").innerHTML = minutes;
-                    document.getElementById("second").innerHTML = seconds;
-                    if (t < 0) {
-                        clearInterval(x);
-                        //document.getElementById("clockdiv").innerHTML = "L' évènement est passé";
-                        document.getElementById("day").innerHTML = '0';
-                        document.getElementById("hour").innerHTML = '0';
-                        document.getElementById("minute").innerHTML = '0';
-                        document.getElementById("second").innerHTML = '0';
-                    }
-                }, 1000);
-            </script>
+                var now = new Date().getTime();
+                var t = deadline - now;
+                var days = Math.floor(t / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((t % (1000 * 60)) / 1000);
+                document.getElementById("day").innerHTML = days;
+                document.getElementById("hour").innerHTML = hours;
+                document.getElementById("minute").innerHTML = minutes;
+                document.getElementById("second").innerHTML = seconds;
+                if (t < 0) {
+                    clearInterval(x);
+                    //document.getElementById("clockdiv").innerHTML = "L' évènement est passé";
+                    document.getElementById("day").innerHTML = '0';
+                    document.getElementById("hour").innerHTML = '0';
+                    document.getElementById("minute").innerHTML = '0';
+                    document.getElementById("second").innerHTML = '0';
+                }
+            }, 1000);
+        </script>
     {% endblock %}
 {% endblock %}
 {% block contact %}{% endblock %}
