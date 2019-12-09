@@ -7,8 +7,8 @@
     {{ parent() }}
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
-    <link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}"/>
-    <link type="text/css" rel="stylesheet" href="{{ asset('css/croppie.css') }}"/>
+    <!--<link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}"/>
+    <link type="text/css" rel="stylesheet" href="{{ asset('css/croppie.css') }}"/>-->
     <style type="text/css">
         .upload-msg {
             text-align: center;
@@ -119,6 +119,73 @@
                                     <h4 class="lead">{{ 'create_event_field_label.date_end'|trans }}</h4>
                                     {{ form_widget(form.dateFinEvent) }}
                                 </div>
+                                <br/>
+                                <hr/><br/>
+                                <h4>Billets <span class="fa fa-ticket"></span></h4>
+                                <p>Définissez des billets pour votre évènement</p>
+                                <form>
+                                    <div class="clonable-block" data-toggle="cloner">
+                                        <div class="clonable">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <label for="attr_1" class="clonable-increment-for">Type de
+                                                        billet n° <span class="clonable-increment-html">1</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-1 align-items-center" data-ss="1">
+                                                <div class="col-sm-4">
+                                                    <input type="text" class="form-control" placeholder="Nom du billet">
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control"
+                                                           placeholder="Prix du billet">
+                                                </div>
+                                                <div class="col-sm-2">
+                                                    <input type="number" class="form-control" placeholder="Quantité">
+                                                </div>
+                                                <div class="col-sm-1">
+                                                        <span class="fa fa-cog fa-2x"
+                                                              title="Options avancées"
+                                                              data-toggle="collapse"
+                                                              href="#billet_1" role="button" aria-expanded="false"
+                                                              aria-controls="billet_1">
+                                                        </span>
+                                                </div>
+                                                <div class="col-sm-1">
+                                                    <span class="fa fa-minus-circle fa-2x clonable-button-close">
+                                                    </span>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="collapse" id="billet_1">
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                 de début de publication
+                                                            </div>
+                                                            <div class="col">
+                                                                Date de fin de publication
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col">Desc</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>
+                                        <div class="row" data-ss="1">
+                                            <div class="col-sm-1">
+                                            <span class="fa fa-plus-circle fa-2x clonable-button-add">
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </form>
+
                             {% endif %}
 
                             {% if flow.getCurrentStepNumber() == 2 %}
@@ -154,8 +221,6 @@
                                         <label for="appbundle_event_isUsingSeatMap">Démarrer avec un plan de salle
                                             prédéfini</label>
                                     </div>
-
-
                                 </div>
                                 <div class="row align-items-center">
                                     <div class="col-5 my-1">
@@ -168,7 +233,9 @@
                                         </select>
                                     </div>
                                     <div class="col-7 my-1">
-                                        <img id="template_antsahamanitra" src="{{ asset('img/map/template_antsahamanitra.jpg') }}" width="500" height="500">
+                                        <img id="template_antsahamanitra"
+                                             src="{{ asset('img/map/template_antsahamanitra.jpg') }}" width="500"
+                                             height="500">
                                         <!--<img id="template_palais" src="{{ asset('img/map/template_palais.jpg') }}" width="500" height="500">-->
                                     </div>
                                 </div>
@@ -240,7 +307,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/fr.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-        <script src="{{ asset('js/croppie.js') }}"></script>
+        <script src="{{ asset('js/jquery.cloner.min.js') }}"></script>
         <script type="text/javascript">
             $(document).ready(function () {
                 $('.nav-tabs a[href="#info_event"]').tab('show');
@@ -297,61 +364,25 @@
                 });
                 {% endif %}
             });
-            $('#appbundle_event_templateSeatmap').on('change',function(e){
+            $('#appbundle_event_templateSeatmap').on('change', function (e) {
                 $('#'.$(this).children("option:selected").val()).show();
             });
-
-            //var $uploadCrop;
-
-            /*function readFile(input) {
-                if (input.files && input.files[0]) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        $('.upload-msg').hide();
-                        $('#upload-demo').show();
-                        $('.upload-demo').addClass('ready');
-                        $uploadCrop.croppie('bind', {
-                            url: e.target.result
-                        }).then(function () {
-                            console.log('jQuery bind complete');
-                        });
-
-                    };
-
-                    reader.readAsDataURL(input.files[0]);
-                }
-            }
-
-            $('.image-event').on('change', function () {
-                readFile(this);
+            $('#clonable-block').cloner({
+                clonableContainer: '.clonable-block',
+                clonable: '.clonable',
+                addButton: '.clonable-button-add',
+                closeButton: '.clonable-button-close',
+                focusableElement: ':input:visible:enabled:first',
+                clearValueOnClone: true,
+                removeNestedClonablesOnClone: true,
+                limitCloneNumbers: true,
+                debug: false,
+                cloneName: 'clonable-clone',
+                sourceName: 'clonable-source',
+                clonableCloneNumberDecrement: 'clonable-clone-number-decrement',
+                incrementName: 'clonable-increment',
+                decrementName: 'clonable-decrement',
             });
-            $uploadCrop = $('#upload-demo').croppie({
-                showZoomer: true,
-                enableExif: true,
-                viewport: {
-                    width: 350,
-                    height: 350,
-                    type: 'square'
-                },
-                boundary: {
-                    width: 400,
-                    height: 400
-                },
-                mouseWheelZoom: false
-            });
-            $('#upload-demo').on('click', function (ev) {
-                $uploadCrop.croppie('result', {
-                    type: 'html',
-                    size: 'viewport'
-                }).then(function (resp) {
-                    console.log(resp);
-                    $uploadCrop.croppie('bind', {
-                        url: resp
-                    }).then(function () {
-                        console.log('jQuery bind complete');
-                    });
-                });
-            });*/
         </script>
     {% endblock %}
 {% endblock %}

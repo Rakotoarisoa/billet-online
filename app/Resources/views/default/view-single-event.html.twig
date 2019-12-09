@@ -1,4 +1,8 @@
 {% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/jquery-steps.css') }}"/>
+{% endblock %}
 {% block title %}
     {{ event.titreEvenement }} | {{ event.dateDebutEvent|date('d-m-Y') }}
 {% endblock %}
@@ -125,36 +129,8 @@
                                 <p>{{ event.description|raw }}</p>
                             </div>
                         </div>
-                        <div class="modal fade" id="choixVue" tabindex="-1" role="dialog"
-                             aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Choisir des billets</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        {% if event.isUsingSeatMap == 1 %}
-                                            <a href="{{ url('viewBuyMap',{'idEvent':event.id}) }}"
-                                               class="btn oneMusic-btn m-2" style="text-transform: none;">Sur le plan de
-                                                salle
-                                                <i class="fa fa-circle"></i></a>
-                                        {% else %}
-                                            <p href="#" class="text m-2 text-danger"
-                                               style="text-transform: none;">{{ 'events.map_not_available'|trans }}</p>
-                                        {% endif %}
-                                        <a href="{{ url('viewTicketList',{'id':event.id}) }}"
-                                           class="btn oneMusic-btn m-2" style="text-transform: none;">Lister les billets<i
-                                                    class="fa fa-list"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal" id="checkout_command" tabindex="-1" role="dialog"
-                             aria-labelledby="exampleModalLabel"
-                             aria-hidden="true">
+
+                        <div class="modal" id="checkout_command" role="dialog">
                             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -168,9 +144,9 @@
                                             </div>
                                         </div>
                                         <div class="col">
-                                            <button type="button" class="close" data-dismiss="modal"
+                                            <button type="button" class="close closeConfirm"
                                                     aria-label="Fermer">
-                                                <span aria-hidden="true">&times;</span>
+                                                <span>&times;</span>
                                             </button>
                                         </div>
                                     </div>
@@ -178,39 +154,200 @@
                                         <div class="row">
                                             <!-- Panel 1 body -->
                                             <div class="col-lg-7">
-                                                <div class="container-fluid">
-                                                    <h6 class="mx-auto">Choisissez des articles</h6>
-                                                    <hr/>
-                                                    <div class="list-group">
-                                                        {% for type in event.typeBillets %}
-                                                            <div class="list-group-item list-group-item-action flex-column align-items-start">
-                                                                <div class="d-flex w-100 justify-content-between">
-                                                                    <h5 class="mb-1">{{ type.libelle }}</h5>
-                                                                    <select class="form-control col-3"
-                                                                            name="{{ type }}">
-                                                                        <option selected></option>
-                                                                        {% if  type.billets|length > 0 %}
+                                                <div id="checkout_steps">
+                                                    <div class="step-app">
+                                                        <ul class="step-steps">
+                                                            <li><a href="#tab1"><span class="number">1</span> Step 1</a>
+                                                            </li>
+                                                            <li><a href="#tab2"><span class="number">2</span> Step 2</a>
+                                                            </li>
+                                                            <li><a href="#tab3"><span class="number">3</span> Step 3</a>
+                                                            </li>
+                                                            <li><a href="#tab4"><span class="number">4</span> Step 4</a>
+                                                            </li>
+                                                            <li><a href="#tab5"><span class="number">5</span> Step 5</a>
+                                                            </li>
+                                                        </ul>
+                                                        <div class="step-content">
+                                                            <div class="step-tab-panel" id="tab1">
+                                                                <div class="container-fluid">
+                                                                    <h6 class="mx-auto">Choisissez des articles</h6>
+                                                                    <hr/>
 
-                                                                            <option value="1">1</option>
-                                                                            <option value="2">2</option>
-                                                                        {% endif %}
-                                                                    </select>
+                                                                    <form name="form_select_items"
+                                                                          id="form_select_items">
+                                                                        <div class="list-group">
+                                                                            {% set i=1 %}
+                                                                            {% for type in event.typeBillets %}
+                                                                                <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
+                                                                                    <div class="row d-flex w-100 justify-content-between">
+                                                                                        <div class="col-4">
+                                                                                            <h5 class="mb-1">{{ type.libelle }}</h5>
+                                                                                        </div>
+                                                                                        <div class="col">
+                                                                                            <select class="form-control col-6 pull-right fillOne"
+                                                                                                    name="{{ type.libelle }}"
+                                                                                                    id="billet_{{ i }}"
+                                                                                                    data-price="{{ type.prix }}"
+                                                                                                    data-name="{{ type.libelle }}">
+                                                                                                <option selected></option>
+                                                                                                {% if type.billets|length > 0 %}
+                                                                                                    <option value="{{ type.libelle }}:{{ type.prix }}:1">
+                                                                                                        1
+                                                                                                    </option>
+                                                                                                    <option value="{{ type.libelle }}:{{ type.prix }}:2">
+                                                                                                        2
+                                                                                                    </option>
+                                                                                                {% endif %}
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="row message_errors">
+                                                                                        <div class="col-12">
+                                                                                            <span class="text-danger error"></span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <small>Ar {{ type.prix }}</small>
+                                                                                    <br/>
+                                                                                    <small>{{ type.description }}</small>
+                                                                                </div>
+                                                                                {% set i=i+1 %}
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    </form>
+                                                                    <br/>
+                                                                    <!--<div class="row">
+                                                                        <div class="col">
+                                                                            <button data-direction="next"
+                                                                                    class="btn btn-danger pull-right"
+                                                                                    type="button"
+                                                                            >Continuer
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>-->
                                                                 </div>
-                                                                <small>Ar {{ type.prix }}</small>
-                                                                <br/>
-                                                                <small>{{ type.description }}</small>
                                                             </div>
-                                                        {% endfor %}
-                                                    </div>
-                                                    <br/>
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <button class="btn btn-danger pull-right" type="button"
-                                                                    disabled>Continuer
+                                                            <div class="step-tab-panel" id="tab2">
+                                                                <div class="container-fluid">
+                                                                <h6>Informations sur l'acheteur</h6>
+                                                                    <form>
+                                                                        <div class="form-row">
+                                                                            <div class="form-group col-md-6">
+                                                                                <label for="inputEmail4">Nom</label>
+                                                                                <input type="nom" class="form-control" id="nom" placeholder="Nom">
+                                                                            </div>
+                                                                            <div class="form-group col-md-6">
+                                                                                <label for="inputPassword4">Prénom</label>
+                                                                                <input type="prenom" class="form-control" id="prenom"
+                                                                                       placeholder="Prénom">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="inputAddress">Adresse</label>
+                                                                            <input type="text" class="form-control" id="inputAddress"
+                                                                                   placeholder="Ivandry">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="inputAddress2">Logement</label>
+                                                                            <input type="text" class="form-control" id="inputAddress2"
+                                                                                   placeholder="Logement">
+                                                                        </div>
+                                                                        <div class="form-row">
+                                                                            <div class="form-group col-md-5">
+                                                                                <label for="inputCity">Pays</label>
+                                                                                <input type="text" class="form-control" id="inputCity">
+                                                                            </div>
+                                                                            <div class="form-group col-md-4">
+                                                                                <label for="inputState">Région</label>
+                                                                                <select id="inputState" class="form-control">
+                                                                                    <option selected>Choose...</option>
+                                                                                    <option>...</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="form-group col-md-3">
+                                                                                <label for="inputZip">Code postal</label>
+                                                                                <input type="text" class="form-control" id="inputZip">
+                                                                            </div>
+                                                                        </div>
+                                                                        <hr/>
+                                                                        <div class="form-group">
+                                                                            <label for="inputAddress2"><h6>Méthode de paiement</h6></label>
+                                                                            <div class="row">
+                                                                                <div class="col-6"><span class="fa fa-credit-card fa-2x"></span>  Carte bancaire</div>
+                                                                            </div>
+                                                                            <hr/>
+                                                                            <div class="row">
+                                                                                <div id="btnPaypal" class="col-6"></div>
+                                                                            </div>
+                                                                            <hr/>
+                                                                            <div class="row">
+                                                                                <div class="col-6"><img src="{{ asset('img/logo-mvola.png.png') }}" width="100" height="30"/> </div>
+                                                                            </div>
+                                                                            <hr/>
+                                                                            <button type="button" class="btn btn-danger pull-right">Valider</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                            <div class="step-tab-panel" id="tab3">
+                                                                <h3>Tab3</h3>
+                                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing
+                                                                    elit. Magni dicta nulla veritatis
+                                                                    totam vel blanditiis, cumque minima harum reiciendis
+                                                                    officia, accusamus ipsum esse nam
+                                                                    itaque consequuntur eum! Nesciunt maiores
+                                                                    dignissimos repellendus cumque, ea nemo
+                                                                    perspiciatis dolor accusantium, enim modi veniam
+                                                                    deleniti omnis unde, ad temporibus
+                                                                    quasi incidunt placeat magni qui totam porro nobis
+                                                                    alias culpa. Sit nisi dolorum illum!
+                                                                    Voluptatum magnam dolorem minima impedit
+                                                                    perspiciatis obcaecati odit iusto maxime
+                                                                    dolorum, ut consequuntur cum quia minus alias sunt
+                                                                    libero corrupti quam quidem placeat
+                                                                    enim, aperiam, facere! Quae sit incidunt blanditiis
+                                                                    quisquam cum a illo, dolore ex
+                                                                    expedita fugit aliquam, id temporibus illum
+                                                                    excepturi omnis autem sequi. Aspernatur eos
+                                                                    numquam in laboriosam debitis sapiente consequuntur
+                                                                    facere, esse iste delectus, impedit
+                                                                    aliquid error! At dignissimos molestias accusantium
+                                                                    sequi perferendis quidem quas quia
+                                                                    nobis expedita? Reiciendis minima quaerat adipisci
+                                                                    architecto, dignissimos ut, dicta
+                                                                    nesciunt, quae a maxime aliquam consequuntur
+                                                                    aspernatur doloribus eveniet, quasi
+                                                                    reprehenderit!</p>
+                                                            </div>
+                                                            <div class="step-tab-panel" id="tab4">
+                                                                <h3>Tab4</h3>
+                                                                <form name="frmLogin" id="frmLogin">
+                                                                    Email address:<br>
+                                                                    <input type="text" name="txtEmail" required>
+                                                                    <br> Password:<br>
+                                                                    <input type="text" name="txtPassword" required>
+                                                                </form>
+                                                            </div>
+                                                            <div class="step-tab-panel" id="tab5">
+                                                                <h3>Tab5</h3>
+                                                                <form name="frmMobile" id="frmMobile">
+                                                                    Mobile No:<br>
+                                                                    <input type="text" name="txtMobileNum" required>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                        <div class="step-footer">
+                                                            <button data-direction="prev" class="step-btn">Previous
+                                                            </button>
+                                                            <button data-direction="next"
+                                                                    class="btn btn-danger pull-right">Continuer
+                                                            </button>
+                                                            <button data-direction="finish" class="step-btn">Terminé
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
                                             <!-- Panel 2 body-->
                                             <div class="col-lg-5">
@@ -218,42 +355,41 @@
 
                                                     <h6 class="mx-auto">Résumé de la commande</h6>
                                                     <hr/>
-                                                    <div class="row">
-                                                        <div class="col-8">3x Billet "Simple"</div>
-                                                        <div class="col">
-                                                            <span class="currency">Ar</span> 10.000
+                                                    <div id="data_cart">
+                                                        <div class="row">
+                                                            <div class="col">Veuillez ajouter vos commandes</div>
                                                         </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-8">1x Billet "Reservation"</div>
-                                                        <div class="col">
-                                                            <span class="currency">Ar</span> 20.000
+                                                        <!--<div class="row">
+                                                            <div class="col-8">1x Billet "Reservation"</div>
+                                                            <div class="col">
+                                                                <span class="currency">Ar</span> 20.000
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-8">2x Billet "VIP"</div>
-                                                        <div class="col">
-                                                            <span class="currency">Ar</span> 100.000
-                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-8">2x Billet "VIP"</div>
+                                                            <div class="col">
+                                                                <span class="currency">Ar</span> 100.000
+                                                            </div>
+                                                        </div>-->
                                                     </div>
                                                     <hr/>
-                                                    <div class="row">
+                                                    <div class="row sub-total">
                                                         <div class="col-8">Sous-total</div>
-                                                        <div class="col">
-                                                            <span class="currency">Ar</span> 130.000
+                                                        <div class="col sub_total_value">
+                                                            <span class="currency">Ar</span> 0
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-8">Frais</div>
                                                         <div class="col">
-                                                            <span class="currency">Ar</span> 10000
+                                                            <span class="currency frais">Ar</span> 0
                                                         </div>
                                                     </div>
                                                     <hr/>
-                                                    <div class="row">
+                                                    <div class="row total">
                                                         <div class="col-8"><h6>Total</h6></div>
-                                                        <div class="col">
-                                                            <span class="currency">Ar</span> 140.000
+                                                        <div class="col total_value">
+                                                            <span class="currency">Ar</span> 0
                                                         </div>
                                                     </div>
                                                 </div>
@@ -264,18 +400,241 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="modal fade" id="confirmCloseCheckout" role="dialog" data-backdrop="false">
+                            <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="close">Fermer la fenêtre</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row text-center">
+                                            <div class="col">Etes-vous sur de vouloir fermer la fenêtre, vos commandes seront annulées.</div>
+                                        </div>
+                                        <br>
+                                        <div class="row text-center">
+                                            <div class="col-12">
+                                                <button class="btn btn-danger confirmclosed">Oui</button>
+                                                <button class="btn btn-primary" data-dismiss="modal">Non</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
     {% endblock %}
     {% block javascripts %}
         {{ parent() }}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery-steps.js') }}"></script>
+        <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency=EUR"></script>
+        <script type="text/javascript">
+            let cart_items =[];
+            function start_counter(){
+                let start_counter = 8*60;//8 * 60;
+                let checkout_timer = setInterval(function () {
+                    --start_counter;
+                    $('.time_left').text(format(start_counter));
+                    if (start_counter === 0) {
+                        clearInterval(checkout_timer);
+                        $.get('/res_billet/clear');
+                        $('#checkout_command').modal('hide');
+                    }
+                }, 1000);
+            }
+            function format(time) {
+                // Hours, minutes and seconds
+                var hrs = ~~(time / 3600);
+                var mins = ~~((time % 3600) / 60);
+                var secs = ~~time % 60;
 
+                // Output like "1:01" or "4:03:59" or "123:03:59"
+                var ret = "";
+                if (hrs > 0) {
+                    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+                }
+                ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+                ret += "" + secs;
+                return ret;
+            }
+
+            function transformItemsPaypalFormat(cart_items) {
+                let formatted_cart = [];
+                cart_items.forEach(function (el) {
+                    let item = {
+                        name: el.name,
+                        quantity: el.quantity,
+                        currency: "EUR",
+                        unit_amount: {
+                            value: el.price,
+                            currency_code: "EUR"
+                        }
+                    };
+                    formatted_cart.push(item);
+                });
+                return formatted_cart;
+            }
+            paypal.Buttons({
+                style: {
+                    layout: 'horizontal'
+                },
+                createOrder: function (data, actions) {
+                    // Set up the transaction
+                    return actions.order.create({
+                        purchase_units: [{
+                            application_context: {
+                                brand_name: 'Ivenco',
+                                return_url: '/res_billet/checkout',
+                                cancel_url: '/res_billet/cancel'
+                            },
+                            amount: {
+                                breakdown: {
+                                    item_total: {
+                                        currency_code: "EUR",
+                                        value: "{{ not app.session.get('totalPrice') ? "0" : app.session.get('totalPrice') }}"
+                                    }
+                                },
+                                currency_code: "EUR",
+                                value: "{{ not app.session.get('totalPrice') ? "0" : app.session.get('totalPrice') }}"
+                            },
+                            items:
+                                transformItemsPaypalFormat(cart_items)
+                        }],
+
+                    });
+                },
+                onApprove: function (data, actions) {
+                    // Capture the funds from the transaction
+                    return actions.order.capture().then(function (details) {
+                        // Show a success message to your buyer
+                        console.log('Transaction completed by ' + details.payer.name.given_name);
+                        location.href = "/res_billet/checkout";
+                    });
+                }
+            }).render('#btnPaypal');
+            //-------------------------------modal management
+            $('.closeConfirm').click(function () { //Close Button on Form Modal to trigger Warning Modal
+                $('#confirmCloseCheckout').modal('show').on('shown.bs.modal', function () { //Show Warning Modal and use `show` event listener
+                    $('.confirmclosed').click(function () { //Warning Modal Confirm Close Button
+                        $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
+                        $('#checkout_command').modal('hide'); //Hide Form Modal
+                        $.get('/res_billet/clear');
+                    });
+                });
+            });
+
+            //--------------------------------steps management
+            var form_select_item = $('#form_select_items');
+            let rules = {}, messages = {};
+
+            $('#form_select_items select').each(function (i, val) {
+                rules[val.getAttribute('name')] = {require_from_group: [1, ".fillOne"]};
+                messages[val.getAttribute('name')] = {require_from_group: "Veuiller choisir au moins 1 billet pour continuer"}
+            });
+            let form_select_item_validator = form_select_item.validate({
+                rules: rules,
+                messages: messages,
+                submitHandler: function (form) {
+                    alert('valid form.');
+                    return false;
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parents('.parent_item').find('.message_errors').find('.error'));
+                }
+            });
+
+
+            var frmInfo = $('#frmInfo');
+            var frmInfoValidator = frmInfo.validate();
+
+            var frmLogin = $('#frmLogin');
+            var frmLoginValidator = frmLogin.validate();
+
+            var frmMobile = $('#frmMobile');
+            var frmMobileValidator = frmMobile.validate();
+            $(".step-steps").hide();
+            $('#checkout_steps').steps({
+                onChange: function (currentIndex, newIndex, stepDirection) {
+                    if (currentIndex === 0) {
+                        if (stepDirection === 'forward') {
+                            let data = form_select_item.serializeArray();
+                            $('#data_cart').empty();
+                            $.each(data, function (i, field) {
+                                if (field.value !== "") {
+                                    let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
+                                    let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
+                                    let item_price = $("<div class='col'>Ar </div>").append(parsed[1] * parsed[2]);
+                                    let item_container = $("<div class='row'></div>").append(item_label, item_price);
+                                    $('#data_cart').append(item_container);
+                                    $.post('/res_billet/add/', {
+                                        event_id: {{ event.id }},
+                                        select_nb_billets: parsed[2],
+                                        type_billet: parsed[0],
+                                        section_id: '-',
+                                        place_id: '-',
+                                        redirect: '/'
+                                    }, function (result) {
+                                        $.get("/api/cart/get_total", function (total) {
+                                            let item_label = $("<div class='col-8'></div>").append("<h6>Total</h6>");
+                                            let item_price = $("<div class='col total_value'>Ar </div>").append(total);
+                                            $(".total").empty();
+                                            $(".total").append(item_label, item_price);
+                                        });
+
+                                    });
+                                }
+
+                            });
+                            return form_select_item.valid();
+                        }
+                    }
+                    if (currentIndex === 1) {
+                        start_counter();
+                        $.get('/api/cart/list', function (data, status) {
+                            cart_items = data;
+                        });
+                        console.log(cart_items);
+                        if (stepDirection === 'forward') {
+                            return frmInfo.valid();
+                        }
+                        if (stepDirection === 'backward') {
+                            frmInfoValidator.resetForm();
+                        }
+                    }
+                    // step4
+                    if (currentIndex === 3) {
+                        if (stepDirection === 'forward') {
+                            return frmLogin.valid();
+                        }
+                        if (stepDirection === 'backward') {
+                            frmLoginValidator.resetForm();
+                        }
+                    }
+                    // step5
+                    if (currentIndex === 4) {
+                        if (stepDirection === 'forward') {
+                            return frmMobile.valid();
+                        }
+                        if (stepDirection === 'backward') {
+                            frmMobileValidator.resetForm();
+                        }
+                    }
+                    return true;
+                },
+                showBackButton: true,
+                onFinish: function () {
+                    alert('Wizard Completed');
+                }
+            });
+        </script>
         <script>
             var deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
             var x = setInterval(function () {
-
                 var now = new Date().getTime();
                 var t = deadline - now;
                 var days = Math.floor(t / (1000 * 60 * 60 * 24));
@@ -295,6 +654,10 @@
                     document.getElementById("second").innerHTML = '0';
                 }
             }, 1000);
+
+            function updateResumeCheckout() {
+                let array = [{}];
+            }
         </script>
     {% endblock %}
 {% endblock %}

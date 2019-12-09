@@ -107,5 +107,24 @@ class BilletController extends AbstractFOSRestController
         return $billet;
 
     }
+    /**
+     * SELECT * FROM `billet` b
+    JOIN typebillet tb ON tb.id=b.id_billet
+    JOIN evenement evt ON tb.id_evenement=evt.id
+    WHERE tb.id=95 and b.est_vendu = 0 ORDER BY b.id ASC LIMIT 15
+     *
+     */
+    public function getBilletsRestants($event, $typeBillet, $nbr){
+        $list=$this->getDoctrine()->getRepository(Billet::class)->getLeftTicketsByType();
+
+    }
+
+
+    public function countBilletsRestantsByType(){
+
+    }
+
+
+
 
 }

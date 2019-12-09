@@ -13,19 +13,21 @@ use Doctrine\ORM\EntityRepository;
  */
 class EvenementRepository extends EntityRepository
 {
-    public function search($titre=null,$lieu=null,$date=null)
+    public function search($titre=null,$lieu=null,$date=null,$cat=null)
     {
         return $this->getEntityManager()
             ->createQuery('SELECT e.id,e.titreEvenementSlug, e.titreEvenement, e.imageEvent, e.dateDebutEvent, e.dateFinEvent, lieu.nomSalle FROM AppBundle:Evenement e
-            LEFT JOIN AppBundle:LieuEvenement lieu WITH e.lieuEvenement=lieu.id
+            LEFT JOIN AppBundle:LieuEvenement lieu WITH e.lieuEvenement=lieu.id JOIN AppBundle:CategorieEvenement cat WITH e.categorieEvenement=cat.id
            WHERE 
            e.titreEvenement LIKE :titre AND 
            lieu.nomSalle LIKE :lieu AND 
            e.dateDebutEvent LIKE :date AND
+           cat.libelle LIKE :cat AND
             e.isPublished = 1')
             ->setParameter('titre', '%'.$titre.'%')
             ->setParameter('lieu', '%'.$lieu.'%')
             ->setParameter('date', '%'.$date.'%')
+            ->setParameter('cat','%'.$cat.'%')
             ->getResult();
     }
     public function getAllEvents()

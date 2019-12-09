@@ -18,6 +18,9 @@ use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\Controller\DataTablesTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
+use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class HomeController extends Controller
 {
@@ -35,9 +38,11 @@ class HomeController extends Controller
             $titre=$request->request->get('titre');
         if($date=$request->request->has('date'))
             $date=$request->request->get('date');
+        if($cat=$request->request->has('cat'))
+            $cat=$request->request->get('cat');
         $eventsList = $this->getDoctrine()
             ->getRepository(Evenement::class)
-            ->search($titre,$lieu,$date);
+            ->search($titre,$lieu,$date,$cat);
         $categoryList= $this->getDoctrine()
             ->getRepository(CategorieEvenement::class)
             ->searchUsedCategories();

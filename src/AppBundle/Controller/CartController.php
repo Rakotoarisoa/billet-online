@@ -120,7 +120,7 @@ class CartController extends Controller
             throw new \Exception('Erreur lors de l\'ajout au panier');
         }
         //Récupérer les billets à vendre
-        $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event_id);
+        $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event_id);//get Event entity
         $type_billet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $type_billet, 'evenement' => $event]);
         $result = $this->getDoctrine()->getRepository(Billet::class)->getTicketsToBuy($event_id, $nbr_billets, $type_billet);
         $section_id='-';
@@ -178,7 +178,6 @@ class CartController extends Controller
         $discount = $this->cart->getAppliedDiscount();
         $em = $this->getDoctrine()->getManager();
         $repo = $this->getDoctrine()->getRepository(Billet::class);
-        //$firstUser = $em->getRepository(User::class)->findOneBy([]); // current user id needs to be set after sign up
         try {
             $reservation = new Reservation();
             $reservation->setNomReservation('commande-'.date('d F Y'));
@@ -193,8 +192,9 @@ class CartController extends Controller
             }
             $this->sendEmailToBuyer();
             $this->addFlash('success', 'Validation de la reservation complétée. Vous serez notifié par e-mail avec votre commande');
-            $this->cart->clear();
-            return $this->redirectToRoute('viewList');
+            //$this->cart->clear();
+            return new Response('ok', Response::HTTP_OK);
+            //return $this->redirectToRoute('viewList');
         } catch (\Exception $exception) {
             $this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
             return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -218,7 +218,7 @@ class CartController extends Controller
     {
         try {
             $mailer = $this->get('mailer');
-            $html = '<html><body>';
+            $html = '';
             $bGen=$this->get('skies_barcode.generator');
             $domOptions=new Options();
             $domOptions->set('isRemoteEnabled', TRUE);
@@ -236,9 +236,9 @@ class CartController extends Controller
                 );
                 $barcode = $bGen->generate($options);
                 $qr_code = "data:image/png;base64,' . $barcode";
-                $html .= $this->renderView('emails/attachments/attachment.html.twig', ['event' => $item->getEvenement(),'qr' => $qr_code]);
+                $html .= $this->renderView('emails/attachments/attachment_email.html.twig', ['event' => $item->getEvenement(),'qr' => $qr_code]);
             }
-            $html.='</body></html>';
+            $html.='';
             $domPdf->loadHtml($html);
             $domPdf->render();
             $attachment = new \Swift_Attachment($domPdf->output(), 'commande-'.date('d-m-Y').'.pdf', 'application/pdf');
@@ -248,7 +248,7 @@ class CartController extends Controller
                 ->setTo('andry163.nexthope@gmail.com')
                 ->setBody(
                     $this->renderView(// app/Resources/views/Emails/registration.html.twig
-                        'emails/template_clients/body.html.twig'
+                        'emails/template_clients/template_email.html.twig'
                     ),
                     'text/html'
                 )

@@ -87,7 +87,33 @@ class CartController extends AbstractFOSRestController
         }
         return View::create("Panier vidé",Response::HTTP_OK);
     }
-
+    /**
+     * Takes the user to the cart list
+     * @Rest\View
+     * @Rest\Post("/api/cart/insert_items", name="cart_insert_multiple")
+     * @return View|object|null
+     */
+    public function insertItems(array $items){
+        $this->cart->addItems($items);
+    }
+    /**
+     * Takes the user to the cart list
+     * @Rest\View
+     * @Rest\Post("/api/cart/insert_item", name="cart_insert_one")
+     * @return View|object|null
+     */
+    public function insertItem($item){
+        $this->cart->addItem($item);
+    }
+    /**
+     * Takes the user to the cart list
+     * @Rest\View
+     * @Rest\Get("/api/cart/get_total", name="cart_getTotal")
+     * @return View|object|null
+     */
+    public function getTotal(){
+        return $this->cart->getTotalPrice();
+    }
     /**
      * @Rest\Get("/api/cart/{id}")
      * @param $id

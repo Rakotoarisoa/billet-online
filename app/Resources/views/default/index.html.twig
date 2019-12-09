@@ -41,13 +41,13 @@
         <section class="events-area section-padding-0-100">
             <div class="container-fluid top-filters  browse-by-catagories row p-2 bg bg-white" style="z-index: 999 !important;">
                 <div class="col-sm-11">
-                    <ul class="nav">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">Toutes les catégories</a>
+                    <ul class="nav nav-list">
+                        <li class="nav-item ">
+                            <a class="nav-link {{ app.request.get('cat')?'':'active' }}" href="/">Toutes les catégories</a>
                         </li>
                         {% for cat in catList %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#">{{ cat.libelle }}</a>
+                                <a class="nav-link {{ (app.request.get('cat')== cat.libelle)?'active':'' }}" href="#" data-label="{{ cat.libelle }}">{{ cat.libelle }}</a>
                             </li>
                         {% endfor %}
                     </ul>
@@ -59,9 +59,9 @@
                             Filtrer
                         </button>
                         <div class="dropdown-menu">
-                            <div class="dropdown-item">
+                            <div class="card-body">
                                 <!-- Dropdown menu links -->
-                                <form action="/" method="post">
+                                <form action="/" method="post" class="filter_form">
                                     <ul class="nav flex-column">
                                         <li class="nav-item">
                                             <div class="form-group">
@@ -81,9 +81,10 @@
                                             <div class="form-group">
                                                 <input type="date" class="form-control" id="date" placeholder="Date"
                                                        name="date"
-                                                       value="{{  "now"|date('YYYY-MM-DD') }}">
+                                                       value="{{  "now"|date('Y-M-D') }}">
                                             </div>
                                         </li>
+                                        <input name="cat" class="cat_field" type="hidden" value="{{ app.request.get('cat') }}">
                                         <li class="nav-item">
                                             <button class="btn oneMusic-btn mt-0" type="submit">Recherche<i
                                                         class="fa fa-search"></i></button>
@@ -152,7 +153,23 @@
     {% endblock %}
     <!-- ##### Events Area End ##### -->
     {% block javascripts %}
-        {{ parent() }} {% endblock %}
+        {{ parent() }}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('.nav-link').click(function() {
+                    console.log($(this).attr('data-label'));
+                    $(".filter_form")[0].reset();
+                    $(".filter_form input").attr('value','');
+                    $(".cat_field").attr('value',$(this).attr('data-label'));
+                    console.log($('.filter_form'));
+                    $(".filter_form").submit();
+                });
+                $('.filter_form button').click(function(){
+                    $(".cat_field").attr("value",null);
+                });
+            });
+        </script>
+    {% endblock %}
     {% block contact %}{% endblock %}
 {% endblock %}
 
