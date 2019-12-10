@@ -1,37 +1,71 @@
 {% trans_default_domain 'messages' %}
 {% extends 'base.html.twig' %}
+{% macro printBilletItemRow(typeBilletForm,i) %}
+    <div class="js-type-item">
+        <div class="row mb-1 align-items-end">
+            <div class="col-sm-4">
+                {{ form_label(typeBilletForm.libelle) }}
+                {{ form_widget(typeBilletForm.libelle) }}
+                <small>{{ form_errors(typeBilletForm.libelle) }}</small>
+            </div>
+            <div class="col-sm-3">
+                {{ form_label(typeBilletForm.prix) }}
+                {{ form_widget(typeBilletForm.prix) }}
+                <small>{{ form_errors(typeBilletForm.prix) }}</small>
+            </div>
+            <div class="col-sm-2">
+                {{ form_label(typeBilletForm.quantite) }}
+                {{ form_widget(typeBilletForm.quantite) }}
+                <small>{{ form_errors(typeBilletForm.quantite) }}</small>
+            </div>
+            <div class="col-sm-1">
+                <span class="fa fa-cog fa-2x" title="Options avancées" data-toggle="collapse" href="#billet_{{ i }}"
+                      role="button" aria-expanded="false" aria-controls="billet_{{ i }}">
+                </span>
+                <span class="js-remove-type fa fa-minus-circle fa-2x clonable-button-close">
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="collapse" id="billet_{{ i }}">
+                    <div class="row">
+                        <div class="col">
+                            <span class="text-muted"> {{ form_label(typeBilletForm.dateDebut) }}</span>
+                            {{ form_widget(typeBilletForm.dateDebut) }}
+                        </div>
+                        <div class="col">
+                            <span class="text-muted"> {{ form_label(typeBilletForm.dateFin) }}</span>
+                            {{ form_widget(typeBilletForm.dateFin) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <span class="text-muted">{{ form_label(typeBilletForm.description) }}</span>
+                            {{ form_widget(typeBilletForm.description) }}
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col">
+                            <span class="text-muted">{{ form_label(typeBilletForm.active) }}</span>
+                            {{ form_widget(typeBilletForm.active) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+{% import _self as formMacros %}
 {% block title %}
-    Création d'évènement | {{ app.user.username }}
+    {{ title }} | {{ app.user.username }}
 {% endblock %}
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
-    <!--<link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}"/>
-    <link type="text/css" rel="stylesheet" href="{{ asset('css/croppie.css') }}"/>-->
-    <style type="text/css">
-        .upload-msg {
-            text-align: center;
-            padding: 50px;
-            font-size: 22px;
-            color: #aaa;
-            width: 400px;
-            height: 400px;
-            margin: 50px auto;
-            border: 1px solid #aaa;
-        }
-
-        #upload-demo {
-            text-align: center;
-            padding: 0;
-            font-size: 22px;
-            color: #aaa;
-            width: 400px;
-            height: 400px;
-            margin: 50px auto;
-            border: 1px solid #aaa;
-        }
-    </style>
+    <!--<link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}"/>-->
 {% endblock %}
 {% block breadcrumb %}
 {% endblock %}
@@ -54,6 +88,7 @@
                                             <li>
                                                 <small class="text text-muted">{{ event.dateDebutEvent|date('d M Y') }}</small>
                                             </li>
+
                                         </ul>
                                     </div>
                                 </div>
@@ -71,7 +106,6 @@
                     <div class="tab-content">
                         <div id="info_event" class="container tab-pane fade section-padding-0-100 active"><br>
                             {{ form_start(form, {'method': 'post', 'action':  path('createEvent',{'userId':app.user.id}), 'attr': {'class': 'form'}}) }}
-
                             {% if flow.getCurrentStepNumber() == 1 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
@@ -106,6 +140,10 @@
                                     <label class="">{{ form_label(form.organisation) }}</label>
                                     {{ form_widget(form.organisation) }}
                                 </div>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <label class="">{{ form_label(form.devise) }}</label>
+                                    {{ form_widget(form.devise) }}
+                                </div>
                                 <br/>
                                 <hr/><br/>
                                 <h4>Date et heure <span class="fa fa-calendar"></span></h4>
@@ -123,68 +161,20 @@
                                 <hr/><br/>
                                 <h4>Billets <span class="fa fa-ticket"></span></h4>
                                 <p>Définissez des billets pour votre évènement</p>
-                                <form>
-                                    <div class="clonable-block" data-toggle="cloner">
-                                        <div class="clonable">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <label for="attr_1" class="clonable-increment-for">Type de
-                                                        billet n° <span class="clonable-increment-html">1</span></label>
-                                                </div>
-                                            </div>
-                                            <div class="row mb-1 align-items-center" data-ss="1">
-                                                <div class="col-sm-4">
-                                                    <input type="text" class="form-control" placeholder="Nom du billet">
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    <input type="text" class="form-control"
-                                                           placeholder="Prix du billet">
-                                                </div>
-                                                <div class="col-sm-2">
-                                                    <input type="number" class="form-control" placeholder="Quantité">
-                                                </div>
-                                                <div class="col-sm-1">
-                                                        <span class="fa fa-cog fa-2x"
-                                                              title="Options avancées"
-                                                              data-toggle="collapse"
-                                                              href="#billet_1" role="button" aria-expanded="false"
-                                                              aria-controls="billet_1">
-                                                        </span>
-                                                </div>
-                                                <div class="col-sm-1">
-                                                    <span class="fa fa-minus-circle fa-2x clonable-button-close">
-                                                    </span>
-
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="collapse" id="billet_1">
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                 de début de publication
-                                                            </div>
-                                                            <div class="col">
-                                                                Date de fin de publication
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col">Desc</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <br/>
-                                        <div class="row" data-ss="1">
-                                            <div class="col-sm-1">
-                                            <span class="fa fa-plus-circle fa-2x clonable-button-add">
-                                                </span>
-                                            </div>
-
-                                        </div>
+                                <div class="ken-block">
+                                    <div class="js-type-wrapper"
+                                         data-prototype="{{ formMacros.printBilletItemRow(form.typeBillets.vars.prototype)|e('html_attr') }}"
+                                         data-index="{{ form.typeBillets|length }}">
+                                        {% set i=1 %}
+                                        {% for typeBilletForm in form.typeBillets %}
+                                            {{ formMacros.printBilletItemRow(typeBilletForm,i) }}
+                                            {% set i=i+1 %}
+                                        {% endfor %}
+                                        <span class="text-center fa fa-plus-circle fa-2x js-add-type">
+                                        </span>
                                     </div>
-                                </form>
+                                    {{ form_widget(form.typeBillets) }}
+                                </div>
 
                             {% endif %}
 
@@ -224,13 +214,7 @@
                                 </div>
                                 <div class="row align-items-center">
                                     <div class="col-5 my-1">
-                                        <select id="appbundle_event_templateSeatmap"
-                                                name="appbundle_event[templateSeatMap]"
-                                                class="custom-select mr-sm-2 col-sm-8 form-control">
-                                            <option selected value="no_template">Démarrer sans plan de salle</option>
-                                            <option selected value="template_antsahamanitra">Antsahamanitra</option>
-                                            <option value="template_palais">Palais des sports Mahamasina</option>
-                                        </select>
+                                        {{ form_widget(form.templateSeatMap) }}
                                     </div>
                                     <div class="col-7 my-1">
                                         <img id="template_antsahamanitra"
@@ -307,9 +291,29 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/fr.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-        <script src="{{ asset('js/jquery.cloner.min.js') }}"></script>
         <script type="text/javascript">
             $(document).ready(function () {
+                let $wrapper = $('.js-type-wrapper');
+                $wrapper.on('click', '.js-remove-type', function (e) {
+                    e.preventDefault();
+                    $(this).parents('.js-type-item')
+                        .fadeOut()
+                        .remove();
+                });
+                $wrapper.on('click', '.js-add-type', function (e) {
+                    e.preventDefault();
+                    // Get the data-prototype explained earlier
+                    let prototype = $wrapper.data('prototype');
+                    // get the new index
+                    let index = $wrapper.data('index');
+                    // Replace '__name__' in the prototype's HTML to
+                    // instead be a number based on how many items we have
+                    let newForm = prototype.replace(/__name__/g, index);
+                    // increase the index with one for the next item
+                    $wrapper.data('index', index + 1);
+                    // Display the form in the page before the "new" link
+                    $(this).before(newForm);
+                });
                 $('.nav-tabs a[href="#info_event"]').tab('show');
                 {% if flow.currentStepNumber == 1 %}
                 $('#appbundle_event_titreEvenement').on('input', function (e) {
@@ -317,7 +321,7 @@
                     document.getElementById("word-count").innerHTML = this.value.length + "/" + maxLength;
                 });
                 $('.dateDebut').datetimepicker({
-                    format: 'DD-MM-YYYY H:m',
+                    format: 'DD-MM-YYYY HH:mm',
                     defaultDate: new Date(),
                     sideBySide: true,
                     showTodayButton: true,
@@ -338,7 +342,7 @@
                     }
                 });
                 $('.dateFin').datetimepicker({
-                        format: 'DD-MM-YYYY H:m',
+                        format: 'DD-MM-YYYY HH:mm',
                         sideBySide: true,
                         ignoreReadonly: true,
                         // Your Icons
@@ -366,22 +370,6 @@
             });
             $('#appbundle_event_templateSeatmap').on('change', function (e) {
                 $('#'.$(this).children("option:selected").val()).show();
-            });
-            $('#clonable-block').cloner({
-                clonableContainer: '.clonable-block',
-                clonable: '.clonable',
-                addButton: '.clonable-button-add',
-                closeButton: '.clonable-button-close',
-                focusableElement: ':input:visible:enabled:first',
-                clearValueOnClone: true,
-                removeNestedClonablesOnClone: true,
-                limitCloneNumbers: true,
-                debug: false,
-                cloneName: 'clonable-clone',
-                sourceName: 'clonable-source',
-                clonableCloneNumberDecrement: 'clonable-clone-number-decrement',
-                incrementName: 'clonable-increment',
-                decrementName: 'clonable-decrement',
             });
         </script>
     {% endblock %}

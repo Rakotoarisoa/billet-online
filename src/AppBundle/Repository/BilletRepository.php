@@ -59,22 +59,13 @@ class BilletRepository extends EntityRepository
     public function countPurchasedTickets(Evenement $event)
     {
 
-        $queryBillet = $this->getEntityManager()->createQuery('SELECT count(tb.id) as billets,GROUP_CONCAT(DISTINCT b.estVendu) as estVendu 
-            from AppBundle:Billet b
-            JOIN AppBundle:TypeBillet tb WITH b.typeBillet=tb.id
-            LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
-            WHERE evt.id= :idEvent
-            GROUP BY b.estVendu')
+        $queryBilletTotal = $this->getEntityManager()->createQuery('SELECT SUM(tb.quantite) as quantite FROM AppBundle:TypeBillet tb WHERE  tb.evenement=:idEvent and tb.active=1')
             ->setParameter('idEvent', $event->getId())
-            ->getScalarResult();
-        $result = array();
-        foreach ($queryBillet as $billet) {
-            if ($billet['estVendu'] == 1)
-                $result['vendus'] = $billet['billets'];
-            elseif ($billet['estVendu'] == 0) {
-                $result['restants'] = $billet['billets'];
-            }
-        }
+            ->getResult();
+        $queryBilletVendus = $this->getEntityManager()->createQuery('SELECT COUNT(b) as quantite FROM AppBundle:TypeBillet tb JOIN AppBundle:Billet b WITH b.typeBillet=tb.id WHERE  tb.evenement=:idEvent AND b.estVendu=1 AND tb.active=1')
+            ->setParameter('idEvent', $event->getId())
+            ->getResult();
+        $result = (int)$queryBilletTotal[0]["quantite"]-(int)$queryBilletVendus[0]["quantite"];
         return $result;
     }
 

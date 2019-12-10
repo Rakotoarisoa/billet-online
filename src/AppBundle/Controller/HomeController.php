@@ -61,8 +61,9 @@ class HomeController extends Controller
     {
         $repo = $this->getDoctrine()->getRepository(Billet::class);
         $queryTicketsState=$repo->countPurchasedTickets($event);
+        var_dump($queryTicketsState);
         $this->getDoctrine()->getRepository(Evenement::class)->initMapEvent($event);
-        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketState'=> $queryTicketsState));
+        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState));
     }
     /**
      * Page création map

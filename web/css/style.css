@@ -1,5 +1,5 @@
 /* [Master Stylesheet - v1.0] */
-/* :: 1.0 Import Fonts */
+/* :: 1.0 Import Fonts
 @import url(eds.css);
 /*@import url("https://fonts.googleapis.com/css?family=Archivo+Narrow:400,400i,500,500i,600,600i,700,700i");*/
 /* :: 2.0 Import All CSS */
@@ -1755,7 +1755,7 @@ div.date-single-event{
   padding-left: 25px;    
   font-size: 13px;
 }
-.day{
+.day_{
   font-weight: 200; 
   display: block; 
   color: #1e1e1f;
@@ -1764,7 +1764,7 @@ div.date-single-event{
   text-align: center;    
   font-size: 40px;
 }
-.month{
+.month_{
   font-family: arial; 
   font-weight: bold;   
   font-size: 14px;  
@@ -1775,7 +1775,7 @@ div.date-single-event{
   font-weight: bold;
   text-align: center;
 }
-.year{
+.year_{
   font-family: arial;
   font-size: 14px;
   letter-spacing: 2px;

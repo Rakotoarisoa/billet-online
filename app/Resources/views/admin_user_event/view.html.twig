@@ -93,8 +93,8 @@
                     {% for event in events %}
                     <tr>
                         <td>
-                            <p class="day">{{ event.dateDebutEvent|date("d") }}</p>                                               
-                            <p class="month">{{ event.dateDebutEvent.date|date('M') }} -{{ event.dateDebutEvent.date|date('Y') }} </p>                       
+                            <p class="day_">{{ event.dateDebutEvent|date("d") }}</p>
+                            <p class="month_">{{ event.dateDebutEvent.date|date('M') }} -{{ event.dateDebutEvent.date|date('Y') }} </p>
                         </td>
                         <td>
                             {% if event.imageEvent %}

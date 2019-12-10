@@ -67,11 +67,6 @@ class EventController extends Controller
                 try {
                     // flow finished
                     $em = $this->getDoctrine()->getManager();
-                    if( null != $event->getImageEvent())
-                    {
-                        $uploaded_image=new ImageEventUploader($event->getImageEvent(),$this->container);
-                        $event->setImageEvent($uploaded_image->upload());
-                    }
                     $event->setUser($user);
                     $slugger = new Slugger();
                     $event->setTitreEvenementSlug($slugger->slugify($event->getTitreEvenement()));
@@ -86,7 +81,7 @@ class EventController extends Controller
                     }
             }
         }
-        return $this->render('event_admin/event/event-register.html.twig', array('form' => $form->createView(), 'flow' => $flow, 'user' => $user, 'event' => $event));
+        return $this->render('event_admin/event/event-register.html.twig', array('form' => $form->createView(), 'title' => 'Création d\'évènement','flow' => $flow, 'user' => $user, 'event' => $event));
     }
 
     /**
@@ -195,7 +190,8 @@ class EventController extends Controller
                 }
             }
         }
-        return $this->render('event_admin/event/event-update.html.twig', array(
+        return $this->render('event_admin/event/event-register.html.twig', array(
+            'title' => 'Edition de l\'évènement '.$event->getTitreEvenement(),
             'event' => $event,
             'flow' => $flow,
             'form' => $form->createView()

@@ -35,6 +35,27 @@ class Devise
      */
     private $libelle;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Evenement", mappedBy="devise")
+     */
+    private $evenement;
+
+    /**
+     * @return mixed
+     */
+    public function getEvenement()
+    {
+        return $this->evenement;
+    }
+
+    /**
+     * @param mixed $evenement
+     */
+    public function setEvenement($evenement): void
+    {
+        $this->evenement = $evenement;
+    }
+
 
     /**
      * Get id.

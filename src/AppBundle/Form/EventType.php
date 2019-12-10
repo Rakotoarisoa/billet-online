@@ -3,8 +3,10 @@
 
 namespace AppBundle\Form;
 
+use AppBundle\Form\TypeBilletType;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -32,6 +34,29 @@ class EventType extends AbstractType
                             'groups' => 'flow_registration_step1'
                         )),
                         'required' => true,
+                    ))
+                    ->add('typeBillets', CollectionType::class, [
+                        'entry_type' => TypeBilletType::class,
+                        'allow_add' => true,
+                        'allow_delete' => true,
+                        'by_reference' => false,
+                        /*'constraints' => new NotBlank(
+                            array(
+                                'groups' => 'flow_registration_step1'
+                            )
+                        )*/
+                    ])
+                    ->add('devise',EntityType::class ,array(
+                        'label' => 'Sélectionner la devise',
+                        'class' => 'AppBundle\Entity\Devise',
+                        'placeholder' => 'Sélectionnez la devise à utiliser',
+                        'choice_label' => 'libelle',
+                        'constraints' => new NotBlank(
+                            array(
+                                'groups' => 'flow_registration_step1'
+                            )
+                        ),
+                        'required' => true
                     ))
                     ->add('dateDebutEvent', DateTimeType::class, array(
                         'required' => true,
@@ -120,6 +145,23 @@ class EventType extends AbstractType
                         ]
 
                     )
+                    ->add('templateSeatMap', ChoiceType::class, [
+                            'choices' => [
+                                'Antsahamanitra' => 'antsahamanitra',
+                                'Palais des sports' => 'palais',
+                            ],
+                            'expanded' => false,
+                            'multiple' => false,
+                            'label' => 'Utiliser comme modèle',
+                            'empty_data' => true,
+                            'attr' => [
+                                'class' => 'custom-select mr-sm-2 col-sm-2'
+                            ],
+                            'mapped' => false
+                        ]
+
+                    )
+
                     ->add('isPublished', ChoiceType::class, [
                             'choices' => [
                                 'Oui' => true,

@@ -4,10 +4,16 @@
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity
  * @ORM\Table(name = "typebillet")
  * @Serializer\ExclusionPolicy("none")
+ * @UniqueEntity(
+ *     fields={"evenement", "libelle"},
+ *      message="Le billet existe déjà"
+ *     )
+ *
  */
 class TypeBillet
 {
@@ -30,7 +36,7 @@ class TypeBillet
     private $libelle;
     /**
      * @ORM\ManyToOne(targetEntity="Evenement",inversedBy="typeBillets")
-     * @ORM\JoinColumn(name="id_evenement", referencedColumnName="id")
+     * @ORM\JoinColumn(name="id_evenement", referencedColumnName="id",nullable=false)
      */
     private $evenement;
     /**
@@ -78,7 +84,7 @@ class TypeBillet
         $this->billets = $billets;
     }
     /**
-     * @ORM\OneToMany(targetEntity="Billet", mappedBy="typeBillet")
+     * @ORM\OneToMany(targetEntity="Billet", mappedBy="typeBillet",cascade={"remove"})
      * @Serializer\Exclude
      */
     private $billets;
@@ -101,7 +107,7 @@ class TypeBillet
         $this->prix = $prix;
     }
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text",nullable=true)
      */
     private $description;
     /**

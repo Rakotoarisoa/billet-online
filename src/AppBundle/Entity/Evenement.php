@@ -5,6 +5,8 @@ namespace AppBundle\Entity;
 use AppBundle\Utils\Slugger;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Doctrine\Common\Collections\ArrayCollection;
+use AppBundle\Entity\TypeBillet;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\EvenementRepository")
@@ -71,6 +73,27 @@ class Evenement
      */
     private $isUsingSeatMap;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Devise", inversedBy="evenement")
+     * @ORM\JoinColumn(name="id_devise", referencedColumnName="id")
+     */
+    private $devise;
+
+    /**
+     * @return mixed
+     */
+    public function getDevise()
+    {
+        return $this->devise;
+    }
+
+    /**
+     * @param mixed $devise
+     */
+    public function setDevise($devise): void
+    {
+        $this->devise = $devise;
+    }
     /**
      * @return mixed
      */
@@ -156,13 +179,13 @@ class Evenement
      */
     private $reservation;
     /**
-     * @ORM\OneToMany(targetEntity="TypeBillet", mappedBy="evenement")
+     * @ORM\OneToMany(targetEntity="TypeBillet", mappedBy="evenement",fetch="EXTRA_LAZY",orphanRemoval=true,cascade={"persist"})
      * @Serializer\Exclude
      */
     private $typeBillets;
 
     /**
-     * @return mixed
+     * @return ArrayCollection|TypeBillet[]
      */
     public function getTypeBillets()
     {
@@ -175,6 +198,25 @@ class Evenement
     public function setTypeBillets($typeBillets): void
     {
         $this->typeBillets = $typeBillets;
+    }
+
+    public function removeTypeBillet(TypeBillet $typeBillet)
+    {
+        if (!$this->typeBillets->contains($typeBillet)) {
+            return;
+        }
+        $this->typeBillets->removeElement($typeBillet);
+        $typeBillet->setEvenement(null);
+    }
+    public function addTypebillet(TypeBillet $typeBillet){
+        if($this->typeBillets == null){
+            $this->typeBillets=new ArrayCollection();
+        }
+        if ($this->typeBillets->contains($typeBillet)) {
+            return;
+        }
+        $typeBillet->setEvenement($this);
+        $this->typeBillets[] = $typeBillet;
     }
 
 
