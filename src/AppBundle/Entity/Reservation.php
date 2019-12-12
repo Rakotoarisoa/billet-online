@@ -2,7 +2,9 @@
 
 
 namespace AppBundle\Entity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use http\Exception\InvalidArgumentException;
 
 /**
  * @ORM\Entity
@@ -21,7 +23,18 @@ class Reservation
      * @ORM\Column(type="string", length=100)
      */
     private $nomReservation;
+    /**
+     * @ORM\Column(type="string",length=5,unique=true)
+     */
+    private $randomCodeCommande;
 
+    /**
+     * @return mixed
+     */
+    public function getRandomCodeCommande()
+    {
+        return $this->randomCodeCommande;
+    }
     /**
      * @ORM\Column(type="datetime")
      */
@@ -35,7 +48,7 @@ class Reservation
      */
     private $montant_total;
     /**
-     * @ORM\ManyToOne(targetEntity="Evenement", inversedBy="reservation")
+     * @ORM\ManyToOne(targetEntity="Evenement", inversedBy="reservation",cascade={"persist"})
      * @ORM\JoinColumn(name="id_reservation", referencedColumnName="id")
      */
     private $evenement;
@@ -43,6 +56,26 @@ class Reservation
      * @ORM\OneToMany(targetEntity="Billet", mappedBy="reservation")
      */
     private $billet;
+    /**
+     * * @ORM\ManyToOne(targetEntity="UserCheckout", inversedBy="reservations",cascade={"persist"})
+     */
+    private $user_checkout;
+
+    /**
+     * @return mixed
+     */
+    public function getUserCheckout()
+    {
+        return $this->user_checkout;
+    }
+
+    /**
+     * @param mixed $user_checkout
+     */
+    public function setUserCheckout($user_checkout): void
+    {
+        $this->user_checkout = $user_checkout;
+    }
 
     /**
      * @return mixed
@@ -61,25 +94,11 @@ class Reservation
     }
 
     /**
-     * @return mixed
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
-
-    /**
-     * @param mixed $place
-     */
-    public function setPlace($place)
-    {
-        $this->place = $place;
-    }
-    /**
      * Reservation constructor.
      */
     public function __construct()
     {
+        $this->randomCodeCommande=substr(str_shuffle("0123456789"), 0, 5);
         $this->dateReservation = new \Datetime();
     }
 
@@ -112,6 +131,10 @@ class Reservation
      */
     public function setNomReservation($nomReservation)
     {
+        if(!is_string($nomReservation) || strlen($nomReservation) == 0 )
+        {
+            throw new \InvalidArgumentException('Nom de Réservation invalide');
+        }
         $this->nomReservation = $nomReservation;
     }
 
@@ -144,6 +167,10 @@ class Reservation
      */
     public function setModePaiement($mode_paiement)
     {
+        if(!is_string($mode_paiement) || strlen($mode_paiement) == 0 )
+        {
+            throw new \InvalidArgumentException('Nom de Réservation invalide');
+        }
         $this->mode_paiement = $mode_paiement;
     }
 
@@ -160,6 +187,10 @@ class Reservation
      */
     public function setMontantTotal($montant_total)
     {
+        if(!settype($montant_total,"float") )
+        {
+            throw new \InvalidArgumentException('Nom de Réservation invalide');
+        }
         $this->montant_total = $montant_total;
     }
 
@@ -176,6 +207,11 @@ class Reservation
      */
     public function setEvenement($evenement)
     {
+        if(!$evenement instanceof Evenement)
+        {
+            throw new InvalidArgumentException('L\'objet n\'est pas du type Evenement' );
+        }
         $this->evenement = $evenement;
     }
+
 }

@@ -19,7 +19,8 @@ class Evenement
     public function __construct()
     {
         $slugger= new Slugger();
-            $this->setTitreEvenementSlug($slugger->slugify($this->getTitreEvenement()));
+        $this->titreEvenementSlug=$slugger->slugify($this->getTitreEvenement());
+        $this->randomCodeEvent=substr(str_shuffle("0123456789"), 0, 10);
     }
 
     /**
@@ -29,9 +30,22 @@ class Evenement
      */
     private $id;
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100, options={"fixed"=true})
      */
     private $titreEvenementSlug;
+    /**
+     * @ORM\Column(type="string", length=10,unique=true)
+     */
+    private $randomCodeEvent;
+
+    /**
+     * @return mixed
+     */
+    public function getRandomCodeEvent()
+    {
+        return $this->randomCodeEvent;
+    }
+
 
     /**
      * @return mixed
@@ -67,7 +81,7 @@ class Evenement
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isPublished;
+    private $isPublished = true;
     /**
      * @ORM\Column(type="boolean")
      */

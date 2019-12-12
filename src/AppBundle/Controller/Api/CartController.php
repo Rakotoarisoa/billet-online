@@ -43,7 +43,7 @@ class CartController extends AbstractFOSRestController
     /**
      * Takes the user to the cart list
      * @Rest\View
-     * @Rest\Get("/api/cart/list", name="cart_inde")
+     * @Rest\Get("/api/cart/list", name="cart_list")
      * @return View|object|null
      */
     public function showCartAction()
@@ -51,7 +51,7 @@ class CartController extends AbstractFOSRestController
         $cart = $this->cart->getItems();
         $this->session->set('quantity', count($this->cart->getItems()));
         if ($cart === null) {
-            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+            return new View("Aucun article", Response::HTTP_NOT_FOUND);
         }
         return View::create($cart,Response::HTTP_OK);
     }

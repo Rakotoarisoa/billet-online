@@ -32,8 +32,8 @@
                                                  alt="{{ event.titreEvenement }}"></a>
                                 <!-- Post Date -->
                                 <div class="post-date">
-                                    <span class="day">{{ event.dateDebutEvent|date('d') }}</span>
-                                    <span class="month">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,'MMM Y') }}</span>
+                                    <span class="day_">{{ event.dateDebutEvent|date('d') }}</span>
+                                    <span class="month_">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,'MMM Y') }}</span>
                                 </div>
                             </div>
                             <!-- Blog Content -->
@@ -170,7 +170,7 @@
                                                         <div class="step-content">
                                                             <div class="step-tab-panel" id="tab1">
                                                                 <div class="container-fluid">
-                                                                    <h6 class="mx-auto">Choisissez des articles</h6>
+                                                                    <h6 class="mx-auto">1.Choisissez des articles</h6>
                                                                     <hr/>
 
                                                                     <form name="form_select_items"
@@ -180,7 +180,7 @@
                                                                             {% for type in event.typeBillets %}
                                                                                 <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
                                                                                     <div class="row d-flex w-100 justify-content-between">
-                                                                                        <div class="col-4">
+                                                                                        <div class="col-6">
                                                                                             <h5 class="mb-1">{{ type.libelle }}</h5>
                                                                                         </div>
                                                                                         <div class="col">
@@ -190,13 +190,12 @@
                                                                                                     data-price="{{ type.prix }}"
                                                                                                     data-name="{{ type.libelle }}">
                                                                                                 <option selected></option>
-                                                                                                {% if type.billets|length > 0 %}
-                                                                                                    <option value="{{ type.libelle }}:{{ type.prix }}:1">
-                                                                                                        1
-                                                                                                    </option>
-                                                                                                    <option value="{{ type.libelle }}:{{ type.prix }}:2">
-                                                                                                        2
-                                                                                                    </option>
+                                                                                                {% if (type.quantite - type.billets|length) > 0 %}
+                                                                                                    {% for i in 1..min((type.quantite - type.billets|length),max_command_per_ticket) %}
+                                                                                                        <option value="{{ type.libelle }}:{{ type.prix }}:{{ i }}">
+                                                                                                            {{ i }}
+                                                                                                        </option>
+                                                                                                    {% endfor %}
                                                                                                 {% endif %}
                                                                                             </select>
                                                                                         </div>
@@ -208,7 +207,7 @@
                                                                                     </div>
                                                                                     <small>Ar {{ type.prix }}</small>
                                                                                     <br/>
-                                                                                    <small>{{ type.description }}</small>
+                                                                                    <small>{{ type.description|raw }}</small>
                                                                                 </div>
                                                                                 {% set i=i+1 %}
                                                                             {% endfor %}
@@ -229,51 +228,80 @@
                                                             <div class="step-tab-panel" id="tab2">
                                                                 <div class="container-fluid">
                                                                     <h6>Informations sur l'acheteur</h6>
-                                                                    <form>
+                                                                    {% set nom,prenom,email,adresse,country,zipCode='','','','','','' %}
+                                                                    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+                                                                        {% set nom,prenom,email,adresse,country,zipCode = app.user.nom,app.user.prenom,app.user.email,app.user.adresse,app.user.pays,app.user.codePostal %}
+                                                                    {% endif %}
+                                                                    <form id="frmInfo">
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-6">
-                                                                                <label for="inputEmail4">Nom</label>
+                                                                                <label for="inputEmail4">Nom <span
+                                                                                            class="text-danger">*</span></label>
                                                                                 <input type="nom" class="form-control"
-                                                                                       id="nom" placeholder="Nom">
+                                                                                       id="nom" placeholder="Nom"
+                                                                                       name="nom"
+                                                                                       value="{{ nom }}" required>
+                                                                                <span class="text text-danger input-error"></span>
+
                                                                             </div>
                                                                             <div class="form-group col-md-6">
-                                                                                <label for="inputPassword4">Prénom</label>
+                                                                                <label for="inputPassword4">Prénom <span
+                                                                                            class="text-danger">*</span></label>
                                                                                 <input type="prenom"
                                                                                        class="form-control" id="prenom"
-                                                                                       placeholder="Prénom">
+                                                                                       placeholder="Prénom"
+                                                                                       name="prenom"
+                                                                                       value="{{ prenom }}" required>
+                                                                                <span class="text text-danger input-error"></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-row">
+                                                                            <div class="form-group col-md-12">
+                                                                                <label for="inputEmail4">Email <span
+                                                                                            class="text-danger">*</span></label>
+                                                                                <input type="email" class="form-control"
+                                                                                       id="email"
+                                                                                       placeholder="Adresse e-mail"
+                                                                                       name="email" value="{{ email }}"
+                                                                                       required>
+                                                                                <span class="text text-danger input-error"></span>
                                                                             </div>
                                                                         </div>
                                                                         <div class="form-group">
                                                                             <label for="inputAddress">Adresse</label>
                                                                             <input type="text" class="form-control"
                                                                                    id="inputAddress"
-                                                                                   placeholder="Ivandry">
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label for="inputAddress2">Logement</label>
-                                                                            <input type="text" class="form-control"
-                                                                                   id="inputAddress2"
-                                                                                   placeholder="Logement">
+                                                                                   placeholder="Adresse" name="adresse"
+                                                                                   value="{{ adresse }}">
                                                                         </div>
                                                                         <div class="form-row">
                                                                             <div class="form-group col-md-5">
-                                                                                <label for="inputCity">Pays</label>
-                                                                                <input type="text" class="form-control"
-                                                                                       id="inputCity">
+                                                                                <label for="pays">Pays</label>
+                                                                                <select class="form-control"
+                                                                                        name="pays">
+                                                                                    <option>Votre pays..</option>
+                                                                                    {% for country_item in country %}
+                                                                                        <option value="{{ country_item.code }}">{{ country_item.libelle }}</option>
+                                                                                    {% endfor %}
+                                                                                </select>
                                                                             </div>
                                                                             <div class="form-group col-md-4">
-                                                                                <label for="inputState">Région</label>
-                                                                                <select id="inputState"
-                                                                                        class="form-control">
-                                                                                    <option selected>Choose...</option>
+                                                                                <label for="region">Région</label>
+                                                                                <select id="region"
+                                                                                        class="form-control"
+                                                                                        name="region">
+                                                                                    <option value="" selected>Votre
+                                                                                        région...
+                                                                                    </option>
                                                                                     <option>...</option>
                                                                                 </select>
                                                                             </div>
                                                                             <div class="form-group col-md-3">
-                                                                                <label for="inputZip">Code
+                                                                                <label for="code_zip">Code
                                                                                     postal</label>
                                                                                 <input type="text" class="form-control"
-                                                                                       id="inputZip">
+                                                                                       id="inputZip" name="code_zip"
+                                                                                       value="{{ zipCode }}">
                                                                             </div>
                                                                         </div>
                                                                         <hr/>
@@ -281,60 +309,58 @@
                                                                             <label for="inputAddress2"><h6>Méthode de
                                                                                     paiement</h6></label>
                                                                             <div class="row">
-                                                                                <div class="col-6"><span
-                                                                                            class="fa fa-credit-card fa-2x"></span>
+
+                                                                                <div class="col-6">
+                                                                                    <input type="radio"
+                                                                                           class="form-check-input"
+                                                                                           name="paymentMethod"
+                                                                                           disabled>
+                                                                                    <span class="fa fa-credit-card fa-2x"></span>
                                                                                     Carte bancaire
                                                                                 </div>
                                                                             </div>
                                                                             <hr/>
                                                                             <div class="row">
-                                                                                <div id="btnPaypal" class="col-6"></div>
+                                                                                <div class="col-6">
+                                                                                    <input type="radio"
+                                                                                           class="form-check-input"
+                                                                                           name="paymentMethod"
+                                                                                           value="Paypal" checked>
+                                                                                    <span class="fa fa-paypal fa-2x"></span>
+                                                                                    Paypal
+                                                                                </div>
                                                                             </div>
                                                                             <hr/>
                                                                             <div class="row">
-                                                                                <div class="col-6"><img
+                                                                                <div class="col-6">
+                                                                                    <input type="radio"
+                                                                                           class="form-check-input"
+                                                                                           name="paymentMethod"
+                                                                                           disabled>
+                                                                                    <img
                                                                                             src="{{ asset('img/logo-mvola.png.png') }}"
                                                                                             width="100" height="30"/>
                                                                                 </div>
                                                                             </div>
+                                                                            <input type="hidden" name="_token"
+                                                                                   value="{{ csrf_token('checkout_info') }}"/>
                                                                             <hr/>
-                                                                            <button type="button"
-                                                                                    class="btn btn-danger pull-right">
-                                                                                Valider
-                                                                            </button>
                                                                         </div>
                                                                     </form>
                                                                 </div>
+
                                                             </div>
                                                             <div class="step-tab-panel" id="tab3">
-                                                                <h3>Tab3</h3>
-                                                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing
-                                                                    elit. Magni dicta nulla veritatis
-                                                                    totam vel blanditiis, cumque minima harum reiciendis
-                                                                    officia, accusamus ipsum esse nam
-                                                                    itaque consequuntur eum! Nesciunt maiores
-                                                                    dignissimos repellendus cumque, ea nemo
-                                                                    perspiciatis dolor accusantium, enim modi veniam
-                                                                    deleniti omnis unde, ad temporibus
-                                                                    quasi incidunt placeat magni qui totam porro nobis
-                                                                    alias culpa. Sit nisi dolorum illum!
-                                                                    Voluptatum magnam dolorem minima impedit
-                                                                    perspiciatis obcaecati odit iusto maxime
-                                                                    dolorum, ut consequuntur cum quia minus alias sunt
-                                                                    libero corrupti quam quidem placeat
-                                                                    enim, aperiam, facere! Quae sit incidunt blanditiis
-                                                                    quisquam cum a illo, dolore ex
-                                                                    expedita fugit aliquam, id temporibus illum
-                                                                    excepturi omnis autem sequi. Aspernatur eos
-                                                                    numquam in laboriosam debitis sapiente consequuntur
-                                                                    facere, esse iste delectus, impedit
-                                                                    aliquid error! At dignissimos molestias accusantium
-                                                                    sequi perferendis quidem quas quia
-                                                                    nobis expedita? Reiciendis minima quaerat adipisci
-                                                                    architecto, dignissimos ut, dicta
-                                                                    nesciunt, quae a maxime aliquam consequuntur
-                                                                    aspernatur doloribus eveniet, quasi
-                                                                    reprehenderit!</p>
+                                                                <h3>Paiement de la facture</h3>
+                                                                <p>Voici avez choisi paypal comme mode de paiement,
+                                                                    cliquer sur le bouton ci-dessous pour continuer, une
+                                                                    fois le paiement effectué , vous serez redirigé
+                                                                    automatiquement sur la page.</p>
+                                                                <div class="row">
+                                                                    <div class="col-6">
+                                                                        <div id="btnPaypal"></div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <div class="step-tab-panel" id="tab4">
                                                                 <h3>Tab4</h3>
@@ -353,14 +379,21 @@
                                                                 </form>
                                                             </div>
                                                         </div>
-                                                        <div class="step-footer">
-                                                            <button data-direction="prev" class="step-btn">Previous
-                                                            </button>
-                                                            <button data-direction="next"
-                                                                    class="btn btn-danger pull-right">Continuer
-                                                            </button>
-                                                            <button data-direction="finish" class="step-btn">Terminé
-                                                            </button>
+                                                        <div class="step-footer row">
+                                                            <div class="col">
+                                                                <button data-direction="prev"
+                                                                        class="btn btn-secondary step-btn">Précédent
+                                                                </button>
+                                                            </div>
+                                                            <div col="col">
+                                                                <button data-direction="next"
+                                                                        class="btn btn-danger pull-right step-btn">
+                                                                    Continuer
+                                                                </button>
+                                                                <button data-direction="finish"
+                                                                        class="btn btn-success step-btn">Terminé
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -376,18 +409,6 @@
                                                         <div class="row">
                                                             <div class="col">Veuillez ajouter vos commandes</div>
                                                         </div>
-                                                        <!--<div class="row">
-                                                            <div class="col-8">1x Billet "Reservation"</div>
-                                                            <div class="col">
-                                                                <span class="currency">Ar</span> 20.000
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-8">2x Billet "VIP"</div>
-                                                            <div class="col">
-                                                                <span class="currency">Ar</span> 100.000
-                                                            </div>
-                                                        </div>-->
                                                     </div>
                                                     <hr/>
                                                     <div class="row sub-total">
@@ -454,53 +475,7 @@
         <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency=EUR"></script>
         <script type="text/javascript">
             let cart_items = [];
-
-            function start_counter() {
-                let start_counter = 8 * 60;//8 * 60;
-                let checkout_timer = setInterval(function () {
-                    --start_counter;
-                    $('.time_left').text(format(start_counter));
-                    if (start_counter === 0) {
-                        clearInterval(checkout_timer);
-                        $.get('/res_billet/clear');
-                        $('#checkout_command').modal('hide');
-                    }
-                }, 1000);
-            }
-
-            function format(time) {
-                // Hours, minutes and seconds
-                var hrs = ~~(time / 3600);
-                var mins = ~~((time % 3600) / 60);
-                var secs = ~~time % 60;
-
-                // Output like "1:01" or "4:03:59" or "123:03:59"
-                var ret = "";
-                if (hrs > 0) {
-                    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-                }
-                ret += "" + mins + ":" + (secs < 10 ? "0" : "");
-                ret += "" + secs;
-                return ret;
-            }
-
-            function transformItemsPaypalFormat(cart_items) {
-                let formatted_cart = [];
-                cart_items.forEach(function (el) {
-                    let item = {
-                        name: el.name,
-                        quantity: el.quantity,
-                        currency: "EUR",
-                        unit_amount: {
-                            value: el.price,
-                            currency_code: "EUR"
-                        }
-                    };
-                    formatted_cart.push(item);
-                });
-                return formatted_cart;
-            }
-
+            let steps_api = null;
             paypal.Buttons({
                 style: {
                     layout: 'horizontal'
@@ -539,7 +514,133 @@
                     });
                 }
             }).render('#btnPaypal');
-            //-------------------------------modal management
+            //-------------------------------modal management-------------
+            $('#checkout_command').on('shown.bs.modal', function () {
+                $.get('/res_billet/clear');
+                //--------------------------------steps management
+                let form_select_item = $('#form_select_items');
+                let rules_select_items = {}, messages_select_items = {};
+                $('#form_select_items select').each(function (i, val) {
+                    rules_select_items[val.getAttribute('name')] = {require_from_group: [1, ".fillOne"]};
+                    messages_select_items[val.getAttribute('name')] = {require_from_group: "Veuiller choisir au moins 1 billet pour continuer"}
+                });
+                let form_select_item_validator = form_select_item.validate({
+                    rules: rules_select_items,
+                    messages: messages_select_items,
+                    submitHandler: function (form) {
+                        return false;
+                    },
+                    errorPlacement: function (error, element) {
+                        error.appendTo(element.parents('.parent_item').find('.message_errors').find('.error'));
+                    }
+                });
+
+                let frmInfo = $('#frmInfo');
+                let frmInfoValidator = frmInfo.validate({
+                    rules: {
+                        nom: {required: true},
+                        prenom: {required: true},
+                        email: {
+                            required: true,
+                            email: true
+                        }
+                    },
+                    messages: {
+                        nom: {required: 'Veuillez insérer votre nom'},
+                        prenom: {required: 'Veuillez insérer votre prénom'},
+                        email: {
+                            required: 'Veuillez insérer votre e-mail',
+                            email: 'Veuillez insérer un e-mail valide'
+                        }
+                    },
+                    submitHandler: function (form) {
+                        return false;
+                    },
+                    errorPlacement: function (error, element) {
+                        error.appendTo(element.parents('.form-group').find('.input-error'));
+                    }
+                });
+
+                let frmLogin = $('#frmLogin');
+                let frmLoginValidator = frmLogin.validate();
+
+                let frmMobile = $('#frmMobile');
+                let frmMobileValidator = frmMobile.validate();
+                $(".step-steps").hide();
+                steps_api = $('#checkout_steps').steps({
+                    onChange: function (currentIndex, newIndex, stepDirection) {
+                        if (stepDirection === 'forward') {
+                            if (newIndex === 1 && currentIndex === newIndex - 1) {
+                                let data = form_select_item.serializeArray();
+                                $('#data_cart').empty();
+                                $.each(data, function (i, field) {
+                                    if (field.value !== "") {
+                                        let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
+                                        let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
+                                        let item_price = $("<div class='col'>Ar </div>").append(parsed[1] * parsed[2]);
+                                        let item_container = $("<div class='row'></div>").append(item_label, item_price);
+                                        $.post('/res_billet/add/', {
+                                            event_id: {{ event.id }},
+                                            select_nb_billets: parseInt(parsed[2]),
+                                            type_billet: parsed[0],
+                                            section_id: '-',
+                                            place_id: '-',
+                                            redirect: '/'
+                                        }, function (result) {
+                                            $('#data_cart').append(item_container);
+                                        });
+                                    }
+                                });
+                                $.get("/api/cart/get_total", function (total) {
+                                    let item_label = $("<div class='col-8'></div>").append("<h6>Total</h6>");
+                                    let item_price = $("<div class='col total_value'>Ar </div>").append(total);
+                                    $(".total").empty();
+                                    $(".total").append(item_label, item_price);
+                                });
+                                return form_select_item.valid();
+                            }
+                            if (newIndex === 2 && currentIndex === newIndex - 1) {
+                                start_counter();
+                                $.post("/res_billet/send_buyer_info", frmInfo.serialize(),function(data){
+                                    console.log(data);
+                                });
+                                return frmInfo.valid();
+                            }
+                            if (newIndex === 3 && currentIndex === newIndex - 1) {
+                                $('btnPayPal').on('click', function () {
+                                    $.get('/api/cart/list', function (data, status) {
+                                        cart_items = data;
+                                    });
+                                });
+                                return true;
+
+                            }
+                            if (newIndex === 4 && currentIndex === newIndex - 1) {
+                                return frmLogin.valid();
+                            }
+                        }
+                        if (stepDirection === 'backward') {
+                            if (newIndex === 0 && currentIndex === newIndex + 1) {
+                                $.get('/res_billet/clear',function(){
+                                    $('#data_cart').empty();
+                                    $('#data_cart').append("<div class='row'><div class='col'>Veuillez ajouter vos commandes</div>");
+                                    $('.total_value').empty().append("0");
+                                });
+                            }
+                            if (newIndex === 1 && currentIndex === newIndex + 1) {
+                            }
+                            if (newIndex === 2 && currentIndex === newIndex + 1) {
+                            }
+
+                        }
+                        return true;
+                    },
+                    showBackButton: true,
+                    onFinish: function () {
+                        alert('Wizard Completed');
+                    }
+                });
+            });
             $('.closeConfirm').click(function () { //Close Button on Form Modal to trigger Warning Modal
                 $('#confirmCloseCheckout').modal('show').on('shown.bs.modal', function () { //Show Warning Modal and use `show` event listener
                     $('.confirmclosed').click(function () { //Warning Modal Confirm Close Button
@@ -549,120 +650,61 @@
                     });
                 });
             });
+            let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
 
-            //--------------------------------steps management
-            var form_select_item = $('#form_select_items');
-            let rules = {}, messages = {};
+            function start_counter() {
+                let start_counter = 8 * 60;//8 * 60;
+                let checkout_timer = setInterval(function () {
+                    --start_counter;
+                    $('.time_left').text(format(start_counter));
+                    if (start_counter === 0) {
+                        clearInterval(checkout_timer);
+                        $.get('/res_billet/clear');
+                        $('#checkout_command').modal('hide');
+                    }
+                }, 1000);
+            }
 
-            $('#form_select_items select').each(function (i, val) {
-                rules[val.getAttribute('name')] = {require_from_group: [1, ".fillOne"]};
-                messages[val.getAttribute('name')] = {require_from_group: "Veuiller choisir au moins 1 billet pour continuer"}
-            });
-            let form_select_item_validator = form_select_item.validate({
-                rules: rules,
-                messages: messages,
-                submitHandler: function (form) {
-                    alert('valid form.');
-                    return false;
-                },
-                errorPlacement: function (error, element) {
-                    error.appendTo(element.parents('.parent_item').find('.message_errors').find('.error'));
+            function format(time) {
+                // Hours, minutes and seconds
+                let hrs = ~~(time / 3600);
+                let mins = ~~((time % 3600) / 60);
+                let secs = ~~time % 60;
+
+                // Output like "1:01" or "4:03:59" or "123:03:59"
+                let ret = "";
+                if (hrs > 0) {
+                    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
                 }
-            });
+                ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+                ret += "" + secs;
+                return ret;
+            }
 
+            function transformItemsPaypalFormat(cart_items) {
+                let formatted_cart = [];
+                cart_items.forEach(function (el) {
+                    let item = {
+                        name: el.name,
+                        quantity: el.quantity,
+                        currency: "EUR",
+                        unit_amount: {
+                            value: el.price,
+                            currency_code: "EUR"
+                        }
+                    };
+                    formatted_cart.push(item);
+                });
+                return formatted_cart;
+            }
 
-            var frmInfo = $('#frmInfo');
-            var frmInfoValidator = frmInfo.validate();
-
-            var frmLogin = $('#frmLogin');
-            var frmLoginValidator = frmLogin.validate();
-
-            var frmMobile = $('#frmMobile');
-            var frmMobileValidator = frmMobile.validate();
-            $(".step-steps").hide();
-            $('#checkout_steps').steps({
-                onChange: function (currentIndex, newIndex, stepDirection) {
-                    if (currentIndex === 0) {
-                        if (stepDirection === 'forward') {
-                            let data = form_select_item.serializeArray();
-                            $('#data_cart').empty();
-                            $.each(data, function (i, field) {
-                                if (field.value !== "") {
-                                    let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
-                                    let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
-                                    let item_price = $("<div class='col'>Ar </div>").append(parsed[1] * parsed[2]);
-                                    let item_container = $("<div class='row'></div>").append(item_label, item_price);
-                                    $('#data_cart').append(item_container);
-                                    $.post('/res_billet/add/', {
-                                        event_id: {{ event.id }},
-                                        select_nb_billets: parsed[2],
-                                        type_billet: parsed[0],
-                                        section_id: '-',
-                                        place_id: '-',
-                                        redirect: '/'
-                                    }, function (result) {
-                                        $.get("/api/cart/get_total", function (total) {
-                                            let item_label = $("<div class='col-8'></div>").append("<h6>Total</h6>");
-                                            let item_price = $("<div class='col total_value'>Ar </div>").append(total);
-                                            $(".total").empty();
-                                            $(".total").append(item_label, item_price);
-                                        });
-
-                                    });
-                                }
-
-                            });
-                            return form_select_item.valid();
-                        }
-                    }
-                    if (currentIndex === 1) {
-                        start_counter();
-                        $.get('/api/cart/list', function (data, status) {
-                            cart_items = data;
-                        });
-                        console.log(cart_items);
-                        if (stepDirection === 'forward') {
-                            return frmInfo.valid();
-                        }
-                        if (stepDirection === 'backward') {
-                            frmInfoValidator.resetForm();
-                        }
-                    }
-                    // step4
-                    if (currentIndex === 3) {
-                        if (stepDirection === 'forward') {
-                            return frmLogin.valid();
-                        }
-                        if (stepDirection === 'backward') {
-                            frmLoginValidator.resetForm();
-                        }
-                    }
-                    // step5
-                    if (currentIndex === 4) {
-                        if (stepDirection === 'forward') {
-                            return frmMobile.valid();
-                        }
-                        if (stepDirection === 'backward') {
-                            frmMobileValidator.resetForm();
-                        }
-                    }
-                    return true;
-                },
-                showBackButton: true,
-                onFinish: function () {
-                    alert('Wizard Completed');
-                }
-            });
-        </script>
-        <script>
-            var deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
-            var x = setInterval(function () {
-                var now = new Date().getTime();
-                var t = deadline - now;
-                var days = Math.floor(t / (1000 * 60 * 60 * 24));
-                var hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
-                var seconds = Math.floor((t % (1000 * 60)) / 1000);
+            let x = setInterval(function () {
+                let now = new Date().getTime();
+                let t = deadline - now;
+                let days = Math.floor(t / (1000 * 60 * 60 * 24));
+                let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+                let seconds = Math.floor((t % (1000 * 60)) / 1000);
                 document.getElementById("day").innerHTML = days;
                 document.getElementById("hour").innerHTML = hours;
                 document.getElementById("minute").innerHTML = minutes;
@@ -676,11 +718,8 @@
                     document.getElementById("second").innerHTML = '0';
                 }
             }, 1000);
-
-            function updateResumeCheckout() {
-                let array = [{}];
-            }
         </script>
+        <script type="text/javascript" src="{{ asset('js/js.event.single.management.js') }}"></script>
     {% endblock %}
 {% endblock %}
 {% block contact %}{% endblock %}

@@ -11,22 +11,16 @@ class CartItem
 {
     /** @var int Unique id for this item */
     protected $id;
-
     /** @var string Name of the item */
     protected $name;
-
     /** @var int Number of items */
     protected $quantity = 0;
-
     /** @var float Price for one item */
     protected $price = 0;
-
     /** @var int Category of the item */
     protected $category;
     /** @var string category of item */
     protected $category_str;
-    /** @var string event */
-    protected $event;
     /** @var string section*/
     protected $section;
     /** @var Evenement evenement */
@@ -45,6 +39,10 @@ class CartItem
      */
     public function setEvenement(Evenement $evenement): void
     {
+        if($evenement == null)
+        {
+            throw new  \InvalidArgumentException('Le billet doit être associé à un évènement');
+        }
         $this->evenement = $evenement;
     }
 
@@ -61,6 +59,9 @@ class CartItem
      */
     public function setSection(string $section): void
     {
+        if (false === $this->validateString($section)) {
+            throw new \InvalidArgumentException('Au moins un caractère');
+        }
         $this->section = $section;
     }
 
@@ -77,29 +78,13 @@ class CartItem
      */
     public function setSeat(string $seat): void
     {
+        if (false === $this->validateString($seat)) {
+            throw new \InvalidArgumentException('Au moins doit contenir 1 caractère');
+        }
         $this->seat = $seat;
     }
     /** @var string seat*/
     protected $seat;
-
-    /**
-     * @return id
-     */
-    public function getEvent(): string
-    {
-        return $this->event;
-    }
-
-    /**
-     * @param id $event
-     */
-    public function setEvent($event): void
-    {
-
-        $this->event = $event;
-    }
-
-
     /**
      * @param array $options
      */

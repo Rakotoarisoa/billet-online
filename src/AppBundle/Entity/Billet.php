@@ -4,9 +4,12 @@
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BilletRepository")
- * @ORM\Table(name = "billet")
+ * @ORM\Table(name = "billet",uniqueConstraints={@ORM\UniqueConstraint(name="UNIQUE", columns={"identifiant", "id_billet"})})
+ * @UniqueEntity(fields={"identifiant","typeBillet"})
  * @Serializer\ExclusionPolicy("none")
  *
  */
@@ -18,9 +21,13 @@ class Billet
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    public function __construct(){
+        $this->checked= false;
+        $this->identifiant=substr(str_shuffle("0123456789"), 0, 5);
+    }
 
     /**
-     * @ORM\Column(type="string", length=100,unique=true)
+     * @ORM\Column(type="string", length=5)
      */
     private $identifiant;
     /**
@@ -47,6 +54,27 @@ class Billet
      * @ORM\Column(type="boolean")
      */
     private $isMapped;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $checked ;
+
+    /**
+     * @return mixed
+     */
+    public function getChecked()
+    {
+        return $this->checked;
+    }
+
+    /**
+     * @param mixed $checked
+     */
+    public function setChecked($checked): void
+    {
+        $this->checked = $checked;
+    }
+
 
     /**
      * @return mixed
@@ -137,14 +165,6 @@ class Billet
     public function getIdentifiant()
     {
         return $this->identifiant;
-    }
-
-    /**
-     * @param mixed $identifiant
-     */
-    public function setIdentifiant($identifiant)
-    {
-        $this->identifiant = $identifiant;
     }
 
     /**

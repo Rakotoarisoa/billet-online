@@ -183,9 +183,7 @@ class BilletRepository extends EntityRepository
         for($i=0;$i<$nbr;$i++ )
         {
             $billet=new Billet();
-            $identifiant = $i."-".date("d-m-Y")."-".$event->getTitreEvenementSlug();//format nb-ddmmYYYY-event-slug
             $billet->setTypeBillet($type_billet);
-            $billet->setIdentifiant($identifiant);
             $billet->setPlaceId("-");
             $billet->setSectionId("-");
             array_push($result,$billet);

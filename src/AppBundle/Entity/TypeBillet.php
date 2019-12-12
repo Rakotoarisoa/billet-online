@@ -2,15 +2,16 @@
 
 
 namespace AppBundle\Entity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity
- * @ORM\Table(name = "typebillet")
+ * @ORM\Table(name = "typebillet",uniqueConstraints={@ORM\UniqueConstraint(name="UNIQUE", columns={"id_evenement", "random_type_code"})})
  * @Serializer\ExclusionPolicy("none")
  * @UniqueEntity(
- *     fields={"evenement", "libelle"},
+ *     fields={"evenement", "randomTypeCode"},
  *      message="Le billet existe déjà"
  *     )
  *
@@ -34,6 +35,21 @@ class TypeBillet
      * @ORM\Column(type="string", length=100)
      */
     private $libelle;
+    public function __construct(){
+        $this->randomTypeCode = substr(str_shuffle("0123456789"), 0, 5);
+    }
+    /**
+     * @ORM\Column(type="string", length=5)
+     */
+    private $randomTypeCode;
+
+    /**
+     * @return mixed
+     */
+    public function getRandomTypeCode()
+    {
+        return $this->randomTypeCode;
+    }
     /**
      * @ORM\ManyToOne(targetEntity="Evenement",inversedBy="typeBillets")
      * @ORM\JoinColumn(name="id_evenement", referencedColumnName="id",nullable=false)
@@ -125,7 +141,7 @@ class TypeBillet
     /**
      * @ORM\Column(type="boolean")
      */
-    private $active;
+    private $active = true;
 
     /**
      * @return mixed

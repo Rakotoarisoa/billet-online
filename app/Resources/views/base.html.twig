@@ -49,9 +49,9 @@
             <div class="classy-nav-container breakpoint-off">
                 <div class="custom-nav-container">
                     <!-- Cart Button -->
-                    <div class="cart-btn pull-right" style="margin-right:2%;height: 1px;">
+                    <!--<div class="cart-btn pull-right" style="margin-right:2%;height: 1px;">
                         <a data-toggle="tooltip" data-placement="bottom" title="Vous avez {{ not app.session.get('quantity') ? "0" : app.session.get('quantity') }} billets à commander" href="{{ path('cart_index') }}"><p style="color:#DDD;">Votre panier <span class="fa fa-shopping-cart"></span></p></a>
-                    </div>
+                    </div>-->
                     <!-- Menu -->
                     <nav class="classy-navbar " id="oneMusicNav">
                         <!-- Nav brand -->
@@ -137,36 +137,6 @@
 <!-- ##### Breadcumb Area Start ##### -->
 {% block breadcrumb %}
     <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/cover.jpg') }})">
-        <!--<div id="demo" class="carousel slide" data-ride="carousel">
-
-             Indicators
-            <ul class="carousel-indicators">
-                <li data-target="#demo" data-slide-to="0" class="active"></li>
-                <li data-target="#demo" data-slide-to="1"></li>
-                <li data-target="#demo" data-slide-to="2"></li>
-            </ul>
-
-             The slideshow
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="" alt="Los Angeles" width="100" height="100">
-                </div>
-                <div class="carousel-item">
-                    <img src="" alt="Chicago" width="100" height="100">
-                </div>
-                <div class="carousel-item">
-                    <img src="" alt="New York" width="100" height="100">
-                </div>
-            </div>
-
-
-            <a class="carousel-control-prev" href="#demo" data-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
-            </a>
-            <a class="carousel-control-next" href="#demo" data-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </a>
-        </div>-->
         <div class="bradcumbContent">
             {% block breadcrumb_content %}
                 <p>Parcourir</p>

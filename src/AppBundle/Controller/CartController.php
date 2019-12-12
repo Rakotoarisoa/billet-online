@@ -13,8 +13,10 @@ use AppBundle\Entity\Reservation;
 use AppBundle\Entity\TypeBillet;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Billet;
+use AppBundle\Entity\UserCheckout;
 use AppBundle\Utils\Cart;
 use AppBundle\Utils\CartItem;
+use Doctrine\Common\Collections\ArrayCollection;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\Form\Factory\FactoryInterface;
 use FOS\UserBundle\FOSUserEvents;
@@ -122,33 +124,27 @@ class CartController extends Controller
         //Récupérer les billets à vendre
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event_id);//get Event entity
         $type_billet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $type_billet, 'evenement' => $event]);
-        $result = $this->getDoctrine()->getRepository(Billet::class)->getTicketsToBuy($event_id, $nbr_billets, $type_billet);
-        $section_id='-';
-        $place_id='-';
-        if($request->request->has('section_id') && $request->request->has('place_id'))
-        {
-            $section_id=$request->request->get('section_id');
-            $place_id=$request->request->get('place_id');
+        $section_id = '-';
+        $place_id = '-';
+        if ($request->request->has('section_id') && $request->request->has('place_id')) {
+            $section_id = $request->request->get('section_id');
+            $place_id = $request->request->get('place_id');
         }
-        for ($i = 0; $i < count($result); $i++) {
+        for ($i = 0; $i < $nbr_billets; $i++) {
             $item = new CartItem([
-                'id' => $i,
-                'name' => $result[$i]->getIdentifiant(),
+                'name' => '-', //Nom temporaire
                 'price' => $type_billet->getPrix(),
-                'event' => $event->getTitreEvenement(),
-                'seat' =>$place_id,
+                'seat' => $place_id,
                 'section' => $section_id,
                 'evenement' => $event
             ]);
+            $item->setId($this->cart->count());
             $item->setQuantity(1); // defaults to 1
             $item->setCategoryStr($type_billet->getLibelle());
             $this->cart->addItem($item);
         }
+        return new Response($nbr_billets . ' créé', Response::HTTP_OK);
 
-
-        $this->addFlash('success', 'Billet ajouté dans le panier avec succès.');
-
-        return $this->redirect($redirect);
     }
 
     /**
@@ -174,39 +170,58 @@ class CartController extends Controller
     {
 
         $cartItems = $this->cart->getItems();
-        $cartTotal = $this->cart->getDiscountTotal();
-        $discount = $this->cart->getAppliedDiscount();
-        $em = $this->getDoctrine()->getManager();
-        $repo = $this->getDoctrine()->getRepository(Billet::class);
+        $event = $this->getDoctrine()->getRepository(Evenement::class)->find($this->cart->getItem(0)->getEvenement()->getId());
+        $buyer_data = $this->session->get('buyer_data');
+        $user_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => (string)$buyer_data['email']]);
+        $user_checkout = $this->getDoctrine()->getRepository(UserCheckout::class)->findOneBy(['email' => (string)$buyer_data['email']]);
         try {
-            $reservation = new Reservation();
-            $reservation->setNomReservation('commande-'.date('d F Y'));
-            //TODO: Ajouter les données de reservation
-            //$em->persist($reservation);
-            //$em->flush();
+            if (!isset($user_checkout) && $this->isCsrfTokenValid('checkout_info', $buyer_data['_token'])) {
 
-            foreach ($this->cart->getItems() as $item) {
-                //TODO: Ajouter les billets
-                //$em->persist();
-                //$em->flush();
+                $user_checkout = new  UserCheckout();
+                $user_checkout->setNom((string)$buyer_data['nom']);
+                $user_checkout->setPrenom((string)$buyer_data['prenom']);
+                $user_checkout->setAdresse1((string)$buyer_data['adresse']);
+                $user_checkout->setEmail((string)$buyer_data['email']);
+                $user_checkout->setIsRegisteredUser(isset($user_exist));
+                $user_checkout->setPays((string)$buyer_data['pays']);
             }
-            $this->sendEmailToBuyer();
-            $this->addFlash('success', 'Validation de la reservation complétée. Vous serez notifié par e-mail avec votre commande');
-            //$this->cart->clear();
-            return new Response('ok', Response::HTTP_OK);
+            $reservation = new Reservation();
+            $reservation->setNomReservation('commande_' . $reservation->getRandomCodeCommande());
+            //TODO: Ajouter les données de reservation
+            $reservation->setModePaiement('Paypal');
+            $reservation->setEvenement($event);
+            $reservation->setUserCheckout($user_checkout);
+            $reservation->setMontantTotal($this->cart->getTotalPrice());
+            $this->getDoctrine()->getManager()->persist($user_checkout);
+            $this->getDoctrine()->getManager()->persist($reservation);
+            $billets_collection = new ArrayCollection();
+            foreach ($cartItems as $item) {
+                //TODO: Ajouter les billets
+                $typeBillet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $item->getCategoryStr(), 'evenement' => $event]);
+                $billet = new Billet();
+                $billet->setEstVendu(true);
+                $billet->setIsMapped(false);
+                $billet->setPlaceId($item->getSeat());
+                $billet->setSectionId($item->getSection());
+                $billet->setTypeBillet($typeBillet);
+                $billet->setReservation($reservation);
+                $this->getDoctrine()->getManager()->persist($billet);
+                $this->getDoctrine()->getManager()->flush();
+                $billets_collection->add($billet);
+            }
+            $reservation->setBillet($billets_collection);
+            $this->getDoctrine()->getManager()->persist($reservation);
+            $this->getDoctrine()->getManager()->flush();
+            $this->sendEmailToBuyer($user_checkout->getEmail(), $reservation, $event, $billets_collection);
+            //delete session and cart _data
+            $this->session->remove('buyer_data');
+            $this->cart->clear();
+            return $this->render('default/view-support.html.twig');
             //return $this->redirectToRoute('viewList');
         } catch (\Exception $exception) {
-            $this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
-            return new Response($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            //$this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
+            return new Response($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        /* return $this->render('default/invoice.html.twig', [
-             'cart' => $cartItems,
-             'total' => $cartTotal,
-             //'orderId' => $order->getId(),
-             'discount' => $discount,
-         ]);*/
-        return new Response('ok', Response::HTTP_OK);
     }
 
     /**
@@ -214,41 +229,42 @@ class CartController extends Controller
      *
      * @Route("/res_billet/send_email", name="cart_send_email")
      */
-    private function sendEmailToBuyer()
+    private function sendEmailToBuyer($email = null, Reservation $reservation = null, Evenement $event = null, ArrayCollection $billets = null)
     {
         try {
             $mailer = $this->get('mailer');
             $html = '';
-            $bGen=$this->get('skies_barcode.generator');
-            $domOptions=new Options();
+            $bGen = $this->get('skies_barcode.generator');
+            $domOptions = new Options();
             $domOptions->set('isRemoteEnabled', TRUE);
-            $domOptions->set('isHtml5ParserEnabled',true);
-            $domPdf=new Dompdf($domOptions);
-            $domPdf->setPaper('A4','landscape');
-            foreach ($this->cart->getItems() as $item) {
+            $domOptions->set('isHtml5ParserEnabled', true);
+            $domPdf = new Dompdf($domOptions);
+            $domPdf->setPaper('A4', 'landscape');
+            foreach ($billets as $item) {
+                $code_billet=$reservation->getRandomCodeCommande().'-'.$event->getRandomCodeEvent().'-'.$item->getIdentifiant();
                 $options = array(
-                    'code' => $item->getName(),
+                    'code' => $code_billet,
                     'type' => 'qrcode',
                     'format' => 'png',
-                    'width' => 10,
-                    'height' => 10,
+                    'width' => 100,
+                    'height' => 100,
                     'color' => array(0, 0, 0),
                 );
                 $barcode = $bGen->generate($options);
                 $qr_code = "data:image/png;base64,' . $barcode";
-                $html .= $this->renderView('emails/attachments/attachment_email.html.twig', ['event' => $item->getEvenement(),'qr' => $qr_code]);
+                $html .= $this->renderView('emails/attachments/attachment_email.html.twig', ['event' => $event, 'reservation' => $reservation, 'qr' => $qr_code,'code_billet'=>$code_billet,'item'=>$item]);
             }
-            $html.='';
+            $html .= '';
             $domPdf->loadHtml($html);
             $domPdf->render();
-            $attachment = new \Swift_Attachment($domPdf->output(), 'commande-'.date('d-m-Y').'.pdf', 'application/pdf');
+            $attachment = new \Swift_Attachment($domPdf->output(), 'commande_' . $reservation->getRandomCodeCommande() . date('dmY') . '.pdf', 'application/pdf');
             $message = (new \Swift_Message('Votre commande'))
-                ->setSubject('Ivenco Réservation - Votre commande du '.date('d F Y'))
+                ->setSubject('Ivenco Réservation - Votre commande n° ' . $reservation->getRandomCodeCommande() . ' du ' . date('d M Y'))
                 ->setFrom('andry163.nexthope@gmail.com')
-                ->setTo('andry163.nexthope@gmail.com')
+                ->setTo($email)
                 ->setBody(
                     $this->renderView(// app/Resources/views/Emails/registration.html.twig
-                        'emails/template_clients/template_email.html.twig'
+                        'emails/template_clients/template_email.html.twig', ['event' => $event, 'reservation' => $reservation]
                     ),
                     'text/html'
                 )
@@ -265,6 +281,26 @@ class CartController extends Controller
             $mailer->send($message);
         } catch (\ErrorException $e) {
             throw new $e;
+        }
+    }
+
+    /**
+     *
+     * @Route("/res_billet/send_buyer_info", name="cart_register_buyer_info")
+     */
+    public function getBuyerInfo(Request $request)
+    {
+
+        if ($request && $request->getMethod() == 'POST') {
+            $data_buyer = $request->request;
+            if ($data_buyer->has('email') && $data_buyer->has('nom') && $data_buyer->has('prenom')) {
+                $this->session->set('buyer_data', $data_buyer->all());
+                return new Response($data_buyer->get('email') . ' registered', Response::HTTP_OK);
+            } else {
+                return new Response("Error Buyer ", Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+
         }
     }
 

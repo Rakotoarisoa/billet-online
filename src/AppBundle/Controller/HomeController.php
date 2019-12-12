@@ -5,6 +5,8 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Billet;
 
 use AppBundle\Entity\CategorieEvenement;
+use AppBundle\Entity\Pays;
+use AppBundle\Entity\TypeBillet;
 use AppBundle\Repository\BilletRepository;
 use Doctrine\ORM\Query;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -61,9 +63,9 @@ class HomeController extends Controller
     {
         $repo = $this->getDoctrine()->getRepository(Billet::class);
         $queryTicketsState=$repo->countPurchasedTickets($event);
-        var_dump($queryTicketsState);
         $this->getDoctrine()->getRepository(Evenement::class)->initMapEvent($event);
-        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState));
+        $country = $this->getDoctrine()->getRepository(Pays::class)->findAll();//Command_ID generation
+        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState,'max_command_per_ticket'=> 10,'country'=>$country));
     }
     /**
      * Page création map

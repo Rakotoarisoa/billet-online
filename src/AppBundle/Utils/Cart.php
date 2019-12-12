@@ -83,11 +83,10 @@ class Cart implements \ArrayAccess
         $newItemId = $newItem->getId();
         if ($this->session->has($this->key.'/'.$newItemId)) {
             $oldItem = $this->session->get($this->key.'/'.$newItemId);
-            //$newQty = $oldItem->getQuantity() + $newItem->getQuantity();
-            //$newItem->setQuantity($newQty);
+            $newQty = $oldItem->getQuantity() + $newItem->getQuantity();
+            $newItem->setQuantity($newQty);
         }
         $this->setItem($newItem);
-
         $this->session->set('totalPrice', $this->getDiscountTotal());
         $this->session->set('quantity',count($this->getItems()));
     }
