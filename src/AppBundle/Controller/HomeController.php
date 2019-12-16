@@ -64,8 +64,11 @@ class HomeController extends Controller
         $repo = $this->getDoctrine()->getRepository(Billet::class);
         $queryTicketsState=$repo->countPurchasedTickets($event);
         $this->getDoctrine()->getRepository(Evenement::class)->initMapEvent($event);
+        $categoryList= $this->getDoctrine()
+            ->getRepository(CategorieEvenement::class)
+            ->searchUsedCategories();
         $country = $this->getDoctrine()->getRepository(Pays::class)->findAll();//Command_ID generation
-        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState,'max_command_per_ticket'=> 10,'country'=>$country));
+        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState,'max_command_per_ticket'=> 10,'country'=>$country,'catList'=>$categoryList));
     }
     /**
      * Page création map

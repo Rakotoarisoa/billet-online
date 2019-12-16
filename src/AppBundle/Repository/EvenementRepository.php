@@ -23,7 +23,8 @@ class EvenementRepository extends EntityRepository
            lieu.nomSalle LIKE :lieu AND 
            e.dateDebutEvent LIKE :date AND
            cat.libelle LIKE :cat AND
-            e.isPublished = 1')
+            e.isPublished = 1
+            ORDER BY e.dateDebutEvent DESC')
             ->setParameter('titre', '%'.$titre.'%')
             ->setParameter('lieu', '%'.$lieu.'%')
             ->setParameter('date', '%'.$date.'%')

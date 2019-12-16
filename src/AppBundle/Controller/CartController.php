@@ -14,6 +14,7 @@ use AppBundle\Entity\TypeBillet;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Billet;
 use AppBundle\Entity\UserCheckout;
+use AppBundle\Events\Reservation\RegisteredReservationEvent;
 use AppBundle\Utils\Cart;
 use AppBundle\Utils\CartItem;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -29,9 +30,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
-use Symfony\Component\Templating\EngineInterface;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 
 class CartController extends Controller
 {
@@ -83,9 +81,8 @@ class CartController extends Controller
      */
     public function clearCartAction()
     {
-        $this->session->set('quantity', count($this->cart->getItems()));
+        $this->session->set('quantity', 0);
         $this->cart->clear();
-        $this->addFlash('success', 'Panier vidé');
         return $this->redirect('/res_billet/list');
     }
 
@@ -166,7 +163,7 @@ class CartController extends Controller
      *
      * @Route("/res_billet/checkout", name="cart_checkout")
      */
-    public function checkOutAction(EngineInterface $tplEngine)
+    public function checkOutAction(EventDispatcherInterface $eventDispatcher)
     {
 
         $cartItems = $this->cart->getItems();
@@ -206,81 +203,18 @@ class CartController extends Controller
                 $billet->setTypeBillet($typeBillet);
                 $billet->setReservation($reservation);
                 $this->getDoctrine()->getManager()->persist($billet);
-                $this->getDoctrine()->getManager()->flush();
                 $billets_collection->add($billet);
             }
             $reservation->setBillet($billets_collection);
             $this->getDoctrine()->getManager()->persist($reservation);
             $this->getDoctrine()->getManager()->flush();
-            $this->sendEmailToBuyer($user_checkout->getEmail(), $reservation, $event, $billets_collection);
+            $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation));
             //delete session and cart _data
-            $this->session->remove('buyer_data');
-            $this->cart->clear();
-            return $this->render('default/view-support.html.twig');
+            return new Response('Processus Terminé', Response::HTTP_OK);
             //return $this->redirectToRoute('viewList');
         } catch (\Exception $exception) {
             //$this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
             return new Response($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
-     * Checkout process of the cart
-     *
-     * @Route("/res_billet/send_email", name="cart_send_email")
-     */
-    private function sendEmailToBuyer($email = null, Reservation $reservation = null, Evenement $event = null, ArrayCollection $billets = null)
-    {
-        try {
-            $mailer = $this->get('mailer');
-            $html = '';
-            $bGen = $this->get('skies_barcode.generator');
-            $domOptions = new Options();
-            $domOptions->set('isRemoteEnabled', TRUE);
-            $domOptions->set('isHtml5ParserEnabled', true);
-            $domPdf = new Dompdf($domOptions);
-            $domPdf->setPaper('A4', 'landscape');
-            foreach ($billets as $item) {
-                $code_billet=$reservation->getRandomCodeCommande().'-'.$event->getRandomCodeEvent().'-'.$item->getIdentifiant();
-                $options = array(
-                    'code' => $code_billet,
-                    'type' => 'qrcode',
-                    'format' => 'png',
-                    'width' => 100,
-                    'height' => 100,
-                    'color' => array(0, 0, 0),
-                );
-                $barcode = $bGen->generate($options);
-                $qr_code = "data:image/png;base64,' . $barcode";
-                $html .= $this->renderView('emails/attachments/attachment_email.html.twig', ['event' => $event, 'reservation' => $reservation, 'qr' => $qr_code,'code_billet'=>$code_billet,'item'=>$item]);
-            }
-            $html .= '';
-            $domPdf->loadHtml($html);
-            $domPdf->render();
-            $attachment = new \Swift_Attachment($domPdf->output(), 'commande_' . $reservation->getRandomCodeCommande() . date('dmY') . '.pdf', 'application/pdf');
-            $message = (new \Swift_Message('Votre commande'))
-                ->setSubject('Ivenco Réservation - Votre commande n° ' . $reservation->getRandomCodeCommande() . ' du ' . date('d M Y'))
-                ->setFrom('andry163.nexthope@gmail.com')
-                ->setTo($email)
-                ->setBody(
-                    $this->renderView(// app/Resources/views/Emails/registration.html.twig
-                        'emails/template_clients/template_email.html.twig', ['event' => $event, 'reservation' => $reservation]
-                    ),
-                    'text/html'
-                )
-                ->attach($attachment)
-                // you can remove the following code if you don't define a text version for your emails
-                /*->addPart(
-                    $this->renderView(
-                        'Emails/registration.txt.twig',
-                        ['name' => $name]
-                    ),
-                    'text/plain'
-                )*/
-            ;
-            $mailer->send($message);
-        } catch (\ErrorException $e) {
-            throw new $e;
         }
     }
 

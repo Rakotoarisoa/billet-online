@@ -18,7 +18,7 @@
                     <img src="{{ asset('img/zay_01.jpg') }}" alt="Mage 4" width="100%" height="100%">
                 </div>
                 <div class="carousel-item">
-                    <img src="{{ asset('img/cover.jpg') }}" alt="Mage 4" width="100%" height="100%">
+                    <img src="{{ asset('img/events/reveillon.jpg') }}" alt="Rev" width="100%" height="100%">
                 </div>
             </div>
 
@@ -116,7 +116,7 @@
                                     </div>
                                     <div class="event-thumbnail">
 
-                                        <img width="350px" height="436.33px" src="{{ asset(item.imageEvent) }}"
+                                        <img width="350px" height="436.33px" src="{{ item.imageEvent?asset(item.imageEvent):"https://via.placeholder.com/400x300?text=IMAGE+NON+DISPONIBLE" }}"
                                              alt="{{ item.imageEvent }}">
                                     </div>
                                     <div class="event-text">

@@ -23,13 +23,14 @@
         <div class="blog-area section-padding-0-100">
             <div class="container">
                 <div class="row">
-                    <div class="col-12 col-lg-12">
+                    <div class="col-12 col-lg-9">
                         <!-- Single Post Start -->
                         <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
                             <!-- Post Thumb -->
                             <div class="blog-post-thumb mt-30">
-                                <a href="#"><img src="{{ asset(event.imageEvent) }}"
-                                                 alt="{{ event.titreEvenement }}"></a>
+                                <a href="#"><img
+                                            src="{{ event.imageevent?asset(event.imageEvent):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE" }}"
+                                            alt="{{ event.titreEvenement }}"></a>
                                 <!-- Post Date -->
                                 <div class="post-date">
                                     <span class="day_">{{ event.dateDebutEvent|date('d') }}</span>
@@ -129,7 +130,8 @@
                             </div>
                         </div>
 
-                        <div class="modal" id="checkout_command" role="dialog">
+                        <div class="modal" id="checkout_command" role="dialog" data-backdrop="static"
+                             data-keyboard="false">
                             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -161,10 +163,6 @@
                                                             <li><a href="#tab2"><span class="number">2</span> Step 2</a>
                                                             </li>
                                                             <li><a href="#tab3"><span class="number">3</span> Step 3</a>
-                                                            </li>
-                                                            <li><a href="#tab4"><span class="number">4</span> Step 4</a>
-                                                            </li>
-                                                            <li><a href="#tab5"><span class="number">5</span> Step 5</a>
                                                             </li>
                                                         </ul>
                                                         <div class="step-content">
@@ -205,7 +203,7 @@
                                                                                             <span class="text-danger error"></span>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <small>Ar {{ type.prix }}</small>
+                                                                                    <small>EUR {{ type.prix }}</small>
                                                                                     <br/>
                                                                                     <small>{{ type.description|raw }}</small>
                                                                                 </div>
@@ -361,22 +359,68 @@
                                                                         <div id="btnPaypal"></div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            <div class="step-tab-panel" id="tab4">
-                                                                <h3>Tab4</h3>
-                                                                <form name="frmLogin" id="frmLogin">
-                                                                    Email address:<br>
-                                                                    <input type="text" name="txtEmail" required>
-                                                                    <br> Password:<br>
-                                                                    <input type="text" name="txtPassword" required>
-                                                                </form>
-                                                            </div>
-                                                            <div class="step-tab-panel" id="tab5">
-                                                                <h3>Tab5</h3>
-                                                                <form name="frmMobile" id="frmMobile">
-                                                                    Mobile No:<br>
-                                                                    <input type="text" name="txtMobileNum" required>
-                                                                </form>
+                                                                <div class="row text-center payment-loader">
+                                                                    <div class="col loader">
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                <img src="{{ asset('img/loader.gif') }}"
+                                                                                     width="200px"/></div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                <span>Veuiller patienter pendant l'enregistrement de vos informations</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row card payment-success">
+                                                                    <div class="col-12">
+                                                                        <div class="row text-center">
+                                                                            <div class="col">
+                                                                                <span class="fa fa-check-circle text-success fa-3x "></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                Merci, le paiement de votre commande a
+                                                                                abouti. Veuiller vérifier vos billets
+                                                                                via e-mail
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row card payment-failure">
+                                                                    <div class="col-12">
+                                                                        <div class="row text-center">
+                                                                            <div class="col">
+                                                                                <span class="fa fa-warning text-danger fa-3x "></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                Désolé, le paiement de votre commande
+                                                                                n'a pas abouti. Veuiller recommencer
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row card register-failure">
+                                                                    <div class="col-12">
+                                                                        <div class="row text-center">
+                                                                            <div class="col">
+                                                                                <span class="fa fa-warning text-danger fa-3x "></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row">
+                                                                            <div class="col">
+                                                                                Merci, le paiement de votre commande a
+                                                                                abouti
+                                                                                mais des erreurs internes se sont
+                                                                                produites
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div class="step-footer row">
@@ -391,7 +435,8 @@
                                                                     Continuer
                                                                 </button>
                                                                 <button data-direction="finish"
-                                                                        class="btn btn-success step-btn">Terminé
+                                                                        class="btn btn-success step-btn step-btn-finish">
+                                                                    Terminé
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -414,20 +459,20 @@
                                                     <div class="row sub-total">
                                                         <div class="col-8">Sous-total</div>
                                                         <div class="col sub_total_value">
-                                                            <span class="currency">Ar</span> 0
+                                                            <span class="currency">EUR </span> 0
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-8">Frais</div>
                                                         <div class="col">
-                                                            <span class="currency frais">Ar</span> 0
+                                                            <span class="currency frais">EUR </span> 0
                                                         </div>
                                                     </div>
                                                     <hr/>
                                                     <div class="row total">
                                                         <div class="col-8"><h6>Total</h6></div>
                                                         <div class="col total_value">
-                                                            <span class="currency">Ar</span> 0
+                                                            <span class="currency">EUR </span> 0
                                                         </div>
                                                     </div>
                                                 </div>
@@ -462,6 +507,32 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-12 col-lg-3">
+                        <div class="blog-sidebar-area">
+                            <!-- Widget Area -->
+                            <div class="single-widget-area mb-30">
+                                <img src="{{ asset('img/events/Bodo.png') }}"/>
+                            </div>
+
+                            <!-- Widget Area -->
+                            <div class="single-widget-area mb-30">
+                                <a href="#"><img src="{{ asset('img/events/reveillon.jpg') }}" alt=""></a>
+                            </div>
+                            <!-- Widget Area -->
+                            <div class="single-widget-area mb-30">
+                                <div class="widget-title">
+                                    <h5>Catégories</h5>
+                                </div>
+                                <div class="widget-content">
+                                    <ul class="tags">
+                                        {% for cat in catList %}
+                                        <li><a href="#">{{  cat.libelle}}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -476,44 +547,16 @@
         <script type="text/javascript">
             let cart_items = [];
             let steps_api = null;
-            paypal.Buttons({
-                style: {
-                    layout: 'horizontal'
-                },
-                createOrder: function (data, actions) {
-                    // Set up the transaction
-                    return actions.order.create({
-                        purchase_units: [{
-                            application_context: {
-                                brand_name: 'Ivenco',
-                                return_url: '/res_billet/checkout',
-                                cancel_url: '/res_billet/cancel'
-                            },
-                            amount: {
-                                breakdown: {
-                                    item_total: {
-                                        currency_code: "EUR",
-                                        value: "{{ not app.session.get('totalPrice') ? "0" : app.session.get('totalPrice') }}"
-                                    }
-                                },
-                                currency_code: "EUR",
-                                value: "{{ not app.session.get('totalPrice') ? "0" : app.session.get('totalPrice') }}"
-                            },
-                            items:
-                                transformItemsPaypalFormat(cart_items)
-                        }],
-
-                    });
-                },
-                onApprove: function (data, actions) {
-                    // Capture the funds from the transaction
-                    return actions.order.capture().then(function (details) {
-                        // Show a success message to your buyer
-                        console.log('Transaction completed by ' + details.payer.name.given_name);
-                        location.href = "/res_billet/checkout";
-                    });
-                }
-            }).render('#btnPaypal');
+            let total_price = 0;
+            let counter = '';
+            function resetForm(id_form){
+                $("#" + id_form).find('input[type="radio"]').val('');
+                $("#" + id_form).find('input[type="text"]').val('');
+                $("#" + id_form).find('input[type="password"]').val('');
+                $("#" + id_form).find('input[type="checkbox"]').removeAttr("checked");
+                $("#" + id_form).find('select option').removeAttr("selected");
+                $("#" + id_form).find('textarea').val('');
+            }
             //-------------------------------modal management-------------
             $('#checkout_command').on('shown.bs.modal', function () {
                 $.get('/res_billet/clear');
@@ -560,12 +603,6 @@
                         error.appendTo(element.parents('.form-group').find('.input-error'));
                     }
                 });
-
-                let frmLogin = $('#frmLogin');
-                let frmLoginValidator = frmLogin.validate();
-
-                let frmMobile = $('#frmMobile');
-                let frmMobileValidator = frmMobile.validate();
                 $(".step-steps").hide();
                 steps_api = $('#checkout_steps').steps({
                     onChange: function (currentIndex, newIndex, stepDirection) {
@@ -574,10 +611,11 @@
                                 let data = form_select_item.serializeArray();
                                 $('#data_cart').empty();
                                 $.each(data, function (i, field) {
+                                    let total_container = null;
                                     if (field.value !== "") {
                                         let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
                                         let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
-                                        let item_price = $("<div class='col'>Ar </div>").append(parsed[1] * parsed[2]);
+                                        let item_price = $("<div class='col'>EUR </div>").append(parsed[1] * parsed[2]);
                                         let item_container = $("<div class='row'></div>").append(item_label, item_price);
                                         $.post('/res_billet/add/', {
                                             event_id: {{ event.id }},
@@ -586,48 +624,105 @@
                                             section_id: '-',
                                             place_id: '-',
                                             redirect: '/'
-                                        }, function (result) {
-                                            $('#data_cart').append(item_container);
                                         });
+                                        $('#data_cart').append(item_container);
                                     }
+
                                 });
+                                $('.total').html('<div class="col loader text-center"><img style="width:100px" src="{{ asset('img/loader.gif') }}"></div>');
                                 $.get("/api/cart/get_total", function (total) {
-                                    let item_label = $("<div class='col-8'></div>").append("<h6>Total</h6>");
-                                    let item_price = $("<div class='col total_value'>Ar </div>").append(total);
+                                    total_price = total;
+                                    let item_label = $("<div class='col-7'></div>").append("<h6>Total</h6>");
+                                    let item_price = $("<div class='col total_value'>EUR </div>").append(total);
                                     $(".total").empty();
                                     $(".total").append(item_label, item_price);
                                 });
                                 return form_select_item.valid();
                             }
                             if (newIndex === 2 && currentIndex === newIndex - 1) {
-                                start_counter();
-                                $.post("/res_billet/send_buyer_info", frmInfo.serialize(),function(data){
+                                counter = start_counter();
+                                $('.payment-success').hide();
+                                $('.payment-failure').hide();
+                                $('.register-failure').hide();
+                                $('.payment-loader').hide();
+                                $.post("/res_billet/send_buyer_info", frmInfo.serialize(), function (data) {
                                     console.log(data);
                                 });
-                                return frmInfo.valid();
-                            }
-                            if (newIndex === 3 && currentIndex === newIndex - 1) {
-                                $('btnPayPal').on('click', function () {
-                                    $.get('/api/cart/list', function (data, status) {
-                                        cart_items = data;
-                                    });
+                                $.get('/api/cart/list', function (data) {
+                                    cart_items = data;
                                 });
-                                return true;
+                                paypal.Buttons({
+                                    style: {
+                                        layout: 'horizontal'
+                                    },
+                                    createOrder: function (data, actions) {
+                                        // Set up the transaction
+                                        return actions.order.create({
+                                            purchase_units: [{
+                                                application_context: {
+                                                    brand_name: 'Ivenco',
+                                                    return_url: '/res_billet/checkout',
+                                                    cancel_url: '/res_billet/cancel'
+                                                },
+                                                amount: {
+                                                    breakdown: {
+                                                        item_total: {
+                                                            currency_code: "EUR",
+                                                            value: total_price
+                                                        }
+                                                    },
+                                                    currency_code: "EUR",
+                                                    value: total_price
+                                                },
+                                                items:
+                                                    transformItemsPaypalFormat(cart_items)
+                                            }],
 
-                            }
-                            if (newIndex === 4 && currentIndex === newIndex - 1) {
-                                return frmLogin.valid();
+                                        });
+                                    },
+                                    onApprove: function (data, actions) {
+                                        // Capture the funds from the transaction
+                                        return actions.order.capture().then(function (details) {
+                                            $(document).ajaxStart(function () {
+                                                $('.payment-loader').show();
+                                            });
+                                            $(document).ajaxStop(function () {
+                                                $('.payment-loader').hide();
+                                            });
+                                            // Show a success message to your buyer
+                                            $.get('/res_billet/checkout')
+                                                .done(function () {
+                                                    $('.payment-success').show();
+                                                    $('#btnPaypal').hide();
+                                                })
+                                                .fail(function () {
+                                                    $('.register-failure').show();
+                                                })
+                                                .always(function () {
+                                                    console.log("finished");
+                                                });
+                                                console.log('Transaction completed by ' + details.payer.name.given_name);
+                                            //location.href = "/res_billet/checkout";
+                                        });
+                                    },
+                                    onError: function (error) {
+                                        $('.payment-failure').show();
+                                    }
+                                }).render('#btnPaypal');
+                                return true;
                             }
                         }
                         if (stepDirection === 'backward') {
                             if (newIndex === 0 && currentIndex === newIndex + 1) {
-                                $.get('/res_billet/clear',function(){
+                                clearInterval(counter);
+                                $.get('/res_billet/clear', function () {
                                     $('#data_cart').empty();
                                     $('#data_cart').append("<div class='row'><div class='col'>Veuillez ajouter vos commandes</div>");
                                     $('.total_value').empty().append("0");
                                 });
                             }
                             if (newIndex === 1 && currentIndex === newIndex + 1) {
+                                $("#btnPaypal").find('.paypal-buttons').remove();
                             }
                             if (newIndex === 2 && currentIndex === newIndex + 1) {
                             }
@@ -637,7 +732,11 @@
                     },
                     showBackButton: true,
                     onFinish: function () {
-                        alert('Wizard Completed');
+                        if ($('.payment-success').is(':visible') || $('.payment-failure').is(':visible') || $('.register-failure').is(':visible')) {
+                            $('#checkout_command').modal('hide');
+                        } else {
+                            alert('Veuiller procéder au paiement. Pour fermer le dialogue cliquer sur x. ');
+                        }
                     }
                 });
             });
@@ -647,8 +746,13 @@
                         $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
                         $('#checkout_command').modal('hide'); //Hide Form Modal
                         $.get('/res_billet/clear');
+                        location.reload();
                     });
                 });
+            });
+            $('#checkout_command').on('hidden.bs.modal', function () {
+                resetForm('form_select_items');
+                resetForm('frmInfo');
             });
             let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
 
@@ -663,6 +767,7 @@
                         $('#checkout_command').modal('hide');
                     }
                 }, 1000);
+                return start_counter;
             }
 
             function format(time) {
@@ -685,7 +790,7 @@
                 let formatted_cart = [];
                 cart_items.forEach(function (el) {
                     let item = {
-                        name: el.name,
+                        name: el.category_str,
                         quantity: el.quantity,
                         currency: "EUR",
                         unit_amount: {
