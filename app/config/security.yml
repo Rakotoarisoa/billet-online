@@ -36,6 +36,7 @@ security:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/user,role : ROLE_USER_MEMBER}
         - { path: '^/admin', roles: ROLE_ADMIN }
 
     role_hierarchy:

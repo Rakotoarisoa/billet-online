@@ -61,7 +61,7 @@
                                     <p class="isPublished">{% if item.isPublished %}Publié{% else %}<i
                                                 class="fa fa-close"></i>Non publié {% endif %}</p>
                                     <div class="event-thumbnail">
-                                        <img src="{{ asset(item.imageEvent) }}" width="350px" height="436.33px" alt="{{ item.titreEvenement }}">
+                                        <img src="{{ asset((item.imageEvent)?vich_uploader_asset(item,'image','AppBundle\\Entity\\Evenement')|imagine_filter('list_event_view'):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE") }}" width="350px" height="436.33px" alt="{{ item.titreEvenement }}">
                                     </div>
                                     <div class="event-text">
                                         <h4>{{ item.titreEvenement }}</h4>

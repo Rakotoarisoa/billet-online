@@ -24,10 +24,14 @@ class TypeBilletType extends AbstractType
         $builder
             ->add('libelle', TextType::class, array('label' => 'Libellé', 'attr' => [
                 'placeholder' => 'Ajouter un titre explicite à votre billet'
-            ]))
+            ],
+                'required' => true
+            ))
             ->add('prix', NumberType::class, array('label' => 'Prix (MGA)', 'attr' => [
                 'placeholder' => 'Définir le prix de votre Billet'
-            ]))
+            ],
+                'required' => true
+            ))
             ->add('active', ChoiceType::class, [
                     'choices' => [
                         'Oui' => true,
@@ -55,26 +59,24 @@ class TypeBilletType extends AbstractType
             ))
             ->add('dateDebut', DateTimeType::class, array(
                 'label' => 'Date de début des ventes',
-                'required' => true,
                 'widget' => 'single_text',
                 'html5' => false,
                 'attr' => [
-                    'class' => 'form-control dateDebut',
+                    'class' => 'form-control dateDebutBillets',
                     'readOnly' => true
                 ],
             ))
             ->add('dateFin', DateTimeType::class, array(
                 'label' => 'Date de fin des ventes',
-                'required' => true,
                 'widget' => 'single_text',
                 'html5' => false,
                 'attr' => [
-                    'class' => 'form-control dateFin',
+                    'class' => 'form-control dateFinBillets',
                     'readOnly' => true
                 ],
             ))
             ->add('quantite', NumberType::class, array('label' => 'Quantité', 'attr' => [
-                'placeholder' => 'Préciser la quantité disponible du billet'
+                'placeholder' => 'Nombre de billets'
             ]));
     }
 

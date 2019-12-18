@@ -1,0 +1,218 @@
+{% extends 'adminuserevent.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    <!-- hedare search -->
+    <!--
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <div class="navbar-nav">
+            <div style="margin-top:20px">
+                <div class="row">
+                    <div class="col">
+                        <h1 style="color:#6c757d">Evénements</h1>
+                    </div>                    
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-sx-12">    
+                            <form>
+                                <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" placeholder="Rechercher des evenements">
+                                        </div>
+                                        <div class="col">
+                                        <input type="text" class="form-control" placeholder="Etat de l'événement">
+                                        </div>
+                                        <div class="col">
+                                        <input type="text" class="form-control" placeholder="Organisateur">
+                                        </div>
+                                </div>
+                            </form>
+                    </div>                                   
+                </div>
+            </div>
+        </div>
+    </nav>
+    -->
+
+    <nav class="navbar navbar-expand-sm bg-white navbar-white fixed-top">
+
+        <table style="width:100%">
+            <tr>
+                <td style="width:60%"><h1 style="color:#6c757d">Evénements</h1></td>
+                <td style="width:30%;">
+
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#ooo;width:60%">
+                    <form method="GET" action="{{ path('viewEventUserAdmin',{'userId':app.user.id }) }}">
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" name="event_name" value="" class="form-control"
+                                       placeholder="Rechercher des evenements">
+                            </div>
+                            <div class="col">
+                                <input type="text" name="event_state" value="" class="form-control"
+                                       placeholder="Etat de l'événement">
+                            </div>
+                            <div class="col">
+                                <input type="text" name="event_creator" value="" class="form-control"
+                                       placeholder="Organisateur">
+                            </div>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </td>
+                <td style="color:#ooo;width:30%; float:right">
+                    <button type="button" class="btn btn-danger"><strong><a
+                                    href="{{ path('createEvent',{'userId':app.user.id }) }}" style="color:#fff">Créer un
+                                événement</a></strong></button>
+                </td>
+            </tr>
+        </table>
+    </nav>
+
+
+    <!-- header search -->
+    <div class="clear">
+        <br/><br/><br/><br/><br/><br/><br/><br/>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-8">
+                <table class="table">
+                    <tr style="background-color:#ccc">
+                        <td><b>Evenement</b></td>
+                        <td></td>
+                        <td></td>
+                        <td><b>Vendus</b></td>
+                        <td><b>Commandes</b></td>
+                        <td><b>Statut</b></td>
+                        <td></td>
+                    </tr>
+                    {% for event in events %}
+                        <tr>
+                            <td>
+                                <p class="day_">{{ event.dateDebutEvent|date("d") }}</p>
+                                <p class="month_">{{ event.dateDebutEvent.date|date('M') }}
+                                    -{{ event.dateDebutEvent.date|date('Y') }} </p>
+                            </td>
+                            <td>
+                                {% if event.imageEvent %}
+                                    <img src="{{ vich_uploader_asset(event, 'image','\\AppBundle\\Entity\\Evenement')|imagine_filter('user_list_event_view') }}" style="width:100px;"/>
+                                {% else %}
+                                    <img src="https://via.placeholder.com/100"/>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <p>
+                                    <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}"><b>{{ event.titreEvenement }}</b></a>
+                                    <br/>
+                                    {{ event.lieuEvenement.nomSalle }} ,{{ event.lieuEvenement.pays }} <br/>
+                                    {{ event.organisation }}</p>
+                            </td>
+
+
+                            <td>{% set total_billets,count_vendus=0,0 %}
+                                {% for typeBillet in event.typeBillets %}
+                                    {% for billet in typeBillet.billets %}
+                                        {% if  billet.estVendu %}
+                                            {% set count_vendus=count_vendus+ 1 %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% set total_billets=total_billets+typeBillet.quantite %}
+                                {% endfor %}
+                                {% if count_vendus > 0 and total_billets > 0 %}
+                                    <a class="link_table_admin_user text-success" href="{{ path('viewTicketEventUserAdmin',{'userId':app.user.id,'e_id': event.id}) }}" target="_blank">
+                                        {{ count_vendus }}/{{ total_billets }}
+                                    </a>
+                                {% elseif total_billets > 0 %}
+                                    {{ count_vendus }}/{{ total_billets }}
+                                {% else %}
+                                    Aucun billets à vendre
+                                {% endif %}
+                            </td>
+
+
+                            <td>{% if event.reservation|length %}
+                                    <a class="link_table_admin_user text-success" href="{{ path('viewOrdersList'),{ 'userId':app.user.id,'e_id': event.id }) }}" target="_blank">
+                                        {{ event.reservation|length }} commandes
+                                    </a>
+                                {% else %}
+                                    Aucune commande
+                                {% endif %}
+                            </td>
+                            <td>Ventes achevées</td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm rakoto">
+                                    <i class="fa fa-bars" id="flip"></i>
+                                </button>
+                                <ul class="list-group" id="show-{{ event.id }}" style="display:none;">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}"
+                                           style="font-size:12px">Modifier</a>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Supprimer
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Copier l'evenement
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Copier l'url
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div class="text-center">{{ knp_pagination_render(events) }}</div>
+            </div>
+            <div class="col-sm-4">
+                <h4>Etat de votre compte</h4>
+                <div class="row">
+                    <div class="col">
+                        <div class="card">
+
+                            <div class="card-body text-center">
+                                <h4>86</h4>
+                            </div>
+                            <div class="card-footer text-center bg bg-success text-white">
+                                Commandes
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h4>30 000</h4>
+                            </div>
+                            <div class="card-footer text-center bg bg-success text-white">
+                                Billets vendus
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h4>30 000</h4>
+                            </div>
+                            <div class="card-footer text-center bg bg-danger text-white">
+                                En attente
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+

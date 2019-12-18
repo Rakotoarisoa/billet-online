@@ -1,0 +1,145 @@
+{% extends 'adminuserevent.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    <!-- hedare search -->
+    <!--
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <div class="navbar-nav">
+            <div style="margin-top:20px">
+                <div class="row">
+                    <div class="col">
+                        <h1 style="color:#6c757d">Evénements</h1>
+                    </div>                    
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-sx-12">    
+                            <form>
+                                <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" placeholder="Rechercher des evenements">
+                                        </div>
+                                        <div class="col">
+                                        <input type="text" class="form-control" placeholder="Etat de l'événement">
+                                        </div>
+                                        <div class="col">
+                                        <input type="text" class="form-control" placeholder="Organisateur">
+                                        </div>
+                                </div>
+                            </form>
+                    </div>                                   
+                </div>
+            </div>
+        </div>
+    </nav>
+    -->
+
+    <nav class="navbar navbar-expand-sm bg-white navbar-white fixed-top">
+
+        <table style="width:100%">
+            <tr>
+                <td style="width:60%">Liste des commandes pour l' évènement <span style="color:#6c757d"> {{ event.titreEvenement }}</span></td>
+
+                <td style="width:30%;">
+
+                </td>
+            </tr>
+            <hr/>
+            <tr>
+                <td style="color:#oooooo;width:60%">
+                    <form method="GET" action="{{ path('viewEventUserAdmin',{'userId':app.user.id }) }}">
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" name="order_id" value="" class="form-control"
+                                       placeholder="Numéro de la commande">
+                            </div>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </nav>
+
+
+    <!-- header search -->
+    <div class="clear">
+        <br/><br/><br/><br/><br/><br/><br/><br/>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-8">
+                <table class="table">
+                    <tr style="background-color:#ccc">
+                        <td><b>Identifiant Commande</b></td>
+                        <td></td>
+                        <td></td>
+                        <td><b>Etat</b></td>
+                        <td><b>Mode de paiement</b></td>
+                        <td><b>Acheteur</b></td>
+                        <td></td>
+                    </tr>
+                    {% for order in orders %}
+                        <tr>
+                            <td>
+                                <h4><span class="badge badge-info badge-pill ">#{{ order.randomCodeCommande }}</span></h4>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                                Payé
+                            </td>
+                            <td>
+                                Paypal
+                            </td>
+                            <td>order.userCheckout.nom</td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm rakoto">
+                                    <i class="fa fa-bars" id="flip"></i>
+                                </button>
+                                <ul class="list-group" id="show-{{ event.id }}" style="display:none;">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}"
+                                           style="font-size:12px">Modifier</a>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Supprimer
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Copier l'evenement
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Copier l'url
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col-sm-4">
+                <h4>Etat de votre compte</h4>
+                <p>Le Lorem Ipsum est simplement du faux texte
+                    employé dans la composition et la mise en page avant impression.
+                    Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis
+                    les années 1500, quand un imprimeur anonyme assembla ensemble des morceaux de texte pour réaliser un
+                    livre spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles, mais s'est aussi
+                    adapté à la bureautique informatique, sans que son contenu n'en soit modifié. Il a été popularisé
+                    dans les années 1960 grâce à la vente de feuilles Letraset contenant des passages du Lorem Ipsum,
+                    et,
+                    plus récemment, par son inclusion dans des applications de mise en page de texte, comme Aldus
+                    PageMaker.</p>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+

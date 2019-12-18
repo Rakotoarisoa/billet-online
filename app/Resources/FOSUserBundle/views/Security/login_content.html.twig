@@ -19,13 +19,20 @@
                                     {% if app.request.hasPreviousSession %}
                                         {% for type, messages in app.session.flashbag.all() %}
                                             {% for message in messages %}
-                                                <p class="alert alert-danger">
+
                                                 <div class="flash-{{ type }}">
-                                                    {{ message }}
+                                                    <p class="alert alert-danger"> {{ message }}</p>
                                                 </div>
-                                                </p>
+
                                             {% endfor %}
                                         {% endfor %}
+                                    {% endif %}
+                                    {% if app.session.get('sf_redirect')['route'] is defined  %}
+
+                                        <div class="flash-error">
+                                            <p class="alert alert-danger"> Veuiller vous connecter pour pouvoir accéder à cette page</p>
+                                        </div>
+                                        {{ app.session.get('sf_redirect')['route'] }}
                                     {% endif %}
                                 <div class="form-group">
                                     <label for="username">{{ 'security.login.username'|trans }}</label>

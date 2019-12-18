@@ -98,7 +98,9 @@
                                                        href="{{ path('createEvent',{'userId':app.user.id }) }}">Créer un
                                                         évènement</a>
                                                     <a class="dropdown-item bg-light text-dark"
-                                                       href="{{ path('viewListUser',{'userId':app.user.id}) }}">Gérer
+                                                       href="{{ path('viewListUser',{'userId':app.user.id}) }}">Evènements</a>
+                                                    <a class="dropdown-item bg-light text-dark"
+                                                       href="{{ path('viewEventUserAdmin',{'userId':app.user.id}) }}">Gérer
                                                         les
                                                         évènements</a>
                                                     <a class="dropdown-item bg-light text-dark"
@@ -150,7 +152,6 @@
     <div class="col-sm-9 col-lg-9">
         <!-- page content -->
         {% for label, messages in app.flashes %}
-
             {% for message in messages %}
                 {% if label == 'error' %}
                     <div class="alert alert-danger" role="alert">

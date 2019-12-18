@@ -1,0 +1,123 @@
+{% extends 'adminuserevent.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    <!-- hedare search -->
+    <!--
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <div class="navbar-nav">
+            <div style="margin-top:20px">
+                <div class="row">
+                    <div class="col">
+                        <h1 style="color:#6c757d">Evénements</h1>
+                    </div>                    
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-sm-12 col-sx-12">    
+                            <form>
+                                <div class="row">
+                                        <div class="col">
+                                            <input type="text" class="form-control" placeholder="Rechercher des evenements">
+                                        </div>
+                                        <div class="col">
+                                        <input type="text" class="form-control" placeholder="Etat de l'événement">
+                                        </div>
+                                        <div class="col">
+                                        <input type="text" class="form-control" placeholder="Organisateur">
+                                        </div>
+                                </div>
+                            </form>
+                    </div>                                   
+                </div>
+            </div>
+        </div>
+    </nav>
+    -->
+
+    <nav class="navbar navbar-expand-sm bg-white navbar-white fixed-top">
+
+        <table style="width:100%">
+            <tr>
+                <td style="width:60%"><h1 style="color:#6c757d">Evénements</h1></td>
+                <td style="width:30%;">
+
+                </td>
+            </tr>
+            <tr>
+                <td style="color:#ooo;width:60%">
+                    <form method="GET" action="{{ path('viewEventUserAdmin',{'userId':app.user.id }) }}">
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" name="event_name" value="{{ event_name }}" class="form-control"
+                                       placeholder="Rechercher des evenements">
+                            </div>
+                            <div class="col">
+                                <input type="text" name="event_state" value="{{ event_state }}" class="form-control"
+                                       placeholder="Etat de l'événement">
+                            </div>
+                            <div class="col">
+                                <input type="text" name="event_creator" value="{{ event_creator }}" class="form-control"
+                                       placeholder="Organisateur">
+                            </div>
+                            <button type="submit" class="btn btn-info">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </td>
+                <td style="color:#ooo;width:30%; float:right">
+                    <button type="button" class="btn btn-danger"><strong><a
+                                    href="{{ path('createEvent',{'userId':app.user.id }) }}" style="color:#fff">Créer un
+                                événement</a></strong></button>
+                </td>
+            </tr>
+        </table>
+    </nav>
+
+
+    <!-- header search -->
+    <div class="clear">
+        <br/><br/><br/><br/><br/><br/><br/><br/>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table">
+                    {% for typeBillet in event.typeBillets %}
+                        <tr style="background-color:#ccc">
+                            <td><b>Libellé</b></td>
+                            <td><b>Quantité</b></td>
+                            <td><b>Prix</b></td>
+                            <td><b>Statut</b></td>
+                        </tr>
+                        <tr>
+                            <td>{{ typeBillet.libelle }}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div class="text-center">{{ knp_pagination_render(events) }}</div>
+            </div>
+            <!--<div class="col-sm-4">
+                <h4>Etat de votre compte</h4>
+                <p>Le Lorem Ipsum est simplement du faux texte
+                    employé dans la composition et la mise en page avant impression.
+                    Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis
+                    les années 1500, quand un imprimeur anonyme assembla ensemble des morceaux de texte pour réaliser un
+                    livre spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles, mais s'est aussi
+                    adapté à la bureautique informatique, sans que son contenu n'en soit modifié. Il a été popularisé
+                    dans les années 1960 grâce à la vente de feuilles Letraset contenant des passages du Lorem Ipsum,
+                    et,
+                    plus récemment, par son inclusion dans des applications de mise en page de texte, comme Aldus
+                    PageMaker.</p>
+
+            </div>-->
+
+        </div>
+    </div>
+{% endblock %}
+

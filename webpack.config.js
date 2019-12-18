@@ -24,7 +24,12 @@ Encore
         {from: './node_modules/ckeditor/adapters', to: 'ckeditor/adapters/[path][name].[ext]'},
         {from: './node_modules/ckeditor/lang', to: 'ckeditor/lang/[path][name].[ext]'},
         {from: './node_modules/ckeditor/plugins', to: 'ckeditor/plugins/[path][name].[ext]'},
-        {from: './node_modules/ckeditor/skins', to: 'ckeditor/skins/[path][name].[ext]'}
+        {from: './node_modules/ckeditor/skins', to: 'ckeditor/skins/[path][name].[ext]'},
+        {from: './vendor/kartik-v/bootstrap-fileinput/js',to:'kartik-v/js/[path][name].[ext]', pattern: /\.(js)$/, includeSubdirectories: true},
+        {from: './vendor/kartik-v/bootstrap-fileinput/css',to:'kartik-v/css/[path][name].[ext]', pattern: /\.(css)$/},
+        {from: './vendor/kartik-v/bootstrap-fileinput/img',to:'kartik-v/img/[path][name].[ext]', pattern: /\.(gif)$/},
+        {from: './vendor/kartik-v/bootstrap-fileinput/themes/fa',to:'kartik-v/themes/[path][name].[ext]', pattern: /\.(js)$/}
+
     ])
     /*
      * FEATURE CONFIG

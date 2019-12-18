@@ -3,7 +3,7 @@
 
 namespace AppBundle\Form;
 
-use AppBundle\Form\TypeBilletType;
+
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -16,6 +16,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
+use Vich\UploaderBundle\Form\Type\VichImageType;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class EventType extends AbstractType
 {
@@ -40,11 +42,13 @@ class EventType extends AbstractType
                         'allow_add' => true,
                         'allow_delete' => true,
                         'by_reference' => false,
-                        /*'constraints' => new NotBlank(
-                            array(
-                                'groups' => 'flow_registration_step1'
-                            )
-                        )*/
+                        'required' => true,
+                        'constraints' => [
+                            new Assert\Count([
+                                'min' => 1,
+                                'minMessage' => 'Au moins 1 type de billets est requis',
+                                // also has max and maxMessage just like the Length constraint
+                            ])]
                     ])
                     ->add('devise',EntityType::class ,array(
                         'label' => 'Sélectionner la devise',
@@ -102,7 +106,7 @@ class EventType extends AbstractType
                     ));
                 break;
             case 2:
-                $builder->add('image_event', FileType::class, [
+                $builder->add('image', VichImageType::class, [
                     'label' => 'Image',
                     // unmapped means that this field is not associated to any entity property
                     'mapped' => true,
@@ -110,16 +114,17 @@ class EventType extends AbstractType
                     'constraints' => [
                         new Image(
                             [
-                                'minHeight' => 300,
+                                'minHeight' => 400,
                                 'minWidth' => 600
                             ]
                         )
                     ],
                     'attr' => [
-                        'class' => 'image-event',
-                        'accept' => '.jpg,.jpeg,.png'
-                    ],
-                    'data_class' => null
+                        'id' => "image-event",
+                        'class' => 'image-event file',
+                        'accept' => '.jpg,.jpeg',
+                        'data-msg-placeholder' => "Select {files} for upload..."
+                    ]
                 ])
                     ->add('description', CKEditorType::class, array(
                         'config' => array(

@@ -26,6 +26,7 @@
         "friendsofsymfony/user-bundle": "^2.1",
         "incenteev/composer-parameter-handler": "^2.0",
         "jms/serializer-bundle": "^2.4",
+        "kartik-v/bootstrap-fileinput": "^5.0",
         "knplabs/knp-paginator-bundle": "^4.0",
         "liip/imagine-bundle": "^2.2",
         "nelmio/cors-bundle": "^1.5",
