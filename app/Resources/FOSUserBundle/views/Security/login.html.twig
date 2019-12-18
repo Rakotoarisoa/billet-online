@@ -1,8 +1,14 @@
 {% extends "FOSUserBundle::layout.html.twig" %}
 {% trans_default_domain 'FOSUserBundle' %}
-{% block breadcrumb_content  %}
+{% block header %}
+{% endblock %}
+{% block breadcrumb_content %}
     <img src="{{ asset('img/ivenco_old.png') }}" width="200" height="50">
 {% endblock %}
 {% block fos_user_content %}
     {{ include('@FOSUser/Security/login_content.html.twig') }}
 {% endblock fos_user_content %}
+{% block contact %}
+{% endblock %}
+    {% block footer %}
+    {% endblock %}

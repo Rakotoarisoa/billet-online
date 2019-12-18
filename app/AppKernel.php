@@ -2,9 +2,11 @@
 
 use FOS\RestBundle\FOSRestBundle;
 use JMS\SerializerBundle\JMSSerializerBundle;
+use Liip\ImagineBundle\LiipImagineBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Vich\UploaderBundle\VichUploaderBundle;
 
 class AppKernel extends Kernel
 {
@@ -31,6 +33,7 @@ class AppKernel extends Kernel
             new Beelab\PaypalBundle\BeelabPaypalBundle(),
             new Omines\DataTablesBundle\DataTablesBundle(),
             new Craue\FormFlowBundle\CraueFormFlowBundle(),
+            new Vich\UploaderBundle\VichUploaderBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
             new Core23\DompdfBundle\Core23DompdfBundle(),
             new Sonata\CoreBundle\SonataCoreBundle(),

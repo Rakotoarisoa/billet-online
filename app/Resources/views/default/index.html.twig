@@ -103,7 +103,6 @@
             <div class="container">
                 {% if (nbEvents > 0) %}
                     <p>{{ 'filter_events.countResults'|transchoice(nbEvents) }}{% if app.request.get('titre') != null %} pour la recherche <b>{{ app.request.get('titre') }}</b>{% endif %}</p>
-
                     <div class="row">
                         {% for item in events %}
                             <!-- Single Event Area -->
@@ -115,17 +114,14 @@
                                         <p class="year_">{{item.dateDebutEvent|localizeddate('none', 'none', null, null,"Y")}}</p>
                                     </div>
                                     <div class="event-thumbnail">
-
-                                        <img width="350px" height="436.33px" src="{{ item.imageEvent?asset(item.imageEvent):"https://via.placeholder.com/400x300?text=IMAGE+NON+DISPONIBLE" }}"
+                                        <img width="350px" height="436.33px" src="{{ item.imageEvent?vich_uploader_asset(item,'image','AppBundle\\Entity\\Evenement')|imagine_filter('list_event_view'):"https://via.placeholder.com/400x300?text=IMAGE+NON+DISPONIBLE" }}"
                                              alt="{{ item.imageEvent }}">
                                     </div>
                                     <div class="event-text">
                                         <h4>{{ item.titreEvenement }}</h4>
                                         <div class="event-meta-data">
                                             <a href="#" class="event-place"><b>{{ item.nomSalle }}</b></a>
-
-                                            <a href="#"
-                                               class="event-date">à {{ item.dateDebutEvent|localizeddate('none', 'none', null, null,"HH:mm") }}</a>
+                                            <a href="#" class="event-date">à {{ item.dateDebutEvent|localizeddate('none', 'none', null, null,"HH:mm") }}</a>
                                         </div>
                                         <a href="{{ path('viewSingle',{'id':item.id}) }}" class="btn see-more-btn">Détails</a>
                                     </div>

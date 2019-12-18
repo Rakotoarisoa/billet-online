@@ -49,7 +49,13 @@ a:focus {
   font-weight: 700;
   font-size: 16px;
   font-family: "Archivo Narrow", sans-serif; }
-
+a.link_table_admin_user{
+  font-weight: inherit;
+}
+a.link_table_admin_user:hover{
+  font-weight: inherit;
+  color:blue;
+}
 ul,
 ol {
   margin: 0; }

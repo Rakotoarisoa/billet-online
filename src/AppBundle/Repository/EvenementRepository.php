@@ -91,7 +91,8 @@ class EvenementRepository extends EntityRepository
             $qbEvent->andWhere('e.organisation LIKE :organisation')
                     ->setParameter('organisation','%'.$event_creator.'%');
 
-        }            
+        }
+        $qbEvent->orderBy('e.dateDebutEvent','DESC');
         return $qbEvent->getQuery()
                        ->execute();
                     

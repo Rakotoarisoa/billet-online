@@ -7,11 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\TypeBillet;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\EvenementRepository")
  * @ORM\Table(name="evenement")
  * @Serializer\ExclusionPolicy("none")
+ * @Vich\Uploadable
  */
 class Evenement
 {
@@ -144,6 +147,28 @@ class Evenement
      * @ORM\Column(type="string", length=255,nullable=true)
      */
     private $imageEvent;
+    /**
+     * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageEvent")
+     *
+     * @var File
+     */
+    private $image;
+
+    /**
+     * @return File
+     */
+    public function getImage(): ?File
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param File $image
+     */
+    public function setImage(File $image): void
+    {
+        $this->image = $image;
+    }
 
     /**
      * @ORM\Column(type="text")

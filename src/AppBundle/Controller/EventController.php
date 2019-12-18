@@ -41,7 +41,7 @@ class EventController extends Controller
 
     /**
      * Formulaire de création d'évènements
-     * @Route("/{userId}/events/create", name="createEvent")
+     * @Route("/user/{userId}/events/create", name="createEvent")
      * @ParamConverter("user",options={"mapping":{"userId" = "id"}})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
@@ -86,8 +86,9 @@ class EventController extends Controller
 
     /**
      * Gestion des évènements de l'utilisateur
-     * @Route("/{userId}/events/list", name="viewListUser")
+     * @Route("/user/{userId}/events/list", name="viewListUser")
      * @ParamConverter("user",options={"mapping":{"userId" = "id"}})
+     * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
      * @return Response
@@ -107,8 +108,9 @@ class EventController extends Controller
     }
 
     /**
-     * @Route("/{userId}/event/create-map/{id}", name="viewCreateMap")
+     * @Route("/user/{userId}/event/create-map/{id}", name="viewCreateMap")
      * @ParamConverter("event",options={"mapping":{"id" = "id","userId":"user.id"}})
+     * @Security("has_role('ROLE_USER')")
      * @param Evenement $event
      * @return Response
      */
@@ -119,7 +121,7 @@ class EventController extends Controller
 
     /**
      * Supprimer un évènement
-     * @Route("/{user}/events/delete/{id}", name="viewEventDelete")
+     * @Route("//user/{user}/events/delete/{id}", name="viewEventDelete")
      * */
     public function deleteEventById(Request $request, Evenement $event)
     {
@@ -155,7 +157,7 @@ class EventController extends Controller
 
     /**
      * Modifier un évènement
-     * @Route("/{user}/event/manage/{id}", name="viewEventUpdate")
+     * @Route("//user/{user}/event/manage/{id}", name="viewEventUpdate")
      * */
     public function updateEvent(Request $request, Evenement $event)
     {

@@ -29,7 +29,7 @@
                             <!-- Post Thumb -->
                             <div class="blog-post-thumb mt-30">
                                 <a href="#"><img
-                                            src="{{ event.imageevent?asset(event.imageEvent):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE" }}"
+                                            src="{{ event.imageevent?vich_uploader_asset(event,'image')|imagine_filter('single_event_view'):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE" }}"
                                             alt="{{ event.titreEvenement }}"></a>
                                 <!-- Post Date -->
                                 <div class="post-date">
