@@ -55,8 +55,6 @@ class Devise
     {
         $this->evenement = $evenement;
     }
-
-
     /**
      * Get id.
      *
@@ -66,7 +64,6 @@ class Devise
     {
         return $this->id;
     }
-
     /**
      * Set code.
      *

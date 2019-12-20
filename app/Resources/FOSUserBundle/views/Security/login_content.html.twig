@@ -28,11 +28,9 @@
                                         {% endfor %}
                                     {% endif %}
                                     {% if app.session.get('sf_redirect')['route'] is defined  %}
-
                                         <div class="flash-error">
                                             <p class="alert alert-danger"> Veuiller vous connecter pour pouvoir accéder à cette page</p>
                                         </div>
-                                        {{ app.session.get('sf_redirect')['route'] }}
                                     {% endif %}
                                 <div class="form-group">
                                     <label for="username">{{ 'security.login.username'|trans }}</label>

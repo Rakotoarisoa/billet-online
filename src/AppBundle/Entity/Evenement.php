@@ -6,13 +6,13 @@ use AppBundle\Utils\Slugger;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Doctrine\Common\Collections\ArrayCollection;
-use AppBundle\Entity\TypeBillet;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\EvenementRepository")
- * @ORM\Table(name="evenement")
+ * @ORM\Table(name="evenement",uniqueConstraints={@UniqueConstraint(name="unique_idx", columns={"random_code_event", "id_user"})})
  * @Serializer\ExclusionPolicy("none")
  * @Vich\Uploadable
  */
@@ -37,7 +37,7 @@ class Evenement
      */
     private $titreEvenementSlug;
     /**
-     * @ORM\Column(type="string", length=10,unique=true)
+     * @ORM\Column(type="string", length=10)
      */
     private $randomCodeEvent;
 

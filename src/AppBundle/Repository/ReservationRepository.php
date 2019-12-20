@@ -2,11 +2,12 @@
 
 namespace AppBundle\Repository;
 use AppBundle\Entity\Evenement;
-use AppBundle\Entity\LieuEvenement;
-use AppBundle\Entity\TypeBillet;
 use AppBundle\Entity\Reservation;
 use Doctrine\ORM\EntityRepository;
-use Symfony\Component\HttpFoundation\Cookie;
+
+use Liip\ImagineBundle\Exception\Config\Filter\NotFoundException;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * EvenementRepository
@@ -20,8 +21,66 @@ class ReservationRepository extends EntityRepository
      * @param Billet|null $listeBillet
      * @param Evenement $event
      */
+    use ContainerAwareTrait;
+    private $domOptions;
+    private $domPdf;
+    private $engine;
+    private $codeGen;
     public function createReservation(Billet $listeBillet=null,Evenement $event )
     {
+    }
 
+
+    public function getOrdersListByEvent($order_id=null,$order_name=null,$date=null,Evenement $event=null){
+        $qbEvent = $this->createQueryBuilder('res')
+            ->join('res.user_checkout','uc','uc.id=res.user_checkout_id')
+            ->andWhere('res.evenement = :event')
+            ->setParameter('event',$event);
+        if($date == 'past')
+        {
+            $qbEvent->andWhere('DATE_FORMAT(res.dateReservation,\'%Y-%m-%d\') < CURRENT_DATE()');
+        }
+        else if(($date == 'today')){
+            $qbEvent->andWhere('DATE_FORMAT(res.dateReservation,\'%Y-%m-%d\') = CURRENT_DATE()');
+        }
+        if((int)$order_name)
+        {
+            $qbEvent->andWhere('uc.id LIKE :order_name')
+                ->setParameter('order_name',$order_name);
+        }
+
+        if($order_id){
+            $qbEvent->andWhere('res.randomCodeCommande LIKE :order_id')
+                ->setParameter('order_id','%'.$order_id.'%');
+
+        }
+        if($order_name){
+
+        }
+        $qbEvent->orderBy('res.id','DESC');
+       return $qbEvent->getQuery()->execute();
+
+    }
+
+    public function getUserCheckoutsByEvent(Evenement $event=null){
+        $qbUC = $this->createQueryBuilder('res')
+            ->select('uc.nom, uc.prenom,uc.id')
+            ->join('res.user_checkout','uc','res.user_checkout_id=uc.id')
+            ->andWhere('res.evenement = :event')
+            ->groupBy('uc.email')
+            ->setParameter('event',$event);
+        $qbUC->orderBy('res.user_checkout','DESC');
+        return $qbUC->getQuery()->execute();
+    }
+
+    public function printOrder($id){
+        $reservation=$this->find($id);
+        if(isset($reservation)) {
+
+            return $reservation;
+        }
+        return $reservation;
+
+        //return new NotFoundException('Aucun fichier');
     }
 }

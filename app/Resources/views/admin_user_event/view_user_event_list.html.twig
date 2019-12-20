@@ -2,92 +2,47 @@
 {% block stylesheets %}
     {{ parent() }}
 {% endblock %}
-
-
+{% block title %}
+    {{ app.user.username }} | Liste des évènements
+{% endblock %}
 {% block body %}
-    <!-- hedare search -->
-    <!--
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-        <div class="navbar-nav">
-            <div style="margin-top:20px">
-                <div class="row">
-                    <div class="col">
-                        <h1 style="color:#6c757d">Evénements</h1>
-                    </div>                    
-                </div>
-                <div class="row">
-                    <div class="col-md-12 col-sm-12 col-sx-12">    
-                            <form>
-                                <div class="row">
-                                        <div class="col">
-                                            <input type="text" class="form-control" placeholder="Rechercher des evenements">
-                                        </div>
-                                        <div class="col">
-                                        <input type="text" class="form-control" placeholder="Etat de l'événement">
-                                        </div>
-                                        <div class="col">
-                                        <input type="text" class="form-control" placeholder="Organisateur">
-                                        </div>
-                                </div>
-                            </form>
-                    </div>                                   
-                </div>
-            </div>
-        </div>
-    </nav>
-    -->
-
-    <nav class="navbar navbar-expand-sm bg-white navbar-white fixed-top">
-
-        <table style="width:100%">
-            <tr>
-                <td style="width:60%"><h1 style="color:#6c757d">Evénements</h1></td>
-                <td style="width:30%;">
-
-                </td>
-            </tr>
-            <tr>
-                <td style="color:#ooo;width:60%">
-                    <form method="GET" action="{{ path('viewEventUserAdmin',{'userId':app.user.id }) }}">
-                        <div class="row">
-                            <div class="col">
-                                <input type="text" name="event_name" value="" class="form-control"
-                                       placeholder="Rechercher des evenements">
-                            </div>
-                            <div class="col">
-                                <input type="text" name="event_state" value="" class="form-control"
-                                       placeholder="Etat de l'événement">
-                            </div>
-                            <div class="col">
-                                <input type="text" name="event_creator" value="" class="form-control"
-                                       placeholder="Organisateur">
-                            </div>
-                            <button type="submit" class="btn btn-info">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </td>
-                <td style="color:#ooo;width:30%; float:right">
-                    <button type="button" class="btn btn-danger"><strong><a
-                                    href="{{ path('createEvent',{'userId':app.user.id }) }}" style="color:#fff">Créer un
-                                événement</a></strong></button>
-                </td>
-            </tr>
-        </table>
-    </nav>
-
-
     <!-- header search -->
-    <div class="clear">
-        <br/><br/><br/><br/><br/><br/><br/><br/>
-    </div>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-8">
-                <table class="table">
+            <div class="col">
+                <h4>Mes évènements</h4>
+            </div>
+        </div>
+        <form method="GET" action="{{ path('viewEventUserAdmin',{'userId':app.user.id }) }}">
+            <div class="row">
+                <div class="col">
+                    <input type="text" name="event_name" value="{{ app.request.get('event_name') }}"
+                           class="form-control"
+                           placeholder="Rechercher des évènements">
+                </div>
+                <div class="col">
+                    <input type="text" name="event_state" value="{{ app.request.get('event_state') }}"
+                           class="form-control"
+                           placeholder="Etat de l'événement">
+                </div>
+                <div class="col">
+                    <input type="text" name="event_creator" value="{{ app.request.get('event_creator') }}"
+                           class="form-control"
+                           placeholder="Organisateur">
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-info">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <br/>
+        <div class="row">
+            <div class="col-sm-7">
+                <table class="table table-striped">
                     <tr style="background-color:#ccc">
-                        <td><b>Evenement</b></td>
+                        <td><b>Titre</b></td>
                         <td></td>
                         <td></td>
                         <td><b>Vendus</b></td>
@@ -104,20 +59,30 @@
                             </td>
                             <td>
                                 {% if event.imageEvent %}
-                                    <img src="{{ vich_uploader_asset(event, 'image','\\AppBundle\\Entity\\Evenement')|imagine_filter('user_list_event_view') }}" style="width:100px;"/>
+                                    <img src="{{ vich_uploader_asset(event, 'image','\\AppBundle\\Entity\\Evenement')|imagine_filter('user_list_event_view') }}"
+                                         style="width:100px;"/>
                                 {% else %}
                                     <img src="https://via.placeholder.com/100"/>
                                 {% endif %}
                             </td>
                             <td>
-                                <p>
-                                    <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}"><b>{{ event.titreEvenement }}</b></a>
-                                    <br/>
-                                    {{ event.lieuEvenement.nomSalle }} ,{{ event.lieuEvenement.pays }} <br/>
-                                    {{ event.organisation }}</p>
+                                <div class="row">
+                                    <div class="col">
+                                        <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}"><b>{{ event.titreEvenement }}</b></a>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {{ event.lieuEvenement.nomSalle }} <br/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {{ event.organisation }}
+                                    </div>
+                                </div>
                             </td>
-
-
                             <td>{% set total_billets,count_vendus=0,0 %}
                                 {% for typeBillet in event.typeBillets %}
                                     {% for billet in typeBillet.billets %}
@@ -128,9 +93,7 @@
                                     {% set total_billets=total_billets+typeBillet.quantite %}
                                 {% endfor %}
                                 {% if count_vendus > 0 and total_billets > 0 %}
-                                    <a class="link_table_admin_user text-success" href="{{ path('viewTicketEventUserAdmin',{'userId':app.user.id,'e_id': event.id}) }}" target="_blank">
-                                        {{ count_vendus }}/{{ total_billets }}
-                                    </a>
+                                    {{ count_vendus }}/{{ total_billets }}
                                 {% elseif total_billets > 0 %}
                                     {{ count_vendus }}/{{ total_billets }}
                                 {% else %}
@@ -140,7 +103,9 @@
 
 
                             <td>{% if event.reservation|length %}
-                                    <a class="link_table_admin_user text-success" href="{{ path('viewOrdersList'),{ 'userId':app.user.id,'e_id': event.id }) }}" target="_blank">
+                                    <a class="link_table_admin_user text-success"
+                                       href="{{ path('viewOrdersList',{ 'userId':app.user.id,'eventId': event.id }) }}"
+                                       target="_blank">
                                         {{ event.reservation|length }} commandes
                                     </a>
                                 {% else %}
@@ -154,8 +119,12 @@
                                 </button>
                                 <ul class="list-group" id="show-{{ event.id }}" style="display:none;">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a href="{{ path('viewSingle',{'id':event.id}) }}"
+                                           style="font-size:12px" target="_blank">Afficher</a>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}"
-                                           style="font-size:12px">Modifier</a>
+                                           style="font-size:12px" target="_blank">Modifier</a>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         Supprimer
@@ -173,45 +142,53 @@
                 </table>
                 <div class="text-center">{{ knp_pagination_render(events) }}</div>
             </div>
-            <div class="col-sm-4">
-                <h4>Etat de votre compte</h4>
-                <div class="row">
-                    <div class="col">
-                        <div class="card">
+            <div class="col-sm-5">
+                <div class="card">
+                    <div class="card-header">Résumé des ventes</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col col-md-5">
+                                <h4><span class="fa fa-check"></span>Commandes:</h4>
+                                Nombre de commandes<span class="pull-right strong"> 30</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow="30"
+                                         aria-valuemin="0" aria-valuemax="100" style="width:30%">30
+                                    </div>
+                                </div>
+                                Evènement<span class="pull-right strong"> 8</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="8"
+                                         aria-valuemin="0" aria-valuemax="100" style="width:8%">8
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col col-md-5">
+                                <h4><span class="fa fa-ticket"></span>Billets:</h4>
+                                Billets vendus<span class="pull-right strong">90</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="15"
+                                         aria-valuemin="0" aria-valuemax="100" style="width:30%">15
+                                    </div>
+                                </div>
 
-                            <div class="card-body text-center">
-                                <h4>86</h4>
-                            </div>
-                            <div class="card-footer text-center bg bg-success text-white">
-                                Commandes
-                            </div>
-                        </div>
+                                395 New Users<span class="pull-right strong"> 57</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow="57"
+                                         aria-valuemin="0" aria-valuemax="100" style="width:57%">57
+                                    </div>
+                                </div>
 
-                    </div>
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h4>30 000</h4>
-                            </div>
-                            <div class="card-footer text-center bg bg-success text-white">
-                                Billets vendus
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h4>30 000</h4>
-                            </div>
-                            <div class="card-footer text-center bg bg-danger text-white">
-                                En attente
+                                12.593 Downloads<span class="pull-right strong"> 25</span>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow="25"
+                                         aria-valuemin="0" aria-valuemax="100" style="width:25%">25
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
 {% endblock %}

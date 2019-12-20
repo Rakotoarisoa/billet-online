@@ -104,6 +104,8 @@
                                                         les
                                                         évènements</a>
                                                     <a class="dropdown-item bg-light text-dark"
+                                                       href="{{ path('fos_user_profile_show') }}">Mon compte</a>
+                                                    <a class="dropdown-item bg-light text-dark"
                                                        href="#"><span class="fa fa-dashboard"></span> Tableau de bord</a>
                                                     <div class="dropdown-divider"></div>
                                                     <a class="dropdown-item bg-light text-dark"
@@ -280,11 +282,9 @@
                 <div class="col-4 col-md-4">
                     <div class="footer-nav">
                         <ul>
-                            <li><a href="#">Accueil</a></li>
-                            <li><a href="#">Albums</a></li>
-                            <li><a href="#">Evènemements</a></li>
-                            <li><a href="#">Aide</a></li>
-                            <li><a href="#">Contact</a></li>
+                            <li><a href="{{ asset('/') }}">Accueil</a></li>
+                            <li><a href="{{ path('support') }}">Aide</a></li>
+                            <li><a href="{{ path('contact') }}">Contact</a></li>
                         </ul>
                     </div>
                 </div>

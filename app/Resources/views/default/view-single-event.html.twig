@@ -17,6 +17,7 @@
     </section>-->
 {% endblock %}
 {% block body %}
+    {% set devise = event.devise.code %}
     <!-- ##### Events Area Start ##### -->
     {% block content %}
         {{ parent() }}
@@ -58,9 +59,28 @@
                                                 </p>
                                             </div>
                                             <div class="col col-md-auto">
-                                                <p>
-                                                    <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|date('H:i') }}
-                                                </p>
+                                                {% if event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") == event.dateFinEvent|date("d M Y") %}
+                                                    <p>
+                                                        <span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+                                                    </p>
+                                                    <p>
+                                                        <span class="fa fa-clock"></span> jusqu'
+                                                        à <b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"hh:mm") }}</b>
+                                                    </p>
+                                                {% elseif event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") != event.dateFinEvent|date("d M Y") %}
+                                                    <p>
+                                                        <span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+                                                    </p>
+                                                    <p>
+                                                        <span class="fa fa-clock"></span> jusqu'
+                                                        à <b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+                                                    </p>
+                                                {% else %}
+                                                    <p>
+                                                        <span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+                                                    </p>
+
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </div>
@@ -85,9 +105,9 @@
                                                         {% endfor %}
                                                         <mark class="text text-light-blue pull-right">
                                                             <span class="text text-danger">*</span>
-                                                            entre MGA
+                                                            entre {{ devise }}
                                                             <span>{{ minPrice|number_format(2, '.', ' ') }}</span>
-                                                            - MGA
+                                                            - {{ devise }}
                                                             <span>{{ maxPrice|number_format(2, '.', ' ') }}</span>
                                                         </mark>
                                                     </div>
@@ -203,7 +223,7 @@
                                                                                             <span class="text-danger error"></span>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <small>EUR {{ type.prix }}</small>
+                                                                                    <small>{{ devise }} {{ type.prix }}</small>
                                                                                     <br/>
                                                                                     <small>{{ type.description|raw }}</small>
                                                                                 </div>
@@ -459,20 +479,20 @@
                                                     <div class="row sub-total">
                                                         <div class="col-8">Sous-total</div>
                                                         <div class="col sub_total_value">
-                                                            <span class="currency">EUR </span> 0
+                                                            <span class="currency">{{ devise }} </span> 0
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-8">Frais</div>
                                                         <div class="col">
-                                                            <span class="currency frais">EUR </span> 0
+                                                            <span class="currency frais">{{ devise }} </span> 0
                                                         </div>
                                                     </div>
                                                     <hr/>
                                                     <div class="row total">
                                                         <div class="col-8"><h6>Total</h6></div>
                                                         <div class="col total_value">
-                                                            <span class="currency">EUR </span> 0
+                                                            <span class="currency">{{ devise }} </span> 0
                                                         </div>
                                                     </div>
                                                 </div>
@@ -526,7 +546,7 @@
                                 <div class="widget-content">
                                     <ul class="tags">
                                         {% for cat in catList %}
-                                        <li><a href="#">{{  cat.libelle}}</a></li>
+                                            <li><a href="#">{{ cat.libelle }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 </div>
@@ -543,13 +563,14 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
         <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
         <script type="text/javascript" src="{{ asset('js/jquery-steps.js') }}"></script>
-        <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency=EUR"></script>
+        <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency={{ devise }}"></script>
         <script type="text/javascript">
             let cart_items = [];
             let steps_api = null;
             let total_price = 0;
             let counter = '';
-            function resetForm(id_form){
+
+            function resetForm(id_form) {
                 $("#" + id_form).find('input[type="radio"]').val('');
                 $("#" + id_form).find('input[type="text"]').val('');
                 $("#" + id_form).find('input[type="password"]').val('');
@@ -557,6 +578,7 @@
                 $("#" + id_form).find('select option').removeAttr("selected");
                 $("#" + id_form).find('textarea').val('');
             }
+
             //-------------------------------modal management-------------
             $('#checkout_command').on('shown.bs.modal', function () {
                 $.get('/res_billet/clear');
@@ -615,7 +637,7 @@
                                     if (field.value !== "") {
                                         let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
                                         let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
-                                        let item_price = $("<div class='col'>EUR </div>").append(parsed[1] * parsed[2]);
+                                        let item_price = $("<div class='col'>{{ devise }} </div>").append(parsed[1] * parsed[2]);
                                         let item_container = $("<div class='row'></div>").append(item_label, item_price);
                                         $.post('/res_billet/add/', {
                                             event_id: {{ event.id }},
@@ -633,7 +655,7 @@
                                 $.get("/api/cart/get_total", function (total) {
                                     total_price = total;
                                     let item_label = $("<div class='col-7'></div>").append("<h6>Total</h6>");
-                                    let item_price = $("<div class='col total_value'>EUR </div>").append(total);
+                                    let item_price = $("<div class='col total_value'>{{ devise }} </div>").append(total);
                                     $(".total").empty();
                                     $(".total").append(item_label, item_price);
                                 });
@@ -667,11 +689,11 @@
                                                 amount: {
                                                     breakdown: {
                                                         item_total: {
-                                                            currency_code: "EUR",
+                                                            currency_code: "{{ devise }}",
                                                             value: total_price
                                                         }
                                                     },
-                                                    currency_code: "EUR",
+                                                    currency_code: "{{ devise }}",
                                                     value: total_price
                                                 },
                                                 items:
@@ -701,7 +723,7 @@
                                                 .always(function () {
                                                     console.log("finished");
                                                 });
-                                                console.log('Transaction completed by ' + details.payer.name.given_name);
+                                            console.log('Transaction completed by ' + details.payer.name.given_name);
                                             //location.href = "/res_billet/checkout";
                                         });
                                     },
@@ -792,10 +814,10 @@
                     let item = {
                         name: el.category_str,
                         quantity: el.quantity,
-                        currency: "EUR",
+                        currency: "{{ devise }}",
                         unit_amount: {
                             value: el.price,
-                            currency_code: "EUR"
+                            currency_code: "{{ devise }}"
                         }
                     };
                     formatted_cart.push(item);

@@ -54,20 +54,6 @@ class RegisteredReservationSubscriber implements EventSubscriberInterface
         $this->domOptions->set('isHtml5ParserEnabled', true);
         $this->domPdf->setOptions($this->domOptions);
         $this->domPdf->setPaper('A4', 'landscape');
-        /*foreach ($reservation->getReservation()->getBillet() as $item) {
-            $code_billet=$reservation->getReservation()->getRandomCodeCommande().'-'.$reservation->getReservation()->getEvenement()->getRandomCodeEvent().'-'.$item->getIdentifiant();
-            $options = array(
-                'code' => $code_billet,
-                'type' => 'qrcode',
-                'format' => 'png',
-                'width' => 100,
-                'height' => 100,
-                'color' => array(0, 0, 0),
-            );
-            $barcode = $this->codeGen->generate($options);
-            $qr_code = "data:image/png;base64,' . $barcode";
-
-        }*/
         $html .= $this->engine->render('emails/attachments/attachment_email.html.twig', ['event' => $reservation->getReservation()->getEvenement(), 'reservation' => $reservation->getReservation(), 'qr' => $this->codeGen]);
         $html .= '';
         $this->domPdf->loadHtml($html);

@@ -2,16 +2,19 @@
 
 
 namespace AppBundle\Entity;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use http\Exception\InvalidArgumentException;
+use AppBundle\Entity\Traits\TimeStampTrait;
+use Doctrine\ORM\Mapping\UniqueConstraint;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name = "reservation")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ReservationRepository")
+ * @ORM\Table(name = "reservation",uniqueConstraints={@UniqueConstraint(name="unique_reservation", columns={"random_code_commande", "id_reservation"})})
+ *
  */
 class Reservation
 {
+    use TimeStampTrait;
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -24,7 +27,7 @@ class Reservation
      */
     private $nomReservation;
     /**
-     * @ORM\Column(type="string",length=5,unique=true)
+     * @ORM\Column(type="string",length=5)
      */
     private $randomCodeCommande;
 
@@ -50,14 +53,17 @@ class Reservation
     /**
      * @ORM\ManyToOne(targetEntity="Evenement", inversedBy="reservation",cascade={"persist"})
      * @ORM\JoinColumn(name="id_reservation", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $evenement;
     /**
      * @ORM\OneToMany(targetEntity="Billet", mappedBy="reservation")
+     * @Serializer\Exclude
      */
     private $billet;
     /**
      * * @ORM\ManyToOne(targetEntity="UserCheckout", inversedBy="reservations",cascade={"persist"})
+     * * @ORM\JoinColumn(name="user_checkout_id", referencedColumnName="id",nullable=false)
      */
     private $user_checkout;
 

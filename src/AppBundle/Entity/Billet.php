@@ -33,7 +33,6 @@ class Billet
     /**
      * @ORM\ManyToOne(targetEntity="TypeBillet", inversedBy="billets")
      * @ORM\JoinColumn(name="id_billet", referencedColumnName="id")
-     * @Serializer\Exclude
      */
     private $typeBillet;
     /**
