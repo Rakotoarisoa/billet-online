@@ -1,0 +1,31 @@
+{% block vich_image_row -%}
+    {% set force_error = true %}
+    {{- block('form_row') }}
+{%- endblock %}
+
+{% block vich_image_widget %}
+    <div class="vich-image">
+        {% if download_uri is defined and download_uri %}
+            <div class="file-preview article-item-image">
+                <div class="file-drop-disabled">
+                    <div class="file-preview-thumbnails">
+                        <div class="file-preview-frame krajee-default  kv-preview-thumb">
+                            <div class="kv-file-content">
+                                <img class="img-responsive"
+                                     src="{{ download_uri }}"
+                                     alt="{{ download_uri }}"/>
+                            </div>
+                            <div class="file-thumbnail-footer">
+                                <div class="file-footer-caption"
+                                     title="{{ form.vars.object.imageEvent }}">{{ form.vars.object.imageEvent }}<br>
+                                    {# include 'admin/common/form/_delete.html.twig' #}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {{ form_widget(form.file) }}
+    </div>
+{% endblock %}

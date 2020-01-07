@@ -211,4 +211,9 @@ sonata_admin:
         # use this to change the default route used to generate the link
         # to the parent object inside a breadcrumb, when in a child admin
         child_admin_route: edit
-
+stof_doctrine_extensions:
+    default_locale: en_US
+    orm:
+        default:
+            sluggable: true
+            timestampable: true

@@ -62,7 +62,7 @@ class HomeController extends Controller
     public function showSingleEvent(Evenement $event)
     {
         $repo = $this->getDoctrine()->getRepository(Billet::class);
-        $queryTicketsState=$repo->countPurchasedTickets($event);
+        $queryTicketsState=$repo->getListTicketsByType($event);
         $this->getDoctrine()->getRepository(Evenement::class)->initMapEvent($event);
         $categoryList= $this->getDoctrine()
             ->getRepository(CategorieEvenement::class)

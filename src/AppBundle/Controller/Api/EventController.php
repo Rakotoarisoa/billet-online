@@ -114,5 +114,31 @@ class EventController extends AbstractFOSRestController
         }
         return new View("Supprimé", Response::HTTP_OK);
     }
+    /**
+     * @Rest\Post("/api/event/delete-image/{id}")
+     * @param $id
+     * @return View|object|null
+     */
+    public function deleteImageEvent(Request $request,$id){
+        if($request->getMethod() != 'POST')
+            return new MethodNotAllowedException('POST');
+        //$id=$request->get('id');
+        $sn = $this->getDoctrine()->getManager();
+        $event = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        if (empty($event)) {
+            return new View("Evènement non trouvé", Response::HTTP_NOT_FOUND);
+        }
+        else {
+            if($request->request->get('key') == 1)
+            {
+
+            }
+            $sn->remove($event);
+            $sn->flush();
+        }
+        return new View("Supprimé", Response::HTTP_OK);
+    }
+
+
     //TODO: Récupérer données de la carte
 }

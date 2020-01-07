@@ -2,6 +2,7 @@
 
 
 namespace AppBundle\Events\Reservation;
+use AppBundle\Manager\LogManager;
 use AppBundle\Utils\Cart;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -24,12 +25,14 @@ class RegisteredReservationSubscriber implements EventSubscriberInterface
     private $session;
     private $container;
     private $eventDispatcher;
-    public function __construct(\Swift_Mailer $mailer,EngineInterface $engine, ContainerInterface $container,EventDispatcherInterface $eventDispatcher){
+    private $log;
+    public function __construct(\Swift_Mailer $mailer,EngineInterface $engine, ContainerInterface $container,EventDispatcherInterface $eventDispatcher,LogManager $lm){
         $this->eventDispatcher=$eventDispatcher;
         $this->mailer= $mailer;
         $this->engine=$engine;
         $this->domOptions=new Options();
         $this->domPdf=new Dompdf();
+        $this->log=$lm;
         $this->container=$container;
         $this->codeGen=$this->container->get('skies_barcode.generator');
         $storage = new NativeSessionStorage();
@@ -48,34 +51,41 @@ class RegisteredReservationSubscriber implements EventSubscriberInterface
 
 
     public function onReservationRegistered(RegisteredReservationEvent $reservation){
-        $html = '';
-        $logger = new \Swift_Plugins_Loggers_ArrayLogger();
-        $this->domOptions->set('isRemoteEnabled', TRUE);
-        $this->domOptions->set('isHtml5ParserEnabled', true);
-        $this->domPdf->setOptions($this->domOptions);
-        $this->domPdf->setPaper('A4', 'landscape');
-        $html .= $this->engine->render('emails/attachments/attachment_email.html.twig', ['event' => $reservation->getReservation()->getEvenement(), 'reservation' => $reservation->getReservation(), 'qr' => $this->codeGen]);
-        $html .= '';
-        $this->domPdf->loadHtml($html);
-        $this->domPdf->render();
-        $attachment = new \Swift_Attachment($this->domPdf->output(), 'commande_' . $reservation->getReservation()->getRandomCodeCommande() . date('dmY') . '.pdf', 'application/pdf');
-        $message = (new \Swift_Message('Votre commande'))
-            ->setSubject('Ivenco Réservation - Votre commande n° ' . $reservation->getReservation()->getRandomCodeCommande() . ' du ' . date('d M Y'))
-            ->setFrom('andry163.nexthope@gmail.com')
-            ->setTo($reservation->getReservation()->getUserCheckout()->getEmail())
-            ->setBody(
-                $this->engine->render(// app/Resources/views/Emails/registration.html.twig
-                    'emails/template_clients/template_email.html.twig', ['event' => $reservation->getReservation()->getEvenement(), 'reservation' => $reservation->getReservation()]
-                ),
-                'text/html'
-            )
-            ->attach($attachment);
-        $this->mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
-        if(!$this->mailer->send($message,$errors)){
-            //$this->eventDispatcher->dispatch('mai')
-        };
-        $this->session->remove('buyer_data');
-        $this->cart->clear();
+        try {
+            $html = '';
+            $logger = new \Swift_Plugins_Loggers_ArrayLogger();
+            $this->domOptions->set('isRemoteEnabled', TRUE);
+            $this->domOptions->set('isHtml5ParserEnabled', true);
+            $this->domPdf->setOptions($this->domOptions);
+            $this->domPdf->setPaper('A4', 'landscape');
+            $html .= $this->engine->render('emails/attachments/attachment_email.html.twig', ['event' => $reservation->getReservation()->getEvenement(), 'reservation' => $reservation->getReservation(), 'qr' => $this->codeGen]);
+            $html .= '';
+            $this->domPdf->loadHtml($html);
+            $this->domPdf->render();
+            $attachment = new \Swift_Attachment($this->domPdf->output(), 'commande_' . $reservation->getReservation()->getRandomCodeCommande() . date('dmY') . '.pdf', 'application/pdf');
+            $message = (new \Swift_Message('Votre commande'))
+                ->setSubject('Ivenco Réservation - Votre commande n° ' . $reservation->getReservation()->getRandomCodeCommande() . ' du ' . date('d M Y'))
+                ->setFrom('andry163.nexthope@gmail.com')
+                ->setTo($reservation->getReservation()->getUserCheckout()->getEmail())
+                ->setBody(
+                    $this->engine->render(// app/Resources/views/Emails/registration.html.twig
+                        'emails/template_clients/template_email.html.twig', ['event' => $reservation->getReservation()->getEvenement(), 'reservation' => $reservation->getReservation()]
+                    ),
+                    'text/html'
+                )
+                ->attach($attachment);
+            $this->mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
+            if (!$this->mailer->send($message, $errors)) {
+                $this->eventDispatcher->dispatch();
+            };
+            $this->session->remove('buyer_data');
+            $this->cart->clear();
+            $this->log->logAction('Réservation','Mail pour nouvelle Réservation n° '.$reservation->getReservation()->getRandomCodeCommande().' au nom de '.$reservation->getReservation()->getUserCheckout()->getNom().' '.$reservation->getReservation()->getUserCheckout()->getPrenom(),$reservation->getReservation()->getEvenement()->getUser());
+        }
+        catch(\Exception $e){
+            $this->log->logAction('Erreur', "Envoi mail Réservation n° ".$reservation->getReservation()->getRandomCodeCommande(),$reservation->getReservation()->getEvenement()->getUser());
+            throw new \Exception('Une erreur s\'est produite pendant l\'envoi du mail'.$e->getMessage());
+        }
 
     }
 }

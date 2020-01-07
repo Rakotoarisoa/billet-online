@@ -1,6 +1,5 @@
 {% trans_default_domain 'messages' %}
 {% extends 'base.html.twig' %}
-{% form_theme form 'form/theme.html.twig' %}
 {% macro printBilletItemRow(typeBilletForm,i) %}
     <div class="js-type-item">
         <div class="row mb-1 align-items-end">
@@ -105,7 +104,7 @@
                             {% if flow.getCurrentStepNumber() == 1 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <label class="">{{ 'create_event_field_label.title_event'|trans }} <span
+                                    <label class=""> {{ form_label(form.titreEvenement) }}<span
                                                 class="fa fa-align-left"></span></label>
                                     {{ form_widget(form.titreEvenement) }}
                                     <div class="row">
@@ -118,14 +117,14 @@
                                 <br/>
                                 <hr/><br/>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <label class="">{{ 'create_event_field_label.categorie'|trans }}</label>
+                                    <label class="">{{ form_label(form.categorieEvenement) }}</label>
                                     {{ form_widget(form.categorieEvenement) }}
                                     <small id="lieu" class="form-text text-muted">Préciser la catégorie de
                                         l'évènement
                                     </small>
                                 </div>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <label class="">{{ 'create_event_field_label.lieu'|trans }} <span
+                                    <label class="">{{ form_label(form.lieuEvenement) }} <span
                                                 class="fa fa-map-marker"></span></label>
                                     {{ form_widget(form.lieuEvenement) }}
                                     <small id="lieu" class="form-text text-muted">Ajouter le lieu ou se déroulera
@@ -148,11 +147,11 @@
                                 <p>Indiquez aux participants potentiels quand votre événement commence et se termine
                                     pour qu'ils puissent planifier au mieux leur venue.</p>
                                 <div class="form-group col-md-3 col-sm-6">
-                                    <h4 class="lead">{{ 'create_event_field_label.date_start'|trans }} </h4>
+                                    <h4 class="lead">{{ form_label(form.dateDebutEvent) }} </h4>
                                     {{ form_widget(form.dateDebutEvent) }}
                                 </div>
                                 <div class="form-group col-md-3 col-sm-6">
-                                    <h4 class="lead">{{ 'create_event_field_label.date_end'|trans }}</h4>
+                                    <h4 class="lead">{{ form_label(form.dateFinEvent) }}</h4>
                                     {{ form_widget(form.dateFinEvent) }}
                                 </div>
                                 <br/>
@@ -180,10 +179,9 @@
                             {% if flow.getCurrentStepNumber() == 2 %}
                                 <p class="alert-danger">{{ form_errors(form.image) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <h4 class="">{{ 'create_event_field_label.image_event'|trans }} <span
-                                                class="fa fa-file-image"></span></h4>
+                                    <h4 class="">{{ form_label(form.image)  }} <span class="fa fa-file-image"></span></h4>
                                     <small>Insérer une image ayant une dimension au dessus de 600px x 400px</small>
-                                    {{ form_widget(form.image) }}
+                                    {{   form_widget(form.image) }}
                                     <br/>
                                 </div>
                                 <div class="form-group col-md-12 col-sm-12">
@@ -303,7 +301,10 @@
                 initialCaption: "{{ event.imageEvent }}",
                 language: 'fr',
                 theme: "fa",
-                showUpload: false
+                showUpload: false,
+                showDownload: false,
+                deleteUrl: '/delete',
+                multiple: false
             });
             {% else %}
             $(".file").fileinput({
@@ -348,7 +349,6 @@
                 });
                 $('.dateDebut').datetimepicker({
                     format: 'DD-MM-YYYY HH:mm',
-                    minDate: moment(),
                     sideBySide: true,
                     ignoreReadonly: true,
                     // as Bootstrap 4 is not using Glyphicons anymore
@@ -366,7 +366,6 @@
                 });
                 $('.dateFin').datetimepicker({
                     format: 'DD-MM-YYYY HH:mm',
-                    minDate: moment(),
                     sideBySide: true,
                     ignoreReadonly: true,
                     // as Bootstrap 4 is not using Glyphicons anymore
@@ -382,14 +381,30 @@
                         close: 'fa fa-times'
                     }
                 });
-                {%  if event.id is defined and event.id %}
-                $(".dateDebut").on("dp.change", function (e) {
-                    $('.dateFin').data("DateTimePicker").minDate(e.date);
-                });
-                $(".dateFin").on("dp.change", function (e) {
-                    $('.dateDebut').data("DateTimePicker").maxDate(e.date);
-                });
-                {% endif %}
+                    {%  if event.id is defined and event.id %}
+                        $('.dateDebut').data("DateTimePicker").minDate({{ event.dateDebutEvent|date('U') }});
+                        $('.dateFin').data("DateTimePicker").minDate({{ event.dateDebutEvent|date('U') }});
+                        $('.dateDebut').data("DateTimePicker").date({{ event.dateDebutEvent|date('U') }});
+                        $('.dateFin').data("DateTimePicker").date({{ event.dateFinEvent|date('U') }});
+                        $('.dateDebut').data("DateTimePicker").maxDate({{ event.dateFinEvent|date('U') }});
+                        $(".dateDebut").on("dp.change", function (e) {
+                            $('.dateFin').data("DateTimePicker").minDate(e.date);
+                        });
+                        $(".dateFin").on("dp.change", function (e) {
+                            $('.dateDebut').data("DateTimePicker").maxDate(e.date);
+                        });
+
+                    {% else %}
+                        $('.dateDebut').data("DateTimePicker").date(new Date());
+                        $('.dateDebut').data("DateTimePicker").minDate(new Date());
+                        $('.dateFin').data("DateTimePicker").minDate(new Date());
+                        $(".dateDebut").on("dp.change", function (e) {
+                            $('.dateFin').data("DateTimePicker").minDate(e.date);
+                        });
+                        $(".dateFin").on("dp.change", function (e) {
+                            $('.dateDebut').data("DateTimePicker").maxDate(e.date);
+                        });
+                    {% endif %}
                 {% endif %}
             });
             $('#appbundle_event_templateSeatmap').on('change', function (e) {
@@ -400,9 +415,8 @@
     {% endblock %}
     {% block stylesheets %}
         {{ parent() }}
-        <link rel="stylesheet" href="{{ asset('build/kartik-v/css/fileinput.min.css') }}"/>
-        <link rel="stylesheet"
-              href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="{{  asset('build/kartik-v/css/fileinput.min.css') }}"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
         <!--<link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}"/>-->
     {% endblock %}
 {% endblock %}

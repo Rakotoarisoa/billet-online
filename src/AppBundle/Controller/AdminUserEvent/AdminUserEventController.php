@@ -25,8 +25,7 @@ class AdminUserEventController extends Controller
 {
     /**
      * Gestion des évènements de l'utilisateur
-     * @Route("/user/{userId}/admin-event/list", name="viewEventUserAdmin")
-     * @ParamConverter("user",options={"mapping":{"userId" = "id"}})
+     * @Route("/user/admin-event/list", name="viewEventUserAdmin")
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
@@ -35,7 +34,7 @@ class AdminUserEventController extends Controller
     public function listAction(Request $request){
         //entity manager
         $repository = $this->getDoctrine()->getRepository(Evenement::class);
-        $user = $request->get('userId');
+        $user = $this->getUser();
         $event_name = $request->get('event_name');
         $event_state = $request->get('event_state');
         $event_creator = $request->get('event_creator');
@@ -55,8 +54,7 @@ class AdminUserEventController extends Controller
     }
     /**
      * List des commandes pour un évènements
-     * @Route("/user/{userId}/admin-event/{eventId}/orders/list", name="viewOrdersList")
-     * @ParamConverter("user",options={"mapping":{"id" = "userId"}})
+     * @Route("/user/admin-event/{eventId}/orders/list", name="viewOrdersList")
      * @ParamConverter("evenement",options={"mapping":{"eventId"= "id"}})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
@@ -77,7 +75,7 @@ class AdminUserEventController extends Controller
 
     /**
      * List des commandes pour un évènements
-     * @Route("/user/{userId}/admin-event/{eventId}/order/print", name="printOrder",methods={"POST"})
+     * @Route("/user/admin-event/{eventId}/order/print", name="printOrder",methods={"POST"})
      * @ParamConverter("user",options={"mapping":{"id" = "userId"}})
      * @ParamConverter("evenement",options={"mapping":{"eventId"= "id"}})
      * @Security("has_role('ROLE_USER')")
@@ -88,7 +86,7 @@ class AdminUserEventController extends Controller
      */
     public function printOrder(Request $request){
         if($request->request->has('_token') and  $this->isCsrfTokenValid('order-print',$request->request->get('_token'))){
-            $order_id=(int)$request->request->has('_order_print');
+            $order_id=(int)$request->request->get('_order_print');
             try{
                 $reservation=$this->getDoctrine()->getRepository(Reservation::class)->find($order_id);
                 $domOpt=new Options();
@@ -103,7 +101,7 @@ class AdminUserEventController extends Controller
                 $html .= '';
                 $domPdf->loadHtml($html);
                 $domPdf->render();
-                $domPdf->stream("test.pdf",["Attachment" => false]);
+                $domPdf->stream("Commmande-".$reservation->getRandomCodeCommande()."-".$reservation->getEvenement()->getRandomCodeEvent().".pdf",["Attachment" => true]);
                 //return //$render->stream("test.pdf",["Attachment" => false]);
             }
             catch(\Exception $e) {
@@ -113,7 +111,7 @@ class AdminUserEventController extends Controller
     }
     /**
      * Gestion des évènements de l'utilisateur
-     * @Route("/user/{userId}/admin-event/{e_id}/ticket/list", name="viewTicketEventUserAdmin")
+     * @Route("/user/admin-event/{e_id}/ticket/list", name="viewTicketEventUserAdmin")
      * @ParamConverter("user",options={"mapping":{"userId" = "id","e_id"= "event_id"}})
      * @ParamConverter("evenement",options={"mapping":{"e_id"= "id"}})
      * @Security("has_role('ROLE_USER')")

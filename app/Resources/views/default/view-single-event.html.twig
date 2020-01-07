@@ -85,7 +85,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        {% if (ticketNumber) %}
+                                        {% if ticketNumber is defined and ticketNumber|length > 0 %}
                                             {% if ticketNumber > 0 %}
                                                 <div class="row">
                                                     <div class="col">
@@ -99,7 +99,7 @@
                                                 <div class="row">
                                                     <div class="col">
                                                         {% set maxPrice,minPrice=0,999999999 %}
-                                                        {% for type in event.typeBillets %}
+                                                        {% for type in ticketNumber %}
                                                             {% set maxPrice = max(type.prix, maxPrice) %}
                                                             {% set minPrice = min(type.prix, minPrice) %}
                                                         {% endfor %}
@@ -755,7 +755,9 @@
                     showBackButton: true,
                     onFinish: function () {
                         if ($('.payment-success').is(':visible') || $('.payment-failure').is(':visible') || $('.register-failure').is(':visible')) {
+                            $.get('/res_billet/clear');
                             $('#checkout_command').modal('hide');
+                            location.reload();
                         } else {
                             alert('Veuiller procéder au paiement. Pour fermer le dialogue cliquer sur x. ');
                         }
@@ -773,8 +775,10 @@
                 });
             });
             $('#checkout_command').on('hidden.bs.modal', function () {
+                $.get('/res_billet/clear');
                 resetForm('form_select_items');
                 resetForm('frmInfo');
+                location.reload();
             });
             let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
 

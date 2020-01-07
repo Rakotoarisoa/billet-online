@@ -4,7 +4,7 @@
     <link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet"/>
 {% endblock %}
 {% block title %}
-    {{ app.user.username }} | Liste des évènements
+    {{ app.user.username }} | {{ event.titreEvenement }}
 {% endblock %}
 {% block body %}
     <!-- header search -->
@@ -46,7 +46,7 @@
         <br/>
         <div class="row">
             <div class="col-sm-7">
-                <table class="table table-hover text-center table-bordered table-responsive">
+                <table class="table table-hover text-center table-bordered">
                     <tr style="background-color:#ccc">
                         <td width="15%"><b>Id commande</b></td>
                         <td><b>Nom de l'acheteur</b></td>
@@ -94,6 +94,28 @@
             </div>
             <div class="col-sm-5">
                 <div class="card">
+                    <div class="card-header"><h4>Billets vendus</h4></div>
+                    <div class="card-body">
+                        {% set total_billets,count_vendus=0,0 %}
+                        {% for typeBillet in event.typeBillets %}
+                            {% for billet in typeBillet.billets %}
+                                {% if  billet.estVendu %}
+                                    {% set count_vendus=count_vendus+ 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {% set total_billets=total_billets+typeBillet.quantite %}
+                        {% endfor %}
+                        {% if count_vendus > 0 and total_billets > 0 %}
+                            <h4><div class="card-text"> <span class="badge badge-pill badge-success">{{ count_vendus }}/{{ total_billets }}</span></div></h4>
+                        {% elseif total_billets > 0 %}
+                            <h4><span class="badge badge-pill badge-success">{{ count_vendus }}/{{ total_billets }}</span></h4>
+                        {% else %}
+                            Aucun billets à vendre
+                        {% endif %}
+                    </div>
+                </div>
+                <br/>
+                <div class="card">
                     <div class="card-header"><h4 class="order_right_panel"></h4></div>
                     <div class="card-body">
                         <div class="order_details">
@@ -119,7 +141,7 @@
                             </div>
 
                             <br/>
-                            <table id="billets_list" class="table table-responsive order_details text-center"
+                            <table id="billets_list" class="table order_details text-center"
                                    style="width:100%;">
                                 <thead>
                                 <tr>
@@ -154,7 +176,7 @@
                         $('.order_details').show();
                         $(".order_details .payment-mode").html('<b>' + data.mode_paiement + '</b>');
                         $(".order_details .user-data").html('<b>' + data.user_checkout.nom + ' ' + data.user_checkout.prenom + '</b>');
-                        $(".order_details .form_print").attr('action','/user/{{ app.user.id }}/admin-event/{{ event.id }}/order/print');
+                        $(".order_details .form_print").attr('action','/user/admin-event/{{ event.id }}/order/print');
                         $(".order_details .form_print ._order_print").attr('value',order_id);
                     });
                     $('#billets_list').DataTable({

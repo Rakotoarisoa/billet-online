@@ -27,6 +27,7 @@ class EventType extends AbstractType
             case 1:
                 $builder
                     ->add('titreEvenement', TextType::class, array(
+                        'label' => 'create_event_field_label.title_event',
                         'attr' => [
                             'autocomplete' => 'on',
                             'placeholder' => 'Soyez clair et précis',
@@ -63,9 +64,11 @@ class EventType extends AbstractType
                         'required' => true
                     ))
                     ->add('dateDebutEvent', DateTimeType::class, array(
+                        'label'=> 'create_event_field_label.date_start',
                         'required' => true,
                         'widget' => 'single_text',
                         'html5' => false,
+                        'format' => 'dd-MM-yyyy HH:mm',
                         'constraints' => new NotBlank(
                             array(
                                 'groups' => 'flow_registration_step1'
@@ -77,9 +80,11 @@ class EventType extends AbstractType
                         ],
                     ))
                     ->add('dateFinEvent', DateTimeType::class, array(
+                        'label' => 'create_event_field_label.date_end',
                         'widget' => 'single_text',
                         'required' => false,
-                        'html5' => false,
+
+                        'format' => 'dd-MM-yyyy HH:mm',
                         'attr' => [
                             'class' => 'form-control dateFin',
                             'readOnly' => true
@@ -87,12 +92,14 @@ class EventType extends AbstractType
                         //'constraints' => new NotBlank(),
                     ))
                     ->add('categorieEvenement', EntityType::class, array(
+                        'label' => 'create_event_field_label.categorie',
                         'class' => 'AppBundle\Entity\CategorieEvenement',
                         'placeholder' => 'Sélectionnez la catégorie de l\'évènement',
                         'choice_label' => 'libelle',
                         'required' => true
                     ))
                     ->add('lieuEvenement', EntityType::class, array(
+                        'label' => 'create_event_field_label.lieu',
                         'class' => 'AppBundle\Entity\LieuEvenement',
                         'placeholder' => 'Sélectionnez le lieu',
                         'choice_label' => 'nomSalle',
@@ -107,7 +114,7 @@ class EventType extends AbstractType
                 break;
             case 2:
                 $builder->add('image', VichImageType::class, [
-                    'label' => 'Image',
+                    'label' => 'create_event_field_label.image_event',
                     // unmapped means that this field is not associated to any entity property
                     'mapped' => true,
                     'required' => true,
@@ -123,7 +130,7 @@ class EventType extends AbstractType
                         'id' => "image-event",
                         'class' => 'image-event file',
                         'accept' => '.jpg,.jpeg',
-                        'data-msg-placeholder' => "Select {files} for upload..."
+                        'data-msg-placeholder' => "Selectionner une image ..."
                     ]
                 ])
                     ->add('description', CKEditorType::class, array(

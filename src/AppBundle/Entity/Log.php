@@ -3,7 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use AppBundle\Entity\Traits\TimeStampTrait;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * Class Log
@@ -13,7 +13,7 @@ use AppBundle\Entity\Traits\TimeStampTrait;
  */
 class Log
 {
-    use TimeStampTrait;
+    use TimestampableEntity;
     /**
      * @var int
      *

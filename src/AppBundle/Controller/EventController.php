@@ -41,15 +41,14 @@ class EventController extends Controller
 
     /**
      * Formulaire de création d'évènements
-     * @Route("/user/{userId}/events/create", name="createEvent")
-     * @ParamConverter("user",options={"mapping":{"userId" = "id"}})
+     * @Route("/user/events/create", name="createEvent")
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
      * @return Response
      * @throws \Doctrine\ORM\ORMException
      */
-    public function createFormEvent(Request $request, User $user)
+    public function createFormEvent(Request $request)
     {
         if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->isGranted('IS_AUTHENTICATED_FULLY')) {
             $this->redirect('/login?src=create');
@@ -61,33 +60,32 @@ class EventController extends Controller
         if ($flow->isValid($form)) {
             $flow->saveCurrentStepData($form);
             if ($flow->nextStep()) {
-                // form for the next step
+                //form for the next step
                 $form = $flow->createForm();
             } else {
                 try {
                     // flow finished
                     $em = $this->getDoctrine()->getManager();
-                    $event->setUser($user);
+                    $event->setUser($this->getUser());
                     $slugger = new Slugger();
                     $event->setTitreEvenementSlug($slugger->slugify($event->getTitreEvenement()));
                     $em->persist($event);
                     $em->flush();
                     $flow->reset(); // remove step data from the session
                     $this->addFlash('success', 'Evènement enregistré avec succès.');
-                    return $this->redirectToRoute('viewEventAdmin', array('user' => $user->getId(), 'id' => (string)$event->getId(), 'event' => $event));// redirect when done
+                    return $this->redirectToRoute('viewEventAdmin', array('user' => $this->getUser()->getId(), 'id' => (string)$event->getId(), 'event' => $event));// redirect when done
                 } catch (\Exception $e)
                     {
                         $this->addFlash('error','Une erreur s\'est produite : '+$e->getMessage());
                     }
             }
         }
-        return $this->render('event_admin/event/event-register.html.twig', array('form' => $form->createView(), 'title' => 'Création d\'évènement','flow' => $flow, 'user' => $user, 'event' => $event));
+        return $this->render('event_admin/event/event-register.html.twig', array('form' => $form->createView(), 'title' => 'Création d\'évènement','flow' => $flow, 'user' => $this->getUser(), 'event' => $event));
     }
 
     /**
      * Gestion des évènements de l'utilisateur
-     * @Route("/user/{userId}/events/list", name="viewListUser")
-     * @ParamConverter("user",options={"mapping":{"userId" = "id"}})
+     * @Route("/user/events/list", name="viewListUser")
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user

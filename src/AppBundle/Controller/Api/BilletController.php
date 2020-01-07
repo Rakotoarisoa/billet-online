@@ -144,7 +144,7 @@ class BilletController extends AbstractFOSRestController
      */
     public function checkTicket(Request $request)
     {
-        if ($request && $request->request->has('code_billet') && $request->request->has('_token')) {
+        if ($request && $request->request->has('code_billet')) {
             $code_to_parse = $request->request->get('code_billet');
             $array_data = explode('-', (string)($code_to_parse));
             if (count($array_data) === 3) {
@@ -153,14 +153,16 @@ class BilletController extends AbstractFOSRestController
                 $parsed_billet_code = $array_data[2];
                 $doctrine = $this->getDoctrine();
                 try {
-                    $reservation=$doctrine->getRepository(Reservation::class)->findOneBy([''=>$parsed_reservation_code]);
-                    $event=$doctrine->getRepository(Evenement::class)->findOneBy([''=>$parsed_event_code]);
-                    $billet=$event=$doctrine->getRepository(Billet::class)->findOneBy([''=>$parsed_billet_code]);
+                    $billet=$event=$doctrine->getRepository(Billet::class)->findOneBy(['identifiant'=>$parsed_billet_code]);
+                    $reservation=$billet->getReservation();
+                    $event=$reservation->getEvenement();
                     if(isset($reservation) && isset($event) && isset($billet) && !$billet->getChecked()) {
-                        $billet->setChecked(true);
-                        $doctrine->getManager()->persist($billet);
-                        $doctrine->getManager()->flush();
-                        return new View('Checked',Response::HTTP_OK);
+                        if($reservation->getRandomCodeCommande() === $parsed_reservation_code && $event->getRandomCodeEvent() === $parsed_event_code && $billet->getIdentifiant() === $parsed_billet_code) {
+                            $billet->setChecked(true);
+                            $doctrine->getManager()->persist($billet);
+                            $doctrine->getManager()->flush();
+                            return new View('Checked', Response::HTTP_OK);
+                        }
                     }
                     else if(isset($reservation) && isset($event) && isset($billet) && $billet->getChecked()) {
                         return new View('Already Checked',Response::HTTP_ALREADY_REPORTED);
@@ -171,10 +173,10 @@ class BilletController extends AbstractFOSRestController
                 }
 
             } else {
-                return new View("Erreur de requête", Response::HTTP_BAD_REQUEST);
+                return new View("Erreur de secondaire requête", Response::HTTP_BAD_REQUEST);
             }
         } else {
-            return new View("Erreur de requête", Response::HTTP_BAD_REQUEST);
+            return new View("Erreur de primaire requête", Response::HTTP_BAD_REQUEST);
         }
     }
 

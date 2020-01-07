@@ -41,6 +41,7 @@
                                 <div class="form-group">
                                     <label for="password">{{ 'security.login.password'|trans }}</label>
                                     <input name="_password" type="password" class="form-control" id="password">
+                                    <small class="text-muted"><a href="{{  path('fos_user_resetting_request')  }}"> Mot de passe oublié? </a></small>
                                 </div>
                                 <div class="checkbox">
                                     <input type="checkbox" id="remember_me" name="_remember_me" value="on"/>
@@ -49,7 +50,9 @@
                                 <button id="_submit" name="_submit" type="submit"
                                         class="btn oneMusic-btn mt-30">{{ 'security.login.submit'|trans }}</button>
                             </form>
-                            <p class="text-muted">Pas encore inscrit? <a href="{{  path('fos_user_registration_register')  }}">Inscrivez-vous</a></p>
+                            <div class="row">
+                                <div class="col"><p class="text-muted"><a href="{{  path('fos_user_registration_register')  }}">Pas encore inscrit?</a></p></div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -1,9 +1,22 @@
 {% extends "@FOSUser/layout.html.twig" %}
 
 {% trans_default_domain 'FOSUserBundle' %}
-
+{% block footer %}
+{% endblock %}
+{% block contact %}
+{% endblock %}
 {% block fos_user_content %}
+<section class="login-area section-padding-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="login-content">
 <p>
 {{ 'resetting.check_email'|trans({'%tokenLifetime%': tokenLifetime})|nl2br }}
 </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

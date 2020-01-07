@@ -6,8 +6,8 @@
 {% endblock %}
 
 {% block body_text %}
-{% autoescape false %}
-{{ 'resetting.email.message'|trans({'%username%': user.username, '%confirmationUrl%': confirmationUrl}) }}
-{% endautoescape %}
 {% endblock %}
-{% block body_html %}{% endblock %}
+{% block body_html %}
+{%    include 'emails/template_user/reset_password.html.twig' %}
+{% endblock %}
+

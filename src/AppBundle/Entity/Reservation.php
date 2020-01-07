@@ -3,9 +3,9 @@
 
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
-use AppBundle\Entity\Traits\TimeStampTrait;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use JMS\Serializer\Annotation as Serializer;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ReservationRepository")
@@ -14,7 +14,7 @@ use JMS\Serializer\Annotation as Serializer;
  */
 class Reservation
 {
-    use TimeStampTrait;
+    use TimestampableEntity;
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id

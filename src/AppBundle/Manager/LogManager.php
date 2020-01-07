@@ -4,7 +4,7 @@ namespace AppBundle\Manager;
 
 use AppBundle\Entity\Log;
 use AppBundle\Entity\User;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -18,10 +18,10 @@ class LogManager
     /**
      * LogService constructor.
      *
-     * @param EntityManager       $em
+     * @param EntityManagerInterface       $em
      * @param TranslatorInterface $translator
      */
-    public function __construct(EntityManager $em, TranslatorInterface $translator)
+    public function __construct(EntityManagerInterface $em, TranslatorInterface $translator)
     {
         $this->em         = $em;
         $this->translator = $translator;

@@ -37,7 +37,10 @@ p {
   font-size: 15px;
   line-height: 2;
   font-weight: 400; }
-
+label.required:after {
+  content: " * ";
+  color: red;
+}
 a,
 a:hover,
 a:focus {
