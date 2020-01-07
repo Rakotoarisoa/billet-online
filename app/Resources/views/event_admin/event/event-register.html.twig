@@ -1,5 +1,6 @@
 {% trans_default_domain 'messages' %}
 {% extends 'base.html.twig' %}
+{% form_theme form 'form/theme.html.twig' %}
 {% macro printBilletItemRow(typeBilletForm,i) %}
     <div class="js-type-item">
         <div class="row mb-1 align-items-end">
@@ -303,7 +304,6 @@
                 theme: "fa",
                 showUpload: false,
                 showDownload: false,
-                deleteUrl: '/delete',
                 multiple: false
             });
             {% else %}

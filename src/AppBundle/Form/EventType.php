@@ -117,7 +117,7 @@ class EventType extends AbstractType
                     'label' => 'create_event_field_label.image_event',
                     // unmapped means that this field is not associated to any entity property
                     'mapped' => true,
-                    'required' => true,
+                    'required' => false,
                     'constraints' => [
                         new Image(
                             [
