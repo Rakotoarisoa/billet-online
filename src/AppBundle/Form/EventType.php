@@ -4,6 +4,7 @@
 namespace AppBundle\Form;
 
 
+use AppBundle\Entity\TypeBillet;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -117,7 +118,7 @@ class EventType extends AbstractType
                     'label' => 'create_event_field_label.image_event',
                     // unmapped means that this field is not associated to any entity property
                     'mapped' => true,
-                    'required' => false,
+                    'required' => true,
                     'constraints' => [
                         new Image(
                             [

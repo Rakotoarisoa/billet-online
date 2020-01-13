@@ -62,18 +62,20 @@ class TypeBilletType extends AbstractType
                 'widget' => 'single_text',
                 'html5' => false,
                 'attr' => [
-                    'class' => 'form-control dateDebutBillets',
+                    'class' => 'form-control date-debut-billet',
                     'readOnly' => true
                 ],
+                'format' => 'dd-MM-yyyy HH:mm'
             ))
             ->add('dateFin', DateTimeType::class, array(
                 'label' => 'Date de fin des ventes',
                 'widget' => 'single_text',
                 'html5' => false,
                 'attr' => [
-                    'class' => 'form-control dateFinBillets',
+                    'class' => 'form-control date-fin-billet',
                     'readOnly' => true
                 ],
+                'format' => 'dd-MM-yyyy HH:mm'
             ))
             ->add('quantite', NumberType::class, array('label' => 'Quantité', 'attr' => [
                 'placeholder' => 'Nombre de billets'

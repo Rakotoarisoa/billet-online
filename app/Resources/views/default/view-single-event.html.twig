@@ -48,6 +48,11 @@
                                             <div class="col">
                                                 <a href="#" class="post-title">{{ event.titreEvenement }}</a>
                                             </div>
+                                            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") and app.user == event.user  %}
+                                                <div class="col">
+                                                    <a target="_blank" href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}" class="btn btn-danger text-white  pull-right">Modifier l'évènement</a>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                         <hr/>
                                         <div class="row">
@@ -65,7 +70,8 @@
                                                     </p>
                                                     <p>
                                                         <span class="fa fa-clock"></span> jusqu'
-                                                        à <b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"hh:mm") }}</b>
+                                                        à
+                                                        <b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"hh:mm") }}</b>
                                                     </p>
                                                 {% elseif event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") != event.dateFinEvent|date("d M Y") %}
                                                     <p>
@@ -73,7 +79,8 @@
                                                     </p>
                                                     <p>
                                                         <span class="fa fa-clock"></span> jusqu'
-                                                        à <b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+                                                        à
+                                                        <b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
                                                     </p>
                                                 {% else %}
                                                     <p>
@@ -86,7 +93,15 @@
                                     </div>
                                     <div class="col-md-6">
                                         {% if ticketNumber is defined and ticketNumber|length > 0 %}
-                                            {% if ticketNumber > 0 %}
+                                            {% set maxPrice,minPrice,dispo=0,999999999,false %}
+                                            {% for type in ticketNumber %}
+                                                {% if type.estDisponible %}
+                                                    {% set maxPrice = max(type.prix, maxPrice) %}
+                                                    {% set minPrice = min(type.prix, minPrice) %}
+                                                    {% set dispo=true %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% if dispo %}
                                                 <div class="row">
                                                     <div class="col">
                                                         <a class="btn btn-success text text-white pull-right"
@@ -98,11 +113,6 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col">
-                                                        {% set maxPrice,minPrice=0,999999999 %}
-                                                        {% for type in ticketNumber %}
-                                                            {% set maxPrice = max(type.prix, maxPrice) %}
-                                                            {% set minPrice = min(type.prix, minPrice) %}
-                                                        {% endfor %}
                                                         <mark class="text text-light-blue pull-right">
                                                             <span class="text text-danger">*</span>
                                                             entre {{ devise }}
@@ -114,10 +124,7 @@
                                                 </div>
 
                                             {% else %}
-                                                <a class="btn oneMusic-btn m-2 pull-right" style="text-transform: none;"
-                                                   data-toggle="modal"
-                                                   data-target="#choixVue">{{ 'events.ticket_off'|trans }} <i
-                                                            class="fa fa-ticket"></i></a>
+                                                <p class="info text-danger pull-right">{{ 'events.ticket_off'|trans }} </p>
 
                                             {% endif %}
                                         {% else %}

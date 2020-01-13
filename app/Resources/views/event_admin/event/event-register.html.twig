@@ -105,12 +105,11 @@
                             {% if flow.getCurrentStepNumber() == 1 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <label class=""> {{ form_label(form.titreEvenement) }}<span
-                                                class="fa fa-align-left"></span></label>
+                                    <label class=""> {{ form_label(form.titreEvenement) }}<span class="fa fa-align-left"></span></label>
                                     {{ form_widget(form.titreEvenement) }}
                                     <div class="row">
-                                        <small id="title-help" class="form-text text-muted col-sm-10">Entrer le titre de
-                                            votre évènement
+                                        <small id="title-help" class="form-text text-muted col-sm-10">
+                                            Entrer le titre de votre évènement
                                         </small>
                                         <small id="word-count" class="form-text text-muted col-sm-1">0/75</small>
                                     </div>
@@ -125,8 +124,7 @@
                                     </small>
                                 </div>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <label class="">{{ form_label(form.lieuEvenement) }} <span
-                                                class="fa fa-map-marker"></span></label>
+                                    <label class="">{{ form_label(form.lieuEvenement) }} <span class="fa fa-map-marker"></span></label>
                                     {{ form_widget(form.lieuEvenement) }}
                                     <small id="lieu" class="form-text text-muted">Ajouter le lieu ou se déroulera
                                         l'évènement
@@ -340,6 +338,52 @@
                     $wrapper.data('index', index + 1);
                     // Display the form in the page before the "new" link
                     $(this).before(newForm);
+                    $wrapper.find('.date-debut-billet').datetimepicker({
+                        format: 'DD-MM-YYYY HH:mm',
+                        sideBySide: true,
+                        ignoreReadonly: true,
+                        // as Bootstrap 4 is not using Glyphicons anymore
+                        icons: {
+                            time: 'fa fa-clock-o',
+                            date: 'fa fa-calendar',
+                            up: 'fa fa-chevron-up',
+                            down: 'fa fa-chevron-down',
+                            previous: 'fa fa-chevron-left',
+                            next: 'fa fa-chevron-right',
+                            today: 'fa fa-check',
+                            clear: 'fa fa-trash',
+                            close: 'fa fa-times'
+                        }
+                    });
+                    $wrapper.find('.date-fin-billet').datetimepicker({
+                        format: 'DD-MM-YYYY HH:mm',
+                        sideBySide: true,
+                        ignoreReadonly: true,
+                        // as Bootstrap 4 is not using Glyphicons anymore
+                        icons: {
+                            time: 'fa fa-clock-o',
+                            date: 'fa fa-calendar',
+                            up: 'fa fa-chevron-up',
+                            down: 'fa fa-chevron-down',
+                            previous: 'fa fa-chevron-left',
+                            next: 'fa fa-chevron-right',
+                            today: 'fa fa-check',
+                            clear: 'fa fa-trash',
+                            close: 'fa fa-times'
+                        }
+                    });
+                    let dateBegin=$wrapper.find('.date-debut-billet');
+                    let dateEnd=$wrapper.find('.date-fin-billet');
+                    //Date Billet
+                    dateBegin.data("DateTimePicker").date(new Date());
+                    dateBegin.data("DateTimePicker").minDate(new Date());
+                    dateEnd.data("DateTimePicker").minDate(new Date());
+                    dateBegin.on("dp.change", function (e) {
+                        dateEnd.data("DateTimePicker").minDate(e.date);
+                    });
+                    dateEnd.on("dp.change", function (e) {
+                        dateBegin.data("DateTimePicker").maxDate(e.date);
+                    });
                 });
                 $('.nav-tabs a[href="#info_event"]').tab('show');
                 {% if flow.currentStepNumber == 1 %}
@@ -395,6 +439,8 @@
                         });
 
                     {% else %}
+                        $wrapper.find('.js-add-type').click();
+                        // Date Event
                         $('.dateDebut').data("DateTimePicker").date(new Date());
                         $('.dateDebut').data("DateTimePicker").minDate(new Date());
                         $('.dateFin').data("DateTimePicker").minDate(new Date());

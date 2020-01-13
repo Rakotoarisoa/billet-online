@@ -42,7 +42,6 @@ class EventController extends Controller
     /**
      * Formulaire de création d'évènements
      * @Route("/user/events/create", name="createEvent")
-     * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
      * @return Response
@@ -155,7 +154,7 @@ class EventController extends Controller
 
     /**
      * Modifier un évènement
-     * @Route("//user/{user}/event/manage/{id}", name="viewEventUpdate")
+     * @Route("//user/event/manage/{id}", name="viewEventUpdate")
      * */
     public function updateEvent(Request $request, Evenement $event)
     {
