@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @ORM\Table(name="users")
  * @UniqueEntity(fields="email")
  */
@@ -22,8 +22,6 @@ class User extends BaseUser implements UserInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-
-
     /**
      * @ORM\Column(type="string", length=100)
      */
@@ -36,12 +34,6 @@ class User extends BaseUser implements UserInterface
      * @ORM\Column(type="string", length=100)
      */
     protected $adresse;
-
-
-
-    
-
-
     /**
      * {@inheritdoc}
      */
@@ -307,7 +299,26 @@ class User extends BaseUser implements UserInterface
      * @ORM\OneToMany(targetEntity="Evenement", mappedBy="user")
      */
     protected $evenements;
+    /**
+     * @ORM\OneToMany(targetEntity="Log", mappedBy="user")
+     */
+    protected $logs;
 
+    /**
+     * @return mixed
+     */
+    public function getLogs()
+    {
+        return $this->logs;
+    }
+
+    /**
+     * @param mixed $logs
+     */
+    public function setLogs($logs): void
+    {
+        $this->logs = $logs;
+    }
     /**
      * @return mixed
      */

@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as Serializer;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity
- * @ORM\Table(name = "typebillet",uniqueConstraints={@ORM\UniqueConstraint(name="UNIQUE", columns={"id_evenement", "random_type_code"})})
+ * @ORM\Table(name = "type_billet",uniqueConstraints={@ORM\UniqueConstraint(name="UNIQUE", columns={"id_evenement", "random_type_code"})})
  * @Serializer\ExclusionPolicy("none")
  * @UniqueEntity(
  *     fields={"evenement", "randomTypeCode"},
