@@ -142,7 +142,7 @@ class BilletController extends AbstractFOSRestController
      * @param $id
      * @return View|object|null
      */
-    public function checkTicket(Request $request)
+    public function  checkTicket(Request $request)
     {
         if ($request && $request->request->has('code_billet')) {
             $code_to_parse = $request->request->get('code_billet');

@@ -23,25 +23,25 @@ class BilletRepository extends EntityRepository
         return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.libelle, tb.prix as prix,
             CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
             from AppBundle:TypeBillet tb
-            JOIN AppBundle:Billet b WITH b.typeBillet=tb.id
             LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
-            WHERE evt.id= :idEvent
+            WHERE evt.id= :idEvent AND tb.active = 1
             GROUP BY tb.id,prix
             ORDER BY tb.libelle DESC
             ')
             ->setParameter('idEvent', $event->getId())
             ->getResult();
     }
-
     /** @function compter les tickets VENDUS par Type de billets
+     * seulement les Type de Billet active = true
      */
     public function getLeftTicketsByType(Evenement $event)
     {
-        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets, tb.libelle, b.estVendu
+        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets, tb.libelle, tb.prix as prix, tb.quantite as quantite,
+            CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
             from AppBundle:TypeBillet tb
             JOIN AppBundle:Billet b WITH b.typeBillet=tb.id 
             LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
-            WHERE evt.id= :idEvent and b.estVendu=0
+            WHERE evt.id= :idEvent and b.estVendu = 1 and tb.active = 1
             GROUP BY tb.id 
             ORDER BY tb.libelle DESC
             ')
@@ -54,7 +54,6 @@ class BilletRepository extends EntityRepository
         return $this->getEntityManager()->createQuery('SELECT e FROM AppBundle:Evenement e ORDER BY e.dateDebutEvent ASC')->getResult();
 
     }
-
     /** @function compter les tickets restants et vendus
      */
     public function countPurchasedTickets(Evenement $event)

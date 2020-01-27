@@ -27,7 +27,7 @@ class TypeBilletType extends AbstractType
             ],
                 'required' => true
             ))
-            ->add('prix', NumberType::class, array('label' => 'Prix (MGA)', 'attr' => [
+            ->add('prix', NumberType::class, array('label' => 'Prix (EUR)', 'attr' => [
                 'placeholder' => 'Définir le prix de votre Billet'
             ],
                 'required' => true
@@ -61,9 +61,9 @@ class TypeBilletType extends AbstractType
                 'label' => 'Date de début des ventes',
                 'widget' => 'single_text',
                 'html5' => false,
+                'required' =>false,
                 'attr' => [
                     'class' => 'form-control date-debut-billet',
-                    'readOnly' => true
                 ],
                 'format' => 'dd-MM-yyyy HH:mm'
             ))
@@ -71,9 +71,9 @@ class TypeBilletType extends AbstractType
                 'label' => 'Date de fin des ventes',
                 'widget' => 'single_text',
                 'html5' => false,
+                'required' =>false,
                 'attr' => [
                     'class' => 'form-control date-fin-billet',
-                    'readOnly' => true
                 ],
                 'format' => 'dd-MM-yyyy HH:mm'
             ))

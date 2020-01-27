@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <div class="row bg-white">
             <div class="col">
-                <p class="text-muted">Liste des commandes de l'évènement <b>{{ event.titreEvenement }}</b></p>
+                <p class="text-muted">Liste des commandes de l'évènement <a class="btn btn-link" href="{{ path('viewEventUserAdmin') }}">{{ event.titreEvenement }}</a></p>
             </div>
         </div>
         <form method="GET" action="">
@@ -149,8 +149,8 @@
                                     <th>Identifiant</th>
                                     <th>Type Billet</th>
                                     <th>Prix</th>
-                                    <th>Place Id</th>
-                                    <th>Section Id.</th>
+                                    <th>Place</th>
+                                    <th>Section</th>
                                     <th>Vérifié à l'entrée</th>
                                 </tr>
                                 </thead>

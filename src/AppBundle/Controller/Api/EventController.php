@@ -24,6 +24,17 @@ class EventController extends AbstractFOSRestController
         if ($restResult === null) {
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
+        return new View($restResult,200);
+    }
+    /**
+     * @Rest\Get("/api/events/user/list")
+     */
+    public function getAllEventsByUser()
+    {
+        $restResult = $this->getDoctrine()->getRepository(Evenement::class)->findAll();
+        if ($restResult === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
         return $restResult;
     }
 
@@ -39,7 +50,7 @@ class EventController extends AbstractFOSRestController
         if ($restResult === null) {
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
-        return $restResult;
+        return new View($restResult);
     }
     /**
      * @Rest\Get("/api/event/get-map/{id}")
@@ -70,10 +81,22 @@ class EventController extends AbstractFOSRestController
             return new View("there are no map event exist", Response::HTTP_NOT_FOUND);
         }
         //var_dump(unserialize(json_decode($restResult->getEtatSalle())));
-        var_dump(unserialize($restResult->getEtatSalle()));
+        $unse=unserialize($restResult->getEtatSalle());
+        var_dump($unse);
         return json_decode($restResult->getEtatSalle(),true);
     }
-
+    /**
+     * @Rest\Get("/event/lock-seat/{id}/lock")
+     * @param $id
+     * @param $section
+     * @param $seat
+     * @return string
+     */
+    public function LockSeatBySectionAndSeat($id,$section=null,$seat=null){
+        $restResult = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        $arraySalle=unserialize($restResult->getEtatSalle());
+        return new Response($arraySalle,Response::HTTP_OK);
+    }
     /**
      * @Rest\Post("/api/event/update-map/{id}")
      * @param Request $request

@@ -9,6 +9,7 @@
 namespace AppBundle\Controller\AdminUserEvent;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\Reservation;
+use AppBundle\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -33,16 +34,21 @@ class AdminUserEventController extends Controller
      */
     public function listAction(Request $request){
         //entity manager
-        $repository = $this->getDoctrine()->getRepository(Evenement::class);
+        $eventRepository = $this->getDoctrine()->getRepository(Evenement::class);
+        $userRepository= $this->getDoctrine()->getRepository(User::class);
         $user = $this->getUser();
+        $nbEvents=$userRepository->countEvents($user);
+        $nbCheckout=$userRepository->countCheckout($user);
+        $nbTickets=$userRepository->countTickets($user);
+        $nbTicketsVerified=$userRepository->countVerifiedTickets($user);
         $event_name = $request->get('event_name');
         $event_state = $request->get('event_state');
         $event_creator = $request->get('event_creator');
         if($event_name or $event_state or $event_creator){
-            $event = $repository->getSearchEvent($event_name,$event_creator,$user);            
+            $event = $eventRepository->getSearchEvent($event_name,$event_creator,$user);
         }else{
             $tabUser = compact('user');
-            $event = $repository->findBy($tabUser);
+            $event = $eventRepository->findBy($tabUser);
         }
         $event_all = $this->get('knp_paginator')->paginate($event,$request->query->get('page',1),10);
               
@@ -50,7 +56,11 @@ class AdminUserEventController extends Controller
             'events'=>$event_all,
             'event_name'=>$event_name,
             'event_state'=> $event_state,
-            'event_creator'=> $event_creator]);
+            'event_creator'=> $event_creator,
+            'nbEvents' => $nbEvents[0]['nombreEvents'],
+            'nbCheckout' => $nbCheckout[0]['nombreCheckout'],
+            'nbTickets' => $nbTickets[0]['nombreBillets'],
+            'nbChecked' => $nbTicketsVerified[0]['nombreBilletV']]);
     }
     /**
      * List des commandes pour un évènements

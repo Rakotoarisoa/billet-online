@@ -44,7 +44,8 @@ class SeatMap extends Component {
         number_seats: 0,
         color_seat: "#EEEEEE",
         liste_billet: [],
-        booked_circle_color:"#DDDDDD"
+        booked_circle_color:"#DDDDDD",
+        data_in_cart:null
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -58,6 +59,12 @@ class SeatMap extends Component {
                 });
             }
         });
+    };
+    getDataInCart = () => {
+        axios.get('/api/cart/list').then((data)=>{
+            this.setState({'data_in_cart':data.data});
+        });
+        return this.state.data_in_cart;
     };
     //Ajouter Object ( selon type)
     addNewObject = (object, transformer) => {
@@ -249,7 +256,7 @@ class SeatMap extends Component {
                         circle.draw();
                         newGroup.getStage().remove();
                         let card_body = $("<div></div>").attr('class', 'card-body');
-                        let card_title = $('<h6></h6>').attr('class', 'card-title').text('X unité sélectionnée');
+                        let card_title = $('<h6></h6>').attr('class', 'card-title').text('Chaise');
                         let row_type = $("<div></div>").attr('class', 'row');
                         let row_title = $("<div></div>").attr('class', 'row');
                         let row_value = $("<div></div>").attr('class', 'row');
@@ -285,7 +292,6 @@ class SeatMap extends Component {
                         $('#stage-container-front').append(el);
                         newGroup.setAttr('is_selected', !newGroup.getAttr('is_selected'));
                         $("#submit-seat").on('click', (e) => {
-                            console.log('cliked');
                             $.post("/res_billet/add/", {
                                 select_nb_billets: 1,
                                 type_billet: seat_type,
@@ -293,12 +299,31 @@ class SeatMap extends Component {
                                 redirect: "/",
                                 section_id: object.nom.toString(),
                                 place_id: alphabet[i].toUpperCase() + (j + 1)
-                            }, function (data) {
+                            },  (data,status,xhr) =>{
+
+
                                 $(el).remove();
                                 //this.generateCartInfo();
-                                container.success('Votre commande a été ajouté avec succès', 'Ajout panier');
+                                switch (xhr.status) {
+                                    case 200:
+                                        container.success(data.toString(), 'Commande ajoutée');
+                                        this.getDataInCart();
+                                        this.generateCartInfo();
+                                        break;
+                                    case 208:
+                                        container.warning(data.toString(), 'Impossible de commander');
+                                        break;
+                                    case 500:
+                                        container.error(data.toString(), 'Impossible de commander');
+                                        break;
+                                    default:
+                                        container.warning('', 'Requete en cours');
+                                        break;
+
+                                }
+
                             });
-                        });
+                        })
 
                     }
                 );
@@ -881,6 +906,7 @@ class SeatMap extends Component {
             this.handleWheel(e);
         });
         this.generateCartInfo();
+        this.getDataInCart();
         stage.draw();
         /** Responsive stage*/
         window.addEventListener('resize', (e) => {
@@ -907,20 +933,24 @@ class SeatMap extends Component {
         var dataURL = stage.toDataURL({ pixelRatio: 3 });
         downloadURI(dataURL, 'stage.png');*/
     };
-    //Générer div carte
+    //Générer div cart tooltip
     generateCartInfo = () =>{
         let count=0;
+        $('#tooltip_card').remove();
         axios.get('/api/cart/count').then((response)=>{
             count=response.data;
             if(count>0) {
-                $('#tootip_card').remove();
                 let card_body = $("<div></div>").attr('class', 'card-body');
                 let row = $("<div></div>").attr('class', 'row');
-                let cart_icon = $("<div></div>").attr('id', 'cart_icon').attr('class', 'col my-auto').append('<span class="p1 fa-stack fa-lg has-badge" data-count="' + count + '"><i class="p3 fa fa-shopping-cart fa-stack-1x xfa-inverse" data-count="4b"></i></span>').append(' réservations');
+                let cart_icon = $("<div></div>").attr('id', 'cart_icon').attr('class', 'col my-auto').append('<a id="details" class="btn btn-link"><span class="p1 fa-stack fa-lg has-badge" data-count="' + count + '"><i class="p3 fa fa-shopping-cart fa-stack-1x xfa-inverse" data-count="4b"></i></span></a>').append(' réservations');
+                let details= $("<a></a>").attr('title','Test').attr('id','details').attr('class','btn btn-link text text-info col my-auto').text('Détails');
                 row.append(cart_icon);
                 //let command_text=$('<div></div>').attr('class','col').text('réservations');
-                let purchase_button = $('<a></a>').attr('class', 'card-link text text-danger col my-auto').attr('id', 'submit_command').text('Commander');
+                let purchase_button = $('<a></a>').attr('class', 'btn btn-link text text-danger col my-auto').attr('id', 'submit_command').text('Commander');
+                let remove_button = $('<a></a>').attr('class', 'btn btn-link text text-danger col my-auto').attr('id', 'clear_command').text('Annuler les commandes');
                 row.append(purchase_button);
+                //row.append(details);
+                row.append(remove_button);
                 card_body.append(row);
                 let el = $("<div></div>").attr('class', 'card').attr('id', 'tooltip_card').css({
                     'width': '24%',
@@ -929,6 +959,26 @@ class SeatMap extends Component {
                 $('#stage-container-front').append(el.css({'top':10,'left':500}));
                 $('#submit_command').on('click',function(e){
                     $('#checkout_command').modal('show');
+                });
+                $('#clear_command').on('click',function(e){
+                    $.get('/res_billet/clear',()=>{
+                        $('#tooltip_card').remove();
+                    });
+                });
+                $('#details').on('click',function(e){
+                    $('#cart_details').modal('show');
+                });
+                $('#cart_details').on('shown.bs.modal',()=>{
+                    let cart_items_list= this.getDataInCart();
+                    let cart_details_content=$('#cart_details_content');
+                    cart_details_content.empty();
+                    cart_items_list.forEach(function(el){
+                        cart_details_content.append('<div class="row">' +
+                            '<div class="col">Section: <b>'+el.section+'</b></div>' +
+                            '<div class="col">Place: <b>'+el.seat+'</b></div>' +
+                            '<div class="col"><span class="pull-right"> Prix: <b>'+el.price+'</b></span></div>' +
+                            '</div>')
+                    });
                 });
             }
         });
@@ -985,7 +1035,6 @@ class SeatMap extends Component {
                 <div className="col-sm-2 sidebar-right">
                     <RightSidebarFront colors={this.state.ticket_colors} liste_billet={this.state.liste_billet}/>
                 </div>
-
             </div>
         );
     }

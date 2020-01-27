@@ -76,8 +76,7 @@ class EventType extends AbstractType
                             )
                         ),
                         'attr' => [
-                            'class' => 'form-control dateDebut',
-                            'readOnly' => true
+                            'class' => 'form-control dateDebut'
                         ],
                     ))
                     ->add('dateFinEvent', DateTimeType::class, array(
@@ -88,7 +87,6 @@ class EventType extends AbstractType
                         'format' => 'dd-MM-yyyy HH:mm',
                         'attr' => [
                             'class' => 'form-control dateFin',
-                            'readOnly' => true
                         ],
                         //'constraints' => new NotBlank(),
                     ))
@@ -118,7 +116,7 @@ class EventType extends AbstractType
                     'label' => 'create_event_field_label.image_event',
                     // unmapped means that this field is not associated to any entity property
                     'mapped' => true,
-                    'required' => true,
+                    'required' => false,
                     'constraints' => [
                         new Image(
                             [
@@ -168,7 +166,7 @@ class EventType extends AbstractType
                             'label' => 'Utiliser comme modèle',
                             'empty_data' => true,
                             'attr' => [
-                                'class' => 'custom-select mr-sm-2 col-sm-2'
+                                'class' => 'custom-select mr-sm-2 col-5'
                             ],
                             'mapped' => false
                         ]

@@ -102,6 +102,12 @@ class CartController extends Controller
         }
         return $this->redirectToRoute('cart_index');
     }
+    /**
+     *
+     */
+    private function lockItemSeat(Evenement $event, $section, $place){
+
+    }
 
     /**
      *  Adds the book to cart list
@@ -126,6 +132,10 @@ class CartController extends Controller
         if ($request->request->has('section_id') && $request->request->has('place_id')) {
             $section_id = $request->request->get('section_id');
             $place_id = $request->request->get('place_id');
+
+            if($this->cart->alreadyExists($section_id,$place_id,$type_billet->getLibelle())){
+                return new Response('Le billet est déjà commandé', Response::HTTP_ALREADY_REPORTED);
+            }
         }
         for ($i = 0; $i < $nbr_billets; $i++) {
             $item = new CartItem([
@@ -140,7 +150,7 @@ class CartController extends Controller
             $item->setCategoryStr($type_billet->getLibelle());
             $this->cart->addItem($item);
         }
-        return new Response($nbr_billets . ' créé', Response::HTTP_OK);
+        return new Response('Section '.$section_id.' | Place n°'.$place_id.'  ajouté avec succès', Response::HTTP_OK);
 
     }
 

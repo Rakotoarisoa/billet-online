@@ -45,7 +45,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-6">{{ 'events.table_view.event_image'|trans }}</div>
-                                <img src="{{ asset( event.imageEvent) }}">
+                                <img src="{{ event.imageEvent?vich_uploader_asset(event,'image','AppBundle\\Entity\\Evenement')|imagine_filter('list_event_view'):"https://via.placeholder.com/400x300?text=IMAGE+NON+DISPONIBLE"  }}">
                             </div>
                             <hr/>
                             <div class="row">

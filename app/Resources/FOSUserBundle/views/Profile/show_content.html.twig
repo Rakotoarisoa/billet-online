@@ -48,9 +48,11 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Social Media</div>
                         <div class="panel-body">
-                            <i class="fa fa-facebook fa-2x"></i> <i class="fa fa-github fa-2x"></i> <i
-                                    class="fa fa-twitter fa-2x"></i> <i class="fa fa-pinterest fa-2x"></i> <i
-                                    class="fa fa-google-plus fa-2x"></i>
+                            <i class="fa fa-facebook fa-2x"></i>
+                            <i class="fa fa-github fa-2x"></i>
+                            <i class="fa fa-twitter fa-2x"></i>
+                            <i class="fa fa-pinterest fa-2x"></i>
+                            <i class="fa fa-google-plus fa-2x"></i>
                         </div>
                     </div>
 
@@ -61,115 +63,31 @@
                         <li class="nav-item active bg-gray"><a href="#home" data-toggle="tab">Journal d'activités</a>
                         </li>
                         <li class="nav-item bg-gray"><a href="#messages" data-toggle="tab">Messages</a></li>
-                        <li class="nav-item bg-gray"><a href="#settings" data-toggle="tab">Settings</a></li>
+                        <li class="nav-item bg-gray"><a href="#settings" data-toggle="tab">Paramètres</a></li>
                     </ul>
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="home">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover table-striped">
                                     <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Label 1</th>
-                                        <th>Label 2</th>
-                                        <th>Label 3</th>
-                                        <th>Label</th>
-                                        <th>Label</th>
-                                        <th>Label</th>
+                                        <th>Type</th>
+                                        <th>Information</th>
+                                        <th>Date</th>
+
                                     </tr>
                                     </thead>
                                     <tbody id="items">
+                                    {% for log in app.user.logs %}
                                     <tr>
                                         <td>1</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
+                                        <td>{{ log.type }}</td>
+                                        <td>{{ log.message }}</td>
+                                        <td>{{ log.createdAt|localizeddate() }}</td>
                                     </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
-                                    <tr>
-                                        <td>5</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
-                                    <tr>
-                                        <td>6</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
-                                    <tr>
-                                        <td>7</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
-                                    <tr>
-                                        <td>8</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
-                                    <tr>
-                                        <td>9</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
-                                    <tr>
-                                        <td>10</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                        <td>Table cell</td>
-                                    </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                                 <hr>

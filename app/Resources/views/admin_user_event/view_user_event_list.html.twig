@@ -67,7 +67,7 @@
                             <td>
                                 <div class="row">
                                     <div class="col">
-                                        <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}"><b>{{ event.titreEvenement }}</b></a>
+                                        <a href="{{ path('viewEventUpdate',{'id':event.id}) }}"><b>{{ event.titreEvenement }}</b></a>
                                     </div>
 
                                 </div>
@@ -141,6 +141,11 @@
                                         <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}"
                                            style="font-size:12px" target="_blank">Modifier</a>
                                     </li>
+                                    {% if event.isUsingSeatMap %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a href="{{ path('viewEventMapAdmin',{'id':event.id}) }}">Plan de salle</a>
+                                    </li>
+                                    {% endif %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         Supprimer
                                     </li>
@@ -166,16 +171,13 @@
                                 <h4><span class="fa fa-check"></span>Commandes:</h4>
                                 <div class="row">
                                     <div class="col">
-                                        Nombre de commandes
-                                        <span class="pull-right strong  badge badge-info">
-                                </span>
+                                        Nombre de commandes <span class="pull-right strong  badge badge-info">{{ nbCheckout }}</span>
                                     </div>
                                 </div>
                                 <br/>
                                 <div class="row">
                                     <div class="col">
-                                        Nombre d' évènements<span
-                                                class="pull-right strong badge badge-info"></span>
+                                        Nombre d' évènements <span class="pull-right strong badge badge-info">{{ nbEvents }}</span>
                                     </div>
                                 </div>
 
@@ -186,14 +188,14 @@
                                 Billets vendus
                                 <div class="progress">
                                     <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="15"
-                                         aria-valuemin="0" aria-valuemax="100" style="width:30%">15
+                                         aria-valuemin="0" aria-valuemax="100" style="width:30%">{{ nbTickets }}
                                     </div>
                                 </div>
 
                                 Billets vérifiés
                                 <div class="progress">
                                     <div class="progress-bar bg-success" role="progressbar" aria-valuenow="57"
-                                         aria-valuemin="0" aria-valuemax="100" style="width:57%">57
+                                         aria-valuemin="0" aria-valuemax="100" style="width:57%">{{ nbChecked }}
                                     </div>
                                 </div>
 

@@ -949,20 +949,35 @@ class SetMap extends Component {
                 return;
             }
         });
+        stage.on('mousedown', (e) => {
+            if (e.target === stage) {
+                stage.container().style.cursor = 'move';
+                stage.draggable(true);
+                stage.draw();
+            }
+        });
+        stage.on('mouseup', (e) => {
+            if (e.target === stage) {
+                stage.container().style.cursor = 'default';
+                stage.draggable(false);
+                stage.draw();
+            }
+        });
         stage.on('wheel', (e) => {
             this.handleWheel(e);
         });
         stage.draw();
         /** Responsive stage*/
         window.addEventListener('resize',(e)=>{
-            let container = document.querySelector('#stage-container');
+            /*let container = document.querySelector('#stage-container');
             const stageWidth= this.state.initWidth,stageHeight=this.state.initHeight;
             let containerWidth = container.offsetWidth;
             let scale = containerWidth / stageWidth;
             stage.width(stageWidth * scale);
             stage.height(stageHeight * scale);
             stage.scale({ x: scale, y: scale });
-            this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});
+            this.setState({'scaleX':scale,'scaleY':scale,'stageScale':{x:scale,y:scale}},()=>{stage.batchDraw();});*/
+            this.reInitScale(stage);
         });
 
         /** Focus on object : executed when this.state.focusObject is not null*/
@@ -1037,22 +1052,33 @@ class SetMap extends Component {
             x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
             y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
         };
+        const MAX_SCALE = 1;
+        const MIN_SCALE = 0.4;
         const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-        stage.scale({x: newScale, y: newScale});
-        this.setState({
-            stageScale: {
-                x: -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
-                y: -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
-            },
-            stageX:
-                -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
-            stageY:
-                -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
-            scaleX: newScale,
-            scaleY: newScale
-        }, () => {
-            stage.batchDraw();
-        });
+        if (newScale >= MIN_SCALE && newScale <= MAX_SCALE) {
+            stage.scale({x: newScale, y: newScale});
+            this.setState({
+                stageScale: {
+                    x: -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
+                    y: -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
+                },
+                stageX:
+                    -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale,
+                stageY:
+                    -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale,
+                scaleX: newScale,
+                scaleY: newScale
+            }, () => {
+                stage.position(this.state.stageScale);
+                stage.batchDraw();
+            });
+        }
+    };
+    //initScale : 0.4
+    reInitScale = (stage) => {
+        stage.scale({x: 0.4, y: 0.4});
+        stage.position({x: 0, y: 0});
+        stage.draw();
     };
     handleSelected = e => {
         this.setState({'selectedItem': e});

@@ -86,7 +86,7 @@ class HomeController extends Controller
      */
     public function vueMap(Evenement $event){
 
-        return $this->render('default/view-buy-map.html.twig',array('event'=>$event));
+        return $this->render('default/view-buy-map.html.twig',array('event'=>$event,'max_command_per_ticket'=> 10));
     }
 
     /**

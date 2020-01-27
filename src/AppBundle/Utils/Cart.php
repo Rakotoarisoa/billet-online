@@ -72,7 +72,22 @@ class Cart implements \ArrayAccess
     {
         return $this->session->get($this->key, []);
     }
-
+    /**
+     * Check if item already exists
+     *
+     * @return boolean
+     */
+    public function alreadyExists($section,$seat,$cat){
+        $items=$this->getItems();
+        for($i=0;$i<count($items);$i++)
+        {
+            if($items[$i]->getSection() == $section && $items[$i]->getSeat() == $seat && $items[$i]->getCategoryStr() == $cat)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Adds an Item to the cart
      *

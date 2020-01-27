@@ -91,8 +91,20 @@
                             {% endif %}
                             {% include '@CraueFormFlow/FormFlow/stepList.html.twig' %}
                         </li>
+                        {% if event.id is defined and event.id %}
+                            <li class="nav-item">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a target="_blank" class="btn btn-link" href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span class="fa fa-map"></span> Configurer le plan de salle</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link text-info" data-toggle="tab" href="#commande">Formulaire de commande</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-info" data-toggle="tab" href="#"><span class="fa fa-money"></span> Options de paiement</a>
                         </li>
 
                     </ul>
@@ -105,7 +117,8 @@
                             {% if flow.getCurrentStepNumber() == 1 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <label class=""> {{ form_label(form.titreEvenement) }}<span class="fa fa-align-left"></span></label>
+                                    <label class=""> {{ form_label(form.titreEvenement) }}<span
+                                                class="fa fa-align-left"></span></label>
                                     {{ form_widget(form.titreEvenement) }}
                                     <div class="row">
                                         <small id="title-help" class="form-text text-muted col-sm-10">
@@ -124,7 +137,8 @@
                                     </small>
                                 </div>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <label class="">{{ form_label(form.lieuEvenement) }} <span class="fa fa-map-marker"></span></label>
+                                    <label class="">{{ form_label(form.lieuEvenement) }} <span
+                                                class="fa fa-map-marker"></span></label>
                                     {{ form_widget(form.lieuEvenement) }}
                                     <small id="lieu" class="form-text text-muted">Ajouter le lieu ou se déroulera
                                         l'évènement
@@ -137,7 +151,8 @@
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ form_label(form.devise) }}</label>
                                     {{ form_widget(form.devise) }}
-                                    <small id="devise" class="form-text text-muted">Sélectionner la devise à utiliser si le client utilise un mode de paiement autre que le mobile banking
+                                    <small id="devise" class="form-text text-muted">Sélectionner la devise à utiliser si
+                                        le client utilise un mode de paiement autre que le mobile banking
                                     </small>
                                 </div>
                                 <br/>
@@ -178,9 +193,10 @@
                             {% if flow.getCurrentStepNumber() == 2 %}
                                 <p class="alert-danger">{{ form_errors(form.image) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
-                                    <h4 class="">{{ form_label(form.image)  }} <span class="fa fa-file-image"></span></h4>
+                                    <h4 class="">{{ form_label(form.image) }} <span class="fa fa-file-image"></span>
+                                    </h4>
                                     <small>Insérer une image ayant une dimension au dessus de 600px x 400px</small>
-                                    {{   form_widget(form.image) }}
+                                    {{ form_widget(form.image) }}
                                     <br/>
                                 </div>
                                 <div class="form-group col-md-12 col-sm-12">
@@ -194,11 +210,16 @@
                             {% if flow.getCurrentStepNumber() == 3 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <div class="row align-items-center">
-                                    <div class="col-12 my-1">
+                                    <div class="col-6">
                                         <label for="appbundle_event_isUsingSeatMap">Utiliser la carte pour sélectionner
                                             des billets</label>
                                         {{ form_widget(form.isUsingSeatMap) }}
                                     </div>
+                                    {% if event.id is defined and event.id %}
+                                        <div class="col-6">
+                                            <a class="btn btn-danger" href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span class="fa fa-map"></span> Configurer le plan de salle</a>
+                                        </div>
+                                    {% endif %}
                                 </div>
                                 <div class="row align-items-center">
                                     <small class="col-12 text text-muted">L'évènement peut utiliser la carte intéractive
@@ -240,13 +261,35 @@
                             {% endif %}
                             {% if flow.getCurrentStepNumber() == 4 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
-                                <p class="text">Vous avez saisis les informations concernant l'évènement
-                                    <b>{{ event.titreEvenement }}</b> qui déroulera
-                                    le {{ event.dateDebutEvent|date('d m Y') }} </p>
-                                <p>Appuyer sur
-                                    <small class="text-danger">Sauvegarder et confirmer</small>
-                                    pour confirmer.
+                                <p class="text">Vous avez saisis les informations suivantes concernant l'évènement: </p>
+                                <p>Appuyer sur<small class="text-danger">Sauvegarder et confirmer</small> pour confirmer.
                                 </p>
+                                <div class="card">
+                                    <img class="card-img-top"
+                                         src="{{ event.imageEvent?vich_uploader_asset(event,'image','AppBundle\\Entity\\Evenement')|imagine_filter('single_event_view'):"https://via.placeholder.com/400x300?text=IMAGE+NON+DISPONIBLE" }}"
+                                         alt="Card image cap">
+
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col">
+                                                <p class="card-text">
+                                                    {{ event.categorieEvenement.libelle }} : <span>{{ event.titreEvenement }}</span>
+                                                </p>
+                                            </div>
+                                            <div class="col">
+                                                <div class="date-single-event pull-right">
+                                                    <p class="day_">{{event.dateDebutEvent|localizeddate('none', 'none', null, null,"d")}}</p>
+                                                    <p class="month_">{{event.dateDebutEvent|localizeddate('none', 'none', null, null,"MMM")}}</p>
+                                                    <p class="year_">{{event.dateDebutEvent|localizeddate('none', 'none', null, null,"Y")}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="card-text">Devise: <b>{{ event.devise.code }}</b></p>
+                                        <p class="card-text">Lieu: <b>{{ event.lieuEvenement.nomSalle }}</b></p>
+                                        <p class="card-text">Organisateur: <b>{{ event.organisation }}</b></p>
+
+                                    </div>
+                                </div>
                             {% endif %}
                             {{ form_rest(form) }}
                             <hr/>
@@ -341,7 +384,6 @@
                     $wrapper.find('.date-debut-billet').datetimepicker({
                         format: 'DD-MM-YYYY HH:mm',
                         sideBySide: true,
-                        ignoreReadonly: true,
                         // as Bootstrap 4 is not using Glyphicons anymore
                         icons: {
                             time: 'fa fa-clock-o',
@@ -358,7 +400,6 @@
                     $wrapper.find('.date-fin-billet').datetimepicker({
                         format: 'DD-MM-YYYY HH:mm',
                         sideBySide: true,
-                        ignoreReadonly: true,
                         // as Bootstrap 4 is not using Glyphicons anymore
                         icons: {
                             time: 'fa fa-clock-o',
@@ -372,12 +413,11 @@
                             close: 'fa fa-times'
                         }
                     });
-                    let dateBegin=$wrapper.find('.date-debut-billet');
-                    let dateEnd=$wrapper.find('.date-fin-billet');
+                    let dateBegin = $wrapper.find('.date-debut-billet');
+                    let dateEnd = $wrapper.find('.date-fin-billet');
                     //Date Billet
-                    dateBegin.data("DateTimePicker").date(new Date());
-                    dateBegin.data("DateTimePicker").minDate(new Date());
-                    dateEnd.data("DateTimePicker").minDate(new Date());
+                    //dateBegin.data("DateTimePicker").minDate(new Date());
+                    //dateEnd.data("DateTimePicker").minDate(new Date());
                     dateBegin.on("dp.change", function (e) {
                         dateEnd.data("DateTimePicker").minDate(e.date);
                     });
@@ -394,7 +434,6 @@
                 $('.dateDebut').datetimepicker({
                     format: 'DD-MM-YYYY HH:mm',
                     sideBySide: true,
-                    ignoreReadonly: true,
                     // as Bootstrap 4 is not using Glyphicons anymore
                     icons: {
                         time: 'fa fa-clock-o',
@@ -411,7 +450,6 @@
                 $('.dateFin').datetimepicker({
                     format: 'DD-MM-YYYY HH:mm',
                     sideBySide: true,
-                    ignoreReadonly: true,
                     // as Bootstrap 4 is not using Glyphicons anymore
                     icons: {
                         time: 'fa fa-clock-o',
@@ -425,32 +463,32 @@
                         close: 'fa fa-times'
                     }
                 });
-                    {%  if event.id is defined and event.id %}
-                        $('.dateDebut').data("DateTimePicker").minDate({{ event.dateDebutEvent|date('U') }});
-                        $('.dateFin').data("DateTimePicker").minDate({{ event.dateDebutEvent|date('U') }});
-                        $('.dateDebut').data("DateTimePicker").date({{ event.dateDebutEvent|date('U') }});
-                        $('.dateFin').data("DateTimePicker").date({{ event.dateFinEvent|date('U') }});
-                        $('.dateDebut').data("DateTimePicker").maxDate({{ event.dateFinEvent|date('U') }});
-                        $(".dateDebut").on("dp.change", function (e) {
-                            $('.dateFin').data("DateTimePicker").minDate(e.date);
-                        });
-                        $(".dateFin").on("dp.change", function (e) {
-                            $('.dateDebut').data("DateTimePicker").maxDate(e.date);
-                        });
+                {% if event.id is defined and event.id %}
+                $('.dateDebut').data("DateTimePicker").minDate({{ event.dateDebutEvent|date('U') }});
+                $('.dateFin').data("DateTimePicker").minDate({{ event.dateDebutEvent|date('U') }});
+                $('.dateDebut').data("DateTimePicker").date({{ event.dateDebutEvent|date('U') }});
+                $('.dateFin').data("DateTimePicker").date({{ event.dateFinEvent|date('U') }});
+                $('.dateDebut').data("DateTimePicker").maxDate({{ event.dateFinEvent|date('U') }});
+                $(".dateDebut").on("dp.change", function (e) {
+                    $('.dateFin').data("DateTimePicker").minDate(e.date);
+                });
+                $(".dateFin").on("dp.change", function (e) {
+                    $('.dateDebut').data("DateTimePicker").maxDate(e.date);
+                });
 
-                    {% else %}
-                        $wrapper.find('.js-add-type').click();
-                        // Date Event
-                        $('.dateDebut').data("DateTimePicker").date(new Date());
-                        $('.dateDebut').data("DateTimePicker").minDate(new Date());
-                        $('.dateFin').data("DateTimePicker").minDate(new Date());
-                        $(".dateDebut").on("dp.change", function (e) {
-                            $('.dateFin').data("DateTimePicker").minDate(e.date);
-                        });
-                        $(".dateFin").on("dp.change", function (e) {
-                            $('.dateDebut').data("DateTimePicker").maxDate(e.date);
-                        });
-                    {% endif %}
+                {% else %}
+                $wrapper.find('.js-add-type').click();
+                // Date Event
+                $('.dateDebut').data("DateTimePicker").date(new Date());
+                $('.dateDebut').data("DateTimePicker").minDate(new Date());
+                $('.dateFin').data("DateTimePicker").minDate(new Date());
+                $(".dateDebut").on("dp.change", function (e) {
+                    $('.dateFin').data("DateTimePicker").minDate(e.date);
+                });
+                $(".dateFin").on("dp.change", function (e) {
+                    $('.dateDebut').data("DateTimePicker").maxDate(e.date);
+                });
+                {% endif %}
                 {% endif %}
             });
             $('#appbundle_event_templateSeatmap').on('change', function (e) {
@@ -461,8 +499,9 @@
     {% endblock %}
     {% block stylesheets %}
         {{ parent() }}
-        <link rel="stylesheet" href="{{  asset('build/kartik-v/css/fileinput.min.css') }}"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="{{ asset('build/kartik-v/css/fileinput.min.css') }}"/>
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
         <!--<link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}"/>-->
     {% endblock %}
 {% endblock %}

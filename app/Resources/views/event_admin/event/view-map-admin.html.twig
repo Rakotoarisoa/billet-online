@@ -18,11 +18,41 @@
         <section>
             <div class="">
                 <div class="row mr-15 mt-15 ml-15 mb-15">
-                    <div class="col">
-                        <h4>{{ event.titreEvenement }}</h4>
+                    <div class="col-sm-8">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <h3 class="mb-0"><a href="{{ url('viewSingle',{'id':event.id}) }}">{{ event.titreEvenement }}</a></h3>
+                            <div class="mb-1 text-muted">
+                                {% if event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") == event.dateFinEvent|date("d M Y") %}
+                                    <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}
+                                    jusqu' à {{ event.dateFinEvent|localizeddate('none','none',null,null,"hh:mm") }}
+                                {% elseif event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") != event.dateFinEvent|date("d M Y") %}
+
+                                    <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }} jusqu'
+                                    à {{ event.dateFinEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}
+                                {% else %}
+                                    <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}
+                                {% endif %}
+                            </div>
+                            <div class="text-muted"><span class="fa fa-map-marker"></span> {{ event.lieuEvenement.nomSalle }}</div>
+                        </div>
                     </div>
-                    <div class="col-3">
-                        <a href="#" class="btn btn-danger">Revenir à la page de l' évènement</a>
+
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <div class="col">
+                                <a href="{{ url('viewList') }}" class="btn btn-link pull-right">{{ 'events.back_homepage'|trans }}</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <a href="" class="btn btn-link text-danger pull-right"> Besoin d'aide ?</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <a href="{{ path('viewEventUpdate',{'id':event.id}) }}" class="btn btn-danger pull-right"> Modifier l'évènement</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="root" data-event-id="{{ event.id }}">

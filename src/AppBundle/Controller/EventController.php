@@ -72,7 +72,7 @@ class EventController extends Controller
                     $em->flush();
                     $flow->reset(); // remove step data from the session
                     $this->addFlash('success', 'Evènement enregistré avec succès.');
-                    return $this->redirectToRoute('viewEventAdmin', array('user' => $this->getUser()->getId(), 'id' => (string)$event->getId(), 'event' => $event));// redirect when done
+                    return $this->redirectToRoute('viewSingle', array( 'id' => (string)$event->getId()));// redirect when done
                 } catch (\Exception $e)
                     {
                         $this->addFlash('error','Une erreur s\'est produite : '+$e->getMessage());
@@ -173,8 +173,8 @@ class EventController extends Controller
                     $em = $this->getDoctrine()->getManager();
                     if( null != $event->getImageEvent())
                     {
-                        $uploaded_image=new ImageEventUploader($event->getImageEvent(),$this->container);
-                        $event->setImageEvent($uploaded_image->upload());
+                        //$uploaded_image=new ImageEventUploader($event->getImageEvent(),$this->container);
+                        //$event->setImageEvent($uploaded_image->upload());
                     }
                     $slugger = new Slugger();
                     $event->setTitreEvenementSlug($slugger->slugify($event->getTitreEvenement()));
@@ -182,7 +182,7 @@ class EventController extends Controller
                     $em->flush();
                     $flow->reset(); // remove step data from the session
                     $this->addFlash('success', 'Evènement enregistré avec succès.');
-                    return $this->redirectToRoute('viewEventAdmin', array('user' => $event->getUser()->getId(), 'id' => (string)$event->getId(), 'event' => $event));// redirect when done
+                    return $this->redirectToRoute('viewSingle', array('id' => (string)$event->getId(), 'event' => $event));// redirect when done
                 } catch (\Exception $e)
                 {
                     $this->addFlash('error','Une erreur s\'est produite : '+$e->getMessage());
@@ -208,7 +208,7 @@ class EventController extends Controller
      */
     /**
      * Modifier un évènement
-     * @Route("/{user}/event/view/{id}", name="viewEventAdmin")
+     * @Route("/{user}/event/edit/{id}", name="viewEventAdmin")
      * */
     public function viewEventUser(Evenement $event)
     {
@@ -217,7 +217,7 @@ class EventController extends Controller
 
     /**
      * Modifier un évènement
-     * @Route("/{userId}/event/view/{id}/map", name="viewEventMapAdmin")
+     * @Route("/event/view/{id}/map", name="viewEventMapAdmin")
      * */
     public function viewStateUserMap(Evenement $event)
     {

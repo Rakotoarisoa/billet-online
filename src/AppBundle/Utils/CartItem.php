@@ -1,11 +1,13 @@
 <?php
 namespace AppBundle\Utils;
 use AppBundle\Entity\Evenement;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * Class CartItem
  * Represents a item in car which in turn can be passed to the Cart class
  * @package AppBundle\Utils
+ * @Serializer\ExclusionPolicy("none")
  */
 class CartItem
 {
@@ -23,7 +25,9 @@ class CartItem
     protected $category_str;
     /** @var string section*/
     protected $section;
-    /** @var Evenement evenement */
+    /** @var Evenement evenement
+     * @Serializer\Exclude
+     */
     protected $evenement;
 
     /**

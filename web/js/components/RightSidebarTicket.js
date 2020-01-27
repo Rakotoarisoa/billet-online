@@ -109,7 +109,7 @@ function RightSidebarTicket(props) {
     };
 
     return (
-        <aside>
+        <aside className={"d-inline-flex justify-content-center flex-wrap"}>
             <div className={classes.root}>
                 <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
                 {hasObjectSelected &&

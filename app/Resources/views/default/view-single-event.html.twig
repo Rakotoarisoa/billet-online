@@ -48,9 +48,12 @@
                                             <div class="col">
                                                 <a href="#" class="post-title">{{ event.titreEvenement }}</a>
                                             </div>
-                                            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") and app.user == event.user  %}
+                                            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") and app.user == event.user %}
                                                 <div class="col">
-                                                    <a target="_blank" href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}" class="btn btn-danger text-white  pull-right">Modifier l'évènement</a>
+                                                    <a target="_blank"
+                                                       href="{{ path('viewEventUpdate',{'id':event.id}) }}"
+                                                       class="btn btn-danger text-white  pull-right">Modifier
+                                                        l'évènement</a>
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -103,6 +106,13 @@
                                             {% endfor %}
                                             {% if dispo %}
                                                 <div class="row">
+                                                    {% if event.isUsingSeatMap %}
+                                                        <div class="col">
+                                                            <a class="btn btn-outline-danger text-dark"
+                                                               href="{{ path('viewBuyMap',{'idEvent': event.id}) }}"><span
+                                                                        class="fa fa-map"></span> Plan de salle</a>
+                                                        </div>
+                                                    {% endif %}
                                                     <div class="col">
                                                         <a class="btn btn-success text text-white pull-right"
                                                            style="text-transform: none;" data-toggle="modal"
@@ -738,7 +748,7 @@
                                         $('.payment-failure').show();
                                     }
                                 }).render('#btnPaypal');
-                                return true;
+                                return frmInfo.valid();
                             }
                         }
                         if (stepDirection === 'backward') {
