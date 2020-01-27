@@ -108,8 +108,8 @@
                                                 <div class="row">
                                                     {% if event.isUsingSeatMap %}
                                                         <div class="col">
-                                                            <a class="btn btn-outline-danger text-dark"
-                                                               href="{{ path('viewBuyMap',{'idEvent': event.id}) }}"><span
+                                                            <a id="view_seat_map" class="btn btn-outline-danger text-dark"
+                                                               href="{{ path('viewBuyMap',{'idEvent': event.id}) }}" target="_blank"><span
                                                                         class="fa fa-map"></span> Plan de salle</a>
                                                         </div>
                                                     {% endif %}
@@ -597,6 +597,9 @@
             }
 
             //-------------------------------modal management-------------
+            $('#view_seat_map').on('click',function(){
+                $.get('/res_billet/clear');
+            };
             $('#checkout_command').on('shown.bs.modal', function () {
                 $.get('/res_billet/clear');
                 //--------------------------------steps management
@@ -791,6 +794,7 @@
                     });
                 });
             });
+
             $('#checkout_command').on('hidden.bs.modal', function () {
                 $.get('/res_billet/clear');
                 resetForm('form_select_items');

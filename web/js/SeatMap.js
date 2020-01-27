@@ -44,8 +44,8 @@ class SeatMap extends Component {
         number_seats: 0,
         color_seat: "#EEEEEE",
         liste_billet: [],
-        booked_circle_color:"#DDDDDD",
-        data_in_cart:null
+        booked_circle_color: "#DDDDDD",
+        data_in_cart: null
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -61,8 +61,8 @@ class SeatMap extends Component {
         });
     };
     getDataInCart = () => {
-        axios.get('/api/cart/list').then((data)=>{
-            this.setState({'data_in_cart':data.data});
+        axios.get('/api/cart/list').then((data) => {
+            this.setState({'data_in_cart': data.data});
         });
         return this.state.data_in_cart;
     };
@@ -193,7 +193,7 @@ class SeatMap extends Component {
                 /** End Deleted Seats*/
                 /** assigned seat representation*/
                 let circle_color = this.state.color_seat;
-                let stroke_color="#888888";
+                let stroke_color = "#888888";
                 let seat_type = '-';
                 if (object.mapping !== undefined) {
                     let colors = this.state.ticket_colors;
@@ -201,12 +201,12 @@ class SeatMap extends Component {
                     mapped.forEach((el) => {
                         if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString() && !el.is_booked)
                             colors.forEach((color) => {
-                                 if (color.billet === el.type) {
+                                if (color.billet === el.type) {
                                     circle_color = color.color;
                                     seat_type = el.type;
                                 }
                             });
-                        else if(el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString() && el.is_booked){
+                        else if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString() && el.is_booked) {
                             circle_color = this.state.booked_circle_color;
                             stroke_color = this.state.booked_circle_color;
                         }
@@ -292,37 +292,51 @@ class SeatMap extends Component {
                         $('#stage-container-front').append(el);
                         newGroup.setAttr('is_selected', !newGroup.getAttr('is_selected'));
                         $("#submit-seat").on('click', (e) => {
-                            $.post("/res_billet/add/", {
-                                select_nb_billets: 1,
-                                type_billet: seat_type,
-                                event_id: this.props.eventId,
-                                redirect: "/",
+                            let seat_data = this.state.data_map;
+                            seat_data = JSON.stringify(seat_data);
+                            $.post("/api/event/seat/is-locked", {
                                 section_id: object.nom.toString(),
-                                place_id: alphabet[i].toUpperCase() + (j + 1)
-                            },  (data,status,xhr) =>{
+                                seat_id: alphabet[i].toUpperCase() + (j + 1),
+                                table_event: JSON.parse(seat_data),
+                                lock_action: true,
+                                event_id: this.props.eventId
+                            }, (data, status, xhr) => {
+                                if (!data) {
+                                    $.post("/res_billet/add/", {
+                                        select_nb_billets: 1,
+                                        type_billet: seat_type,
+                                        event_id: this.props.eventId,
+                                        redirect: "/",
+                                        section_id: object.nom.toString(),
+                                        place_id: alphabet[i].toUpperCase() + (j + 1)
+                                    }, (data, status, xhr) => {
+                                        $(el).remove();
+                                        //this.generateCartInfo();
+                                        switch (xhr.status) {
+                                            case 200:
+                                                container.success(data.toString(), 'Commande ajoutée');
+                                                this.getDataInCart();
+                                                this.generateCartInfo();
+                                                break;
+                                            case 208:
+                                                container.warning(data.toString(), 'Impossible de commander');
+                                                break;
+                                            case 500:
+                                                container.error(data.toString(), 'Impossible de commander');
+                                                break;
+                                            default:
+                                                container.warning('', 'Requete en cours');
+                                                break;
 
+                                        }
 
-                                $(el).remove();
-                                //this.generateCartInfo();
-                                switch (xhr.status) {
-                                    case 200:
-                                        container.success(data.toString(), 'Commande ajoutée');
-                                        this.getDataInCart();
-                                        this.generateCartInfo();
-                                        break;
-                                    case 208:
-                                        container.warning(data.toString(), 'Impossible de commander');
-                                        break;
-                                    case 500:
-                                        container.error(data.toString(), 'Impossible de commander');
-                                        break;
-                                    default:
-                                        container.warning('', 'Requete en cours');
-                                        break;
-
+                                    })
                                 }
-
+                                else{
+                                    container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
+                                }
                             });
+
                         })
 
                     }
@@ -849,7 +863,7 @@ class SeatMap extends Component {
     }
 
     //Charger le stage (konva) , initialiser le map
-    loadStage = (focusObj= null) => {
+    loadStage = (focusObj = null) => {
         let data = this.state.data_map;
         let stage = new Konva.Stage({
             container: 'stage-container-front',
@@ -934,16 +948,16 @@ class SeatMap extends Component {
         downloadURI(dataURL, 'stage.png');*/
     };
     //Générer div cart tooltip
-    generateCartInfo = () =>{
-        let count=0;
+    generateCartInfo = () => {
+        let count = 0;
         $('#tooltip_card').remove();
-        axios.get('/api/cart/count').then((response)=>{
-            count=response.data;
-            if(count>0) {
+        axios.get('/api/cart/count').then((response) => {
+            count = response.data;
+            if (count > 0) {
                 let card_body = $("<div></div>").attr('class', 'card-body');
                 let row = $("<div></div>").attr('class', 'row');
                 let cart_icon = $("<div></div>").attr('id', 'cart_icon').attr('class', 'col my-auto').append('<a id="details" class="btn btn-link"><span class="p1 fa-stack fa-lg has-badge" data-count="' + count + '"><i class="p3 fa fa-shopping-cart fa-stack-1x xfa-inverse" data-count="4b"></i></span></a>').append(' réservations');
-                let details= $("<a></a>").attr('title','Test').attr('id','details').attr('class','btn btn-link text text-info col my-auto').text('Détails');
+                let details = $("<a></a>").attr('title', 'Test').attr('id', 'details').attr('class', 'btn btn-link text text-info col my-auto').text('Détails');
                 row.append(cart_icon);
                 //let command_text=$('<div></div>').attr('class','col').text('réservations');
                 let purchase_button = $('<a></a>').attr('class', 'btn btn-link text text-danger col my-auto').attr('id', 'submit_command').text('Commander');
@@ -956,27 +970,33 @@ class SeatMap extends Component {
                     'width': '24%',
                     'position': 'absolute'
                 }).append(card_body);
-                $('#stage-container-front').append(el.css({'top':10,'left':500}));
-                $('#submit_command').on('click',function(e){
+                $('#stage-container-front').append(el.css({'top': 10, 'left': 500}));
+                $('#submit_command').on('click', function (e) {
                     $('#checkout_command').modal('show');
                 });
-                $('#clear_command').on('click',function(e){
-                    $.get('/res_billet/clear',()=>{
+                $('#clear_command').on('click', (e)=> {
+                    $.get('/res_billet/clear', () => {
                         $('#tooltip_card').remove();
+                        $.post('/api/event/seats/unlock-all',{
+                            event_id: this.props.eventId
+                        },(data)=>{
+                            if(data === "Done")
+                                container.success("Les places sont à nouveau disponibles", "Annulation effectués");
+                        });
                     });
                 });
-                $('#details').on('click',function(e){
+                $('#details').on('click', function (e) {
                     $('#cart_details').modal('show');
                 });
-                $('#cart_details').on('shown.bs.modal',()=>{
-                    let cart_items_list= this.getDataInCart();
-                    let cart_details_content=$('#cart_details_content');
+                $('#cart_details').on('shown.bs.modal', () => {
+                    let cart_items_list = this.getDataInCart();
+                    let cart_details_content = $('#cart_details_content');
                     cart_details_content.empty();
-                    cart_items_list.forEach(function(el){
+                    cart_items_list.forEach(function (el) {
                         cart_details_content.append('<div class="row">' +
-                            '<div class="col">Section: <b>'+el.section+'</b></div>' +
-                            '<div class="col">Place: <b>'+el.seat+'</b></div>' +
-                            '<div class="col"><span class="pull-right"> Prix: <b>'+el.price+'</b></span></div>' +
+                            '<div class="col">Section: <b>' + el.section + '</b></div>' +
+                            '<div class="col">Place: <b>' + el.seat + '</b></div>' +
+                            '<div class="col"><span class="pull-right"> Prix: <b>' + el.price + '</b></span></div>' +
                             '</div>')
                     });
                 });
@@ -1030,7 +1050,8 @@ class SeatMap extends Component {
         return (
             <div className="row">
                 <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
-                <div id="stage-container-front" className={"col-sm-10"} style={{paddingLeft: 0,backgroundColor: '#f8f8fa'}}>
+                <div id="stage-container-front" className={"col-sm-10"}
+                     style={{paddingLeft: 0, backgroundColor: '#f8f8fa'}}>
                 </div>
                 <div className="col-sm-2 sidebar-right">
                     <RightSidebarFront colors={this.state.ticket_colors} liste_billet={this.state.liste_billet}/>
