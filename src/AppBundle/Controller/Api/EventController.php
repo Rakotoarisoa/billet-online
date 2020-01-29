@@ -112,6 +112,53 @@ class EventController extends AbstractFOSRestController
             }
         }
     }
+    //Search Section and Seat into array to Lock
+    private function unlockSeat($array, $section = '', $seat = '', $id)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value) && array_key_exists('mapping', $value) && $value['nom'] == trim($section)) {
+                foreach ($value['mapping'] as $mapKey => $mapValue) {
+                    if (is_array($mapValue) &&
+                        array_key_exists('seat_id', $mapValue) &&
+                        array_key_exists('type', $mapValue) &&
+                        $mapValue['seat_id'] == trim($seat)
+                    ) {
+                        $em = $this->getDoctrine()->getManager();
+                        $event = $em->getRepository(Evenement::class)->find($id);
+                        $array = unserialize($event->getEtatSalle());
+                        $array[$key]['mapping'][$mapKey]['is_choosed'] = false;
+                        $event->setEtatSalle(serialize($array));
+                        $em->persist($event);
+                    }
+                }
+                $em->flush();
+            }
+        }
+    }
+    //Search Section and Seat into array to Lock
+    private function bookSeat($array, $section = '', $seat = '', $id)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value) && array_key_exists('mapping', $value) && $value['nom'] == trim($section)) {
+                foreach ($value['mapping'] as $mapKey => $mapValue) {
+                    if (is_array($mapValue) &&
+                        array_key_exists('seat_id', $mapValue) &&
+                        array_key_exists('type', $mapValue) &&
+                        $mapValue['seat_id'] == trim($seat)
+                    ) {
+                        $em = $this->getDoctrine()->getManager();
+                        $event = $em->getRepository(Evenement::class)->find($id);
+                        $array = unserialize($event->getEtatSalle());
+                        $array[$key]['mapping'][$mapKey]['is_booked'] = true;
+                        $array[$key]['mapping'][$mapKey]['is_choosed'] = false;
+                        $event->setEtatSalle(serialize($array));
+                        $em->persist($event);
+                    }
+                }
+                $em->flush();
+            }
+        }
+    }
 
     /**
      * @Rest\Post("/api/event/seats/unlock-all")
@@ -119,33 +166,22 @@ class EventController extends AbstractFOSRestController
      * @param $id
      * @return View|object|null
      */
-    public function unlockSeat(Request $request, $id=null)
+    public function unlockSeats(Request $request, $id=null)
     {
         if ($request->getMethod() != 'POST')
             return new MethodNotAllowedException(['POST']);
-        if ($request->request->has('event_id')) {
+        if ($request->request->has('event_id') && $request->request->has('items')) {
+            $items=$request->request->get('items');
             $id=(int)$request->request->get('event_id');
             $em = $this->getDoctrine()->getManager();
-            $event = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+            $event = $em->getRepository(Evenement::class)->find($id);
             $array = unserialize($event->getEtatSalle());
-            foreach ($array as $key => $value) {
-                if (is_array($value) && array_key_exists('mapping', $value)) {
-                    foreach ($value['mapping'] as $mapKey => $mapValue) {
-                        if (is_array($mapValue) &&
-                            array_key_exists('type', $mapValue)
-                        ) {
-                            if ($array[$key]['mapping'][$mapKey]['is_choosed']) {
-                                $array[$key]['mapping'][$mapKey]['is_choosed'] = false;
-                                $event->setEtatSalle(serialize($array));
-                                $em->persist($event);
-                                $em->flush();
-                                return new Response('Done',200);
-                            }
-                            return new Response('No item to unlock',200);
-                        }
-                    }
+            if(!empty($items) && count($items >0)) {
+                foreach ($items as $item) {
+                    $this->unlockSeat($array, $item['section'], $item['seat'], $id);
                 }
             }
+            return new Response('Done',200);
         }
     }
     /**
@@ -169,13 +205,35 @@ class EventController extends AbstractFOSRestController
                             $mapValue['seat_id'] == trim($seat) && $mapValue['is_choosed'] == "true") {
                             return JsonResponse::create(true);
                         }
-                        if ($lock_action) {
+                        else if($lock_action) {
                             $this->lockSeat($array, $section, $seat, $id);
                         }
-                        return JsonResponse::create(false);
                     }
+                    return JsonResponse::create(false);
                 }
             }
+        }
+    }
+    /**
+     * @Rest\Post("/api/event/seat/book")
+     */
+    //Search Section and Seat into array to Lock
+    public function isBooked(Request $request)
+    {
+        if ($request->getMethod() != 'POST')
+            return new MethodNotAllowedException(['POST']);
+        if ($request->request->has('items')  && $request->request->has('book_action') && $request->request->has('event_id')) {
+            $items = $request->request->get('items');
+            $book_action = $request->request->get('book_action');
+            $id = $request->request->get('event_id');
+            $event = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+            if ($book_action) {
+                foreach ($items as $item) {
+                    $this->bookSeat(unserialize($event->getEtatSalle()),$item['section'],$item['seat'],$id);
+                }
+            }
+
+         return new Response('Done',200);
         }
     }
 
@@ -199,6 +257,7 @@ class EventController extends AbstractFOSRestController
         }
         return JsonResponse::create($arraySalle, 200);
     }
+
 
     /**
      * @Rest\Post("/api/event/update-map/{id}")

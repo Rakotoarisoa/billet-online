@@ -41,6 +41,9 @@ class AdminUserEventController extends Controller
         $nbCheckout=$userRepository->countCheckout($user);
         $nbTickets=$userRepository->countTickets($user);
         $nbTicketsVerified=$userRepository->countVerifiedTickets($user);
+        if($nbTicketsVerified == null){
+            $nbTicketsVerified[0]['nombreBilletV'] =0;
+        }
         $event_name = $request->get('event_name');
         $event_state = $request->get('event_state');
         $event_creator = $request->get('event_creator');

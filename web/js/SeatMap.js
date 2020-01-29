@@ -252,8 +252,8 @@ class SeatMap extends Component {
                                 return node.getType() === 'Shape' && node.getClassName() === 'Circle';
                             })[0]
                         ;
-                        circle.fill('red');
-                        circle.draw();
+                        //circle.fill('red');
+                        //circle.draw();
                         newGroup.getStage().remove();
                         let card_body = $("<div></div>").attr('class', 'card-body');
                         let card_title = $('<h6></h6>').attr('class', 'card-title').text('Chaise');
@@ -975,14 +975,14 @@ class SeatMap extends Component {
                     $('#checkout_command').modal('show');
                 });
                 $('#clear_command').on('click', (e)=> {
+                    let array_cart=[];
+                    let data_cart=this.getDataInCart();
+                    data_cart.forEach(function (el) {
+                        array_cart.push({section:el.section,seat:el.seat});
+                    });
                     $.get('/res_billet/clear', () => {
                         $('#tooltip_card').remove();
-                        $.post('/api/event/seats/unlock-all',{
-                            event_id: this.props.eventId
-                        },(data)=>{
-                            if(data === "Done")
-                                container.success("Les places sont à nouveau disponibles", "Annulation effectués");
-                        });
+                        location.reload();
                     });
                 });
                 $('#details').on('click', function (e) {

@@ -422,13 +422,13 @@
                 $('#data_cart').empty();
                 let data_cart = null;
                 $.get("/api/cart/list", function (data) {
-                    data_cart= data;
+                    data_cart = data;
                     cart_items = data;
                     $.each(data_cart, function (i, el) {
                         $("#data_cart").append('<div class="row">' +
-                            '<div class="col">Section: <b>'+el.section+'</b></div>' +
-                            '<div class="col">Place: <b>'+el.seat+'</b></div>' +
-                            '<div class="col"><span class="pull-right"> Prix: <b>'+el.price+'</b></span></div>' +
+                            '<div class="col">Section: <b>' + el.section + '</b></div>' +
+                            '<div class="col">Place: <b>' + el.seat + '</b></div>' +
+                            '<div class="col"><span class="pull-right"> Prix: <b>' + el.price + '</b></span></div>' +
                             '</div>');
                     });
                 });
@@ -523,6 +523,11 @@
                                             // Show a success message to your buyer
                                             $.get('/res_billet/checkout')
                                                 .done(function () {
+                                                    $.post('/api/event/seat/book', {
+                                                    items: cart_items,
+                                                    book_action: true,
+                                                    event_id: {{ event.id }}
+                                                });
                                                     $('.payment-success').show();
                                                     $('#btnPaypal').hide();
                                                 })
@@ -560,9 +565,9 @@
                     showBackButton: true,
                     onFinish: function () {
                         if ($('.payment-success').is(':visible') || $('.payment-failure').is(':visible') || $('.register-failure').is(':visible')) {
-                            $.get('/res_billet/clear');
-                            $('#checkout_command').modal('hide');
-                            location.reload();
+                                    $.get('/res_billet/clear');
+                                    $('#checkout_command').modal('hide');
+                                    location.reload();
                         } else {
                             alert('Veuiller procéder au paiement. Pour fermer le dialogue cliquer sur x. ');
                         }
@@ -572,18 +577,31 @@
             $('.closeConfirm').click(function () { //Close Button on Form Modal to trigger Warning Modal
                 $('#confirmCloseCheckout').modal('show').on('shown.bs.modal', function () { //Show Warning Modal and use `show` event listener
                     $('.confirmclosed').click(function () { //Warning Modal Confirm Close Button
-                        $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
-                        $('#checkout_command').modal('hide'); //Hide Form Modal
-                        $.get('/res_billet/clear');
-                        location.reload();
+                        /*$.post('/api/event/seats/unlock-all',{
+                            event_id: {{ event.id }},
+                            items : cart_items
+                        },(data)=>{
+                            if(data){*/
+                                $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
+                                $('#checkout_command').modal('hide'); //Hide Form Modal
+                                $.get('/res_billet/clear');
+                                location.reload();
+                           /* }
+                        });*/
+
                     });
                 });
             });
             $('#checkout_command').on('hidden.bs.modal', function () {
-                $.get('/res_billet/clear');
-                resetForm('form_select_items');
-                resetForm('frmInfo');
-                location.reload();
+                $.post('/api/event/seats/unlock-all',{
+                    event_id: {{ event.id }},
+                    items : cart_items
+                },(data)=> {
+                    $.get('/res_billet/clear');
+                    resetForm('form_select_items');
+                    resetForm('frmInfo');
+                    location.reload();
+                });
             });
             let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
 
@@ -621,7 +639,7 @@
                 let formatted_cart = [];
                 cart_items.forEach(function (el) {
                     let item = {
-                        name: el.category_str +'-'+ el.section +'-'+ el.seat,
+                        name: el.category_str + '-' + el.section + '-' + el.seat,
                         quantity: el.quantity,
                         currency: "{{ event.devise.code }}",
                         unit_amount: {

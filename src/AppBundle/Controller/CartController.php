@@ -37,7 +37,6 @@ class CartController extends Controller
      * @var \Symfony\Component\HttpFoundation\Session\Session
      */
     protected $session;
-
     protected $cart;
 
     /**
