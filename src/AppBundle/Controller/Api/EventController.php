@@ -4,6 +4,7 @@
 namespace AppBundle\Controller\Api;
 
 use AppBundle\Entity\Evenement;
+use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,15 +30,16 @@ class EventController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/events/user/list")
+     * @Rest\Get("/api/user/{id}/events/list")
      */
-    public function getAllEventsByUser()
+    public function getAllEventsByUser($id)
     {
-        $restResult = $this->getDoctrine()->getRepository(Evenement::class)->findAll();
+        $user = $this->getDoctrine()->getRepository(User::class)->find($id);
+        $restResult = $this->getDoctrine()->getRepository(Evenement::class)->findBy(['user'=>$user]);
         if ($restResult === null) {
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
-        return $restResult;
+        return new View($restResult,200);
     }
 
     /**
@@ -176,7 +178,7 @@ class EventController extends AbstractFOSRestController
             $em = $this->getDoctrine()->getManager();
             $event = $em->getRepository(Evenement::class)->find($id);
             $array = unserialize($event->getEtatSalle());
-            if(!empty($items) && count($items >0)) {
+            if(!empty($items) && count($items) > 0 ) {
                 foreach ($items as $item) {
                     $this->unlockSeat($array, $item['section'], $item['seat'], $id);
                 }

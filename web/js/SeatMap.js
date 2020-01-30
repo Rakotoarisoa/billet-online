@@ -331,8 +331,7 @@ class SeatMap extends Component {
                                         }
 
                                     })
-                                }
-                                else{
+                                } else {
                                     container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
                                 }
                             });
@@ -974,16 +973,19 @@ class SeatMap extends Component {
                 $('#submit_command').on('click', function (e) {
                     $('#checkout_command').modal('show');
                 });
-                $('#clear_command').on('click', (e)=> {
-                    let array_cart=[];
-                    let data_cart=this.getDataInCart();
-                    data_cart.forEach(function (el) {
-                        array_cart.push({section:el.section,seat:el.seat});
-                    });
-                    $.get('/res_billet/clear', () => {
-                        $('#tooltip_card').remove();
-                        location.reload();
-                    });
+                $('#clear_command').on('click', (e) => {
+                    $.post('/api/event/seats/unlock-all', {
+                            items: JSON.parse(JSON.stringify(this.state.data_in_cart)),
+                            event_id: this.props.eventId
+
+                        }, (data) => {
+                            $.get('/res_billet/clear', () => {
+                                $('#tooltip_card').remove();
+                                location.reload();
+                            });
+                        }
+                    );
+
                 });
                 $('#details').on('click', function (e) {
                     $('#cart_details').modal('show');
