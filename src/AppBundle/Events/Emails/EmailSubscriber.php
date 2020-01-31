@@ -4,9 +4,9 @@
 namespace AppBundle\Events\Emails;
 
 
-use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
+//use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 
-class EmailSubscriber implements EventSubscriberInterface
+class EmailSubscriber //implements EventSubscriberInterface
 {
 
     public static function getSubscribedEvents()
