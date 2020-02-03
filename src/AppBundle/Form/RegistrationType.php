@@ -19,11 +19,22 @@ RegistrationType extends  AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('nom',TextType::class,array('label'=> 'Nom'));
-        $builder->add('prenom',TextType::class,array('label'=> 'Prénom'));
-        $builder->add('adresse',TextType::class,array('label'=>'Adresse'));
-        $builder->add('mobile_phone',TextType::class,array('label'=> 'Numéro Téléphone'));
-        $builder->add('phone',TextType::class,array('label'=> 'Autre numéro téléphone'));//secondary phone
+        $builder->add('nom',TextType::class,array(
+            'label'=> 'Nom',
+            'required' => true)
+        );
+        $builder->add('prenom',TextType::class,array('label'=> 'Prénom',
+            'required' => true
+        ));
+        $builder->add('adresse',TextType::class,array('label'=>'Adresse',
+            'required' => true
+        ));
+        $builder->add('mobile_phone',TextType::class,array('label'=> 'Numéro Téléphone',
+            'required' => true
+        ));
+        $builder->add('phone',TextType::class,array('label'=> 'Autre numéro téléphone',
+            'required' => true
+        ));//secondary phone
         $builder->add('isEventManager',CheckboxType::class,[
             'label' => 'Devenir créateur d\'évènements',
             'mapped' => false,
@@ -53,11 +64,11 @@ RegistrationType extends  AbstractType
         $builder->add('code_postal');
         $builder->add('region',TextType::class);
         $builder->add('website', TextType::class, array(
-            'required' => false,
+            'required' => true,
             'label'=> 'Site web'
         ));
         $builder->add('blog',TextType::class, array(
-        'required' => false,
+        'required' => true,
             'label' => 'Blog'
         ));
         $builder->add('image',FileType::class,[
@@ -78,6 +89,7 @@ RegistrationType extends  AbstractType
                     'mimeTypes' => [
                         'image/png',
                         'image/jpg',
+                        'image/jpeg',
                     ],
                     'mimeTypesMessage' => 'Enregistrez une image valide',
                 ])

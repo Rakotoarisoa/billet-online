@@ -23,9 +23,9 @@ class AuthSubscriber implements EventSubscriberInterface
         $this->logManager->logAction('Connexion', 'Utilisateur: '.$event->getAuthenticationToken()->getUsername().':'.$event->getAuthenticationToken()->getUser()->getEmail().' connecté', $event->getAuthenticationToken()->getUser());
 
     }
-    public function onRegistrationSuccess()
+    public function onRegistrationSuccess(InteractiveLoginEvent $event)
     {
-        $this->logManager->logAction('Inscription', 'Nouvel Utilisateur: '.$event->getAuthenticationToken()->getUsername().':'.$event->getAuthenticationToken()->getUser()->getEmail().' connecté', $event->getAuthenticationToken()->getUser());
+        $this->logManager->logAction('Inscription', 'Nouvel Utilisateur ajouté',$event->getAuthenticationToken()->getUser());
 
     }
 
@@ -36,7 +36,7 @@ class AuthSubscriber implements EventSubscriberInterface
     {
         return [
             SecurityEvents::INTERACTIVE_LOGIN => 'handleLogin',
-            FOSUserEvents::REGISTRATION_SUCCESS => 'onRegistrationSuccess'
+            //FOSUserEvents::REGISTRATION_SUCCESS => 'onRegistrationSuccess'
         ];
     }
 
