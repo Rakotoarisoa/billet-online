@@ -169,9 +169,8 @@ class BilletController extends AbstractFOSRestController
                     }
                     return new View("Nothing Happened",Response::HTTP_CONTINUE);
                 } catch (\ErrorException $e) {
-                    return new View($e,Response::HTTP_INTERNAL_SERVER_ERROR);
+                    return new View($e->getTraceAsString(),Response::HTTP_INTERNAL_SERVER_ERROR);
                 }
-
             } else {
                 return new View("Erreur de secondaire requête", Response::HTTP_BAD_REQUEST);
             }

@@ -584,8 +584,7 @@
                             if(data){*/
                                 $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
                                 $('#checkout_command').modal('hide'); //Hide Form Modal
-                                $.get('/res_billet/clear');
-                                location.reload();
+                                //location.reload();
                            /* }
                         });*/
 
@@ -593,15 +592,10 @@
                 });
             });
             $('#checkout_command').on('hidden.bs.modal', function () {
-                $.post('/api/event/seats/unlock-all',{
-                    event_id: {{ event.id }},
-                    items : cart_items
-                },(data)=> {
                     $.get('/res_billet/clear');
                     resetForm('form_select_items');
                     resetForm('frmInfo');
                     location.reload();
-                });
             });
             let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
 

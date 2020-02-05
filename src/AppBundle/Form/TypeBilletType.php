@@ -47,6 +47,19 @@ class TypeBilletType extends AbstractType
                 ]
 
             )
+            ->add('isAdmission', ChoiceType::class,[
+                'choices' => [
+                    'Oui' => true,
+                    'Non' => false,
+                ],
+                'expanded' => false,
+                'multiple' => false,
+                'label' => 'Billet pour admission générale',
+                'empty_data' => false,
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
             ->add('description', CKEditorType::class, array(
                 'label' => 'Description',
                 'config' => array(
