@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     noSeat: {
         '& .MuiTextField-root': {
             margin: theme.spacing(1),
-            width: "80%"
+            width: "50%"
         },
         display: 'inline-flex'
     },
@@ -90,16 +90,6 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function clearItem(id_item) {
-    /*if (id_item !== null) {
-        console.log(id_item.id);
-        axios.post("/res_billet/clearItem", {id: id_item.id})
-            .then((data) => {
-
-            });
-    }*/
-
-}
 
 const GenerateAdmissionTicket = (props) => {
     const classes = useStyles();
@@ -109,11 +99,18 @@ const GenerateAdmissionTicket = (props) => {
         setEventId(props.event_id);
     });
     useEffect(() => {
-            axios.get("/api/typeBillet/admission-only/" + eventId).then((data) => {
+            axios.get("/api/typeBillet/front_end/admission-only/" + eventId).then((data) => {
                 setTickets(data.data);
             });
         }, [eventId]
     );
+    const checkout = () =>{
+
+    };
+    const handleChange = (e) =>{
+        e.preventDefault();
+        console.log(e);
+    };
     if (tickets !== null && tickets.length > 0) {
         return (
             <Card className={classes.root} variant="outlined">
@@ -124,7 +121,7 @@ const GenerateAdmissionTicket = (props) => {
                     <List dense={false}>
                         {tickets.map((ticket,i) => {
                             return (
-                                <ListItem className={classes.noSeat} key={i}>
+                                <ListItem className={classes.noSeat} key={i.toString()}>
                                     <TextField
                                         variant={"outlined"}
                                         fullWidth={false}
@@ -132,15 +129,16 @@ const GenerateAdmissionTicket = (props) => {
                                         label={"Billet " + ticket.libelle}
                                         type="number"
                                         InputProps={{
-                                            inputProps: { min: 0, max: 10 }
+                                            inputProps: { min: 0, max: Math.min(10,(parseInt(ticket.quantite)-parseInt(ticket.nombreBillets))) }
                                         }}
+                                        //onChange={(e)=>{handleChange(e.target.value)}}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
+                                        helperText={"Prix: EUR "+ticket.prix}
                                     />
-                                    <Button variant="contained" color="secondary"
-                                            className={classes.buttonNoSeatCheckout}>
-                                        <span className={"fa fa-plus"}/>
+                                    <Button variant="contained" color="secondary" className={classes.buttonNoSeatCheckout} onClick={()=>{checkout}}>
+                                        Ajouter
                                     </Button>
                                 </ListItem>
                             )
@@ -180,7 +178,12 @@ const GenerateDataCart = (props) => {
         let item = colors.filter((color) => {
             return color.billet.toString() === type.toString();
         });
+        console.log(item[0]);
+        return item[0].color.toString();
         //return "#333333";
+    };
+    const handleDataCartFromSideBar = (item) => {
+        props.handleDataCartFromSideBar(item);
     };
     if (dataCart !== null && dataCart.length > 0 && colors !== null && colors.length > 0) {
         return (
@@ -191,9 +194,9 @@ const GenerateDataCart = (props) => {
                     </Typography>
                     <List dense={true}>
                         {dataCart.map(
-                            item => {
+                            (item,i) => {
                                 return (
-                                    <ListItem key={item.id}>
+                                    <ListItem key={i.toString()}>
                                         <ListItemAvatar>
                                             <Avatar className={classes.small}>
                                             <span className={"fa fa-circle"}
@@ -208,7 +211,7 @@ const GenerateDataCart = (props) => {
                                             <IconButton edge={"end"} color="secondary" aria-label="Remove item"
                                                         component="span"
                                                         onClick={() => {
-                                                            props.handleDataCartFromSideBar(item)
+                                                            handleDataCartFromSideBar(item)
                                                         }}>
                                                 <span className={"fa fa-trash"}/>
                                             </IconButton>
@@ -226,13 +229,14 @@ const GenerateDataCart = (props) => {
                             </Typography>
                         </ListItem>
                         <div className={classes.buttons}>
-                            <Button className={classes.button}>
+                            <Button className={classes.button} onClick={()=>{props.clear_all(true)}}>
                                 <span className={"fa fa-trash"}/> Vider mon panier
                             </Button>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                className={classes.button}>
+                                className={classes.button}
+                                onClick={()=>{props.checkout(true)}}>
                                 Commander
                             </Button>
                         </div>
@@ -275,8 +279,14 @@ function RightSidebarFront(props) {
             container.error("Une erreur s'est produite: " + error.message, "Erreur", {closeButton: true});
         }
     });
-    const handleDataCartFromSidebar = (item) => {
-        props.handleDataCartFromSidebar(item);
+    const handleDataCartFromSideBar = (item) => {
+        props.handleDataCartFromSideBar(item);
+    };
+    const checkOut = (checkout) => {
+        props.checkout(checkout);
+    };
+    const clearAll = (clear_all) =>{
+        props.clear_all(clear_all);
     };
     return (
         <aside>
@@ -284,7 +294,7 @@ function RightSidebarFront(props) {
                 <GenerateAdmissionTicket event_id={eventId}/>
             </Fade>
             <Fade in={true} style={{transitionDelay: '50ms', display: "inherit"}}>
-                <GenerateDataCart colors={colors} data={billet} handleDataCartFromSidebar={handleDataCartFromSidebar}/>
+                <GenerateDataCart colors={colors} data={billet} handleDataCartFromSideBar={handleDataCartFromSideBar} checkout={checkOut} clear_all={clearAll}/>
             </Fade>
         </aside>
     );

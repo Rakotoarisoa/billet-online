@@ -60,7 +60,7 @@ class Cart implements \ArrayAccess
      */
     public function getItem($id)
     {
-        return $this->session->get($this->key.'/'.$id);
+        return $this->session->get($this->key . '/' . $id);
     }
 
     /**
@@ -72,22 +72,27 @@ class Cart implements \ArrayAccess
     {
         return $this->session->get($this->key, []);
     }
+
     /**
      * Check if item already exists
      *
      * @return boolean
      */
-    public function alreadyExists($section,$seat,$cat){
-        $items=$this->getItems();
-        for($i=0;$i<count($items);$i++)
-        {
-            if($items[$i]->getSection() == $section && $items[$i]->getSeat() == $seat && $items[$i]->getCategoryStr() == $cat)
-            {
-                return true;
+    public function alreadyExists($section, $seat, $cat)
+    {
+        if ($this->count() > 0) {
+            $items = $this->getItems();
+            for ($i = 0; $i < count($items); $i++) {
+                if (array_key_exists($i, $items)) {
+                    if ($items[$i]->getSection() == $section && $items[$i]->getSeat() == $seat && $items[$i]->getCategoryStr() == $cat) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
     }
+
     /**
      * Adds an Item to the cart
      *
@@ -96,14 +101,14 @@ class Cart implements \ArrayAccess
     public function addItem($newItem)
     {
         $newItemId = $newItem->getId();
-        if ($this->session->has($this->key.'/'.$newItemId)) {
-            $oldItem = $this->session->get($this->key.'/'.$newItemId);
+        if ($this->session->has($this->key . '/' . $newItemId)) {
+            $oldItem = $this->session->get($this->key . '/' . $newItemId);
             $newQty = $oldItem->getQuantity() + $newItem->getQuantity();
             $newItem->setQuantity($newQty);
         }
         $this->setItem($newItem);
         $this->session->set('totalPrice', $this->getDiscountTotal());
-        $this->session->set('quantity',count($this->getItems()));
+        $this->session->set('quantity', count($this->getItems()));
     }
 
     /**
@@ -128,7 +133,7 @@ class Cart implements \ArrayAccess
         if ($item->isValid() === false) {
             throw new \InvalidArgumentException('The item is not valid');
         }
-        $this->session->set($this->key.'/'.$item->getId(), $item);
+        $this->session->set($this->key . '/' . $item->getId(), $item);
     }
 
     /**
@@ -202,7 +207,7 @@ class Cart implements \ArrayAccess
      */
     public function removeItem($id)
     {
-        $item = $this->session->remove($this->key.'/'.$id);
+        $item = $this->session->remove($this->key . '/' . $id);
         $this->session->set('totalPrice', $this->getDiscountTotal());
 
         return $item;
@@ -214,7 +219,7 @@ class Cart implements \ArrayAccess
      */
     public function hasItem($id)
     {
-        return $this->session->has($this->key.'/'.$id);
+        return $this->session->has($this->key . '/' . $id);
     }
 
     /**
@@ -224,7 +229,7 @@ class Cart implements \ArrayAccess
      */
     public function count()
     {
-        return (int) count($this->getItems());
+        return (int)count($this->getItems());
     }
 
     /**
@@ -318,7 +323,7 @@ class Cart implements \ArrayAccess
         }
 
         $result = $categories;
-        if (! is_null($category)) {
+        if (!is_null($category)) {
             if (isset($categories[$category])) {
                 $result = $categories[$category];
             } else {
@@ -345,7 +350,7 @@ class Cart implements \ArrayAccess
         }
 
         $result = $priceByCategory;
-        if (! is_null($category)) {
+        if (!is_null($category)) {
             if (isset($priceByCategory[$category])) {
                 $result = $priceByCategory[$category];
             } else {
@@ -384,7 +389,7 @@ class Cart implements \ArrayAccess
             $discountTotal = $this->getCoupon() === null ? $total : $total;// - ($total * (1/*$this->couponDiscount*/ / 100));
         }
 
-        return number_format((float) $discountTotal, 2, '.', '');
+        return number_format((float)$discountTotal, 2, '.', '');
     }
 
     /**

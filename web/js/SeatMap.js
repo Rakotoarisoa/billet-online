@@ -774,7 +774,7 @@ class SeatMap extends Component {
         function initColors(nb, billets) {
             let listColors = [];
             for (let i = 0; i < nb; i++) {
-                let colors_palette = ['#decfd0', '#feb6b1', '#b4b8cf', '#94c9a9', '#c6ecae', '#f6d8ae', '#f8e398', '#ea97ac', '#dec3be', '#c6a29d'];
+                let colors_palette = ['#e57962', '#6278e5', '#b4b8cf', '#e56862', '#c6ecae', '#fbf70a', '#f8e398', '#ea97ac', '#dec3be', '#c6a29d'];
                 let color = colors_palette[i];
                 let billet = billets[i].libelle;
                 listColors.push({color, billet});
@@ -1047,6 +1047,18 @@ class SeatMap extends Component {
                 this.getDataInCart();
             });
     };
+    checkOut = (checkout) => {
+        if(checkout){
+            //open checkout
+            $('#checkout_command').modal('show');
+        }
+    };
+    clearAll = (clear) =>{
+        if(clear){
+            axios.get("/res_billet/clear");
+            this.getDataInCart();
+        }
+    };
     //rendu du composant
     render() {
         return (
@@ -1056,7 +1068,7 @@ class SeatMap extends Component {
                      style={{paddingLeft: 0, backgroundColor: '#f8f8fa'}}>
                 </div>
                 <div className="col-sm-4 sidebar-right">
-                    <RightSidebarFront event_id={this.props.eventId} colors={this.state.ticket_colors} liste_billet={this.state.data_in_cart}/>
+                    <RightSidebarFront handleDataCartFromSideBar={this.handleDataCartFromSideBar} event_id={this.props.eventId} colors={this.state.ticket_colors} liste_billet={this.state.data_in_cart} checkout={this.checkOut} clear_all={this.clearAll}/>
                 </div>
             </div>
         );

@@ -213,6 +213,7 @@
                                                                         <div class="list-group">
                                                                             {% set i=1 %}
                                                                             {% for type in event.typeBillets %}
+                                                                                {% if type.isAdmission %}
                                                                                 <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
                                                                                     <div class="row d-flex w-100 justify-content-between">
                                                                                         <div class="col-6">
@@ -245,6 +246,7 @@
                                                                                     <small>{{ type.description|raw }}</small>
                                                                                 </div>
                                                                                 {% set i=i+1 %}
+                                                                                {% endif %}
                                                                             {% endfor %}
                                                                         </div>
                                                                     </form>

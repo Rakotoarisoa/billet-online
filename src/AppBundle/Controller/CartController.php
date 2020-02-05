@@ -80,9 +80,16 @@ class CartController extends Controller
      */
     public function clearCartAction()
     {
-        $this->session->set('quantity', 0);
-        $this->cart->clear();
-        return $this->redirect('/res_billet/list');
+        $items=$this->cart->getItems();
+        if(count($items) >0) {
+            $event=$items[0]->getEvenement();
+                foreach ($items as $item){
+                    $this->unlockSeat(unserialize($event->getEtatSalle()),$item->getSection(),$item->getSeat(),$event->getId());
+                }
+                    $this->session->set('quantity', 0);
+            $this->cart->clear();
+            return $this->redirect('/res_billet/list');
+        }
     }
     /**
      * Clears the cart
@@ -92,12 +99,37 @@ class CartController extends Controller
     public function clearItemCartAction(Request $request)
     {
         if($request->request && $request->request->has('id')) {
+            $item=$this->cart->getItem((int)$request->request->get('id'));
+            $event=$item->getEvenement();
+            $this->unlockSeat(unserialize($event->getEtatSalle()),$item->getSection(),$item->getSeat(),$event->getId());
             $this->cart->removeItem((int)$request->request->get('id'));
             return new Response('Done', Response::HTTP_OK);
         }
         return new Response('Error', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
-
+    //Search Section and Seat into array to Lock
+    private function unlockSeat($array, $section = '', $seat = '', $id)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value) && array_key_exists('mapping', $value) && $value['nom'] == trim($section)) {
+                foreach ($value['mapping'] as $mapKey => $mapValue) {
+                    if (is_array($mapValue) &&
+                        array_key_exists('seat_id', $mapValue) &&
+                        array_key_exists('type', $mapValue) &&
+                        $mapValue['seat_id'] == trim($seat)
+                    ) {
+                        $em = $this->getDoctrine()->getManager();
+                        $event = $em->getRepository(Evenement::class)->find($id);
+                        $array = unserialize($event->getEtatSalle());
+                        $array[$key]['mapping'][$mapKey]['is_choosed'] = false;
+                        $event->setEtatSalle(serialize($array));
+                        $em->persist($event);
+                    }
+                }
+                $em->flush();
+            }
+        }
+    }
 
     /**
      * Adds coupon to the cart
