@@ -59,4 +59,36 @@ class UserRepository extends EntityRepository
             ->setParameter('userId', $user->getId())
             ->getResult();
     }
+
+
+
+    /**
+     * count Event Public
+     */
+    public function countEventsPublic(User $user){
+        return $this->getEntityManager()->createQuery('SELECT count(u) AS nombreEvents
+            from AppBundle:User u
+            JOIN AppBundle:Evenement e WITH u.id=e.user 
+            WHERE u.id= :userId
+            AND e.isPublished = True
+            GROUP BY  u.id
+            ')
+            ->setParameter('userId', $user->getId())
+            ->getResult();
+    }
+
+    /**
+     * count Event Public
+     */
+    public function countEventsUsingSeatMap(User $user){
+        return $this->getEntityManager()->createQuery('SELECT count(u) AS nombreEvents
+            from AppBundle:User u
+            JOIN AppBundle:Evenement e WITH u.id=e.user 
+            WHERE u.id= :userId
+            AND e.isUsingSeatMap = True
+            GROUP BY  u.id
+            ')
+            ->setParameter('userId', $user->getId())
+            ->getResult();
+    }
 }

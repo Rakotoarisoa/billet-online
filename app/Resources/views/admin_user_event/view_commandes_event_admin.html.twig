@@ -9,11 +9,13 @@
 {% block body %}
     <!-- header search -->
     <div class="container-fluid">
+        <br />
         <div class="row bg-white">
             <div class="col">
-                <p class="text-muted">Liste des commandes de l'évènement <a class="btn btn-link" href="{{ path('viewEventUserAdmin') }}">{{ event.titreEvenement }}</a></p>
+                <h1 class="text-info"><i class="fa fa-calendar" aria-hidden="true"></i> Liste des commandes de l'évènement <a  href="{{ path('viewEventUserAdmin') }}">{{ event.titreEvenement }}</a></h1>
             </div>
         </div>
+        <br />
         <form method="GET" action="">
             <div class="row">
                 <div class="col-2">
@@ -46,7 +48,10 @@
         <br/>
         <div class="row">
             <div class="col-sm-7">
+            <!--
                 <table class="table table-hover text-center table-bordered">
+                -->
+                <table class="table table-hover">
                     <tr style="background-color:#ccc">
                         <td width="15%"><b>Id commande</b></td>
                         <td><b>Nom de l'acheteur</b></td>
@@ -80,7 +85,7 @@
                                 <div class="row">
                                     <div class="col"><a data-id="{{ order.id }}"
                                                         data-ref="{{ order.randomCodeCommande }}"
-                                                        class="btn btn-link text-light-blue order">Détails</a></div>
+                                                        class="btn btn-danger text-light-blue order" style="color:white">Détails</a></div>
                                 </div>
                             </td>
 
@@ -94,26 +99,46 @@
             </div>
             <div class="col-sm-5">
                 <div class="card">
-                    <div class="card-header"><h4>Billets vendus</h4></div>
-                    <div class="card-body">
-                        {% set total_billets,count_vendus=0,0 %}
-                        {% for typeBillet in event.typeBillets %}
-                            {% for billet in typeBillet.billets %}
-                                {% if  billet.estVendu %}
-                                    {% set count_vendus=count_vendus+ 1 %}
-                                {% endif %}
-                            {% endfor %}
-                            {% set total_billets=total_billets+typeBillet.quantite %}
-                        {% endfor %}
-                        {% if count_vendus > 0 and total_billets > 0 %}
-                            <h4><div class="card-text"> <span class="badge badge-pill badge-success">{{ count_vendus }}/{{ total_billets }}</span></div></h4>
-                        {% elseif total_billets > 0 %}
-                            <h4><span class="badge badge-pill badge-success">{{ count_vendus }}/{{ total_billets }}</span></h4>
-                        {% else %}
-                            Aucun billets à vendre
-                        {% endif %}
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="align-self-center">                                   
+                                    <i class="fa fa-bar-chart float-left" style="font-size:48px;color:red" aria-hidden="true"></i>
+                                </div>
+                                <div class="media-body text-right">
+                                         {% set total_billets,count_vendus=0,0 %}
+                                        {% for typeBillet in event.typeBillets %}
+                                            {% for billet in typeBillet.billets %}
+                                                    {% if  billet.estVendu %}
+                                                        {% set count_vendus=count_vendus+ 1 %}
+                                                    {% endif %}
+                                            {% endfor %}
+                                            {% set total_billets=total_billets+typeBillet.quantite %}
+                                        {% endfor %}
+                                    {% if count_vendus > 0 and total_billets > 0 %}
+                                        <h2 class="text-info"> {{ count_vendus }}/{{ total_billets }}</h2>
+                                        <span>Billets vendus</span>
+                                    {% elseif total_billets > 0 %}
+                                     <h2 class="text-info">
+                                       {{ count_vendus }}/{{ total_billets }}
+                                     </h2>
+                                     <span>Billets vendus</span>
+                                    {% else %}
+                                        <span>Aucun billets à vendre</span>
+                                    {% endif %}                                    
+                                </div>
+                                <div class="media-body text-right">                                        
+                                        <h2 class="text-info"> {{ event.reservation|length }}</h2>
+                                        <span>commande(s) créée(s)</span>                                
+                                </div>
+                                
+                                
+                            </div>
+                            
+                        </div>
                     </div>
                 </div>
+                
                 <br/>
                 <div class="card">
                     <div class="card-header"><h4 class="order_right_panel"></h4></div>

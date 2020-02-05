@@ -38,6 +38,10 @@ class AdminUserEventController extends Controller
         $userRepository= $this->getDoctrine()->getRepository(User::class);
         $user = $this->getUser();
         $nbEvents=$userRepository->countEvents($user);
+        /** code HH */
+        $nbEventsPublic=$userRepository->countEventsPublic($user);
+        $nbEventsUsingSeatMap = $userRepository->countEventsUsingSeatMap($user);
+        /** end code HH */
         $nbCheckout=$userRepository->countCheckout($user);
         $nbTickets=$userRepository->countTickets($user);
         $nbTicketsVerified=$userRepository->countVerifiedTickets($user);
@@ -61,6 +65,8 @@ class AdminUserEventController extends Controller
             'event_state'=> $event_state,
             'event_creator'=> $event_creator,
             'nbEvents' => $nbEvents[0]['nombreEvents'],
+            'nbEventsPublic'=>$nbEventsPublic[0]['nombreEvents'],
+            'nbEventsUsingSeatMap'=>$nbEventsUsingSeatMap[0]['nombreEvents'],
             'nbCheckout' => $nbCheckout[0]['nombreCheckout'],
             'nbTickets' => $nbTickets[0]['nombreBillets'],
             'nbChecked' => $nbTicketsVerified[0]['nombreBilletV']]);
@@ -124,18 +130,42 @@ class AdminUserEventController extends Controller
     }
     /**
      * Gestion des évènements de l'utilisateur
-     * @Route("/user/admin-event/{e_id}/ticket/list", name="viewTicketEventUserAdmin")
-     * @ParamConverter("user",options={"mapping":{"userId" = "id","e_id"= "event_id"}})
-     * @ParamConverter("evenement",options={"mapping":{"e_id"= "id"}})
+     * @Route("/user/admin-event/{eventId}/ticket/list", name="viewTicketEventUserAdmin")     
+     * @ParamConverter("user",options={"mapping":{"userId" = "id","eventId"= "event_id"}})
+     * @ParamConverter("evenement",options={"mapping":{"eventId"= "id"}})
      * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param Evenement $event
      * @return Response
      */
-    public function eventTicketsAction(Request $request, Evenement $event){
+    public function eventTicketsAction(Request $request, Evenement $evenement){
+        $billet_place = $request->get('billet_place');
+        $billet_type = $request->get('billet_type');
+        $billet_checked = $request->get('billet_checked');
+
+        //entity manager
+        $eventRepository = $this->getDoctrine()->getRepository(Evenement::class);
+
+        $nbAllBillets = $eventRepository->getCountTicketsEvents($evenement);
+        $nbAllBilletChecked = $eventRepository->getCountTicketsEventsChecked($evenement);
+        if($nbAllBilletChecked){
+            $allbilletchecked = $nbAllBilletChecked[0]['nbAllBillet'];
+
+        }else{
+            $allbilletchecked = 0;
+        }
+        
+        $nbEventsBillets=$eventRepository->getAllTicketsEvents($evenement,$billet_place,$billet_type,$billet_checked);
+        $nbEventsBillets_all = $this->get('knp_paginator')->paginate($nbEventsBillets,$request->query->get('page',1),20);
         return $this->render('admin_user_event/view_billets_event_admin.html.twig',[
-            'event' =>$event]);
-    }
+            'event' =>$evenement,
+            'billet_place'=>$billet_place,
+            'billet_type'=>$billet_type,
+            'billet_checked'=>$billet_checked,
+            'nbAllBillet'=> $nbAllBillets[0]['nbAllBillet'],
+            'nbAllBilletChecked'=> $allbilletchecked,
+            'billets'=>$nbEventsBillets_all]);
+    }    
 
 
 }

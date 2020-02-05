@@ -4,6 +4,8 @@ namespace AppBundle\Repository;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\User;
 use AppBundle\Entity\LieuEvenement;
+use AppBundle\Entity\TypeBillet;
+use AppBundle\Entity\Billet;
 use Doctrine\ORM\EntityRepository;
 /**
  * EvenementRepository
@@ -97,4 +99,50 @@ class EvenementRepository extends EntityRepository
                        ->execute();
                     
     }
+
+
+    /**
+     * get Ticket in Event
+     */
+    public function getAllTicketsEvents($event = null, $billet_place = null,$billet_type = null ,$billet_checked = null){
+        return $this->getEntityManager()
+            ->createQuery('SELECT b
+                            FROM AppBundle:Evenement e
+                            LEFT JOIN AppBundle:TypeBillet t WITH e.id = t.evenement
+                            LEFT JOIN AppBundle:Billet b WITH t.id = b.typeBillet
+                            WHERE e.id=:event')
+                ->setParameter('event', $event)           
+                ->getResult();        
+    }
+
+
+    /**
+     * get Count checked in Event
+     */
+    public function getCountTicketsEvents($event = null, $billet_place = null,$billet_type = null ,$billet_checked = null){
+        return $this->getEntityManager()
+            ->createQuery('SELECT count(b) as nbAllBillet
+                            FROM AppBundle:Evenement e
+                            LEFT JOIN AppBundle:TypeBillet t WITH e.id = t.evenement
+                            LEFT JOIN AppBundle:Billet b WITH t.id = b.typeBillet
+                            WHERE e.id=:event')
+                ->setParameter('event', $event)           
+                ->getResult();        
+    }
+
+    /**
+     * get Count checked in Event
+     */
+    public function getCountTicketsEventsChecked($event = null, $billet_place = null,$billet_type = null ,$billet_checked = null){
+        return $this->getEntityManager()
+            ->createQuery('SELECT count(b) as nbAllBillet
+                            FROM AppBundle:Evenement e
+                            LEFT JOIN AppBundle:TypeBillet t WITH e.id = t.evenement
+                            LEFT JOIN AppBundle:Billet b WITH t.id = b.typeBillet
+                            WHERE e.id=:event AND b.checked = True')
+                ->setParameter('event', $event)           
+                ->getResult();        
+    }
+
+    
 }
