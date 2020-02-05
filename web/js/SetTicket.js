@@ -859,7 +859,7 @@ class SetTicket extends Component {
                         container.error("Une Erreur s'est produite pendant le chargement de la carte:" + error.message, 'Erreur', {closeButton: true});
                     });
                 await axios.get(
-                    '/api/typeBillet/' + this.props.eventId
+                    '/api/typeBillet/seat-map/for-edit/' + this.props.eventId
                 ).then((response) => {
                     this.setState({
                         'liste_billet': response.data,

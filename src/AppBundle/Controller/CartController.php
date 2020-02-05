@@ -84,6 +84,20 @@ class CartController extends Controller
         $this->cart->clear();
         return $this->redirect('/res_billet/list');
     }
+    /**
+     * Clears the cart
+     *
+     * @Route("/res_billet/clearItem", name="cart_clear_item")
+     */
+    public function clearItemCartAction(Request $request)
+    {
+        if($request->request && $request->request->has('id')) {
+            $this->cart->removeItem((int)$request->request->get('id'));
+            return new Response('Done', Response::HTTP_OK);
+        }
+        return new Response('Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
 
     /**
      * Adds coupon to the cart

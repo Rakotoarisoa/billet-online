@@ -159,7 +159,7 @@
 {% for billet in reservation.billet %}
     {% set options=
         {
-            "code": "'" ~ reservation.randomCodeCommande ~'-'~ reservation.evenement.randomCodeEvent ~'-'~ billet.identifiant ~ "'",
+            "code": reservation.randomCodeCommande ~'-'~ reservation.evenement.randomCodeEvent ~'-'~ billet.identifiant,
             "type": "qrcode",
             'format' : 'png',
             'width' : 100,

@@ -143,6 +143,25 @@ class TypeBillet
      * @ORM\Column(type="boolean")
      */
     private $active = true;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isAdmission = false;
+    /**
+     * @return mixed
+     */
+    public function getIsAdmission()
+    {
+        return $this->isAdmission;
+    }
+
+    /**
+     * @param mixed $isAdmission
+     */
+    public function setIsAdmission($isAdmission): void
+    {
+        $this->isAdmission = $isAdmission;
+    }
 
     /**
      * @return mixed

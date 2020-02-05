@@ -67,6 +67,43 @@ class TypeBilletController extends AbstractFOSRestController
         return View::create($restResult,Response::HTTP_OK);
     }
     /**
+     * @Rest\Get("/api/typeBillet/seat-map/for-edit/{id}")
+     * Get Event by Id
+     * @param $id de l'évènement
+     * @return View|object|null
+     */
+    public function getTicketListSeatMapTypeByEvent($id)
+    {
+        //$id : id de l'évènement
+        $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        //$restResult = $this->getDoctrine()->getRepository(TypeBillet::class)->findBy(["evenement"=>$evenement,"active" => true]);
+        //$restResult = $this->getDoctrine()->getRepository(Billet::class)->getListTicketsByType($evenement);
+        $restResult = $this->getDoctrine()->getRepository(Billet::class)->getSeatMapListTicketsByType($evenement);
+        if ($restResult === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
+        return View::create($restResult,Response::HTTP_OK);
+    }
+    /**
+     * @Rest\Get("/api/typeBillet/admission-only/{id}")
+     * Get Event by Id
+     * @param $id de l'évènement
+     * @return View|object|null
+     */
+    public function getTicketListForAdmissionTypeByEvent($id)
+    {
+        //$id : id de l'évènement
+        $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        //$restResult = $this->getDoctrine()->getRepository(TypeBillet::class)->findBy(["evenement"=>$evenement,"active" => true]);
+        //$restResult = $this->getDoctrine()->getRepository(Billet::class)->getListTicketsByType($evenement);
+        $restResult = $this->getDoctrine()->getRepository(Billet::class)->getAdmissionOnlyListTicketsByType($evenement);
+        if ($restResult === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
+        return View::create($restResult,Response::HTTP_OK);
+    }
+
+    /**
      * @Rest\Get("/api/event/update/{id}")
      * @param $id
      * @return View|object|null

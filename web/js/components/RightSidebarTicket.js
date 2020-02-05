@@ -11,11 +11,25 @@ import {ToastContainer} from "react-toastr";
 import ChoosePlaceDialog from "./forms/ChoosePlaceDialog";
 import SaveCanvas from "./forms/SaveCanvas";
 import ReInitSeat from "./forms/ReInitSeat";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import Avatar from "@material-ui/core/Avatar";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import IconButton from "@material-ui/core/IconButton";
+import ListItem from "@material-ui/core/ListItem";
+import List from '@material-ui/core/List';
+import CardContent from "@material-ui/core/CardContent";
+import Card from "@material-ui/core/Card";
 
 let container;
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
+        margin: theme.spacing(1)
+    },
+    small: {
+        width: theme.spacing(3),
+        height: theme.spacing(3),
     },
     paper: {
         padding: theme.spacing(2),
@@ -59,27 +73,25 @@ function RightSidebarTicket(props) {
                         formattedSeat.push({seat_id: name, type: billet, is_booked: false, is_choosed: false});
                     }
                 }
-            }
-            else if(selectedItem.type === "rectangle"){
-                for (let i = 0; i < ((selectedItem.xSeats*2)+(selectedItem.ySeats*2)); i++) {
+            } else if (selectedItem.type === "rectangle") {
+                for (let i = 0; i < ((selectedItem.xSeats * 2) + (selectedItem.ySeats * 2)); i++) {
                     if (selectedItem.deleted_seats.includes(parseInt(i + 1))) continue;
-                    formattedSeat.push({seat_id: i + 1, type: billet, is_booked: false,is_choosed: false});
+                    formattedSeat.push({seat_id: i + 1, type: billet, is_booked: false, is_choosed: false});
                 }
-            }
-            else if(selectedItem.type === "ronde") {
+            } else if (selectedItem.type === "ronde") {
                 for (let i = 0; i < selectedItem.chaises; i++) {
-                    if (selectedItem.deleted_seats.includes(parseInt(i + 1)))  continue;
-                    formattedSeat.push({seat_id: i + 1, type: billet, is_booked: false,is_choosed:false});
+                    if (selectedItem.deleted_seats.includes(parseInt(i + 1))) continue;
+                    formattedSeat.push({seat_id: i + 1, type: billet, is_booked: false, is_choosed: false});
                 }
             }
             props.assignTicket(formattedSeat);
         }
     };
-    const unAssignAll =()=>{
+    const unAssignAll = () => {
         props.assignTicket([]);
     };
-    const reInitAllSeats = (reInit) =>{
-        if(reInit){
+    const reInitAllSeats = (reInit) => {
+        if (reInit) {
             props.reInit(reInit);
         }
     };
@@ -120,33 +132,34 @@ function RightSidebarTicket(props) {
                 </Button>}
                 <Fade in={hasObjectSelected}
                       style={{transitionDelay: '50ms', display: (hasObjectSelected) ? "inherit" : "none"}}>
-                    <Grid container spacing={2} justify="center" direction="row">
-                        {billet.map((item, i) =>
-                            <Paper className={classes.paper} key={i}>
-                                <Grid container direction={"row"}>
-                                    <Grid item xs={12} sm={4}>
-                                        <ButtonBase key={item.libelle}>
-                                            <span id={"billet-" + i} className={"btn fa fa-plus-circle fa-3x"}
-                                                  style={{color: colors[i].color.toString()}}
-                                                  title={"Assigner toutes les chaises"} onClick={() => handleAssignAll(item.libelle)}></span>
-                                        </ButtonBase></Grid>
-                                    <Grid item xs={12} sm={4}>
-                                        <Typography variant="subtitle1">{item.libelle}</Typography></Grid>
-                                    <Grid item xs={12} sm={4}>
-                                        <Typography variant="body2"
-                                                    style={{cursor: 'pointer'}}>{item.quantite} billets</Typography></Grid>
-                                </Grid>
-                                <Grid container direction={"row"}>
-                                    <Grid xs={12} sm={6} item>
-                                        <ButtonBase className={"btn btn-light"} onClick={() => {handleSelectedBillet(item)}}>
-                                            <Typography variant="caption" className={classes.underlined}>
-                                                Assigner des chaises spécifiques
-                                            </Typography>
-                                    </ButtonBase>
-                                    </Grid>
-                                </Grid>
-                            </Paper>)}
-                    </Grid>
+                    <Card className={classes.root} variant="outlined">
+                        <CardContent>
+                            <List dense={true}>
+                                {billet.map((item, i) =>
+                                    <ListItem key={item.id}>
+                                        <ListItemAvatar>
+                                            <Avatar className={classes.small} onClick={() => handleAssignAll(item.libelle)}>
+                                                <span className={"fa fa-circle"} style={{color: colors[i].color.toString()}}></span>
+                                            </Avatar>
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={item.libelle}
+                                            secondary={item.quantite + " billets"}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <IconButton edge={"end"} color="secondary" aria-label="Remove item"
+                                                        component="span"
+                                                        onClick={() => {
+                                                            handleSelectedBillet(item)
+                                                        }}>
+                                                <span className={"fa fa-plus"}/>
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                )}
+                            </List>
+                        </CardContent>
+                    </Card>
                 </Fade>
                 {!hasObjectSelected && <SaveCanvas saveCanvas={saveCanvas} updateObject={props.updateObject}/>}
                 {!hasObjectSelected && <ReInitSeat reInitSeat={reInitAllSeats}/>}

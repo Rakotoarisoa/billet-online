@@ -246,7 +246,7 @@ class SeatMap extends Component {
                 newGroup.on('click',
                     (e) => {
                         // update tooltip
-                        $('#tooltip_wrapper').remove();
+                        /*$('#tooltip_wrapper').remove();*/
                         circle = newGroup
                             .getChildren(function (node) {
                                 return node.getType() === 'Shape' && node.getClassName() === 'Circle';
@@ -254,7 +254,7 @@ class SeatMap extends Component {
                         ;
                         //circle.fill('red');
                         //circle.draw();
-                        newGroup.getStage().remove();
+                        /*newGroup.getStage().remove();
                         let card_body = $("<div></div>").attr('class', 'card-body');
                         let card_title = $('<h6></h6>').attr('class', 'card-title').text('Chaise');
                         let row_type = $("<div></div>").attr('class', 'row');
@@ -290,8 +290,8 @@ class SeatMap extends Component {
                             'left': newGroup.getAbsolutePosition().x - 100
                         }).append(card_body);
                         $('#stage-container-front').append(el);
-                        newGroup.setAttr('is_selected', !newGroup.getAttr('is_selected'));
-                        $("#submit-seat").on('click', (e) => {
+                        newGroup.setAttr('is_selected', !newGroup.getAttr('is_selected'));*/
+                        //$("#submit-seat").on('click', (e) => {
                             let seat_data = this.state.data_map;
                             seat_data = JSON.stringify(seat_data);
                             $.post("/api/event/seat/is-locked", {
@@ -310,13 +310,10 @@ class SeatMap extends Component {
                                         section_id: object.nom.toString(),
                                         place_id: alphabet[i].toUpperCase() + (j + 1)
                                     }, (data, status, xhr) => {
-                                        $(el).remove();
-                                        //this.generateCartInfo();
                                         switch (xhr.status) {
                                             case 200:
                                                 container.success(data.toString(), 'Commande ajoutée');
                                                 this.getDataInCart();
-                                                this.generateCartInfo();
                                                 break;
                                             case 208:
                                                 container.warning(data.toString(), 'Impossible de commander');
@@ -335,9 +332,7 @@ class SeatMap extends Component {
                                     container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
                                 }
                             });
-
-                        })
-
+                        //})
                     }
                 );
                 section.add(newGroup);
@@ -812,7 +807,7 @@ class SeatMap extends Component {
                         container.error("Une Erreur s'est produite pendant le chargement de la carte:" + error.message, 'Erreur', {closeButton: true});
                     });
                 await axios.get(
-                    '/api/typeBillet/' + this.props.eventId
+                    '/api/typeBillet/seat-map/for-edit/' + this.props.eventId
                 ).then((response) => {
                     this.setState({
                         'liste_billet': response.data,
@@ -918,7 +913,7 @@ class SeatMap extends Component {
         stage.on('wheel', (e) => {
             this.handleWheel(e);
         });
-        this.generateCartInfo();
+        //this.generateCartInfo();
         this.getDataInCart();
         stage.draw();
         /** Responsive stage*/
@@ -1046,17 +1041,22 @@ class SeatMap extends Component {
     getColors = (colors) => {
         this.setState({'ticket_colors': colors});
     };
-
+    handleDataCartFromSideBar = (item) => {
+        axios.post("/res_billet/clearItem", {id: item.id})
+            .then((data) => {
+                this.getDataInCart();
+            });
+    };
     //rendu du composant
     render() {
         return (
             <div className="row">
                 <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
-                <div id="stage-container-front" className={"col-sm-10"}
+                <div id="stage-container-front" className={"col-sm-8"}
                      style={{paddingLeft: 0, backgroundColor: '#f8f8fa'}}>
                 </div>
-                <div className="col-sm-2 sidebar-right">
-                    <RightSidebarFront colors={this.state.ticket_colors} liste_billet={this.state.liste_billet}/>
+                <div className="col-sm-4 sidebar-right">
+                    <RightSidebarFront event_id={this.props.eventId} colors={this.state.ticket_colors} liste_billet={this.state.data_in_cart}/>
                 </div>
             </div>
         );

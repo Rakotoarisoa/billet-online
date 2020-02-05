@@ -31,6 +31,36 @@ class BilletRepository extends EntityRepository
             ->setParameter('idEvent', $event->getId())
             ->getResult();
     }
+    /** @function compter les tickets par Type de billets
+     */
+    public function getSeatMapListTicketsByType(Evenement $event)
+    {
+        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.libelle, tb.prix as prix,
+            CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
+            from AppBundle:TypeBillet tb
+            LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
+            WHERE evt.id= :idEvent AND tb.active = 1 AND tb.isAdmission = 0
+            GROUP BY tb.id,prix
+            ORDER BY tb.libelle DESC
+            ')
+            ->setParameter('idEvent', $event->getId())
+            ->getResult();
+    }
+    /** @function compter les tickets par Type de billets
+     */
+    public function getAdmissionOnlyListTicketsByType(Evenement $event)
+    {
+        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.libelle, tb.prix as prix,
+            CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
+            from AppBundle:TypeBillet tb
+            LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
+            WHERE evt.id= :idEvent AND tb.active = 1 AND tb.isAdmission = 1
+            GROUP BY tb.id,prix
+            ORDER BY tb.libelle DESC
+            ')
+            ->setParameter('idEvent', $event->getId())
+            ->getResult();
+    }
     /** @function compter les tickets VENDUS par Type de billets
      * seulement les Type de Billet active = true
      */
