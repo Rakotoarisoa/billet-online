@@ -146,6 +146,7 @@ class BilletController extends AbstractFOSRestController
     {
         if ($request && $request->request->has('code_billet')) {
             $code_to_parse = $request->request->get('code_billet');
+            $user_agent=$request->headers->get('User-Agent');
             $array_data = explode('-', (string)($code_to_parse));
             if (count($array_data) === 3) {
                 $parsed_reservation_code = $array_data[0];
@@ -158,6 +159,8 @@ class BilletController extends AbstractFOSRestController
                     $event=$reservation->getEvenement();
                     if(isset($reservation) && isset($event) && isset($billet) && !$billet->getChecked()) {
                         if($reservation->getRandomCodeCommande() === $parsed_reservation_code && $event->getRandomCodeEvent() === $parsed_event_code && $billet->getIdentifiant() === $parsed_billet_code) {
+                            $billet->setDevice($user_agent);
+                            $billet->setCheckDate(new \DateTime());
                             $billet->setChecked(true);
                             $doctrine->getManager()->persist($billet);
                             $doctrine->getManager()->flush();

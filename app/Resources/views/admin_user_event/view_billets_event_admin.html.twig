@@ -63,6 +63,8 @@
                         <td><b>Place</b></td>
                         <td><b>Section</b></td>
                         <td><b>Checked</b></td>
+                        <td><b>Date Vérification</b></td>
+                        <td><b>Terminal de Vérification</b></td>
                     </tr>
                     {% for billet in billets %}                        
                         <tr>
@@ -71,6 +73,8 @@
                             <td><b>{{ billet.PlaceId }}</b></td>
                             <td><b>{{ billet.SectionId }}</b></td>
                             <td><b>{{ billet.checked}}</b></td>
+                            <td><b>{{ billet.checkDate|localizeddate }}</b></td>
+                            <td><b>{{ billet.device }}</b></td>
                         </tr>
                     {% endfor %}
                 </table>

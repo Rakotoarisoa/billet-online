@@ -57,6 +57,46 @@ class Billet
      * @ORM\Column(type="boolean")
      */
     private $checked ;
+    /**
+     * @ORM\Column(type="datetime",nullable=true)
+     */
+    private $checkDate;
+
+    /**
+     * @return mixed
+     */
+    public function getCheckDate()
+    {
+        return $this->checkDate;
+    }
+
+    /**
+     * @param mixed $check_date
+     */
+    public function setCheckDate($check_date): void
+    {
+        $this->checkDate = $check_date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDevice()
+    {
+        return $this->device;
+    }
+
+    /**
+     * @param mixed $device
+     */
+    public function setDevice($device): void
+    {
+        $this->device = $device;
+    }
+    /**
+     * @ORM\Column(type="string",nullable=true)
+     */
+     private $device;
 
     /**
      * @return mixed
