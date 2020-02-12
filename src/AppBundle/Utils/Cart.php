@@ -14,14 +14,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
  */
 class Cart implements \ArrayAccess
 {
-    /** book category id */
-    //CONST CATEGORY_CHILD_BOOK = 2;
-
-    /** child category max count to apply discount */
-    //CONST CHILD_BOOK_MAX_COUNT = 5;
-
-    /** ecach book category max count to apply discount */
-    //CONST EACH_CATEGORY_MAX_COUNT = 10;
 
     /** @var SessionInterface */
     protected $session;
@@ -198,6 +190,31 @@ class Cart implements \ArrayAccess
             $this->setItem($item);
         }
     }
+    private function custom_unset(&$array=array(), $key=0,$multiple=false,$type="") {
+        if(isset($array[$key]) && !$multiple){
+            // remove item at index
+            unset($array[$key]);
+            // 'reindex' array
+            $array = array_values($array);
+            for($i=0;$i<count($array); $i++){
+                if($array[$i] instanceof CartItem)
+                    $array[$i]->setId($i);
+            }
+            //alternatively
+            //$array = array_merge($array);
+        }
+        if($multiple and $type != ""){
+            $array=array_filter($array , function($item) use($type){
+                return $type !== $item->getCategoryStr();
+            });
+            $array=array_values($array);
+            for($i=0;$i<count($array); $i++){
+                if($array[$i] instanceof CartItem)
+                    $array[$i]->setId($i);
+            }
+        }
+        return $array;
+    }
 
     /**
      * Removes an Item from the cart
@@ -207,11 +224,31 @@ class Cart implements \ArrayAccess
      */
     public function removeItem($id)
     {
-        $item = $this->session->remove($this->key . '/' . $id);
-        $this->session->set('totalPrice', $this->getDiscountTotal());
-
-        return $item;
+        if($this->hasItem($id)){
+            $items=$this->getItems();
+            $return_array=$this->custom_unset($items,$id,false,"");
+            $this->session->set($this->key,$return_array);
+            $this->session->set('totalPrice', $this->getDiscountTotal());
+            $this->session->set('quantity', $this->count());
+        }
     }
+    /**
+     * Removes an Item from the cart
+     *
+     * @param int $id Id of the Item to remove
+     * @return mixed The removed Item or null if it does not exist
+     */
+    public function removeItems($type)
+    {
+        if($type != ""){
+            $items=$this->getItems();
+            $return_array=$this->custom_unset($items,0,true,$type);
+            $this->session->set($this->key,$return_array);
+            $this->session->set('totalPrice', $this->getDiscountTotal());
+            $this->session->set('quantity', $this->count());
+        }
+    }
+
 
     /**
      * @param int $id id of the Item to check

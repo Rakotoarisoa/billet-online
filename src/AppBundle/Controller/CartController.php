@@ -82,9 +82,8 @@ class CartController extends Controller
     {
         $items=$this->cart->getItems();
         if(count($items) >0) {
-            $event=$items[0]->getEvenement();
                 foreach ($items as $item){
-                    $this->unlockSeat(unserialize($event->getEtatSalle()),$item->getSection(),$item->getSeat(),$event->getId());
+                    $this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
                 }
                     $this->session->set('quantity', 0);
             $this->cart->clear();
@@ -102,7 +101,20 @@ class CartController extends Controller
             $item=$this->cart->getItem((int)$request->request->get('id'));
             $event=$item->getEvenement();
             $this->unlockSeat(unserialize($event->getEtatSalle()),$item->getSection(),$item->getSeat(),$event->getId());
-            $this->cart->removeItem((int)$request->request->get('id'));
+            $this->cart->removeItem($request->request->get('id'));
+            return new Response('Done', Response::HTTP_OK);
+        }
+        return new Response('Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+    /**
+     * Clears the cart
+     *
+     * @Route("/res_billet/clearItems", name="cart_clear_items")
+     */
+    public function clearItemsCartAction(Request $request)
+    {
+        if($request->request && $request->request->has('type')) {
+            $this->cart->removeItems($request->request->get('type'));
             return new Response('Done', Response::HTTP_OK);
         }
         return new Response('Error', Response::HTTP_INTERNAL_SERVER_ERROR);

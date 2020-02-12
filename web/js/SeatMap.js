@@ -4,6 +4,7 @@ import Konva from 'konva';
 import axios from 'axios';
 import {ToastContainer} from "react-toastr";
 import RightSidebarFront from "./components/RightSidebarFront";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 let container;
 
@@ -45,7 +46,9 @@ class SeatMap extends Component {
         color_seat: "#EEEEEE",
         liste_billet: [],
         booked_circle_color: "#DDDDDD",
-        data_in_cart: null
+        data_in_cart: null,
+        data_is_empty: true,
+        map_is_loaded: false
     };
     //Enregistrer les déplacements de l'objet
     updateObject = (object) => {
@@ -292,46 +295,46 @@ class SeatMap extends Component {
                         $('#stage-container-front').append(el);
                         newGroup.setAttr('is_selected', !newGroup.getAttr('is_selected'));*/
                         //$("#submit-seat").on('click', (e) => {
-                            let seat_data = this.state.data_map;
-                            seat_data = JSON.stringify(seat_data);
-                            $.post("/api/event/seat/is-locked", {
-                                section_id: object.nom.toString(),
-                                seat_id: alphabet[i].toUpperCase() + (j + 1),
-                                table_event: JSON.parse(seat_data),
-                                lock_action: true,
-                                event_id: this.props.eventId
-                            }, (data, status, xhr) => {
-                                if (!data) {
-                                    $.post("/res_billet/add/", {
-                                        select_nb_billets: 1,
-                                        type_billet: seat_type,
-                                        event_id: this.props.eventId,
-                                        redirect: "/",
-                                        section_id: object.nom.toString(),
-                                        place_id: alphabet[i].toUpperCase() + (j + 1)
-                                    }, (data, status, xhr) => {
-                                        switch (xhr.status) {
-                                            case 200:
-                                                container.success(data.toString(), 'Commande ajoutée');
-                                                this.getDataInCart();
-                                                break;
-                                            case 208:
-                                                container.warning(data.toString(), 'Impossible de commander');
-                                                break;
-                                            case 500:
-                                                container.error(data.toString(), 'Impossible de commander');
-                                                break;
-                                            default:
-                                                container.warning('', 'Requete en cours');
-                                                break;
+                        let seat_data = this.state.data_map;
+                        seat_data = JSON.stringify(seat_data);
+                        $.post("/api/event/seat/is-locked", {
+                            section_id: object.nom.toString(),
+                            seat_id: alphabet[i].toUpperCase() + (j + 1),
+                            table_event: JSON.parse(seat_data),
+                            lock_action: true,
+                            event_id: this.props.eventId
+                        }, (data, status, xhr) => {
+                            if (!data) {
+                                $.post("/res_billet/add/", {
+                                    select_nb_billets: 1,
+                                    type_billet: seat_type,
+                                    event_id: this.props.eventId,
+                                    redirect: "/",
+                                    section_id: object.nom.toString(),
+                                    place_id: alphabet[i].toUpperCase() + (j + 1)
+                                }, (data, status, xhr) => {
+                                    switch (xhr.status) {
+                                        case 200:
+                                            container.success(data.toString(), 'Commande ajoutée');
+                                            this.getDataInCart();
+                                            break;
+                                        case 208:
+                                            container.warning(data.toString(), 'Impossible de commander');
+                                            break;
+                                        case 500:
+                                            container.error(data.toString(), 'Impossible de commander');
+                                            break;
+                                        default:
+                                            container.warning('', 'Requete en cours');
+                                            break;
 
-                                        }
+                                    }
 
-                                    })
-                                } else {
-                                    container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
-                                }
-                            });
+                                })
+                            } else {
+                                container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
+                            }
+                        });
                         //})
                     }
                 );
@@ -783,7 +786,7 @@ class SeatMap extends Component {
             return listColors;
         };
         const fetchData = async () => {
-            try {
+            try{
                 await axios.get(
                     '/api/event/get-map/' + this.props.eventId)
                     .then((response) => {
@@ -879,6 +882,7 @@ class SeatMap extends Component {
                 }*/
                 layer.add(newObject);
             });
+            this.setState({'map_is_loaded' : !this.state.map_is_loaded});
         }
         stage.on('click tap', (e) => {
             if (e.target === stage) {
@@ -1041,37 +1045,56 @@ class SeatMap extends Component {
     getColors = (colors) => {
         this.setState({'ticket_colors': colors});
     };
+    //supprimer des Items
+    handleNewDataInCart = (updated) => {
+        if(updated)
+            this.getDataInCart();
+    };
     handleDataCartFromSideBar = (item) => {
-        axios.post("/res_billet/clearItem", {id: item.id})
-            .then((data) => {
+        if (item.seat === "-" && item.section === "-") {
+            console.log("clearing items");
+            axios.post("/res_billet/clearItems", {type: item.category_str.toString()}).then((rs) => {
                 this.getDataInCart();
             });
+        } else {
+            console.log("clearing item");
+            axios.post("/res_billet/clearItem", {id: parseInt(item.id)}).then((rs) => {
+                this.getDataInCart();
+            });
+        }
     };
     checkOut = (checkout) => {
-        if(checkout){
+        if (checkout) {
             //open checkout
             $('#checkout_command').modal('show');
         }
     };
-    clearAll = (clear) =>{
-        if(clear){
+    clearAll = (clear) => {
+        if (clear) {
             axios.get("/res_billet/clear");
             this.getDataInCart();
         }
     };
+
     //rendu du composant
     render() {
-        return (
-            <div className="row">
-                <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
-                <div id="stage-container-front" className={"col-sm-8"}
-                     style={{paddingLeft: 0, backgroundColor: '#f8f8fa'}}>
+
+            return (
+                <div className="row">
+                    <ToastContainer ref={ref => container = ref} className="toast-bottom-left"/>
+                    <div id="stage-container-front" className={"col-sm-8"}
+                         style={{paddingLeft: 0, backgroundColor: '#f8f8fa'}}>
+                    </div>
+                    <div className="col-sm-4 sidebar-right">
+                        <RightSidebarFront
+                            handleNewDataInCart={this.handleNewDataInCart}
+                            handleDataCartFromSideBar={this.handleDataCartFromSideBar}
+                            event_id={this.props.eventId} colors={this.state.ticket_colors}
+                            liste_billet={this.state.data_in_cart} checkout={this.checkOut}
+                            clear_all={this.clearAll}/>
+                    </div>
                 </div>
-                <div className="col-sm-4 sidebar-right">
-                    <RightSidebarFront handleDataCartFromSideBar={this.handleDataCartFromSideBar} event_id={this.props.eventId} colors={this.state.ticket_colors} liste_billet={this.state.data_in_cart} checkout={this.checkOut} clear_all={this.clearAll}/>
-                </div>
-            </div>
-        );
+            );
     }
 }
 

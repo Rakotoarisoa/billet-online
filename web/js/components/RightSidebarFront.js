@@ -2,15 +2,8 @@ import React, {useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 import Button from "@material-ui/core/Button";
 import Fade from "@material-ui/core/Fade";
-import ButtonBase from "@material-ui/core/ButtonBase";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
 import {makeStyles} from '@material-ui/core/styles';
 import Typography from "@material-ui/core/Typography";
-import {ToastContainer} from "react-toastr";
-import ChoosePlaceDialog from "./forms/ChoosePlaceDialog";
-import SaveCanvas from "./forms/SaveCanvas";
-import ReInitSeat from "./forms/ReInitSeat";
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Card from '@material-ui/core/Card';
@@ -36,9 +29,10 @@ const useStyles = makeStyles(theme => ({
     noSeat: {
         '& .MuiTextField-root': {
             margin: theme.spacing(1),
-            width: "50%"
+            width: "80%"
         },
-        display: 'inline-flex'
+        display: 'inline-flex',
+        alignContent: 'center'
     },
     cartItems: {
         display: 'inline-flex'
@@ -95,21 +89,25 @@ const GenerateAdmissionTicket = (props) => {
     const classes = useStyles();
     const [tickets, setTickets] = useState(null);
     const [eventId, setEventId] = useState(null);
-    useEffect(()=>{
-        setEventId(props.event_id);
-    });
+    const [ticketItem,setTicketItem] = useState(null);
     useEffect(() => {
-            axios.get("/api/typeBillet/front_end/admission-only/" + eventId).then((data) => {
-                setTickets(data.data);
-            });
-        }, [eventId]
-    );
-    const checkout = () =>{
+        setEventId(props.event_id);
+        setTickets(props.billets_admission);
+    });
 
-    };
-    const handleChange = (e) =>{
+    const handleSubmit = (item,e) => {
         e.preventDefault();
-        console.log(e);
+        handleData(item);
+    };
+    const handleChange = (e) => {
+        setTicketItem({name:e.target.name,value:e.target.value});
+    };
+    const handleData = (item) => {
+        if(item.libelle === ticketItem.name){
+            axios.post("/res_billet/add/",{event_id:eventId,type_billet:item.libelle,select_nb_billets:ticketItem.value,redirect:""}).then((data)=>{
+                props.handleNewDataInCart(true);
+            });
+        }
     };
     if (tickets !== null && tickets.length > 0) {
         return (
@@ -119,27 +117,34 @@ const GenerateAdmissionTicket = (props) => {
                         Billet d'admissions:
                     </Typography>
                     <List dense={false}>
-                        {tickets.map((ticket,i) => {
+                        {tickets.map((ticket, i) => {
                             return (
                                 <ListItem className={classes.noSeat} key={i.toString()}>
-                                    <TextField
-                                        variant={"outlined"}
-                                        fullWidth={false}
-                                        id="standard-number"
-                                        label={"Billet " + ticket.libelle}
-                                        type="number"
-                                        InputProps={{
-                                            inputProps: { min: 0, max: Math.min(10,(parseInt(ticket.quantite)-parseInt(ticket.nombreBillets))) }
-                                        }}
-                                        //onChange={(e)=>{handleChange(e.target.value)}}
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                        helperText={"Prix: EUR "+ticket.prix}
-                                    />
-                                    <Button variant="contained" color="secondary" className={classes.buttonNoSeatCheckout} onClick={()=>{checkout}}>
-                                        Ajouter
-                                    </Button>
+                                    <form onSubmit={(e)=>{handleSubmit(ticket,e)}}>
+                                        <TextField
+                                            fullWidth={false}
+                                            name={ticket.libelle.toString()}
+                                            label={"Billet " + ticket.libelle}
+                                            type="number"
+                                            InputProps={{
+                                                required: true,
+                                                inputProps: {
+                                                    min: 1,
+                                                    max: Math.min(10, (parseInt(ticket.quantite) - parseInt(ticket.nombreBillets)))
+                                                }
+                                            }}
+                                            onChange={handleChange}
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                            helperText={"Prix: EUR " + ticket.prix}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <IconButton type={"submit"} edge={"end"} color="primary" aria-label="add to shopping cart">
+                                                <span className={"fa fa-cart-plus"}/>
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </form>
                                 </ListItem>
                             )
                         })
@@ -151,62 +156,68 @@ const GenerateAdmissionTicket = (props) => {
         return <div></div>;
     }
 };
-const GenerateDataCart = (props) => {
+const DataCartFormatDisplay = (props) => {
     const classes = useStyles();
-    const [dataCart, setDataCart] = useState(null);
-    const [colors, setColors] = useState(null);
-    const [totalCart, setTotalCart] = useState(null);
+    const [dataCart, setDataCart] = useState(props.data);
+    const [billetAdm, setBilletAdm] = useState(props.billets_admission);
+    const [colors, setColors] = useState(props.colors);
     useEffect(() => {
-        try {
-            const fetchData = () => {
-                setDataCart(props.data);
-                setColors(props.colors);
-
-            };
-            fetchData();
-        } catch (error) {
-            container.error("Une erreur s'est produite: " + error.message, "Erreur", {closeButton: true});
-        }
+        setDataCart(props.data);
+        setBilletAdm(props.billets_admission);
+        setColors(props.colors);
     });
-    useEffect(() => {
-            axios.get("/api/cart/get_total").then((data) => {
-                setTotalCart(data.data);
-            });
-        }, [dataCart]
-    );
     const getColor = (type) => {
         let item = colors.filter((color) => {
             return color.billet.toString() === type.toString();
         });
-        console.log(item[0]);
-        return item[0].color.toString();
-        //return "#333333";
+        if (item.length !== 0)
+            return item[0].color.toString();
+        else
+            return "#ffffff";
     };
+    let formatted = [];
+    let billet_seats = dataCart.filter((item) => {
+        return item.seat !== "-" && item.section !== "-";
+    });
+    billet_seats.map((item, i) => {
+        formatted.push(item);
+    });
+    billetAdm.map((item_billet, i) => {
+        let filter_no_seat_data = dataCart.filter((item) => {
+            return item.seat === "-" && item.section === "-" && item.category_str === item_billet.libelle;
+        });
+        if (filter_no_seat_data.length > 0) {
+            formatted.push({
+                //id: formatted.length - 1,
+                name: "-",
+                quantity: filter_no_seat_data.length,
+                price: item_billet.prix,
+                category: null,
+                category_str: item_billet.libelle,
+                section: "-",
+                seat: "-"
+            });
+        }
+    });
     const handleDataCartFromSideBar = (item) => {
         props.handleDataCartFromSideBar(item);
     };
-    if (dataCart !== null && dataCart.length > 0 && colors !== null && colors.length > 0) {
-        return (
-            <Card className={classes.root} variant="outlined">
-                <CardContent>
-                    <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        Résumé de votre commande
-                    </Typography>
-                    <List dense={true}>
-                        {dataCart.map(
-                            (item,i) => {
-                                return (
-                                    <ListItem key={i.toString()}>
+    return (
+        <List dense={true}>
+            {formatted.map(
+                (item, i) => {
+                    return (
+                        <div>
+                            {item.seat !== "-" && item.section !== "-" ?
+                                (<ListItem key={i.toString()}>
                                         <ListItemAvatar>
                                             <Avatar className={classes.small}>
                                             <span className={"fa fa-circle"}
                                                   style={{color: getColor(item.category_str)}}></span>
                                             </Avatar>
                                         </ListItemAvatar>
-                                        <ListItemText
-                                            primary={"Billet " + item.category_str}
-                                            secondary={item.section + ", " + item.seat}
-                                        />
+                                        <ListItemText primary={"Billet " + item.category_str}
+                                                      secondary={item.section + ", " + item.seat}/>
                                         <ListItemSecondaryAction>
                                             <IconButton edge={"end"} color="secondary" aria-label="Remove item"
                                                         component="span"
@@ -217,10 +228,81 @@ const GenerateDataCart = (props) => {
                                             </IconButton>
                                         </ListItemSecondaryAction>
                                     </ListItem>
-                                )
-                            })
-                        }
-                    </List>
+                                ) : (<ListItem key={i.toString()}>
+                                    <ListItemAvatar>
+                                        <Avatar className={classes.small}>
+                                            <span style={{color: "#333333"}}>{item.quantity}</span>
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={"Billet " + item.category_str}/>
+                                    <ListItemSecondaryAction>
+                                        <IconButton edge={"end"} color="secondary" aria-label="Remove item"
+                                                    component="span"
+                                                    onClick={() => {
+                                                        handleDataCartFromSideBar(item)
+                                                    }}>
+                                            <span className={"fa fa-trash"}/>
+                                        </IconButton>
+                                    </ListItemSecondaryAction>
+                                </ListItem>)
+                            }
+                        </div>)
+                })
+            }
+        </List>
+    )
+};
+const DataCartDisplay = (props) => {
+    const [dataCart, setDataCart] = useState(null);
+    const [colors, setColors] = useState(null);
+    const [billetAdmission, setBilletAdmission] = useState(null);
+
+    useEffect(() => {
+        setDataCart(props.data);
+        setColors(props.colors);
+        setBilletAdmission(props.billets_admission);
+    });
+    const handleDataCartFromSideBar = (item) => {
+        props.handleDataCartFromSideBar(item);
+    };
+    return (<DataCartFormatDisplay data={props.data} billets_admission={props.billets_admission}
+                                   handleDataCartFromSideBar={handleDataCartFromSideBar}
+                                   colors={props.colors}></DataCartFormatDisplay>);
+};
+const GenerateDataCart = (props) => {
+    const classes = useStyles();
+    const [dataCart, setDataCart] = useState(null);
+    const [colors, setColors] = useState(null);
+    const [billetAdmission, setBilletAdmission] = useState(null);
+    const [totalCart, setTotalCart] = useState(null);
+    useEffect(() => {
+        try {
+            setDataCart(props.data);
+            setColors(props.colors);
+            setBilletAdmission(props.billets_admission);
+        } catch (error) {
+            container.error("Une erreur s'est produite: " + error.message, "Erreur", {closeButton: true});
+        }
+    });
+    useEffect(() => {
+            axios.get("/api/cart/get_total").then((data) => {
+                setTotalCart(data.data);
+            });
+        }, [dataCart]
+    );
+    const handleDataCartFromSideBar = (item) => {
+        props.handleDataCartFromSideBar(item);
+    };
+    if (dataCart !== null && dataCart.length > 0 && colors !== null && colors.length > 0) {
+        return (
+            <Card className={classes.root} variant="outlined">
+                <CardContent>
+                    <Typography className={classes.title} color="textSecondary" gutterBottom>
+                        Résumé de votre commande
+                    </Typography>
+                    <DataCartDisplay data={dataCart} colors={colors}
+                                     handleDataCartFromSideBar={handleDataCartFromSideBar}
+                                     billets_admission={billetAdmission}/>
                     <List>
                         <ListItem className={classes.listItem}>
                             <ListItemText primary="Total"/>
@@ -229,14 +311,18 @@ const GenerateDataCart = (props) => {
                             </Typography>
                         </ListItem>
                         <div className={classes.buttons}>
-                            <Button className={classes.button} onClick={()=>{props.clear_all(true)}}>
+                            <Button className={classes.button} onClick={() => {
+                                props.clear_all(true)
+                            }}>
                                 <span className={"fa fa-trash"}/> Vider mon panier
                             </Button>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 className={classes.button}
-                                onClick={()=>{props.checkout(true)}}>
+                                onClick={() => {
+                                    props.checkout(true)
+                                }}>
                                 Commander
                             </Button>
                         </div>
@@ -255,10 +341,11 @@ const GenerateDataCart = (props) => {
             </Card>);
     }
 
+
     /*return [0, 1, 2, 3, 4, 5, 6 ,7 , 8, 9, 10, 11, 12 ].map(value =>
-        React.cloneElement(element, {
-            key: value,
-        }),
+    React.cloneElement(element, {
+    key: value,
+    }),
     );*/
 };
 
@@ -266,6 +353,7 @@ function RightSidebarFront(props) {
     const [billet, setBillet] = useState(props.liste_billet);
     const [colors, setColors] = useState(props.colors);
     const [eventId, setEventId] = useState(props.event_id);
+    const [billetAdmission, setBilletAdmission] = useState(null);
     const classes = useStyles();
     useEffect(() => {
         try {
@@ -279,22 +367,33 @@ function RightSidebarFront(props) {
             container.error("Une erreur s'est produite: " + error.message, "Erreur", {closeButton: true});
         }
     });
+    useEffect(() => {
+            axios.get("/api/typeBillet/front_end/admission-only/" + eventId).then((data) => {
+                setBilletAdmission(data.data);
+            });
+        }, [eventId]
+    );
     const handleDataCartFromSideBar = (item) => {
         props.handleDataCartFromSideBar(item);
+    };
+    const handleNewDataInCart = (updated) => {
+        props.handleNewDataInCart(updated);
     };
     const checkOut = (checkout) => {
         props.checkout(checkout);
     };
-    const clearAll = (clear_all) =>{
+    const clearAll = (clear_all) => {
         props.clear_all(clear_all);
     };
     return (
         <aside>
             <Fade in={true} style={{transitionDelay: '50ms', display: "inherit"}}>
-                <GenerateAdmissionTicket event_id={eventId}/>
+                <GenerateAdmissionTicket event_id={eventId} billets_admission={billetAdmission} handleNewDataInCart={handleNewDataInCart}/>
             </Fade>
             <Fade in={true} style={{transitionDelay: '50ms', display: "inherit"}}>
-                <GenerateDataCart colors={colors} data={billet} handleDataCartFromSideBar={handleDataCartFromSideBar} checkout={checkOut} clear_all={clearAll}/>
+                <GenerateDataCart event_id={eventId} billets_admission={billetAdmission} colors={colors} data={billet}
+                                  handleDataCartFromSideBar={handleDataCartFromSideBar}  checkout={checkOut}
+                                  clear_all={clearAll}/>
             </Fade>
         </aside>
     );

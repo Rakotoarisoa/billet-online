@@ -3,7 +3,11 @@ liip_imagine :
     single_event_view :
       quality : 90
       filters :
-        thumbnail: { size : [850, 320], mode : outbound }
+        thumbnail: { size : [450, 180], mode : outbound }
+    view_map_event_view:
+      quality: 90
+      filters:
+        thumbnail: { size: [850, 320], mode: outbound }
     list_event_view :
       quality : 90
       filters :

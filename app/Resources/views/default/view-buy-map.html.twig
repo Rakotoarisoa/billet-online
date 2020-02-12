@@ -17,7 +17,10 @@
         {{ parent() }}
         <section>
             <div class="row mr-15 mt-15 ml-15 mb-15">
-                <div class="col-lg-8">
+                <div class="col-lg-2">
+                    <img src="{{ asset((event.imageEvent)?vich_uploader_asset(event,'image','AppBundle\\Entity\\Evenement')|imagine_filter('view_map_event_view'):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE") }}"/>
+                </div>
+                <div class="col-lg-6">
                     <div class="col p-4 d-flex flex-column position-static">
                         <h3 class="mb-0"><a
                                     href="{{ url('viewSingle',{'id':event.id}) }}">{{ event.titreEvenement }}</a></h3>
@@ -36,7 +39,6 @@
                         <div class="text-muted"><span
                                     class="fa fa-map-marker"></span> {{ event.lieuEvenement.nomSalle }}</div>
                     </div>
-
                 </div>
                 <div class="col-lg-4">
                     <div class="row">

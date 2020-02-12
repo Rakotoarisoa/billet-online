@@ -143,7 +143,7 @@ class CartItem
         if (false === $this->validateInteger($id)) {
             throw new \InvalidArgumentException('Id must be an integer and not negative');
         }
-        $this->id = (string)trim($id);
+        $this->id = (int)trim($id);
     }
 
     /**
