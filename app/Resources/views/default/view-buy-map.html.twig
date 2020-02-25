@@ -183,7 +183,6 @@
                                                             <label for="inputAddress2"><h6>Méthode de
                                                                     paiement</h6></label>
                                                             <div class="row">
-
                                                                 <div class="col-6">
                                                                     <input type="radio"
                                                                            class="form-check-input"
@@ -210,6 +209,17 @@
                                                                     <input type="radio"
                                                                            class="form-check-input"
                                                                            name="paymentMethod"
+                                                                           value="point_de_vente" checked>
+                                                                    <span class="fa fa-home fa-2x"></span>
+                                                                    Point de vente
+                                                                </div>
+                                                            </div>
+                                                            <hr/>
+                                                            <div class="row">
+                                                                <div class="col-6">
+                                                                    <input type="radio"
+                                                                           class="form-check-input"
+                                                                           name="paymentMethod"
                                                                            disabled>
                                                                     <img
                                                                             src="{{ asset('img/logo-mvola.png.png') }}"
@@ -225,74 +235,79 @@
 
                                             </div>
                                             <div class="step-tab-panel" id="tab2">
-                                                <h3>Paiement de la facture</h3>
-                                                <p>Voici avez choisi paypal comme mode de paiement,
-                                                    cliquer sur le bouton ci-dessous pour continuer, une
-                                                    fois le paiement effectué , vous serez redirigé
-                                                    automatiquement sur la page.</p>
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <div id="btnPaypal"></div>
-                                                    </div>
+                                                <div class="pv_part">
+                                                    
                                                 </div>
-                                                <div class="row text-center payment-loader">
-                                                    <div class="col loader">
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <img src="{{ asset('img/loader.gif') }}"
-                                                                     width="200px"/></div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <span>Veuiller patienter pendant l'enregistrement de vos informations</span>
-                                                            </div>
+                                                <div class="paypal_part">
+                                                    <h3>Paiement de la facture</h3>
+                                                    <p>Voici avez choisi paypal comme mode de paiement,
+                                                        cliquer sur le bouton ci-dessous pour continuer, une
+                                                        fois le paiement effectué , vous serez redirigé
+                                                        automatiquement sur la page.</p>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <div id="btnPaypal"></div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="row card payment-success">
-                                                    <div class="col-12">
-                                                        <div class="row text-center">
-                                                            <div class="col">
-                                                                <span class="fa fa-check-circle text-success fa-3x "></span>
+                                                    <div class="row text-center payment-loader">
+                                                        <div class="col loader">
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <img src="{{ asset('img/loader.gif') }}"
+                                                                         width="200px"/></div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                Merci, le paiement de votre commande a
-                                                                abouti. Veuiller vérifier vos billets
-                                                                via e-mail
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    <span>Veuiller patienter pendant l'enregistrement de vos informations</span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="row card payment-failure">
-                                                    <div class="col-12">
-                                                        <div class="row text-center">
-                                                            <div class="col">
-                                                                <span class="fa fa-warning text-danger fa-3x "></span>
+                                                    <div class="row card payment-success">
+                                                        <div class="col-12">
+                                                            <div class="row text-center">
+                                                                <div class="col">
+                                                                    <span class="fa fa-check-circle text-success fa-3x "></span>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                Désolé, le paiement de votre commande
-                                                                n'a pas abouti. Veuiller recommencer
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    Merci, le paiement de votre commande a
+                                                                    abouti. Veuiller vérifier vos billets
+                                                                    via e-mail
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="row card register-failure">
-                                                    <div class="col-12">
-                                                        <div class="row text-center">
-                                                            <div class="col">
-                                                                <span class="fa fa-warning text-danger fa-3x "></span>
+                                                    <div class="row card payment-failure">
+                                                        <div class="col-12">
+                                                            <div class="row text-center">
+                                                                <div class="col">
+                                                                    <span class="fa fa-warning text-danger fa-3x "></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    Désolé, le paiement de votre commande
+                                                                    n'a pas abouti. Veuiller recommencer
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                Merci, le paiement de votre commande a
-                                                                abouti
-                                                                mais des erreurs internes se sont
-                                                                produites
+                                                    </div>
+                                                    <div class="row card register-failure">
+                                                        <div class="col-12">
+                                                            <div class="row text-center">
+                                                                <div class="col">
+                                                                    <span class="fa fa-warning text-danger fa-3x "></span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col">
+                                                                    Merci, le paiement de votre commande a
+                                                                    abouti
+                                                                    mais des erreurs internes se sont
+                                                                    produites
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -426,12 +441,38 @@
                 $.get("/api/cart/list", function (data) {
                     data_cart = data;
                     cart_items = data;
-                    $.each(data_cart, function (i, el) {
-                        $("#data_cart").append('<div class="row">' +
-                            '<div class="col">Section: <b>' + el.section + '</b></div>' +
-                            '<div class="col">Place: <b>' + el.seat + '</b></div>' +
-                            '<div class="col"><span class="pull-right"> Prix: <b>' + el.price + '</b></span></div>' +
-                            '</div>');
+                    $.get("/api/typeBillet/admission-only/" +{{ event.id }}, function (data_no_seat) {
+                        let data_admission_only = data_no_seat;
+                        let array_admission_only = [];
+                        data_admission_only.map((item) => {
+                            let item_quantity = (data_cart.filter((item_cart) => {
+                                    return item_cart.seat === "-" && item_cart.section === "-" && item.libelle === item_cart.category_str;
+                                }
+                            )).length;
+                            if (item_quantity > 0) {
+                                array_admission_only.push({
+                                    quantity: item_quantity,
+                                    type: item.libelle,
+                                    price: item.prix
+                                });
+                            }
+                        });
+                        $.each(data_cart, function (i, el) {
+                            if (el.section !== "-" && el.seat !== "-") {
+                                $("#data_cart").append('<div class="row">' +
+                                    '<div class="col"><b>' + el.section + '</b></div>' +
+                                    '<div class="col"><b>' + el.seat + '</b></div>' +
+                                    '<div class="col"><span class="pull-right"> Prix: <b>' + el.price + '</b></span></div>' +
+                                    '</div>');
+                            }
+                        });
+                        $.each(array_admission_only, function (i, el) {
+                            $("#data_cart").append('<div class="row">' +
+                                '<div class="col"><b>' + el.type + ' x ' + el.quantity + '</b></div>' +
+                                '<div class="col"><span class="pull-right"> Prix: <b>' + parseFloat(el.price) * el.quantity + '</b></span></div>' +
+                                '</div>');
+                        });
+
                     });
                 });
 
@@ -526,10 +567,10 @@
                                             $.get('/res_billet/checkout')
                                                 .done(function () {
                                                     $.post('/api/event/seat/book', {
-                                                    items: cart_items,
-                                                    book_action: true,
-                                                    event_id: {{ event.id }}
-                                                });
+                                                        items: cart_items,
+                                                        book_action: true,
+                                                        event_id: {{ event.id }}
+                                                    });
                                                     $('.payment-success').show();
                                                     $('#btnPaypal').hide();
                                                 })
@@ -567,9 +608,9 @@
                     showBackButton: true,
                     onFinish: function () {
                         if ($('.payment-success').is(':visible') || $('.payment-failure').is(':visible') || $('.register-failure').is(':visible')) {
-                                    $.get('/res_billet/clear');
-                                    $('#checkout_command').modal('hide');
-                                    location.reload();
+                            $.get('/res_billet/clear');
+                            $('#checkout_command').modal('hide');
+                            location.reload();
                         } else {
                             alert('Veuiller procéder au paiement. Pour fermer le dialogue cliquer sur x. ');
                         }
@@ -584,20 +625,20 @@
                             items : cart_items
                         },(data)=>{
                             if(data){*/
-                                $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
-                                $('#checkout_command').modal('hide'); //Hide Form Modal
-                                //location.reload();
-                           /* }
-                        });*/
+                        $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
+                        $('#checkout_command').modal('hide'); //Hide Form Modal
+                        //location.reload();
+                        /* }
+                     });*/
 
                     });
                 });
             });
             $('#checkout_command').on('hidden.bs.modal', function () {
-                    $.get('/res_billet/clear');
-                    resetForm('form_select_items');
-                    resetForm('frmInfo');
-                    location.reload();
+                $.get('/res_billet/clear');
+                resetForm('form_select_items');
+                resetForm('frmInfo');
+                location.reload();
             });
             let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
 

@@ -30,6 +30,60 @@ class Reservation
      * @ORM\Column(type="string",length=5)
      */
     private $randomCodeCommande;
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Shop", inversedBy="shop",cascade={"persist"})
+     * @ORM\JoinColumn(name="id_shop", referencedColumnName="id")
+     * @Serializer\Exclude
+     */
+    private $point_de_vente;
+
+    /**
+     * @return mixed
+     */
+    public function getPointDeVente()
+    {
+        return $this->point_de_vente;
+    }
+
+    /**
+     * @param mixed $point_de_vente
+     */
+    public function setPointDeVente($point_de_vente): void
+    {
+        $this->point_de_vente = $point_de_vente;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(): \DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTime $createdAt
+     */
+    public function setCreatedAt(\DateTime $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt(): \DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param \DateTime $updatedAt
+     */
+    public function setUpdatedAt(\DateTime $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
 
     /**
      * @return mixed

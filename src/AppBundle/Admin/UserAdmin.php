@@ -43,7 +43,8 @@ final class UserAdmin extends AbstractAdmin
                 'choices' => [
                     'Simple utilisateur' => 'ROLE_USER',
                     'Utilisateurs membre' => 'ROLE_USER_MEMBER',
-                    'Administrateur' => 'ROLE_ADMIN'
+                    'Administrateur' => 'ROLE_ADMIN',
+                    'Administrateur shop' => 'ROLE_USER_SHOP'
                 ]
             ]); 
             //->add('roles', [], array('required' => false,'attr'=>array('class'=>'mapCoordinate')))  ;        
