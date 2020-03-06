@@ -35,6 +35,29 @@ class User extends BaseUser implements UserInterface
      */
     protected $adresse;
     /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Shop",
+     *     inversedBy="user"
+     * )
+     * @ORM\JoinColumn(name="shop_id", referencedColumnName="id", nullable=true)
+     */
+    protected $pointDeVente;
+
+    /**
+     * @return mixed
+     */
+    public function getPointDeVente()
+    {
+        return $this->pointDeVente;
+    }
+
+    /**
+     * @param mixed $point_de_vente
+     */
+    public function setPointDeVente($point_de_vente): void
+    {
+        $this->pointDeVente = $point_de_vente;
+    }
+    /**
      * {@inheritdoc}
      */
     public function addRole($role)

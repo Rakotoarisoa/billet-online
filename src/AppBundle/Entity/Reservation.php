@@ -31,7 +31,7 @@ class Reservation
      */
     private $randomCodeCommande;
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Shop", inversedBy="shop",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Shop", inversedBy="reservations",cascade={"persist"})
      * @ORM\JoinColumn(name="id_shop", referencedColumnName="id")
      * @Serializer\Exclude
      */

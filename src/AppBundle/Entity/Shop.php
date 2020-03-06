@@ -11,7 +11,7 @@ use Symfony\Component\Security\Acl\Exception\Exception;
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ShopRepository")
  * @ORM\Table(name = "shop",uniqueConstraints={@ORM\UniqueConstraint(name="UNIQUE", columns={"identifiant", "nom"})})
- * @UniqueEntity(fields={"identifiant","typeBillet"})
+ * @UniqueEntity(fields={"identifiant"})
  * @Serializer\ExclusionPolicy("none")
  *
  */
@@ -38,9 +38,39 @@ class Shop
      * @Serializer\Exclude
      */
     private $reservations;
-
+    /**
+     * @ORM\OneToOne(targetEntity="User",mappedBy="pointDeVente")
+     */
     private $user;
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
     private $nom;
+    /**
+     * @ORM\Column(type="boolean",options={"default":"1"})
+     */
+    private $active;
+    public function __toString()
+    {
+        // TODO: Implement __toString() method.
+        return $this->nom;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param mixed $active
+     */
+    public function setActive($active): void
+    {
+        $this->active = $active;
+    }
 
     /**
      * @return mixed
@@ -166,6 +196,4 @@ class Shop
     {
         $this->reservation = $reservation;
     }
-
-
 }
