@@ -50,11 +50,11 @@ class BilletRepository extends EntityRepository
      */
     public function getAdmissionOnlyListTicketsByType(Evenement $event)
     {
-        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.libelle, tb.prix as prix,
-            CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
-            from AppBundle:Billet b
-            LEFT JOIN AppBundle:TypeBillet tb WITH b.typeBillet=tb.id
-            LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
+        return $this->getEntityManager()->createQuery('SELECT count(b.id) AS nombreBillets,tb.quantite as quantite, tb.libelle, tb.prix as prix,
+            CASE WHEN count(b.id) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
+            from AppBundle:Evenement evt
+            LEFT JOIN AppBundle:TypeBillet tb WITH evt.id=tb.evenement
+            LEFT JOIN AppBundle:Billet b WITH b.typeBillet=tb.id
             WHERE evt.id= :idEvent AND tb.active = 1 AND tb.isAdmission = 1
             GROUP BY tb.id,prix
             ORDER BY tb.libelle DESC
