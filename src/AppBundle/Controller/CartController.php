@@ -307,7 +307,7 @@ class CartController extends Controller
         $user_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => (string)$buyer_data['email']]);
         $user_checkout = $this->getDoctrine()->getRepository(UserCheckout::class)->findOneBy(['email' => (string)$buyer_data['email']]);
         try {
-            if (!isset($user_checkout) && $this->isCsrfTokenValid('checkout_info', $buyer_data['_token'])) {
+            if (!isset($user_checkout) /*&& $this->isCsrfTokenValid('checkout_info', $buyer_data['_token'])*/) {
 
                 $user_checkout = new  UserCheckout();
                 $user_checkout->setNom((string)$buyer_data['nom']);

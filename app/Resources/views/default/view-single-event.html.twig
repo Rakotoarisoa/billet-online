@@ -347,7 +347,7 @@
                                                                         <div class="form-group">
                                                                             <label for="inputAddress2"><h6>Méthode de
                                                                                     paiement</h6></label>
-                                                                            {% if(is_granted('ROLE_USER_SHOP')) %}
+                                                                            {% if(is_granted('ROLE_USER_SHOP') == false) %}
                                                                                 <div class="row">
                                                                                     <div class="col-6">
                                                                                         <input type="radio"
@@ -356,7 +356,7 @@
                                                                                                value="point_de_vente"
                                                                                                checked>
                                                                                         <span class="fa fa-home fa-2x"></span>
-                                                                                        Point de vente
+                                                                                        Point de vente ( pour test)
                                                                                     </div>
                                                                                 </div>
                                                                             {% else %}
@@ -790,10 +790,10 @@
                                             }
                                         }).render('#btnPaypal');
                                         return frmInfo.valid();
-                                        {% if is_granted('ROLE_USER_SHOP') %}
+                                        {% if (is_granted('ROLE_USER_SHOP') == false) %}
                                     case 'point_de_vente':
-                                        let user_name = '{{ app.user.username }}';
-                                        let shop_name = '{{ app.user.pointDeVente.nom|escape("js") }}';
+                                        let user_name = 'userTest{# app.user.username #}';
+                                        let shop_name = 'Nect\'art{# app.user.pointDeVente.nom|escape("js") #}';
                                         $(".paymentInfo").append('<p><b>' + user_name + '</b>,administrateur du point de vente: <b>' + shop_name + '</b></p>');
                                         let form_order_method = $(".form_order_method");
                                         form_order_method.append("<div class=\"form-group\">\n" +
