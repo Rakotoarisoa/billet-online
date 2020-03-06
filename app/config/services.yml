@@ -82,6 +82,11 @@ services:
         arguments: [~, AppBundle\Entity\User, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: 'Utilisateurs et Droits', label: 'Utilisateurs',icon: "<i class=\"fa fa-user\"></i>" }
+    admin.shop:
+        class: AppBundle\Admin\ShopAdmin
+        arguments: [~, AppBundle\Entity\Shop, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Point de vente', label: 'Point de vente',icon: "<i class=\"fa fa-shop\"></i>" }
     admin.pays:
         class: AppBundle\Admin\PaysAdmin
         arguments: [~, AppBundle\Entity\Pays, ~]

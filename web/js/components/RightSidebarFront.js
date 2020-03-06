@@ -89,22 +89,27 @@ const GenerateAdmissionTicket = (props) => {
     const classes = useStyles();
     const [tickets, setTickets] = useState(null);
     const [eventId, setEventId] = useState(null);
-    const [ticketItem,setTicketItem] = useState(null);
+    const [ticketItem, setTicketItem] = useState(null);
     useEffect(() => {
         setEventId(props.event_id);
         setTickets(props.billets_admission);
     });
 
-    const handleSubmit = (item,e) => {
+    const handleSubmit = (item, e) => {
         e.preventDefault();
         handleData(item);
     };
     const handleChange = (e) => {
-        setTicketItem({name:e.target.name,value:e.target.value});
+        setTicketItem({name: e.target.name, value: e.target.value});
     };
     const handleData = (item) => {
-        if(item.libelle === ticketItem.name){
-            axios.post("/res_billet/add/",{event_id:eventId,type_billet:item.libelle,select_nb_billets:ticketItem.value,redirect:""}).then((data)=>{
+        if (item.libelle === ticketItem.name) {
+            axios.post("/res_billet/add/", {
+                event_id: eventId,
+                type_billet: item.libelle,
+                select_nb_billets: ticketItem.value,
+                redirect: ""
+            }).then((data) => {
                 props.handleNewDataInCart(true);
             });
         }
@@ -120,7 +125,9 @@ const GenerateAdmissionTicket = (props) => {
                         {tickets.map((ticket, i) => {
                             return (
                                 <ListItem className={classes.noSeat} key={i.toString()}>
-                                    <form onSubmit={(e)=>{handleSubmit(ticket,e)}}>
+                                    <form onSubmit={(e) => {
+                                        handleSubmit(ticket, e)
+                                    }}>
                                         <TextField
                                             fullWidth={false}
                                             name={ticket.libelle.toString()}
@@ -140,7 +147,8 @@ const GenerateAdmissionTicket = (props) => {
                                             helperText={"Prix: EUR " + ticket.prix}
                                         />
                                         <ListItemSecondaryAction>
-                                            <IconButton type={"submit"} edge={"end"} color="primary" aria-label="add to shopping cart">
+                                            <IconButton type={"submit"} edge={"end"} color="primary"
+                                                        aria-label="add to shopping cart">
                                                 <span className={"fa fa-cart-plus"}/>
                                             </IconButton>
                                         </ListItemSecondaryAction>
@@ -207,9 +215,10 @@ const DataCartFormatDisplay = (props) => {
             {formatted.map(
                 (item, i) => {
                     return (
-                        <div>
+                        <div key={i}>
                             {item.seat !== "-" && item.section !== "-" ?
-                                (<ListItem key={i.toString()}>
+                                (
+                                    <ListItem key={i}>
                                         <ListItemAvatar>
                                             <Avatar className={classes.small}>
                                             <span className={"fa fa-circle"}
@@ -228,7 +237,9 @@ const DataCartFormatDisplay = (props) => {
                                             </IconButton>
                                         </ListItemSecondaryAction>
                                     </ListItem>
-                                ) : (<ListItem key={i.toString()}>
+
+                                ) : (
+                                    <ListItem key={i}>
                                     <ListItemAvatar>
                                         <Avatar className={classes.small}>
                                             <span style={{color: "#333333"}}>{item.quantity}</span>
@@ -244,9 +255,12 @@ const DataCartFormatDisplay = (props) => {
                                             <span className={"fa fa-trash"}/>
                                         </IconButton>
                                     </ListItemSecondaryAction>
-                                </ListItem>)
+                                    </ListItem>
+
+                                )
                             }
-                        </div>)
+                        </div>
+                    )
                 })
             }
         </List>
@@ -340,13 +354,6 @@ const GenerateDataCart = (props) => {
                 </CardContent>
             </Card>);
     }
-
-
-    /*return [0, 1, 2, 3, 4, 5, 6 ,7 , 8, 9, 10, 11, 12 ].map(value =>
-    React.cloneElement(element, {
-    key: value,
-    }),
-    );*/
 };
 
 function RightSidebarFront(props) {
@@ -368,7 +375,7 @@ function RightSidebarFront(props) {
         }
     });
     useEffect(() => {
-            axios.get("/api/typeBillet/front_end/admission-only/" + eventId).then((data) => {
+            axios.get("/api/typeBillet/admission-only/" + eventId).then((data) => {
                 setBilletAdmission(data.data);
             });
         }, [eventId]
@@ -388,11 +395,12 @@ function RightSidebarFront(props) {
     return (
         <aside>
             <Fade in={true} style={{transitionDelay: '50ms', display: "inherit"}}>
-                <GenerateAdmissionTicket event_id={eventId} billets_admission={billetAdmission} handleNewDataInCart={handleNewDataInCart}/>
+                <GenerateAdmissionTicket event_id={eventId} billets_admission={billetAdmission}
+                                         handleNewDataInCart={handleNewDataInCart}/>
             </Fade>
             <Fade in={true} style={{transitionDelay: '50ms', display: "inherit"}}>
                 <GenerateDataCart event_id={eventId} billets_admission={billetAdmission} colors={colors} data={billet}
-                                  handleDataCartFromSideBar={handleDataCartFromSideBar}  checkout={checkOut}
+                                  handleDataCartFromSideBar={handleDataCartFromSideBar} checkout={checkOut}
                                   clear_all={clearAll}/>
             </Fade>
         </aside>

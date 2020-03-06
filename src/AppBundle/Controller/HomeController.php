@@ -49,7 +49,7 @@ class HomeController extends Controller
             ->getRepository(CategorieEvenement::class)
             ->searchUsedCategories();
         $events_paginated = $this->get('knp_paginator')->paginate($eventsList,$request->query->get('page',1),15);
-        return $this->render('default/index.html.twig', array('catList'=>$categoryList,'dataSearch'=>$request->request,'events' => $events_paginated,'lieu'=>$lieu,'nbEvents'=>count($eventsList)));
+        return $this->render('default/index.html.twig', array('catList'=> $categoryList,'dataSearch'=>$request->request,'events' => $events_paginated,'lieu'=>$lieu,'nbEvents'=>count($eventsList)));
     }
 
     /**

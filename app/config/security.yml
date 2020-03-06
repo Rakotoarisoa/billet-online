@@ -41,10 +41,10 @@ security:
 
     role_hierarchy:
         ROLE_USER:        ROLE_USER
-        ROLE_USER_MEMBER: ROLE_USER_MEMBER
-        ROLE_USER_SHOP: ROLE_USER_SHOP
-        ROLE_ADMIN:       [ROLE_USER, ROLE_USER_MEMBER]
-        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_USER_MEMBER: ROLE_USER
+        ROLE_USER_SHOP: ROLE_USER
+        ROLE_ADMIN:       [ROLE_USER, ROLE_USER_MEMBER,ROLE_USER_SHOP]
+        ROLE_SUPER_ADMIN: ROLE_ADMIN,ROLE_USER_SHOP
     # Learn more about services, parameters and containers at
     # http://symfony.com/doc/current/book/service_container.html
 parameters:

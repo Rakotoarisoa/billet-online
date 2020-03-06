@@ -108,8 +108,10 @@
                                                 <div class="row">
                                                     {% if event.isUsingSeatMap %}
                                                         <div class="col">
-                                                            <a id="view_seat_map" class="btn btn-outline-danger text-dark"
-                                                               href="{{ path('viewBuyMap',{'idEvent': event.id}) }}" target="_blank"><span
+                                                            <a id="view_seat_map"
+                                                               class="btn btn-outline-danger text-dark"
+                                                               href="{{ path('viewBuyMap',{'idEvent': event.id}) }}"
+                                                               target="_blank"><span
                                                                         class="fa fa-map"></span> Plan de salle</a>
                                                         </div>
                                                     {% endif %}
@@ -214,38 +216,38 @@
                                                                             {% set i=1 %}
                                                                             {% for type in event.typeBillets %}
                                                                                 {% if type.isAdmission %}
-                                                                                <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
-                                                                                    <div class="row d-flex w-100 justify-content-between">
-                                                                                        <div class="col-6">
-                                                                                            <h5 class="mb-1">{{ type.libelle }}</h5>
+                                                                                    <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
+                                                                                        <div class="row d-flex w-100 justify-content-between">
+                                                                                            <div class="col-6">
+                                                                                                <h5 class="mb-1">{{ type.libelle }}</h5>
+                                                                                            </div>
+                                                                                            <div class="col">
+                                                                                                <select class="form-control col-6 pull-right fillOne"
+                                                                                                        name="{{ type.libelle }}"
+                                                                                                        id="billet_{{ i }}"
+                                                                                                        data-price="{{ type.prix }}"
+                                                                                                        data-name="{{ type.libelle }}">
+                                                                                                    <option selected></option>
+                                                                                                    {% if (type.quantite - type.billets|length) > 0 %}
+                                                                                                        {% for i in 1..min((type.quantite - type.billets|length),max_command_per_ticket) %}
+                                                                                                            <option value="{{ type.libelle }}:{{ type.prix }}:{{ i }}">
+                                                                                                                {{ i }}
+                                                                                                            </option>
+                                                                                                        {% endfor %}
+                                                                                                    {% endif %}
+                                                                                                </select>
+                                                                                            </div>
                                                                                         </div>
-                                                                                        <div class="col">
-                                                                                            <select class="form-control col-6 pull-right fillOne"
-                                                                                                    name="{{ type.libelle }}"
-                                                                                                    id="billet_{{ i }}"
-                                                                                                    data-price="{{ type.prix }}"
-                                                                                                    data-name="{{ type.libelle }}">
-                                                                                                <option selected></option>
-                                                                                                {% if (type.quantite - type.billets|length) > 0 %}
-                                                                                                    {% for i in 1..min((type.quantite - type.billets|length),max_command_per_ticket) %}
-                                                                                                        <option value="{{ type.libelle }}:{{ type.prix }}:{{ i }}">
-                                                                                                            {{ i }}
-                                                                                                        </option>
-                                                                                                    {% endfor %}
-                                                                                                {% endif %}
-                                                                                            </select>
+                                                                                        <div class="row message_errors">
+                                                                                            <div class="col-12">
+                                                                                                <span class="text-danger error"></span>
+                                                                                            </div>
                                                                                         </div>
+                                                                                        <small>{{ devise }} {{ type.prix }}</small>
+                                                                                        <br/>
+                                                                                        <small>{{ type.description|raw }}</small>
                                                                                     </div>
-                                                                                    <div class="row message_errors">
-                                                                                        <div class="col-12">
-                                                                                            <span class="text-danger error"></span>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <small>{{ devise }} {{ type.prix }}</small>
-                                                                                    <br/>
-                                                                                    <small>{{ type.description|raw }}</small>
-                                                                                </div>
-                                                                                {% set i=i+1 %}
+                                                                                    {% set i=i+1 %}
                                                                                 {% endif %}
                                                                             {% endfor %}
                                                                         </div>
@@ -345,54 +347,57 @@
                                                                         <div class="form-group">
                                                                             <label for="inputAddress2"><h6>Méthode de
                                                                                     paiement</h6></label>
-                                                                            <div class="row">
-
-                                                                                <div class="col-6">
-                                                                                    <input type="radio"
-                                                                                           class="form-check-input"
-                                                                                           name="paymentMethod"
-                                                                                           disabled>
-                                                                                    <span class="fa fa-credit-card fa-2x"></span>
-                                                                                    Carte bancaire
+                                                                            {% if(is_granted('ROLE_USER_SHOP')) %}
+                                                                                <div class="row">
+                                                                                    <div class="col-6">
+                                                                                        <input type="radio"
+                                                                                               class="form-check-input"
+                                                                                               name="paymentMethod"
+                                                                                               value="point_de_vente"
+                                                                                               checked>
+                                                                                        <span class="fa fa-home fa-2x"></span>
+                                                                                        Point de vente
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <hr/>
-                                                                            <div class="row">
-                                                                                <div class="col-6">
-                                                                                    <input type="radio"
-                                                                                           class="form-check-input"
-                                                                                           name="paymentMethod"
-                                                                                           value="Paypal" checked>
-                                                                                    <span class="fa fa-paypal fa-2x"></span>
-                                                                                    Paypal
+                                                                            {% else %}
+                                                                                <div class="row">
+                                                                                    <div class="col-6">
+                                                                                        <input type="radio"
+                                                                                               class="form-check-input"
+                                                                                               name="paymentMethod"
+                                                                                               disabled>
+                                                                                        <span class="fa fa-credit-card fa-2x"></span>
+                                                                                        Carte bancaire
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <hr/>
-                                                                            <div class="row">
-                                                                                <div class="col-6">
-                                                                                    <input type="radio"
-                                                                                           class="form-check-input"
-                                                                                           name="paymentMethod"
-                                                                                           value="point_de_vente" checked>
-                                                                                    <span class="fa fa-home fa-2x"></span>
-                                                                                    Point de vente
+                                                                                <hr/>
+                                                                                <div class="row">
+                                                                                    <div class="col-6">
+                                                                                        <input type="radio"
+                                                                                               class="form-check-input"
+                                                                                               name="paymentMethod"
+                                                                                               value="Paypal" checked>
+                                                                                        <span class="fa fa-paypal fa-2x"></span>
+                                                                                        Paypal
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <hr/>
-                                                                            <div class="row">
-                                                                                <div class="col-6">
-                                                                                    <input type="radio"
-                                                                                           class="form-check-input"
-                                                                                           name="paymentMethod"
-                                                                                           disabled>
-                                                                                    <img
-                                                                                            src="{{ asset('img/logo-mvola.png.png') }}"
-                                                                                            width="100" height="30"/>
+                                                                                <hr/>
+                                                                                <div class="row">
+                                                                                    <div class="col-6">
+                                                                                        <input type="radio"
+                                                                                               class="form-check-input"
+                                                                                               name="paymentMethod"
+                                                                                               disabled>
+                                                                                        <img
+                                                                                                src="{{ asset('img/logo-mvola.png.png') }}"
+                                                                                                width="100"
+                                                                                                height="30"/>
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                            <input type="hidden" name="_token"
-                                                                                   value="{{ csrf_token('checkout_info') }}"/>
-                                                                            <hr/>
+                                                                                <input type="hidden" name="_token"
+                                                                                       value="{{ csrf_token('checkout_info') }}"/>
+                                                                                <hr/>
+                                                                            {% endif %}
                                                                         </div>
                                                                     </form>
                                                                 </div>
@@ -400,77 +405,85 @@
                                                             </div>
                                                             <div class="step-tab-panel" id="tab3">
                                                                 <h3>Paiement de la facture</h3>
-                                                                <p>Voici avez choisi paypal comme mode de paiement,
-                                                                    cliquer sur le bouton ci-dessous pour continuer, une
-                                                                    fois le paiement effectué , vous serez redirigé
-                                                                    automatiquement sur la page.</p>
-                                                                <div class="row">
-                                                                    <div class="col-6">
-                                                                        <div id="btnPaypal"></div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row text-center payment-loader">
-                                                                    <div class="col loader">
-                                                                        <div class="row">
-                                                                            <div class="col">
-                                                                                <img src="{{ asset('img/loader.gif') }}"
-                                                                                     width="200px"/></div>
-                                                                        </div>
-                                                                        <div class="row">
-                                                                            <div class="col">
-                                                                                <span>Veuiller patienter pendant l'enregistrement de vos informations</span>
-                                                                            </div>
+                                                                <div class="container-fluid">
+                                                                    <p class="paymentInfo"></p>
+                                                                    <div class="form-row">
+                                                                        <div class="col-12">
+                                                                            <div id="btnPaypal"></div>
+                                                                            <form class="form_order_method" method="post" novalidate>
+                                                                            </form>
+                                                                            <form id="form_printer" class="form_printer" method="post" enctype="multipart/form-data">
+                                                                                <input type="hidden" name="order_method" value="print"/>
+                                                                                <input type="hidden" name="_token" value="print"/>
+                                                                            </form>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="row card payment-success">
-                                                                    <div class="col-12">
-                                                                        <div class="row text-center">
-                                                                            <div class="col">
-                                                                                <span class="fa fa-check-circle text-success fa-3x "></span>
+                                                                    <div class="row text-center payment-loader">
+                                                                        <div class="col loader">
+                                                                            <div class="row">
+                                                                                <div class="col">
+                                                                                    <img src="{{ asset('img/loader.gif') }}"
+                                                                                         width="200px"/></div>
                                                                             </div>
-                                                                        </div>
-                                                                        <div class="row">
-                                                                            <div class="col">
-                                                                                Merci, le paiement de votre commande a
-                                                                                abouti. Veuiller vérifier vos billets
-                                                                                via e-mail
+                                                                            <div class="row">
+                                                                                <div class="col">
+                                                                                    <span>Veuiller patienter pendant l'enregistrement de vos informations</span>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="row card payment-failure">
-                                                                    <div class="col-12">
-                                                                        <div class="row text-center">
-                                                                            <div class="col">
-                                                                                <span class="fa fa-warning text-danger fa-3x "></span>
+                                                                    <div class="row card payment-success">
+                                                                        <div class="col-12">
+                                                                            <div class="row text-center">
+                                                                                <div class="col">
+                                                                                    <span class="fa fa-check-circle text-success fa-3x "></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col">
+                                                                                    Merci, la commande a été effectué
+                                                                                    avec succès. Veuiller vérifier vos
+                                                                                    billets selon votre méthode de
+                                                                                    paiement
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="row">
-                                                                            <div class="col">
-                                                                                Désolé, le paiement de votre commande
-                                                                                n'a pas abouti. Veuiller recommencer
+                                                                    </div>
+                                                                    <div class="row card payment-failure">
+                                                                        <div class="col-12">
+                                                                            <div class="row text-center">
+                                                                                <div class="col">
+                                                                                    <span class="fa fa-warning text-danger fa-3x "></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col">
+                                                                                    Désolé, le process n'a pas abouti.
+                                                                                    Veuiller recommencer
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row card register-failure">
+                                                                        <div class="col-12">
+                                                                            <div class="row text-center">
+                                                                                <div class="col">
+                                                                                    <span class="fa fa-warning text-danger fa-3x "></span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="row">
+                                                                                <div class="col">
+                                                                                    Merci, la commande
+                                                                                    a
+                                                                                    abouti
+                                                                                    mais des erreurs internes se sont
+                                                                                    produites
+                                                                                </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="row card register-failure">
-                                                                    <div class="col-12">
-                                                                        <div class="row text-center">
-                                                                            <div class="col">
-                                                                                <span class="fa fa-warning text-danger fa-3x "></span>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="row">
-                                                                            <div class="col">
-                                                                                Merci, le paiement de votre commande a
-                                                                                abouti
-                                                                                mais des erreurs internes se sont
-                                                                                produites
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+                                                                <br/>
                                                             </div>
                                                         </div>
                                                         <div class="step-footer row">
@@ -576,7 +589,7 @@
                                 <div class="widget-content">
                                     <ul class="tags">
                                         {% for cat in catList %}
-                                            <li><a href="#">{{ cat.libelle }}</a></li>
+                                            <li><a href="#">{{ cat['categorie'] }}</a></li>
                                         {% endfor %}
                                     </ul>
                                 </div>
@@ -610,7 +623,7 @@
             }
 
             //-------------------------------modal management-------------
-            $('#view_seat_map').on('click',function(){
+            $('#view_seat_map').on('click', function () {
                 $.get('/res_billet/clear');
             });
             $('#checkout_command').on('shown.bs.modal', function () {
@@ -682,7 +695,6 @@
                                         });
                                         $('#data_cart').append(item_container);
                                     }
-
                                 });
                                 $('.total').html('<div class="col loader text-center"><img style="width:100px" src="{{ asset('img/loader.gif') }}"></div>');
                                 $.get("/api/cart/get_total", function (total) {
@@ -695,6 +707,7 @@
                                 return form_select_item.valid();
                             }
                             if (newIndex === 2 && currentIndex === newIndex - 1) {
+                                let data_payment_method = null;
                                 counter = start_counter();
                                 $('.payment-success').hide();
                                 $('.payment-failure').hide();
@@ -706,65 +719,226 @@
                                 $.get('/api/cart/list', function (data) {
                                     cart_items = data;
                                 });
-                                paypal.Buttons({
-                                    style: {
-                                        layout: 'horizontal'
-                                    },
-                                    createOrder: function (data, actions) {
-                                        // Set up the transaction
-                                        return actions.order.create({
-                                            purchase_units: [{
-                                                application_context: {
-                                                    brand_name: 'Ivenco',
-                                                    return_url: '/res_billet/checkout',
-                                                    cancel_url: '/res_billet/cancel'
-                                                },
-                                                amount: {
-                                                    breakdown: {
-                                                        item_total: {
+                                $.each(frmInfo.serializeArray(), function (index, el) {
+                                    if (el.name === "paymentMethod") {
+                                        data_payment_method = el;
+                                    }
+                                });
+                                switch (data_payment_method.value) {
+                                    case 'Paypal':
+                                        $(".form_order_method").empty();
+                                        $(".paymentInfo").text('Voici avez choisi paypal comme mode de paiement,\n' +
+                                            '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
+                                            '                                                                    fois le paiement effectué , vous serez redirigé\n' +
+                                            '                                                                    automatiquement sur la page.');
+                                        paypal.Buttons({
+                                            style: {
+                                                layout: 'horizontal'
+                                            },
+                                            createOrder: function (data, actions) {
+                                                // Set up the transaction
+                                                return actions.order.create({
+                                                    purchase_units: [{
+                                                        application_context: {
+                                                            brand_name: 'Ivenco',
+                                                            return_url: '/res_billet/checkout',
+                                                            cancel_url: '/res_billet/cancel'
+                                                        },
+                                                        amount: {
+                                                            breakdown: {
+                                                                item_total: {
+                                                                    currency_code: "{{ devise }}",
+                                                                    value: total_price
+                                                                }
+                                                            },
                                                             currency_code: "{{ devise }}",
                                                             value: total_price
-                                                        }
-                                                    },
-                                                    currency_code: "{{ devise }}",
-                                                    value: total_price
-                                                },
-                                                items:
-                                                    transformItemsPaypalFormat(cart_items)
-                                            }],
+                                                        },
+                                                        items:
+                                                            transformItemsPaypalFormat(cart_items)
+                                                    }],
 
-                                        });
-                                    },
-                                    onApprove: function (data, actions) {
-                                        // Capture the funds from the transaction
-                                        return actions.order.capture().then(function (details) {
+                                                });
+                                            },
+                                            onApprove: function (data, actions) {
+                                                // Capture the funds from the transaction
+                                                return actions.order.capture().then(function (details) {
+                                                    $(document).ajaxStart(function () {
+                                                        $('.payment-loader').show();
+                                                    });
+                                                    $(document).ajaxStop(function () {
+                                                        $('.payment-loader').hide();
+                                                    });
+                                                    // Show a success message to your buyer
+                                                    $.get('/res_billet/checkout')
+                                                        .done(function () {
+                                                            $('.payment-success').show();
+                                                            $('#btnPaypal').hide();
+                                                        })
+                                                        .fail(function () {
+                                                            $('.register-failure').show();
+                                                        })
+                                                        .always(function () {
+                                                            console.log("finished");
+                                                        });
+                                                    console.log('Transaction completed by ' + details.payer.name.given_name);
+                                                    //location.href = "/res_billet/checkout";
+                                                });
+                                            },
+                                            onError: function (error) {
+                                                $('.payment-failure').show();
+                                            }
+                                        }).render('#btnPaypal');
+                                        return frmInfo.valid();
+                                        {% if is_granted('ROLE_USER_SHOP') %}
+                                    case 'point_de_vente':
+                                        let user_name = '{{ app.user.username }}';
+                                        let shop_name = '{{ app.user.pointDeVente.nom|escape("js") }}';
+                                        $(".paymentInfo").append('<p><b>' + user_name + '</b>,administrateur du point de vente: <b>' + shop_name + '</b></p>');
+                                        let form_order_method = $(".form_order_method");
+                                        form_order_method.append("<div class=\"form-group\">\n" +
+                                            "                                                                                    <h6>Veuiller choisir le mode d\'envoi des billets</h6>\n" +
+                                            "                                                                                    <div class=\"row\">\n" +
+                                            "                                                                                        <div class=\"col-6\">\n" +
+                                            "                                                                                           <input name=\"_token\" type=\"hidden\" value=\"{{ csrf_token('order-method') }}\">\n" +
+                                            "                                                                                            <input type=\"radio\"\n" +
+                                            "                                                                                                   class=\"form-check-input\"\n" +
+                                            "                                                                                                   name=\"order_method\"\n" +
+                                            "                                                                                                   value=\"print\" checked>\n" +
+                                            "                                                                                            <span class=\"fa fa-print fa-2x\"></span>\n" +
+                                            "                                                                                            Imprimer les billets\n" +
+                                            "                                                                                        </div>\n" +
+                                            "                                                                                    </div>\n" +
+                                            "                                                                                    <hr/>\n" +
+                                            "                                                                                    <div class=\"row\">\n" +
+                                            "                                                                                        <div class=\"col-6\">\n" +
+                                            "                                                                                            <input type=\"radio\"\n" +
+                                            "                                                                                                   class=\"form-check-input\"\n" +
+                                            "                                                                                                   name=\"order_method\"\n" +
+                                            "                                                                                                   value=\"send_email\"/>\n" +
+                                            "                                                                                            <span class=\"fa fa-mail-forward fa-2x\"></span>\n" +
+                                            "                                                                                            Envoyer via e-mail\n" +
+                                            "                                                                                        </div>\n" +
+                                            "                                                                                    </div>\n" +
+                                            "                                                                                    <hr/>\n" +
+                                            "                                                                                    <div class=\"row\">\n" +
+                                            "                                                                                        <div class=\"col-6\">\n" +
+                                            "                                                                                            <input type=\"submit\"\n" +
+                                            "                                                                                                   class=\"form-check-input btn btn-success\"\n" +
+                                            "                                                                                                   value=\"Valider\"/>\n" +
+                                            "                                                                                        </div>\n" +
+                                            "                                                                                    </div>\n" +
+                                            "                                                                                    <br/>\n" +
+                                            "                                                                                </div>");
+
+                                        form_order_method.on('submit', function (e) {
+                                            e.preventDefault();
+                                            let data_order_method = form_order_method.serializeArray();
+                                            let order_method = '';
+                                            let token = '';
+                                            e.preventDefault();
+                                            $.each(data_order_method, function (index, el) {
+                                                if (el.name === "order_method") {
+                                                    order_method = el.value;
+                                                }
+                                                if (el.name === '_token') {
+                                                    token = el.value;
+                                                }
+                                            });
+
                                             $(document).ajaxStart(function () {
                                                 $('.payment-loader').show();
                                             });
                                             $(document).ajaxStop(function () {
                                                 $('.payment-loader').hide();
                                             });
-                                            // Show a success message to your buyer
-                                            $.get('/res_billet/checkout')
-                                                .done(function () {
+                                            if (order_method === 'print') {
+                                                var xhr = new XMLHttpRequest();
+                                                xhr.open("POST", "{{ path('cart_print_mail')|escape('js') }}");
+                                                xhr.responseType = 'arraybuffer';
+                                                xhr.onload = function () {
+                                                    if (this.status === 200) {
+                                                        var filename = "";
+                                                        var disposition = xhr.getResponseHeader('Content-Disposition');
+                                                        if (disposition && disposition.indexOf('attachment') !== -1) {
+                                                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                                                            var matches = filenameRegex.exec(disposition);
+                                                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+                                                        }
+                                                        var type = xhr.getResponseHeader('Content-Type');
+
+                                                        var blob;
+                                                        if (typeof File === 'function') {
+                                                            try {
+                                                                blob = new File([this.response], filename, { type: type });
+                                                            } catch (e) { /* Edge */ }
+                                                        }
+                                                        if (typeof blob === 'undefined') {
+                                                            blob = new Blob([this.response], { type: type });
+                                                        }
+
+                                                        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+                                                            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+                                                            window.navigator.msSaveBlob(blob, filename);
+                                                        } else {
+                                                            var URL = window.URL || window.webkitURL;
+                                                            var downloadUrl = URL.createObjectURL(blob);
+
+                                                            if (filename) {
+                                                                // use HTML5 a[download] attribute to specify filename
+                                                                var a = document.createElement("a");
+                                                                // safari doesn't support this yet
+                                                                if (typeof a.download === 'undefined') {
+                                                                    window.location = downloadUrl;
+                                                                } else {
+                                                                    a.href = downloadUrl;
+                                                                    a.download = filename;
+                                                                    document.body.appendChild(a);
+                                                                    a.click();
+                                                                }
+                                                            } else {
+                                                                window.location = downloadUrl;
+                                                            }
+
+                                                            setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+                                                        }
+                                                    }
+                                                };
+                                                xhr.onloadend = function () {
                                                     $('.payment-success').show();
-                                                    $('#btnPaypal').hide();
-                                                })
-                                                .fail(function () {
-                                                    $('.register-failure').show();
-                                                })
-                                                .always(function () {
-                                                    console.log("finished");
+                                                    $('.payment-loader').hide();
+                                                    $('.payment-loader').hide();
+                                                    $('.form_order_method').empty();
+                                                };
+                                                xhr.onloadstart = function () {
+                                                    $('.form_order_method').hide();
+                                                    $('.payment-loader').show();
+                                                };
+                                                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                                                var formData = new FormData(document.getElementById("form_printer"));
+                                                xhr.send(formData);
+                                                return frmInfo.valid();
+                                            } else if (order_method === 'send_email') {
+                                                $.post('{{ path('cart_print_mail')|escape('js') }}', {
+                                                    order_method: order_method,
+                                                    _token: token
+                                                }).done(function (data) {
+                                                    $('.payment-success').show();
+                                                    $('.form_order_method').empty();
+                                                    return frmInfo.valid();
+                                                }).fail(function () {
+                                                    $('.payment-failure').show();
+                                                    $('.form_order_method').empty();
                                                 });
-                                            console.log('Transaction completed by ' + details.payer.name.given_name);
-                                            //location.href = "/res_billet/checkout";
+                                            }
                                         });
-                                    },
-                                    onError: function (error) {
-                                        $('.payment-failure').show();
-                                    }
-                                }).render('#btnPaypal');
-                                return frmInfo.valid();
+                                        {% endif %}
+                                    default:
+                                        console.log("default");
+                                        break;
+                                }
+                                $("#btnPaypal").empty();
+
                             }
                         }
                         if (stepDirection === 'backward') {
@@ -778,6 +952,8 @@
                             }
                             if (newIndex === 1 && currentIndex === newIndex + 1) {
                                 $("#btnPaypal").find('.paypal-buttons').remove();
+                                $(".paymentInfo").empty();
+                                $(".form_order_method").empty();
                             }
                             if (newIndex === 2 && currentIndex === newIndex + 1) {
                             }

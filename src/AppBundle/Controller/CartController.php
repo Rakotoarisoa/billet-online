@@ -89,6 +89,9 @@ class CartController extends Controller
             $this->cart->clear();
             return $this->redirect('/res_billet/list');
         }
+        else{
+            return new Response("No Data",200);
+        }
     }
     /**
      * Clears the cart
@@ -284,7 +287,74 @@ class CartController extends Controller
             return new Response($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * Checkout process of the cart
+     *
+     * @Route("/res_billet/print_mail_order", name="cart_print_mail")
+     */
+    public function printOrMailAction(Request $request,EventDispatcherInterface $eventDispatcher)
+    {
+        $data_rq=$request->request;
+        $order_method='print';
+        if($data_rq->has('order_method')) {
+            $order_method=$data_rq->get('order_method');
+        }
+        $cartItems = $this->cart->getItems();
+        $event = $this->getDoctrine()->getRepository(Evenement::class)->find($this->cart->getItem(0)->getEvenement()->getId());
+        $buyer_data = $this->session->get('buyer_data');
+        $buyer_name=(string)$buyer_data['prenom'];
+        $buyer_lastname=(string)$buyer_data['nom'];
+        $user_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => (string)$buyer_data['email']]);
+        $user_checkout = $this->getDoctrine()->getRepository(UserCheckout::class)->findOneBy(['email' => (string)$buyer_data['email']]);
+        try {
+            if (!isset($user_checkout) && $this->isCsrfTokenValid('checkout_info', $buyer_data['_token'])) {
 
+                $user_checkout = new  UserCheckout();
+                $user_checkout->setNom((string)$buyer_data['nom']);
+                $user_checkout->setPrenom((string)$buyer_data['prenom']);
+                $user_checkout->setAdresse1((string)$buyer_data['adresse']);
+                $user_checkout->setEmail((string)$buyer_data['email']);
+                $user_checkout->setIsRegisteredUser(isset($user_exist));
+                $user_checkout->setPays((string)$buyer_data['pays']);
+            }
+            $reservation = new Reservation();
+            $reservation->setNomReservation('commande_' . $reservation->getRandomCodeCommande());
+            //TODO: Ajouter les données de reservation
+            $reservation->setModePaiement('Point de vente: '.$user_exist->getPointDeVente()->getNom());
+            $reservation->setEvenement($event);
+            $reservation->setPointDeVente($user_exist->getPointDeVente());
+            $reservation->setUserCheckout($user_checkout);
+            $reservation->setMontantTotal($this->cart->getTotalPrice());
+            $this->getDoctrine()->getManager()->persist($user_checkout);
+            $this->getDoctrine()->getManager()->persist($reservation);
+            $billets_collection = new ArrayCollection();
+            foreach ($cartItems as $item) {
+                //TODO: Ajouter les billets
+                $typeBillet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $item->getCategoryStr(), 'evenement' => $event]);
+                $billet = new Billet();
+                $billet->setEstVendu(true);
+                $billet->setIsMapped(false);
+                $billet->setPlaceId($item->getSeat());
+                $billet->setSectionId($item->getSection());
+                $billet->setTypeBillet($typeBillet);
+                $billet->setReservation($reservation);
+                $this->getDoctrine()->getManager()->persist($billet);
+                $billets_collection->add($billet);
+            }
+            $reservation->setBillet($billets_collection);
+            $this->getDoctrine()->getManager()->persist($reservation);
+            $this->getDoctrine()->getManager()->flush();
+            //set Name and username
+            $data_buyer_name="";
+            $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation,$order_method,array('name'=> $buyer_name,'lastname'=>$buyer_lastname)));
+            //delete session and cart _data
+            return new Response('Processus Terminé', Response::HTTP_OK);
+            //return $this->redirectToRoute('viewList');
+        } catch (\Exception $exception) {
+            //$this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
+            return new Response($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
     /**
      *
      * @Route("/res_billet/send_buyer_info", name="cart_register_buyer_info")

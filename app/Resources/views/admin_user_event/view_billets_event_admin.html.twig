@@ -29,9 +29,9 @@
                             </div>
                             <div class="col-md-3">                               
                                 <select name="billet_checked" class="form-control">
-                                    <option value=""></option>
-                                    <option value="0">Pas encore vérifié</option>
-                                    <option value="1">Déjà vérifié</option>
+                                    <option value="" {{ billet_checked == '' ? 'selected' : '' }}>Tout</option>
+                                    <option value="0" {{ billet_checked == '0' ? 'selected' : '' }}>Pas encore vérifié</option>
+                                    <option value="1" {{ billet_checked == '1' ? 'selected' : '' }}>Déjà vérifié</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -58,21 +58,25 @@
             <div class="col-sm-12">
                 <table class="table">
                     <tr style="background-color:#ccc">
-                        <td><b>Identifiant</b></td>
+                        <td><b>Commande n°</b></td>
+                        <td><b>Billet n°</b></td>
+                        <td><b>Commandé par</b></td>
                         <td><b>Type</b></td>
                         <td><b>Place</b></td>
                         <td><b>Section</b></td>
-                        <td><b>Checked</b></td>
+                        <td><b>Billet vérifié</b></td>
                         <td><b>Date Vérification</b></td>
                         <td><b>Terminal de Vérification</b></td>
                     </tr>
                     {% for billet in billets %}                        
                         <tr>
+                            <td><b>{{  billet.reservation.nomReservation }}</b></td>
                             <td>{{ billet.identifiant }}</td>
+                            <td>{{ billet.reservation.userCheckout.nom }} {{ billet.reservation.userCheckout.prenom }}</td>
                             <td><b>{{ billet.TypeBillet }}</b></td>
                             <td><b>{{ billet.PlaceId }}</b></td>
                             <td><b>{{ billet.SectionId }}</b></td>
-                            <td><b>{{ billet.checked}}</b></td>
+                            <td><b>{{ billet.checked ? 'Oui' : 'Non'}}</b></td>
                             <td><b>{{ billet.checkDate|localizeddate }}</b></td>
                             <td><b>{{ billet.device }}</b></td>
                         </tr>

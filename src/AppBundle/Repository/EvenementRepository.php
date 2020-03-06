@@ -104,15 +104,27 @@ class EvenementRepository extends EntityRepository
     /**
      * get Ticket in Event
      */
-    public function getAllTicketsEvents($event = null, $billet_place = null,$billet_type = null ,$billet_checked = null){
-        return $this->getEntityManager()
-            ->createQuery('SELECT b
+    public function getAllTicketsEvents($event = null, $billet_place = null,$billet_type = null ,$billet_checked = 0){
+        $query='SELECT b
                             FROM AppBundle:Evenement e
                             LEFT JOIN AppBundle:TypeBillet t WITH e.id = t.evenement
                             LEFT JOIN AppBundle:Billet b WITH t.id = b.typeBillet
-                            WHERE e.id=:event')
-                ->setParameter('event', $event)           
-                ->getResult();        
+                            WHERE e.id=:event';
+        if($billet_checked != null){
+            $query.= ' and b.checked=:checked';
+            return $this->getEntityManager()
+                ->createQuery($query)
+                ->setParameter('event', $event)
+                ->setParameter('checked', $billet_checked)
+                ->getResult();
+        }
+        else{
+            return $this->getEntityManager()
+                ->createQuery($query)
+                ->setParameter('event', $event)
+                ->getResult();
+        }
+
     }
 
 

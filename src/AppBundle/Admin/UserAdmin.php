@@ -3,18 +3,15 @@
 
 namespace AppBundle\Admin;
 
-
-use AppBundle\Entity\Billet;
-use Doctrine\DBAL\Types\FloatType;
-use Money\Number;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
-
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bridge\Doctrine\Form\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 
 final class UserAdmin extends AbstractAdmin
 {
@@ -28,47 +25,76 @@ final class UserAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->add('nom')
-            ->add('prenom')
-            ->add('adresse')
-            ->add('mobile_phone')
-            ->add('date_de_naissance')
-            ->add('sexe')
-            ->add('pays')
-            ->add('code_postal')
+            ->add('nom', 'text', ['label' => 'Nom'])
+            ->add('prenom', 'text', ['label' => 'Prénom'])
+            ->add('username','text',['label'=> 'Nom d\'utilisateur'])
+            ->add('adresse', 'text', ['label' => 'Adresse'])
+            ->add('email')
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'first_options' => ['label' => 'Mot de passe'],
+                'second_options' => ['label' => 'Confirmer le mot de passe']
+            ])
+            ->add('mobile_phone', 'text', ['label' => 'Numéro téléphone'])
+            ->add('date_de_naissance', BirthdayType::class, [
+                'placeholder' => [
+                    'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour',
+                ]
+            ])
+            ->add('sexe', 'choice', [
+                'mapped'=> true,
+                'choices' => [
+                    'Homme' => 'M',
+                    'Femme' => 'F'
+                ]
+            ])
+            ->add('pays', 'choice', [
+                'label' => 'Pays',
+                'mapped' => true,
+                'choices' => [
+                    'Madagascar' => 'Madagascar',
+                    'France' => 'France',
+                    'Etats-unis' => 'Etats-unis'
+                ]
+
+
+            ])
+            ->add('code_postal','text', ['label'=> 'Code postal'])
+            ->add('website','text',['label'=> 'Site web'])
+            ->add('blog','text',['label'=> 'Blog'])
+            ->add('phone','text',['label'=> 'Téléphone'])
+            ->add('mobile_phone','text',['label'=> 'Téléphone mobile'])
             ->add('roles','choice',[
                 'multiple' => true,
-                'expanded' => true,
                 'mapped' => true,
+                'required' => true,
                 'choices' => [
                     'Simple utilisateur' => 'ROLE_USER',
                     'Utilisateurs membre' => 'ROLE_USER_MEMBER',
                     'Administrateur' => 'ROLE_ADMIN',
-                    'Administrateur shop' => 'ROLE_USER_SHOP'
+                    'Administrateur de point de vente' => 'ROLE_USER_SHOP'
                 ]
-            ]); 
-            //->add('roles', [], array('required' => false,'attr'=>array('class'=>'mapCoordinate')))  ;        
+            ])
+            ->add('point_de_vente',
+                EntityType::class,
+                ['class' => 'AppBundle\Entity\Shop','placeholder' => 'Sélectionner le point de vente à gérer']
+            );
 
     }
 
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
-        $datagridMapper->add('nom')
-                        ->add('prenom')
-                        ->add('adresse')                       
-        ;
+        $datagridMapper->add('username')
+            ->add('roles');
     }
 
     protected function configureListFields(ListMapper $listMapper)
     {
-        $listMapper->addIdentifier('nom')
-                    ->add('prenom')
-                    ->add('adresse')
-                    ->add('mobile_phone')
-                    ->add('date_de_naissance')
-                    ->add('sexe')
-                    ->add('pays')
-                    ->add('code_postal')
-                    ;
+        $listMapper->addIdentifier('username', 'string', ['label' => 'Nom d\'utilisateur'])
+            ->add('nom', 'string')
+            ->add('prenom', 'string', ['label' => 'Prénom'])
+            ->add('adresse', 'string', ['label' => 'Adresse'])
+            ->add('email', 'string', ['label' => 'Adresse e-mail'])
+            ->add('roles');
     }
 }

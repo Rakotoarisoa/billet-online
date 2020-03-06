@@ -11,6 +11,24 @@ use Symfony\Component\EventDispatcher\Event;
 class RegisteredReservationEvent extends  Event
 {
     private $reservation;
+    private $order_method;
+    private $buyer_data;
+
+    /**
+     * @return mixed
+     */
+    public function getBuyerData()
+    {
+        return $this->buyer_data;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrderMethod()
+    {
+        return $this->order_method;
+    }
 
     /**
      * @return Reservation
@@ -22,11 +40,14 @@ class RegisteredReservationEvent extends  Event
 
     const NAME = 'reservation.registered';
 
-    public function __construct(Reservation $reservation)
+    public function __construct(Reservation $reservation,$order_method,$buyer_data)
     {
-        if($reservation instanceof Reservation)
+        if($reservation instanceof Reservation && $order_method != '' && $buyer_data != null) {
             $this->reservation = $reservation;
+            $this->order_method = $order_method;
+            $this->buyer_data = $buyer_data;
+        }
         else
-            throw new EntityNotFoundException('Entité Resrevation introuvable');
+            throw new EntityNotFoundException('Entité Reservation introuvable');
     }
 }

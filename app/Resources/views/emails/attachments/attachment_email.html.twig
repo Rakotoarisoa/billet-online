@@ -80,15 +80,15 @@
     section .event {
         font-weight: 700;
         font-size: 1.6em;
-        line-height: 35px;
+        line-height: normal;
         font-family: "Roboto", cursive;
     }
 
     section .title {
-        margin-bottom: 20px;
+        margin-bottom: 5px;
         color: #19868a;
-        font-size: 3em;
-        line-height: 72px;
+        font-size: 33px;
+        line-height: normal;
     }
 
     section .info {
@@ -116,7 +116,7 @@
         float: left;
     }
     section .middle .title{
-        font-size:23px;
+        font-size:50px;
     }
 
     section .seats span {
@@ -130,14 +130,14 @@
 
     section .middle .commande {
         font-size: 0.5em;
+        bottom: 0;
     }
-    .p{
+    p{
         font-family: "Roboto", cursive;
     }
 
     .code {
         font-size: 0.3em;
-        text-align: center;
     }
 
     p.small {
@@ -181,18 +181,20 @@
                     <br>{{ event.lieuEvenement.nomSalle }} </div>
                 <div class="commande">
                     Commande n° {{ reservation.randomCodeCommande }} par
-                    <b>{{ reservation.userCheckout.nom }} {{ reservation.userCheckout.prenom }}</b>
+                    {% if buyer_data is defined %}
+                        <b>{{ buyer_data["lastname"] }} {{ buyer_data["name"] }}</b>
+                    {% else %}
+                        <b>{{ reservation.userCheckout.nom }} {{ reservation.userCheckout.prenom }}</b>
+                    {% endif %}
                 </div>
             </div>
             <div class="vl2"></div>
 
             <div class="right">
                 <div class="qrcode" style="top:30px;">
-                    <p class="code">{{ reservation.randomCodeCommande }}-{{ reservation.evenement.randomCodeEvent }}
-                        -{{ billet.getIdentifiant }}</p>
+                    <p class="code" style="padding-bottom:0px;">{{ reservation.randomCodeCommande }}-{{ reservation.evenement.randomCodeEvent }}-{{ billet.getIdentifiant }}</p>
                     <img width="147px" src="data:image/png;base64,{{ qr.generate( options) }}"/>
                 </div>
-                <br/>
                 <div>
                     <img src="https://ci4.googleusercontent.com/proxy/SW7wMwKZAx4dsy1hslg9EGu2vvoRdGDuw_zpeymYaRKppoo2PWgRHJDUdIMBsc5U-vgRAanq8x4htuwpWyJjoWtX1_O8lceu_qvDmDwGOffhJAgy2cyQ0JdQjOuAbGwVHvliJlYXrRvLUYNOY1P9Hq7ZMNMiMg8-oq5ceDskhoCH-BJ1NQ=s0-d-e1-ft#https://eormqy.stripocdn.email/content/guids/CABINET_d10a93a12a55a242e8eab4259f07c292/images/32811575356144086.png"
                          width="147px"/></div>
