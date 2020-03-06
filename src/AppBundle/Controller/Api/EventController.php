@@ -185,6 +185,7 @@ class EventController extends AbstractFOSRestController
             }
             return new Response('Done',200);
         }
+        return new Response('Error occured',500);
     }
     /**
      * @Rest\Post("/api/event/seat/is-locked")
@@ -215,6 +216,7 @@ class EventController extends AbstractFOSRestController
                 }
             }
         }
+        return JsonResponse::create(false);
     }
     /**
      * @Rest\Post("/api/event/seat/book")
@@ -237,6 +239,7 @@ class EventController extends AbstractFOSRestController
 
          return new Response('Done',200);
         }
+        return new Response('Error occured',500);
     }
 
     /**
