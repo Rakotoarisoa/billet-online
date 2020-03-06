@@ -320,7 +320,7 @@ class CartController extends Controller
             $reservation = new Reservation();
             $reservation->setNomReservation('commande_' . $reservation->getRandomCodeCommande());
             //TODO: Ajouter les données de reservation
-            $reservation->setModePaiement('Point de vente: '.$user_exist->getPointDeVente()->getNom());
+            $reservation->setModePaiement('Point de vente: Test'/*. $user_exist->getPointDeVente()->getNom()*/);
             $reservation->setEvenement($event);
             $reservation->setPointDeVente($user_exist->getPointDeVente());
             $reservation->setUserCheckout($user_checkout);

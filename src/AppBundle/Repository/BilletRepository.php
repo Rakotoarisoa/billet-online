@@ -52,7 +52,8 @@ class BilletRepository extends EntityRepository
     {
         return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.libelle, tb.prix as prix,
             CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
-            from AppBundle:TypeBillet tb
+            from AppBundle:Billet b
+            LEFT JOIN AppBundle:TypeBillet tb WITH b.typeBillet=tb.id
             LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
             WHERE evt.id= :idEvent AND tb.active = 1 AND tb.isAdmission = 1
             GROUP BY tb.id,prix
