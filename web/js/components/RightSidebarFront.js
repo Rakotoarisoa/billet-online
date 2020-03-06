@@ -32,7 +32,8 @@ const useStyles = makeStyles(theme => ({
             width: "80%"
         },
         display: 'inline-flex',
-        alignContent: 'center'
+        alignContent: 'center',
+        fontWeight: '500'
     },
     cartItems: {
         display: 'inline-flex'
@@ -144,7 +145,7 @@ const GenerateAdmissionTicket = (props) => {
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
-                                            helperText={"Prix: EUR " + ticket.prix}
+                                            helperText={(parseInt(ticket.quantite) - parseInt(ticket.nombreBillets)) > 0 ?"Prix: EUR " + ticket.prix:"Billet épuisé"}
                                         />
                                         <ListItemSecondaryAction>
                                             <IconButton type={"submit"} edge={"end"} color="primary"

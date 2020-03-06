@@ -215,7 +215,7 @@
                                                                         <div class="list-group">
                                                                             {% set i=1 %}
                                                                             {% for type in event.typeBillets %}
-                                                                                {% if type.isAdmission %}
+                                                                                {% if type.isAdmission and (type.quantite - type.billets|length) > 0 %}
                                                                                     <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
                                                                                         <div class="row d-flex w-100 justify-content-between">
                                                                                             <div class="col-6">
@@ -248,6 +248,17 @@
                                                                                         <small>{{ type.description|raw }}</small>
                                                                                     </div>
                                                                                     {% set i=i+1 %}
+                                                                                {% elseif type.isAdmission and (type.quantite - type.billets|length) <= 0 %}
+                                                                                    <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
+                                                                                        <div class="row d-flex w-100 justify-content-between">
+                                                                                            <div class="col-6">
+                                                                                                <h5 class="mb-1">{{ type.libelle }}</h5>
+                                                                                                <div class="col">Billet
+                                                                                                    épuisé
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 {% endif %}
                                                                             {% endfor %}
                                                                         </div>
@@ -410,11 +421,16 @@
                                                                     <div class="form-row">
                                                                         <div class="col-12">
                                                                             <div id="btnPaypal"></div>
-                                                                            <form class="form_order_method" method="post" novalidate>
+                                                                            <form class="form_order_method"
+                                                                                  method="post" novalidate>
                                                                             </form>
-                                                                            <form id="form_printer" class="form_printer" method="post" enctype="multipart/form-data">
-                                                                                <input type="hidden" name="order_method" value="print"/>
-                                                                                <input type="hidden" name="_token" value="print"/>
+                                                                            <form id="form_printer" class="form_printer"
+                                                                                  method="post"
+                                                                                  enctype="multipart/form-data">
+                                                                                <input type="hidden" name="order_method"
+                                                                                       value="print"/>
+                                                                                <input type="hidden" name="_token"
+                                                                                       value="print"/>
                                                                             </form>
                                                                         </div>
                                                                     </div>
@@ -870,11 +886,12 @@
                                                         var blob;
                                                         if (typeof File === 'function') {
                                                             try {
-                                                                blob = new File([this.response], filename, { type: type });
-                                                            } catch (e) { /* Edge */ }
+                                                                blob = new File([this.response], filename, {type: type});
+                                                            } catch (e) { /* Edge */
+                                                            }
                                                         }
                                                         if (typeof blob === 'undefined') {
-                                                            blob = new Blob([this.response], { type: type });
+                                                            blob = new Blob([this.response], {type: type});
                                                         }
 
                                                         if (typeof window.navigator.msSaveBlob !== 'undefined') {
@@ -899,8 +916,9 @@
                                                             } else {
                                                                 window.location = downloadUrl;
                                                             }
-
-                                                            setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+                                                            setTimeout(function () {
+                                                                URL.revokeObjectURL(downloadUrl);
+                                                            }, 100); // cleanup
                                                         }
                                                     }
                                                 };
