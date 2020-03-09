@@ -322,7 +322,7 @@ class CartController extends Controller
             //TODO: Ajouter les données de reservation
             $reservation->setModePaiement('Point de vente: Test'/*. $user_exist->getPointDeVente()->getNom()*/);
             $reservation->setEvenement($event);
-            $reservation->setPointDeVente($user_exist->getPointDeVente());
+            $reservation->setPointDeVente(null/*$user_exist->getPointDeVente()*/);
             $reservation->setUserCheckout($user_checkout);
             $reservation->setMontantTotal($this->cart->getTotalPrice());
             $this->getDoctrine()->getManager()->persist($user_checkout);
