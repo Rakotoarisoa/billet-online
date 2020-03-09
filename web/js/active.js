@@ -149,8 +149,12 @@
 
     // :: 8.0 Sticky Active Code
     if ($.fn.sticky) {
-        $(".oneMusic-main-menu").sticky({
+        /*$(".oneMusic-main-menu").sticky({
             topSpacing: 0
+        });*/
+        $(".top-filters").sticky({
+            topSpacing: 0,
+            zIndex: 999
         });
     }
 
@@ -207,8 +211,8 @@
     }
     
     // :: 14.0 Gallery Menu Active Code
-    $('.catagory-menu a').on('click', function () {
-        $('.catagory-menu a').removeClass('active');
+    $('.category-menu a').on('click', function () {
+        $('.category-menu a').removeClass('active');
         $(this).addClass('active');
     })
 

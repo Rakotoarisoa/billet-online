@@ -3,6 +3,7 @@
 
 namespace AppBundle\Form;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -11,17 +12,33 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\IsTrue;
 
 class
 RegistrationType extends  AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('nom',TextType::class,array('label'=> 'Nom'));
-        $builder->add('prenom',TextType::class,array('label'=> 'Prénom'));
-        $builder->add('adresse',TextType::class,array('label'=>'Adresse'));
-        $builder->add('mobile_phone',TextType::class,array('label'=> 'Numéro Téléphone'));
-        $builder->add('phone',TextType::class,array('label'=> 'Autre numéro téléphone'));//secondary phone
+        $builder->add('nom',TextType::class,array(
+            'label'=> 'Nom',
+            'required' => true)
+        );
+        $builder->add('prenom',TextType::class,array('label'=> 'Prénom',
+            'required' => true
+        ));
+        $builder->add('adresse',TextType::class,array('label'=>'Adresse',
+            'required' => true
+        ));
+        $builder->add('mobile_phone',TextType::class,array('label'=> 'Numéro Téléphone',
+            'required' => true
+        ));
+        $builder->add('phone',TextType::class,array('label'=> 'Autre numéro téléphone',
+            'required' => true
+        ));//secondary phone
+        $builder->add('isEventManager',CheckboxType::class,[
+            'label' => 'Devenir créateur d\'évènements',
+            'mapped' => false,
+        ]);
         $builder->add('plainPassword', RepeatedType::class, array(
         'type' => PasswordType::class,
         'first_options'  => array('label' => 'Mot de passe'),
@@ -32,13 +49,14 @@ RegistrationType extends  AbstractType
             'Homme' => '1',
             'Femme' => '2',
             ),
-            'choices_as_values' => true,'multiple'=>false,'expanded'=>true));
+            'choices_as_values' => true,
+            'multiple'=>false,
+            'expanded'=>true,
+            'data' => '1'
+        ));
         $builder->add('date_de_naissance', BirthdayType::class,array(
             'widget'=>'single_text',
             'attr'=>['class'=>'form-row'],
-            'placeholder' => [
-                'year' => 'Année', 'month' => 'Mois', 'day' => 'Jour',
-            ],
             'required' => true,
             'empty_data' => '01/01/1900'
         ));
@@ -46,11 +64,11 @@ RegistrationType extends  AbstractType
         $builder->add('code_postal');
         $builder->add('region',TextType::class);
         $builder->add('website', TextType::class, array(
-            'required' => false,
+            'required' => true,
             'label'=> 'Site web'
         ));
         $builder->add('blog',TextType::class, array(
-        'required' => false,
+        'required' => true,
             'label' => 'Blog'
         ));
         $builder->add('image',FileType::class,[
@@ -71,6 +89,7 @@ RegistrationType extends  AbstractType
                     'mimeTypes' => [
                         'image/png',
                         'image/jpg',
+                        'image/jpeg',
                     ],
                     'mimeTypesMessage' => 'Enregistrez une image valide',
                 ])

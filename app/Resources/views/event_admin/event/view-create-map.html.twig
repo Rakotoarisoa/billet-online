@@ -16,23 +16,7 @@
 {% block body %}
     {% block content %}
         {{ parent() }}
-        <div id="vue-app" class="container-fluid">
-            <!-- Vertical toolbar -->
-            <div class="row">
-                <div class="col-sm-10">
-                    <toolbar-vertical></toolbar-vertical>
-                    <canvas-element></canvas-element>
-                </div>
-                <div class="col-sm-2">
-                    <sidebar-right></sidebar-right>
-                </div>
-            </div>
-            <!--Add Modal -->
-            <add-form></add-form>
-            <!--Edit Modal -->
-            <edit-form></edit-form>
-            <strong class="mr-auto text-success">Plan de salle pour l'évènement {{ event.titreEvenement }}</strong>
-            <p><a href="{{ path('viewEventAdmin',{'user':app.user.username,'id':event.id}) }}">Retour vers l'évènement</a> </p>
+        <div id="root" data-event-id="{{ event.id }}">
         </div>
     {% endblock %}
     {% block contact %}{% endblock %}
@@ -49,7 +33,6 @@
         <!-- Active js -->
         <script src="{{ asset('js/active.js') }}"></script>
 
-        <script type="text/javascript" src="{{ asset('js/fabric.js') }}"></script>
         <!-- Vue js -->
         <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
 

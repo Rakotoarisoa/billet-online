@@ -85,12 +85,12 @@
 
                 {% if event.isUsingSeatMap %}
                     <p>
-                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span
+                        <a href="{{ url('viewBuyMap',{'idEvent':event.id}) }}"><span
                                     class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_seat_map'|trans }}</a>
                     </p>
                 {% else %}
                     <p>
-                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span
+                        <a href="{{ url('viewBuyMap',{'idEvent':event.id}) }}"><span
                                     class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
                     </p>
                 {% endif %}
@@ -117,7 +117,7 @@
                                                 <input type="hidden" value="" name="type_lieuevenement">
                                                 <input type="hidden" value="{{ event.id }}" name="event_id">
                                                 <input type="hidden"
-                                                       value="{{ path('viewTicketList',{'date': event.dateDebutEvent|date("Y-m-d"),'slugEvent': event.titreEvenementSlug}) }}"
+                                                       value="{{ path('viewTicketList',{'id': event.id}) }}"
                                                        name="redirect">
                                                 {{ 'events.tickets'|trans }}
                                             </label>

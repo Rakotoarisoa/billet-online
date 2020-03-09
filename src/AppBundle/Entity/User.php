@@ -6,14 +6,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use FOS\UserBundle\Model\User as BaseUser;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @ORM\Table(name="users")
- * @UniqueEntity(fields="email", message="L'adresse email est déjà utilisé")
+ * @UniqueEntity(fields="email")
  */
-class User extends BaseUser
+class User extends BaseUser implements UserInterface
 {
     /**
      * @ORM\Id;
@@ -21,8 +22,6 @@ class User extends BaseUser
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-
-
     /**
      * @ORM\Column(type="string", length=100)
      */
@@ -35,6 +34,54 @@ class User extends BaseUser
      * @ORM\Column(type="string", length=100)
      */
     protected $adresse;
+    /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Shop",
+     *     inversedBy="user"
+     * )
+     * @ORM\JoinColumn(name="shop_id", referencedColumnName="id", nullable=true)
+     */
+    protected $pointDeVente;
+
+    /**
+     * @return mixed
+     */
+    public function getPointDeVente()
+    {
+        return $this->pointDeVente;
+    }
+
+    /**
+     * @param mixed $point_de_vente
+     */
+    public function setPointDeVente($point_de_vente): void
+    {
+        $this->pointDeVente = $point_de_vente;
+    }
+    /**
+     * {@inheritdoc}
+     */
+    public function addRole($role)
+    {
+        
+        $role = strtoupper($role);
+        if ($role === static::ROLE_DEFAULT) {
+            return $this;
+        }
+
+        $tabRole = array();
+        if(!$this->roles){
+            $this->roles = array();
+        }
+
+
+        if (!in_array($role, $this->roles, true)) {
+        
+            $this->roles[] = $role;
+        }
+
+        return $this;
+    }
+
 
     /**
      * @return mixed
@@ -275,7 +322,26 @@ class User extends BaseUser
      * @ORM\OneToMany(targetEntity="Evenement", mappedBy="user")
      */
     protected $evenements;
+    /**
+     * @ORM\OneToMany(targetEntity="Log", mappedBy="user")
+     */
+    protected $logs;
 
+    /**
+     * @return mixed
+     */
+    public function getLogs()
+    {
+        return $this->logs;
+    }
+
+    /**
+     * @param mixed $logs
+     */
+    public function setLogs($logs): void
+    {
+        $this->logs = $logs;
+    }
     /**
      * @return mixed
      */

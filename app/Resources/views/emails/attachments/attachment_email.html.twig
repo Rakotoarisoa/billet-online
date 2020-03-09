@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HTML to API - event tickets</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900'
+          rel='stylesheet' type='text/css'>
+    <!-- <link rel="stylesheet" href="styles/main.css" media="screen" charset="utf-8"/> -->
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta http-equiv="content-type" content="text-html; charset=utf-8">
+</head>
+
+<style>
+    body {
+        width: 100%;
+        margin: 0 auto;
+        color: #333;
+        font-family: "Roboto", cursive;
+        font-weight: 400;
+        font-size: 25px;
+        background-color: #FFF;
+    }
+
+    .vl1 {
+        border-left: 1px dashed #444;
+        height: 500px;
+        position: absolute;
+        left: 22%;
+        margin-left: -3px;
+        top: 0;
+    }
+
+    .vl2 {
+        border-left: 1px dashed #444;
+        height: 500px;
+        position: absolute;
+        left: 72%;
+        margin-left: -3px;
+        top: 0;
+    }
+
+    .container {
+        width: 100%;
+        background-color: #EEE;
+    }
+
+    section {
+        position: relative;
+        height: 280px;
+        width: 100%;
+        background-color: #FFF;
+        background-repeat: no-repeat;
+        overflow: hidden;
+        border: 1px solid;
+    }
+
+    section .left {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        float: left;
+        width: 13%;
+        padding: 50px;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    section .right {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        float: left;
+        width: 172px;
+        padding: 26px;
+        padding-top: 30px;
+        top: 30px;
+    }
+
+    section .event {
+        font-weight: 700;
+        font-size: 1.6em;
+        line-height: normal;
+        font-family: "Roboto", cursive;
+    }
+
+    section .title {
+        margin-bottom: 5px;
+        color: #19868a;
+        font-size: 33px;
+        line-height: normal;
+    }
+
+    section .info {
+        font-size: 0.65em;
+        /*text-transform: uppercase;*/
+    }
+
+    section .seats {
+        width: 100px;
+        margin-bottom: 15px;
+        color: #19868a;
+        font-family: "Roboto", serif;
+        font-size: 0.50em;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    section .seats:last-child {
+        margin-bottom: 0;
+    }
+
+    section .middle {
+        width: 50%;
+        padding: 20px;
+        float: left;
+    }
+    section .middle .title{
+        font-size:50px;
+    }
+
+    section .seats span {
+        display: block;
+        margin-bottom: 5px;
+        padding: 10px 0;
+        color: #fff;
+        background: #19868a;
+        font-size: 2.777em;
+    }
+
+    section .middle .commande {
+        font-size: 0.5em;
+        bottom: 0;
+    }
+    p{
+        font-family: "Roboto", cursive;
+    }
+
+    .code {
+        font-size: 0.3em;
+    }
+
+    p.small {
+        font-size: 0.45em;
+        padding: 0;
+        margin: 0;
+    }
+
+    .qrcode {
+        width: 100%;
+    }
+
+    .container {
+        page-break-after: always;
+    }
+</style>
+
+<body class="">
+{% for billet in reservation.billet %}
+    {% set options=
+        {
+            "code": reservation.randomCodeCommande ~'-'~ reservation.evenement.randomCodeEvent ~'-'~ billet.identifiant,
+            "type": "qrcode",
+            'format' : 'png',
+            'width' : 100,
+            'height' : 100,
+            'color' : [0, 0, 0]
+        } %}
+    <div class="container">
+        <section>
+            <div class="left">
+                <div class="seats"><span>{{ billet.sectionId }}</span>Section</div>
+                <div class="seats"><span>{{ billet.placeId }}</span>Place</div>
+            </div>
+            <div class="vl1"></div>
+            <div class="middle">
+                <div class="title">{{ event.titreEvenement }}</div>
+                <div class="event">Billet {{ billet.typeBillet.libelle }}</div>
+                <p class="small">{{ event.devise.code }} {{ billet.typeBillet.prix }}</p>
+                <div class="info">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,"cccc, d MMMM Y 'à' hh:mm") }}
+                    <br>{{ event.lieuEvenement.nomSalle }} </div>
+                <div class="commande">
+                    Commande n° {{ reservation.randomCodeCommande }} par
+                    {% if buyer_data is defined %}
+                        <b>{{ buyer_data["lastname"] }} {{ buyer_data["name"] }}</b>
+                    {% else %}
+                        <b>{{ reservation.userCheckout.nom }} {{ reservation.userCheckout.prenom }}</b>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="vl2"></div>
+
+            <div class="right">
+                <div class="qrcode" style="top:30px;">
+                    <p class="code" style="padding-bottom:0px;">{{ reservation.randomCodeCommande }}-{{ reservation.evenement.randomCodeEvent }}-{{ billet.getIdentifiant }}</p>
+                    <img width="147px" src="data:image/png;base64,{{ qr.generate( options) }}"/>
+                </div>
+                <div>
+                    <img src="https://ci4.googleusercontent.com/proxy/SW7wMwKZAx4dsy1hslg9EGu2vvoRdGDuw_zpeymYaRKppoo2PWgRHJDUdIMBsc5U-vgRAanq8x4htuwpWyJjoWtX1_O8lceu_qvDmDwGOffhJAgy2cyQ0JdQjOuAbGwVHvliJlYXrRvLUYNOY1P9Hq7ZMNMiMg8-oq5ceDskhoCH-BJ1NQ=s0-d-e1-ft#https://eormqy.stripocdn.email/content/guids/CABINET_d10a93a12a55a242e8eab4259f07c292/images/32811575356144086.png"
+                         width="147px"/></div>
+            </div>
+        </section>
+    </div>
+{% endfor %}
+</body>
+
+</html>

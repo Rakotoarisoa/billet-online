@@ -1,49 +1,94 @@
 <?php
 namespace AppBundle\Utils;
+use AppBundle\Entity\Evenement;
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * Class CartItem
  * Represents a item in car which in turn can be passed to the Cart class
  * @package AppBundle\Utils
+ * @Serializer\ExclusionPolicy("none")
  */
 class CartItem
 {
     /** @var int Unique id for this item */
     protected $id;
-
     /** @var string Name of the item */
     protected $name;
-
     /** @var int Number of items */
     protected $quantity = 0;
-
     /** @var float Price for one item */
     protected $price = 0;
-
     /** @var int Category of the item */
     protected $category;
     /** @var string category of item */
     protected $category_str;
-    /** @var id event */
-    protected $event;
+    /** @var string section*/
+    protected $section;
+    /** @var Evenement evenement
+     * @Serializer\Exclude
+     */
+    protected $evenement;
 
     /**
-     * @return id
+     * @return Evenement
      */
-    public function getEvent(): id
+    public function getEvenement(): Evenement
     {
-        return $this->event;
+        return $this->evenement;
     }
 
     /**
-     * @param id $event
+     * @param Evenement $evenement
      */
-    public function setEvent($event): void
+    public function setEvenement(Evenement $evenement): void
     {
-
-        $this->event = $event;
+        if($evenement == null)
+        {
+            throw new  \InvalidArgumentException('Le billet doit être associé à un évènement');
+        }
+        $this->evenement = $evenement;
     }
 
+    /**
+     * @return string
+     */
+    public function getSection(): string
+    {
+        return $this->section;
+    }
 
+    /**
+     * @param string $section
+     */
+    public function setSection(string $section): void
+    {
+        if (false === $this->validateString($section)) {
+            throw new \InvalidArgumentException('Au moins un caractère');
+        }
+        $this->section = $section;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeat(): string
+    {
+        return $this->seat;
+    }
+
+    /**
+     * @param string $seat
+     */
+    public function setSeat(string $seat): void
+    {
+        if (false === $this->validateString($seat)) {
+            throw new \InvalidArgumentException('Au moins doit contenir 1 caractère');
+        }
+        $this->seat = $seat;
+    }
+    /** @var string seat*/
+    protected $seat;
     /**
      * @param array $options
      */
@@ -98,7 +143,7 @@ class CartItem
         if (false === $this->validateInteger($id)) {
             throw new \InvalidArgumentException('Id must be an integer and not negative');
         }
-        $this->id = (string)trim($id);
+        $this->id = (int)trim($id);
     }
 
     /**

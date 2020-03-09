@@ -50,8 +50,10 @@
 
 # Embedded web-server pid file
 /.web-server-pid
-#ckeditor
+
 /web/build/ckeditor/
+#.idea
+.idea/workspace.xml
 #package-lock
 package-lock.json
 yarn.lock

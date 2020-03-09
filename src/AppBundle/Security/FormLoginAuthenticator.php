@@ -1,6 +1,8 @@
 <?php
 namespace AppBundle\Security;
 
+use AppBundle\Manager\LogManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -18,11 +20,13 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
 {
     private $router;
     private $encoder;
+    private $logManager;
 
-    public function __construct(RouterInterface $router, UserPasswordEncoderInterface $encoder)
+    public function __construct(RouterInterface $router, UserPasswordEncoderInterface $encoder, ContainerInterface $container)
     {
         $this->router = $router;
         $this->encoder = $encoder;
+        $this->logManager = $container->get('app.manager.log');
     }
 
     public function getCredentials(Request $request)
@@ -61,6 +65,7 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
         $url = $this->router->generate('welcome');
+        $this->logManager->logAction('log.user.login.title','log.user.login.message',$this->getUser());
 
         return new RedirectResponse($url);
     }

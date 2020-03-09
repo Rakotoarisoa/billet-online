@@ -3,9 +3,15 @@
 
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\BilletRepository")
- * @ORM\Table(name = "billet")
+ * @ORM\Table(name = "billet",uniqueConstraints={@ORM\UniqueConstraint(name="UNIQUE", columns={"identifiant", "id_billet"})})
+ * @UniqueEntity(fields={"identifiant","typeBillet"})
+ * @Serializer\ExclusionPolicy("none")
+ *
  */
 class Billet
 {
@@ -15,9 +21,13 @@ class Billet
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    public function __construct(){
+        $this->checked= false;
+        $this->identifiant=substr(str_shuffle("0123456789"), 0, 5);
+    }
 
     /**
-     * @ORM\Column(type="string", length=100,unique=true)
+     * @ORM\Column(type="string", length=5)
      */
     private $identifiant;
     /**
@@ -28,38 +38,118 @@ class Billet
     /**
      * @ORM\ManyToOne(targetEntity="Reservation",inversedBy="billet")
      * @ORM\JoinColumn(name="id_reservation", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $reservation;
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="string", length=10,nullable=true)
      */
     private $place_id;
+    /**
+     * @ORM\Column(type="string", length=10,nullable=true)
+     */
+    private $section_id;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isMapped;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $checked ;
+    /**
+     * @ORM\Column(type="datetime",nullable=true)
+     */
+    private $checkDate;
+
+    /**
+     * @return mixed
+     */
+    public function getCheckDate()
+    {
+        return $this->checkDate;
+    }
+
+    /**
+     * @param mixed $check_date
+     */
+    public function setCheckDate($check_date): void
+    {
+        $this->checkDate = $check_date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDevice()
+    {
+        return $this->device;
+    }
+
+    /**
+     * @param mixed $device
+     */
+    public function setDevice($device): void
+    {
+        $this->device = $device;
+    }
+    /**
+     * @ORM\Column(type="string",nullable=true)
+     */
+     private $device;
+
+    /**
+     * @return mixed
+     */
+    public function getChecked()
+    {
+        return $this->checked;
+    }
+
+    /**
+     * @param mixed $checked
+     */
+    public function setChecked($checked): void
+    {
+        $this->checked = $checked;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getIsMapped()
+    {
+        return $this->isMapped;
+    }
+
+    /**
+     * @param mixed $isMapped
+     */
+    public function setIsMapped($isMapped): void
+    {
+        $this->isMapped = $isMapped;
+    }
+    /**
+     * @return mixed
+     */
+    public function getSectionId()
+    {
+        return $this->section_id;
+    }
+
+    /**
+     * @param mixed $section_id
+     */
+    public function setSectionId($section_id): void
+    {
+        $this->section_id = $section_id;
+    }
     /**
      * @ORM\Column(type="boolean")
      *
      */
     private $estVendu;
-    /**
-     * @ORM\ManyToOne(targetEntity="Evenement",inversedBy="billets")
-     * @ORM\JoinColumn(name="id_evenement", referencedColumnName="id")
-     */
-    private $evenement;
-
-    /**
-     * @return mixed
-     */
-    public function getEvenement()
-    {
-        return $this->evenement;
-    }
-
-    /**
-     * @param mixed $evenement
-     */
-    public function setEvenement($evenement): void
-    {
-        $this->evenement = $evenement;
-    }
     /**
      * @return mixed
      */
@@ -91,10 +181,6 @@ class Billet
     {
         $this->place_id = $place_id;
     }
-    /**
-     * @ORM\Column(type="decimal",scale=2)
-     */
-    private $prix;
 
     /**
      * @return mixed
@@ -118,14 +204,6 @@ class Billet
     public function getIdentifiant()
     {
         return $this->identifiant;
-    }
-
-    /**
-     * @param mixed $identifiant
-     */
-    public function setIdentifiant($identifiant)
-    {
-        $this->identifiant = $identifiant;
     }
 
     /**
@@ -160,20 +238,5 @@ class Billet
         $this->reservation = $reservation;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPrix()
-    {
-        return $this->prix;
-    }
-
-    /**
-     * @param mixed $prix
-     */
-    public function setPrix($prix)
-    {
-        $this->prix = $prix;
-    }
 
 }

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}Evènements{% endblock %}</title>
+    {% block stylesheets %}
+        <!-- Stylesheet -->
+        <link rel="stylesheet" href="{{ asset('build/css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        <style type="text/css">
+            .has-search .form-control {
+                padding-left: 2.375rem;
+            }
+
+            .has-search .form-control-feedback {
+                position: absolute;
+                z-index: 2;
+                display: block;
+                width: 2.375rem;
+                height: 2.375rem;
+                line-height: 2.375rem;
+                text-align: center;
+                pointer-events: none;
+                color: #aaa;
+            }
+
+            #flip-flap {
+                display: none;
+            }
+        </style>
+    {% endblock %}
+    {% block head_javasripts %}
+        <!-- jQuery-2.2.4 js -->
+        <script src="{{ asset('js/jquery/jquery-2.2.4.min.js') }}"></script>
+        <!-- Popper js -->
+        <script src="{{ asset('js/bootstrap/popper.min.js') }}"></script>
+        <!-- Bootstrap js -->
+        <script src="{{ asset('js/bootstrap/bootstrap.min.js') }}"></script>       
+    {% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
+</head>
+
+<body>
+{% block header %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+        <a class="navbar-brand" href="#"> <img class="logo" src="{{ asset('/img/ivenco.png') }}" width="100"
+                                               height="17"></a> <span class="text-white"><b>Administration d'évènements</b></span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbar1">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="btn ml-2 btn-danger" href="{{ path('createEvent') }}"
+                       target="_blank"><span class="fa fa-plus"></span> Créer un évènement</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link  dropdown-toggle" href="#" data-toggle="dropdown"><span
+                                class="fa fa-user"></span> {{ app.user.username }}  </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item bg-light text-dark" href="{{ path('fos_user_profile_show') }}">Mon
+                                compte</a>
+                        </li>
+                        <li>
+                            <div class="dropdown-divider"></div>
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="{{ path('fos_user_security_logout') }}">
+                                {{ 'layout.logout'|trans({}, 'FOSUserBundle') }}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+{% endblock %}
+{% block body %}
+    {% block javascripts %}
+
+    {% endblock %}
+{% endblock body %}
+
+</body>
+</html>

@@ -4,10 +4,17 @@ namespace AppBundle\Entity;
 
 use AppBundle\Utils\Slugger;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\UniqueConstraint;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\EvenementRepository")
- * @ORM\Table(name="evenement")
+ * @ORM\Table(name="evenement",uniqueConstraints={@UniqueConstraint(name="unique_idx", columns={"random_code_event", "id_user"})})
+ * @Serializer\ExclusionPolicy("none")
+ * @Vich\Uploadable
  */
 class Evenement
 {
@@ -15,7 +22,8 @@ class Evenement
     public function __construct()
     {
         $slugger= new Slugger();
-            $this->setTitreEvenementSlug($slugger->slugify($this->getTitreEvenement()));
+        $this->titreEvenementSlug=$slugger->slugify($this->getTitreEvenement());
+        $this->randomCodeEvent=substr(str_shuffle("0123456789"), 0, 10);
     }
 
     /**
@@ -25,9 +33,22 @@ class Evenement
      */
     private $id;
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100, options={"fixed"=true})
      */
     private $titreEvenementSlug;
+    /**
+     * @ORM\Column(type="string", length=10)
+     */
+    private $randomCodeEvent;
+
+    /**
+     * @return mixed
+     */
+    public function getRandomCodeEvent()
+    {
+        return $this->randomCodeEvent;
+    }
+
 
     /**
      * @return mixed
@@ -63,12 +84,33 @@ class Evenement
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isPublished;
+    private $isPublished = true;
     /**
      * @ORM\Column(type="boolean")
      */
     private $isUsingSeatMap;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Devise", inversedBy="evenement")
+     * @ORM\JoinColumn(name="id_devise", referencedColumnName="id")
+     */
+    private $devise;
+
+    /**
+     * @return mixed
+     */
+    public function getDevise()
+    {
+        return $this->devise;
+    }
+
+    /**
+     * @param mixed $devise
+     */
+    public function setDevise($devise): void
+    {
+        $this->devise = $devise;
+    }
     /**
      * @return mixed
      */
@@ -105,6 +147,28 @@ class Evenement
      * @ORM\Column(type="string", length=255,nullable=true)
      */
     private $imageEvent;
+    /**
+     * @Vich\UploadableField(mapping="event_image", fileNameProperty="imageEvent")
+     *
+     * @var File
+     */
+    private $image;
+
+    /**
+     * @return File
+     */
+    public function getImage(): ?File
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param File $image
+     */
+    public function setImage(File $image): void
+    {
+        $this->image = $image;
+    }
 
     /**
      * @ORM\Column(type="text")
@@ -133,42 +197,68 @@ class Evenement
     /**
      * @ORM\ManyToOne(targetEntity="CategorieEvenement", inversedBy="evenement")
      * @ORM\JoinColumn(name="id_categorie_evt", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $categorieEvenement;
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="evenements")
      * @ORM\JoinColumn(name="id_user", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $user;
     /**
      * @ORM\ManyToOne(targetEntity="LieuEvenement", inversedBy="evenement")
      * @ORM\JoinColumn(name="id_lieu_evt", referencedColumnName="id")
+     * @Serializer\Exclude
      */
     private $lieuEvenement;
     /**
      * @ORM\OneToMany(targetEntity="Reservation", mappedBy="evenement")
+     * @Serializer\Exclude
      */
     private $reservation;
     /**
-     * @ORM\OneToMany(targetEntity="Billet", mappedBy="evenement")
+     * @ORM\OneToMany(targetEntity="TypeBillet", mappedBy="evenement",fetch="EXTRA_LAZY",orphanRemoval=true,cascade={"persist"})
+     * @Serializer\Exclude
      */
-    private $billets;
+    private $typeBillets;
 
     /**
-     * @return mixed
+     * @return ArrayCollection|TypeBillet[]
      */
-    public function getBillets()
+    public function getTypeBillets()
     {
-        return $this->billets;
+        return $this->typeBillets;
     }
 
     /**
-     * @param mixed $billets
+     * @param mixed $typeBillets
      */
-    public function setBillets($billets): void
+    public function setTypeBillets($typeBillets): void
     {
-        $this->billets = $billets;
+        $this->typeBillets = $typeBillets;
     }
+
+    public function removeTypeBillet(TypeBillet $typeBillet)
+    {
+        if (!$this->typeBillets->contains($typeBillet)) {
+            return;
+        }
+        $this->typeBillets->removeElement($typeBillet);
+        $typeBillet->setEvenement(null);
+    }
+    public function addTypebillet(TypeBillet $typeBillet){
+        if($this->typeBillets == null){
+            $this->typeBillets=new ArrayCollection();
+        }
+        if ($this->typeBillets->contains($typeBillet)) {
+            return;
+        }
+        $typeBillet->setEvenement($this);
+        $this->typeBillets[] = $typeBillet;
+    }
+
+
     /**
      * @ORM\Column(type="json", length=255,nullable=true)
      */
@@ -384,6 +474,13 @@ class Evenement
     public function getDescription()
     {
         return $this->description;
+    }
+
+
+    public function __toString()
+    {
+        // TODO: Implement __toString() method.
+        return $this->titreEvenement;
     }
 }
 

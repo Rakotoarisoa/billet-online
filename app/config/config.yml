@@ -2,6 +2,8 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: vich_uploader.yml }
+    - { resource: liip_imagine.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -12,7 +14,12 @@ parameters:
     paypal_username:
     paypal_password:
     paypal_signature:
-
+liip_imagine:
+    resolvers:
+        default:
+            web_path: ~
+    filter_sets:
+        cache: ~
 framework:
     translator: { fallbacks: ['%locale%'] }
     #paths:
@@ -20,6 +27,8 @@ framework:
         #fallbacks: ['%locale%']
     #esi: ~
     #translator: { fallbacks: ['%locale%'] }
+    serializer:
+        enabled: true
     secret: '%secret%'
     router:
         resource: '%kernel.project_dir%/app/config/routing.yml'
@@ -74,6 +83,7 @@ doctrine:
         dql:
             string_functions:
                 group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
+                date_format: DoctrineExtensions\Query\Mysql\DateFormat
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -82,6 +92,8 @@ swiftmailer:
     username: '%mailer_user%'
     password: '%mailer_password%'
     spool: { type: memory }
+    encryption: ssl
+    auth_mode : login
 fos_user:
     db_driver: orm # other valid values are 'mongodb' and 'couchdb'
     firewall_name: main
@@ -108,7 +120,7 @@ knp_paginator:
         filter_field_name: filterField  # filter field query parameter name
         filter_value_name: filterValue  # filter value query parameter name
     template:
-        pagination: '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig'     # sliding pagination controls template
+        pagination: 'pagination/pagination.html.twig'     # sliding pagination controls template
         sortable: '@KnpPaginator/Pagination/sortable_link.html.twig' # sort link template
         filtration: '@KnpPaginator/Pagination/filtration.html.twig'  # filters template
 nelmio_cors:
@@ -122,15 +134,22 @@ nelmio_cors:
         origin_regex: false
 fos_rest:
     body_listener: true
+    body_converter:
+        enabled: true
+    routing_loader:
+        include_format: false
     format_listener:
         rules:
             - { path: '^/api', priorities: ['json'], fallback_format: json, prefer_extension: false }
             - { path: '^/', priorities: [ 'html', '*/*'], fallback_format: ~, prefer_extension: true }
     param_fetcher_listener: true
     view:
-        view_response_listener: 'force'
+        view_response_listener: true
         formats:
             json: true
+        serialize_null: true
+    serializer:
+        serialize_null: true
 beelab_paypal:
     username: test
     password: test
@@ -174,3 +193,30 @@ fos_ck_editor:
     # ...
     base_path: "build/ckeditor"
     js_path:   "build/ckeditor/ckeditor.js"
+core23_dompdf:
+    defaults:
+        dpi: 150
+        defaultPaperSize: A5
+sonata_block:
+    blocks:
+        # enable the SonataAdminBundle block
+        sonata.admin.block.admin_list:
+            contexts: [admin]
+        sonata.admin.block.search_result:
+          contexts: [admin]
+sonata_admin:
+    title: 'Administration'
+    title_logo: 'img/ivenco_admin.png'
+    breadcrumbs:
+        # use this to change the default route used to generate the link
+        # to the parent object inside a breadcrumb, when in a child admin
+        child_admin_route: edit
+stof_doctrine_extensions:
+    default_locale: en_US
+    orm:
+        default:
+            sluggable: true
+            timestampable: true
+sensio_framework_extra:
+    view:
+        annotations: true

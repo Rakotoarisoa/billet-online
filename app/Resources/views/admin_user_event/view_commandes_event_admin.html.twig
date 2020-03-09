@@ -1,0 +1,255 @@
+{% extends 'adminuserevent.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet"/>
+{% endblock %}
+{% block title %}
+    {{ app.user.username }} | {{ event.titreEvenement }}
+{% endblock %}
+{% block body %}
+    <!-- header search -->
+    <div class="container-fluid">
+        <br />
+        <div class="row bg-white">
+            <div class="col">
+                <h1 class="text-info"><i class="fa fa-calendar" aria-hidden="true"></i> Liste des commandes de l'évènement <a  href="{{ path('viewEventUserAdmin') }}">{{ event.titreEvenement }}</a></h1>
+            </div>
+        </div>
+        <br />
+        <form method="GET" action="">
+            <div class="row">
+                <div class="col-2">
+                    <input type="text" name="order_id" value="{{ app.request.get('order_id') }}" class="form-control"
+                           placeholder="Numéro de commande">
+                </div>
+                <div class="col-2">
+                    <select name="order_name" class="form-control">
+                        <option value="">Nom de l'acheteur</option>
+                        {% for user in users_checkout %}
+                            <option value="{{ user.id }}">{{ user.nom  }} {{ user.prenom }}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+                <div class="col-2">
+                    <select name="date" class="form-control">
+                        <option value="">Date</option>
+                        <option value="past">Passée</option>
+                        <option value="today">Aujourd'hui</option>
+                    </select>
+                </div>
+                <div class="col-1">
+                    <button type="submit" class="btn btn-info">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <br/>
+        <div class="row">
+            <div class="col-sm-7">
+            <!--
+                <table class="table table-hover text-center table-bordered">
+                -->
+                <table class="table table-hover">
+                    <tr style="background-color:#ccc">
+                        <td width="15%"><b>Id commande</b></td>
+                        <td><b>Nom de l'acheteur</b></td>
+                        <td width="15%"><b>Montant</b></td>
+                        <td width="20%"><b>Date</b></td>
+                        <td><b>Statut</b></td>
+                        <td><b>Actions <span class="fa fa-cogs"></span></b></td>
+
+                    </tr>
+                    {% if orders|length > 0 %}
+                    {% for order in orders %}
+                        <tr>
+                            <td>
+                                <h4>
+                                    <span class="badge badge-pill badge-info text-bold"> #{{ order.randomCodeCommande }}</span>
+                                </h4>
+                            </td>
+                            <td>
+                                {{ order.userCheckout.nom }} {{ order.userCheckout.prenom }}
+                            </td>
+                            <td>
+                                {{ event.devise.code }} {{ order.montantTotal }}
+                            </td>
+                            <td>
+                                {{ order.dateReservation|localizeddate('none','none',null,null,"d/M/Y 'à' HH:MM") }}
+                            </td>
+                            <td>
+                                Vendu
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col"><a data-id="{{ order.id }}"
+                                                        data-ref="{{ order.randomCodeCommande }}"
+                                                        class="btn btn-danger text-light-blue order" style="color:white">Détails</a></div>
+                                </div>
+                            </td>
+
+                        </tr>
+                    {% endfor %}
+                    {% else %}
+                        <tr><td colspan="6"> Aucune donnée trouvée</td> </tr>
+                    {% endif %}
+                </table>
+                <div class="text-center">{{ knp_pagination_render(orders) }}</div>
+            </div>
+            <div class="col-sm-5">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="media d-flex">
+                                <div class="align-self-center">                                   
+                                    <i class="fa fa-bar-chart float-left" style="font-size:48px;color:red" aria-hidden="true"></i>
+                                </div>
+                                <div class="media-body text-right">
+                                         {% set total_billets,count_vendus=0,0 %}
+                                        {% for typeBillet in event.typeBillets %}
+                                            {% for billet in typeBillet.billets %}
+                                                    {% if  billet.estVendu %}
+                                                        {% set count_vendus=count_vendus+ 1 %}
+                                                    {% endif %}
+                                            {% endfor %}
+                                            {% set total_billets=total_billets+typeBillet.quantite %}
+                                        {% endfor %}
+                                    {% if count_vendus > 0 and total_billets > 0 %}
+                                        <h2 class="text-info"> {{ count_vendus }}/{{ total_billets }}</h2>
+                                        <span>Billets vendus</span>
+                                    {% elseif total_billets > 0 %}
+                                     <h2 class="text-info">
+                                       {{ count_vendus }}/{{ total_billets }}
+                                     </h2>
+                                     <span>Billets vendus</span>
+                                    {% else %}
+                                        <span>Aucun billets à vendre</span>
+                                    {% endif %}                                    
+                                </div>
+                                <div class="media-body text-right">                                        
+                                        <h2 class="text-info"> {{ event.reservation|length }}</h2>
+                                        <span>commande(s) créée(s)</span>                                
+                                </div>
+                                
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+                <br/>
+                <div class="card">
+                    <div class="card-header"><h4 class="order_right_panel"></h4></div>
+                    <div class="card-body">
+                        <div class="order_details">
+                            <div class="row card-text">
+                                <div class="col-4">Acheteur:</div>
+                                <div class="col user-data">
+                                </div>
+                                <div class="col">
+                                    <form class="form_print" method="post" novalidate>
+                                        <input name="_token" type="hidden" value="{{ csrf_token('order-print') }}">
+                                        <input name="_order_print" type="hidden" class="_order_print">
+                                        <button type="submit" class="btn btn-secondary">Obtenir une copie des billets</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row card-text">
+                                <div class="col-4">Mode de paiement:</div>
+                                <div class="col payment-mode">
+                                </div>
+                            </div>
+
+                            <br/>
+                            <table id="billets_list" class="table order_details text-center"
+                                   style="width:100%;">
+                                <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Identifiant</th>
+                                    <th>Type Billet</th>
+                                    <th>Prix</th>
+                                    <th>Place</th>
+                                    <th>Section</th>
+                                    <th>Vérifié à l'entrée</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block javascripts %}
+        {{ parent() }}
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('.order_right_panel').text('Détaillez une commande pour le voir ici');
+                $('.order_details').hide();
+                $('.order').on('click', function (e) {
+                    e.preventDefault();
+                    let order_id = $(this).data('id');
+                    let order_ref = $(this).data('ref');
+                    $.get('/api/order/' + order_id, function (data) {
+                        $('.order_details').show();
+                        $(".order_details .payment-mode").html('<b>' + data.mode_paiement + '</b>');
+                        $(".order_details .user-data").html('<b>' + data.user_checkout.nom + ' ' + data.user_checkout.prenom + '</b>');
+                        $(".order_details .form_print").attr('action','/user/admin-event/{{ event.id }}/order/print');
+                        $(".order_details .form_print ._order_print").attr('value',order_id);
+                    });
+                    $('#billets_list').DataTable({
+                        "paging": false,
+                        "searching": false,
+                        "processing": true,
+                        //"serverSide": true,
+                        "columns": [
+                            {"data": "id"},
+                            {"data": "identifiant"},
+                            {"data": "type_billet.libelle"},
+                            {"data": "type_billet.prix"},
+                            {"data": "place_id"},
+                            {"data": "section_id"},
+                            {"data": "checked"}
+                        ],
+                        "columnDefs": [
+                            {
+                                "render": function (data, type, row) {//
+                                    return '<h4><span class="badge badge-success">#' + data + '</span></h4>';
+                                },
+                                "targets": 1
+                            },
+                            {
+                                "render": function (data, type, row) {//
+                                    if (data) {
+                                        return '<h4><span class="badge badge-success">Oui</span></h4>';
+                                    }
+                                    return '<h4><span class="badge badge-warning">Non</span></h4>';
+                                },
+                                "targets": 6
+                            },
+                            {
+                                "render": function (data, type, row) {//
+                                    if (data) {
+                                        return '{{ event.devise.code }} ' + data;
+                                    }
+                                    return '<h4><span class="badge badge-warning">Non</span></h4>';
+                                },
+                                "targets": 3
+                            },
+                            {"visible": false, "targets": [0]}
+                        ],
+                        "destroy": true,
+                        "ajax": "/api/order/" + order_id + "/billets/list"
+                    });
+                    $('.order_right_panel').html('Détails de la commande n°' + '<span class="badge badge-info">#' + order_ref + '</span>');
+                });
+
+            });
+        </script>
+    {% endblock %}
+{% endblock %}
+

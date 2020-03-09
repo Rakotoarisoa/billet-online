@@ -237,7 +237,7 @@ img {
     cursor: pointer; }
     .classy-navbar-toggler .navbarToggler span {
       position: relative;
-      background-color: #858585;
+      /* Andry Edit */background-color: #FFF;
       border-radius: 3px;
       display: block;
       height: 3px;

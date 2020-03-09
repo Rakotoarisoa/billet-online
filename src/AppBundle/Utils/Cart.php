@@ -14,14 +14,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
  */
 class Cart implements \ArrayAccess
 {
-    /** book category id */
-    //CONST CATEGORY_CHILD_BOOK = 2;
-
-    /** child category max count to apply discount */
-    //CONST CHILD_BOOK_MAX_COUNT = 5;
-
-    /** ecach book category max count to apply discount */
-    //CONST EACH_CATEGORY_MAX_COUNT = 10;
 
     /** @var SessionInterface */
     protected $session;
@@ -60,7 +52,7 @@ class Cart implements \ArrayAccess
      */
     public function getItem($id)
     {
-        return $this->session->get($this->key.'/'.$id);
+        return $this->session->get($this->key . '/' . $id);
     }
 
     /**
@@ -74,6 +66,26 @@ class Cart implements \ArrayAccess
     }
 
     /**
+     * Check if item already exists
+     *
+     * @return boolean
+     */
+    public function alreadyExists($section, $seat, $cat)
+    {
+        if ($this->count() > 0) {
+            $items = $this->getItems();
+            for ($i = 0; $i < count($items); $i++) {
+                if (array_key_exists($i, $items)) {
+                    if ($items[$i]->getSection() == $section && $items[$i]->getSeat() == $seat && $items[$i]->getCategoryStr() == $cat) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Adds an Item to the cart
      *
      * @param \AppBundle\Utils\CartItem $newItem The Item to add
@@ -81,15 +93,14 @@ class Cart implements \ArrayAccess
     public function addItem($newItem)
     {
         $newItemId = $newItem->getId();
-        if ($this->session->has($this->key.'/'.$newItemId)) {
-            $oldItem = $this->session->get($this->key.'/'.$newItemId);
+        if ($this->session->has($this->key . '/' . $newItemId)) {
+            $oldItem = $this->session->get($this->key . '/' . $newItemId);
             $newQty = $oldItem->getQuantity() + $newItem->getQuantity();
             $newItem->setQuantity($newQty);
         }
         $this->setItem($newItem);
-
         $this->session->set('totalPrice', $this->getDiscountTotal());
-        $this->session->set('quantity',count($this->getItems()));
+        $this->session->set('quantity', count($this->getItems()));
     }
 
     /**
@@ -114,7 +125,7 @@ class Cart implements \ArrayAccess
         if ($item->isValid() === false) {
             throw new \InvalidArgumentException('The item is not valid');
         }
-        $this->session->set($this->key.'/'.$item->getId(), $item);
+        $this->session->set($this->key . '/' . $item->getId(), $item);
     }
 
     /**
@@ -179,6 +190,31 @@ class Cart implements \ArrayAccess
             $this->setItem($item);
         }
     }
+    private function custom_unset(&$array=array(), $key=0,$multiple=false,$type="") {
+        if(isset($array[$key]) && !$multiple){
+            // remove item at index
+            unset($array[$key]);
+            // 'reindex' array
+            $array = array_values($array);
+            for($i=0;$i<count($array); $i++){
+                if($array[$i] instanceof CartItem)
+                    $array[$i]->setId($i);
+            }
+            //alternatively
+            //$array = array_merge($array);
+        }
+        if($multiple and $type != ""){
+            $array=array_filter($array , function($item) use($type){
+                return $type !== $item->getCategoryStr();
+            });
+            $array=array_values($array);
+            for($i=0;$i<count($array); $i++){
+                if($array[$i] instanceof CartItem)
+                    $array[$i]->setId($i);
+            }
+        }
+        return $array;
+    }
 
     /**
      * Removes an Item from the cart
@@ -188,11 +224,31 @@ class Cart implements \ArrayAccess
      */
     public function removeItem($id)
     {
-        $item = $this->session->remove($this->key.'/'.$id);
-        $this->session->set('totalPrice', $this->getDiscountTotal());
-
-        return $item;
+        if($this->hasItem($id)){
+            $items=$this->getItems();
+            $return_array=$this->custom_unset($items,$id,false,"");
+            $this->session->set($this->key,$return_array);
+            $this->session->set('totalPrice', $this->getDiscountTotal());
+            $this->session->set('quantity', $this->count());
+        }
     }
+    /**
+     * Removes an Item from the cart
+     *
+     * @param int $id Id of the Item to remove
+     * @return mixed The removed Item or null if it does not exist
+     */
+    public function removeItems($type)
+    {
+        if($type != ""){
+            $items=$this->getItems();
+            $return_array=$this->custom_unset($items,0,true,$type);
+            $this->session->set($this->key,$return_array);
+            $this->session->set('totalPrice', $this->getDiscountTotal());
+            $this->session->set('quantity', $this->count());
+        }
+    }
+
 
     /**
      * @param int $id id of the Item to check
@@ -200,7 +256,7 @@ class Cart implements \ArrayAccess
      */
     public function hasItem($id)
     {
-        return $this->session->has($this->key.'/'.$id);
+        return $this->session->has($this->key . '/' . $id);
     }
 
     /**
@@ -210,7 +266,7 @@ class Cart implements \ArrayAccess
      */
     public function count()
     {
-        return (int) count($this->getItems());
+        return (int)count($this->getItems());
     }
 
     /**
@@ -304,7 +360,7 @@ class Cart implements \ArrayAccess
         }
 
         $result = $categories;
-        if (! is_null($category)) {
+        if (!is_null($category)) {
             if (isset($categories[$category])) {
                 $result = $categories[$category];
             } else {
@@ -331,7 +387,7 @@ class Cart implements \ArrayAccess
         }
 
         $result = $priceByCategory;
-        if (! is_null($category)) {
+        if (!is_null($category)) {
             if (isset($priceByCategory[$category])) {
                 $result = $priceByCategory[$category];
             } else {
@@ -370,7 +426,7 @@ class Cart implements \ArrayAccess
             $discountTotal = $this->getCoupon() === null ? $total : $total;// - ($total * (1/*$this->couponDiscount*/ / 100));
         }
 
-        return number_format((float) $discountTotal, 2, '.', '');
+        return number_format((float)$discountTotal, 2, '.', '');
     }
 
     /**

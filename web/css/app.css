@@ -1,12 +1,6 @@
 @import "~@fortawesome/fontawesome-free/css/all.min.css";
-.toolbar-vertical {
-    position: absolute;
-    margin-top:10px;
-    margin-left:10px;
-    box-shadow:0 1px 4px rgba(40, 44, 52, 0.1), 0 0 8px 0 rgba(40, 44, 52, 0.1);
-    border-radius: 0 0 6px 0;
-    z-index: 100;
-    float:left;
+.sidebar-right{
+    background-color: #4B4D63;
 }
 .canvas-container{
     border: 1px solid #CCCCCC;
@@ -52,4 +46,19 @@
     margin-top:0px;
     cursor:pointer;
     font-size:15px;
+}
+#cart_icon .p1[data-count]:after{
+    position:absolute;
+    right:10%;
+    top:8%;
+    content: attr(data-count);
+    font-size:40%;
+    padding:.2em;
+    border-radius:50%;
+    line-height:1em;
+    color: white;
+    background:rgba(255,0,0,.85);
+    text-align:center;
+    min-width: 1em;
+//font-weight:bold;
 }

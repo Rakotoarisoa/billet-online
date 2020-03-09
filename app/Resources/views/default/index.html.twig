@@ -1,81 +1,172 @@
 {% extends 'base.html.twig' %}
+{% block title %}Ivenco Réservation{% endblock %}
+{% block breadcrumb %}
+    <section class="breadcumb-area"> <!--style="background-image: url({# asset('img/cover.jpg') #})"-->
+        <div id="carousel-index" class="carousel slide" data-ride="carousel">
+            <!--Indicators-->
+            <ul class="carousel-indicators">
+                <li data-target="#carousel-index" data-slide-to="0" class="active"></li>
+                <li data-target="#carousel-index" data-slide-to="1"></li>
+                <li data-target="#carousel-index" data-slide-to="2"></li>
+            </ul>
 
-{% block body %}
-    <section class="" style="padding:20px;">
-        <div class="row">
-            <div class="col-12">
-                <!-- Contact Form Area -->
-                <div class="filter-form-area">
-                    <form action="/" method="post">
-                        <div class="row">
-                            <div class="col-md-6 col-lg-3">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="name" placeholder="Titre" name="titre" value="{{ dataSearch.parameters.titre|default('') }}">
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-lg-3">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="email" placeholder="Lieu" name="lieu" value="{{ dataSearch.lieu|default('') }}">
-                                </div>
-                            </div>
-                            <div class="col-lg-3">
-                                <div class="form-group">
-                                    <input type="text" class="form-control" id="date" placeholder="Date" name="date" value="{{ dataSearch.date|default('') }}">
-                                </div>
-                            </div>
-
-                            <div class="col-3 text-center">
-                                <button class="btn oneMusic-btn mt-0" type="submit">Recherche<i class="fa fa-search"></i></button>
-                            </div>
-                        </div>
-                    </form>
+            <!--The slideshow-->
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="{{ asset('img/cover.jpg') }}" alt="Mage 4" width="100%" height="100%">
+                </div>
+                <div class="carousel-item">
+                    <img src="{{ asset('img/zay_01.jpg') }}" alt="Mage 4" width="100%" height="100%">
+                </div>
+                <div class="carousel-item">
+                    <img src="{{ asset('img/events/reveillon.jpg') }}" alt="Rev" width="100%" height="100%">
                 </div>
             </div>
+
+
+            <a class="carousel-control-prev" href="#carousel-index" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#carousel-index" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>
         </div>
+        {% block breadcrumb_content %}
+        {% endblock %}
     </section>
+{% endblock %}
+{% block body %}
     <!-- ##### Events Area Start ##### -->
     {% block content %}
-    <section class="events-area section-padding-100">
-        <div class="container">
-            {% if (nbEvents > 0)  %}
-            <p>{{ 'filter_events.countResults'|transchoice(nbEvents) }}</p>
-
-            <div class="row">
-                {% for item in events %}
-                <!-- Single Event Area -->
-                <div class="col-12 col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="100ms">
-                    <div class="single-event-area mb-30">
-                        <div class="event-thumbnail">
-                            <img width="350px" height="436.33px" src="{{  asset(item.imageEvent)}}" alt="{{  item.imageEvent }}">
-                        </div>
-                        <div class="event-text">
-                            <h4>{{ item.titreEvenement }}</h4>
-                            <div class="event-meta-data">
-                                <a href="#" class="event-place">{{   item.nomSalle }}</a>
-                                <a href="#" class="event-date">{{ item.dateDebutEvent|date("m/d/Y") }}</a>
+        {{ parent() }}
+        <section class="events-area section-padding-0-100">
+            <div class="container-fluid top-filters  browse-by-catagories row p-2 bg bg-white" style="z-index: 999 !important;">
+                <div class="col-sm-11">
+                    <ul class="nav nav-list">
+                        <li class="nav-item ">
+                            <a class="nav-link {{ app.request.get('cat')?'':'active' }}" href="/">Toutes les catégories</a>
+                        </li>
+                        {% for cat in catList %}
+                            <li class="nav-item">
+                                <a class="nav-link {{ (app.request.get('cat')== cat.libelle)?'active':'' }}" href="#" data-label="{{ cat.libelle }}">{{ cat.libelle }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-sm-1">
+                    <div class="btn-group dropleft">
+                        <button type="button" class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                            Filtrer
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="card-body">
+                                <!-- Dropdown menu links -->
+                                <form action="/" method="post" class="filter_form">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="name" placeholder="Titre"
+                                                       name="titre"
+                                                       value="{{ app.request.get('titre') }}">
+                                            </div>
+                                        </li>
+                                        <li class="nav-item">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="email" placeholder="Lieu"
+                                                       name="lieu"
+                                                       value="{{ app.request.get('lieu') }}">
+                                            </div>
+                                        </li>
+                                        <li class="nav-item">
+                                            <div class="form-group">
+                                                <input type="date" class="form-control" id="date" placeholder="Date"
+                                                       name="date"
+                                                       value="{{  "now"|date('Y-M-D') }}">
+                                            </div>
+                                        </li>
+                                        <input name="cat" class="cat_field" type="hidden" value="{{ app.request.get('cat') }}">
+                                        <li class="nav-item">
+                                            <button class="btn oneMusic-btn mt-0" type="submit">Recherche<i
+                                                        class="fa fa-search"></i></button>
+                                        </li>
+                                    </ul>
+                                </form>
                             </div>
-                            <a href="{{ path('viewSingle',{'slugEvent':item.titreEvenementSlug,'date':item.dateDebutEvent|date("Y-m-d")}) }}" class="btn see-more-btn">Détails</a>
+
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-            </div>
-            {% else %}
-                <p>{{ 'filter_events.noEvents'|trans }}</p>
-            {% endif %}
+                    <div class="filter-form-area">
 
-            <!--<div class="row">
-                <div class="col-12">
-                    <div class="load-more-btn text-center mt-70">
-                        <a href="#" class="btn oneMusic-btn">Charger ... <i class="fa fa-angle-double-right"></i></a>
                     </div>
                 </div>
-            </div>-->
-        </div>
-    </section>
+            </div>
+            <div class="container">
+                {% if (nbEvents > 0) %}
+                    <p>{{ 'filter_events.countResults'|transchoice(nbEvents) }}{% if app.request.get('titre') != null %} pour la recherche <b>{{ app.request.get('titre') }}</b>{% endif %}</p>
+                    <div class="row">
+                        {% for item in events %}
+                            <!-- Single Event Area -->
+                            <div class="col-12 col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="100ms">
+                                <div class="single-event-area mb-30">
+                                    <div class="date-single-event">
+                                        <p class="day_">{{  item.dateDebutEvent|localizeddate('none', 'none', null, null,"d")}}</p>
+                                        <p class="month_">{{item.dateDebutEvent|localizeddate('none', 'none', null, null,"MMM")}}</p>
+                                        <p class="year_">{{item.dateDebutEvent|localizeddate('none', 'none', null, null,"Y")}}</p>
+                                    </div>
+                                    <div class="event-thumbnail">
+                                        <img width="350px" height="436.33px" src="{{ item.imageEvent?vich_uploader_asset(item,'image','AppBundle\\Entity\\Evenement')|imagine_filter('list_event_view'):"https://via.placeholder.com/400x300?text=IMAGE+NON+DISPONIBLE" }}"
+                                             alt="{{ item.imageEvent }}">
+                                    </div>
+                                    <div class="event-text">
+                                        <h4>{{ item.titreEvenement }}</h4>
+                                        <div class="event-meta-data">
+                                            <a href="#" class="event-place"><b>{{ item.nomSalle }}</b></a>
+                                            <a href="#" class="event-date">à {{ item.dateDebutEvent|localizeddate('none', 'none', null, null,"HH:mm") }}</a>
+                                        </div>
+                                        <a href="{{ path('viewSingle',{'id':item.id}) }}" class="btn see-more-btn">Détails</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="oneMusic-pagination-area wow fadeInUp" data-wow-delay="300ms"
+                         style="visibility: visible; animation-delay: 300ms; animation-name: fadeInUp;">
+                        <div class="text-center">{{ knp_pagination_render(events) }}</div>
+                    </div>
+                {% else %}
+                    <p>{{ 'filter_events.noEvents'|trans }}</p>
+                {% endif %}
+
+                <!--<div class="row">
+                    <div class="col-12">
+                        <div class="load-more-btn text-center mt-70">
+                            <a href="#" class="btn oneMusic-btn">Charger ... <i class="fa fa-angle-double-right"></i></a>
+                        </div>
+                    </div>
+                </div>-->
+            </div>
+        </section>
     {% endblock %}
     <!-- ##### Events Area End ##### -->
     {% block javascripts %}
-        {{  parent()}} {% endblock %}
+        {{ parent() }}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('.nav-link').click(function() {
+                    console.log($(this).attr('data-label'));
+                    $(".filter_form")[0].reset();
+                    $(".filter_form input").attr('value','');
+                    $(".cat_field").attr('value',$(this).attr('data-label'));
+                    console.log($('.filter_form'));
+                    $(".filter_form").submit();
+                });
+                $('.filter_form button').click(function(){
+                    $(".cat_field").attr("value",null);
+                });
+            });
+        </script>
+    {% endblock %}
+    {% block contact %}{% endblock %}
 {% endblock %}
 

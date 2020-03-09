@@ -1,0 +1,235 @@
+{% extends 'adminuserevent.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block title %}
+    {{ app.user.username }} | Liste des évènements
+{% endblock %}
+{% block body %}
+    <!-- header search -->
+    <div class="container-fluid">
+    <br />
+        <div class="row">
+            <div class="col">                
+                <h1 class="text-info"><i class="fa fa-calendar" aria-hidden="true"></i> Mes évènements</h1>
+            </div>
+        </div>
+        <br />
+        <form method="GET" action="{{ path('viewEventUserAdmin',{'userId':app.user.id }) }}">
+            <div class="row">
+                <div class="col">
+                    <input type="text" name="event_name" value="{{ app.request.get('event_name') }}"
+                           class="form-control"
+                           placeholder="Rechercher des évènements">
+                </div>
+                <div class="col">
+                    <input type="text" name="event_state" value="{{ app.request.get('event_state') }}"
+                           class="form-control"
+                           placeholder="Etat de l'événement">
+                </div>
+                <div class="col">
+                    <input type="text" name="event_creator" value="{{ app.request.get('event_creator') }}"
+                           class="form-control"
+                           placeholder="Organisateur">
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-info">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <br/>
+        <div class="row">
+            <div class="col-sm-8">
+                <table class="table table-striped">
+                    <tr style="background-color:#ccc">
+                        <td><b>Titre</b></td>
+                        <td></td>
+                        <td></td>
+                        <td><b>Vendus</b></td>
+                        <td><b>Commandes</b></td>
+                        <td><b>Billets à l'entrée</b></td>
+                        <td></td>
+                    </tr>
+                    {% for event in events %}
+                        <tr>
+                            <td>
+                                <p class="day_">{{ event.dateDebutEvent|date("d") }}</p>
+                                <p class="month_">{{ event.dateDebutEvent.date|date('M') }}
+                                    -{{ event.dateDebutEvent.date|date('Y') }} </p>
+                            </td>
+                            <td>
+                                {% if event.imageEvent %}
+                                    <img src="{{ vich_uploader_asset(event, 'image','\\AppBundle\\Entity\\Evenement')|imagine_filter('user_list_event_view') }}"
+                                         style="width:100px;"/>
+                                {% else %}
+                                    <img src="https://via.placeholder.com/100"/>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col">
+                                        <a href="{{ path('viewEventUpdate',{'id':event.id}) }}"><b>{{ event.titreEvenement }}</b></a>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {{ event.lieuEvenement.nomSalle }} <br/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        {{ event.organisation }}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{% set total_billets,count_vendus=0,0 %}
+                                {% for typeBillet in event.typeBillets %}
+                                    {% for billet in typeBillet.billets %}
+                                        {% if  billet.estVendu %}
+                                            {% set count_vendus=count_vendus+ 1 %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% set total_billets=total_billets+typeBillet.quantite %}
+                                {% endfor %}
+                                {% if count_vendus > 0 and total_billets > 0 %}
+                                    {{ count_vendus }}/{{ total_billets }}
+                                {% elseif total_billets > 0 %}
+                                    {{ count_vendus }}/{{ total_billets }}
+                                {% else %}
+                                    Aucun billets à vendre
+                                {% endif %}
+                            </td>
+
+
+                            <td>{% if event.reservation|length %}
+                                    <a class="link_table_admin_user text-success"
+                                       href="{{ path('viewOrdersList',{ 'userId':app.user.id,'eventId': event.id }) }}"
+                                       target="_blank">
+                                        {{ event.reservation|length }} commandes
+                                    </a>
+                                {% else %}
+                                    Aucune commande
+                                {% endif %}
+                            </td>
+                            <td>{% set count_checked=0 %}
+                                {% for typeBillet in event.typeBillets %}
+                                    {% for billet in typeBillet.billets %}
+                                        {% if  billet.checked %}
+                                            {% set count_checked=count_checked+1 %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                {% if count_checked > 0 %}
+                                    <span class="fa fa-qrcode"></span> <span
+                                        class="badge badge-info"> {{ count_checked }}</span> billet(s) vérifiés
+                                {% else %}
+                                    <span class="badge badge-warning">Aucun billet vérifié.</span>
+                                {% endif %}
+
+
+                            </td>
+                            <td>                                
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton-{{ event.id }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-bars" id="flip"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton-{{ event.id }}">   
+                                            <a href="{{ path('viewSingle',{'id':event.id}) }}" class="dropdown-item" target="_blank">
+                                                <i class="fa fa-align-justify" aria-hidden="true"></i> Afficher
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}" class="dropdown-item" target="_blank">
+                                            <i class="fa fa-pencil" aria-hidden="true"></i> Modifier
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a href="{{ path('viewEventMapAdmin',{'id':event.id}) }}" class="dropdown-item" target="_blank">
+                                            <i class="fa fa-address-book" aria-hidden="true"></i> Plan de salle                                            
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            {% if event.reservation|length %}
+                                                <a class="dropdown-item"
+                                                href="{{ path('viewOrdersList',{ 'userId':app.user.id,'eventId': event.id }) }}"
+                                                target="_blank">
+                                                {{ event.reservation|length }} commandes
+                                                </a>
+                                            {% else %}
+                                                <a class="dropdown-item">
+                                                    <i class="fa fa-align-right" aria-hidden="true"></i>  Aucune commande
+                                                </a>
+                                            {% endif %}
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="{{ path('viewTicketEventUserAdmin',{'userId':app.user.id,'eventId':event.id}) }}">
+                                                    <i class="fa fa-ticket" aria-hidden="true"></i>  Billets                                                   
+                                            </a>
+                                            
+                                    </div>
+                                </div>                      
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div class="text-center">{{ knp_pagination_render(events) }}</div>
+            </div>
+            <div class="col-sm-4">
+                <!-- code HH -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card border-info mx-sm-1 p-3">
+                            <div class="card border-info shadow text-info p-3 my-card text-center" >
+                            <i class="fa fa-bar-chart float-left" style="font-size:48px;color:red" aria-hidden="true"></i></div>
+                            <div class="text-info text-center mt-3"><h6><span>Evénements créés</span></h6></div>
+                            <div class="text-info text-center mt-2"><h1 class="text-info">{{ nbEvents }}</h1></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-success mx-sm-1 p-3">
+                            <div class="card border-success shadow text-success p-3 my-card text-center">
+                            <i class="fa fa-pie-chart float-left" style="font-size:48px;color:red" aria-hidden="true"></i></div>
+                            <div class="text-success text-center mt-3"><h6><span>Evénements publiés</span></h6></div>
+                            <div class="text-success text-center mt-2"><h1 class="text-info">{{ nbEventsPublic }}</h1></div>
+                        </div>
+                    </div>
+                     <div class="col-md-4">
+                        <div class="card border-danger mx-sm-1 p-3">
+                            <div class="card border-danger shadow text-danger p-3 my-card text-center">
+                            <i class="fa fa-line-chart float-left" style="font-size:48px;color:red" aria-hidden="true"></i></div>
+                            <div class="text-danger text-center mt-3"><h6>Evénements avec carte</h6></div>
+                            <div class="text-danger text-center mt-2"><h1 class="text-info">{{ nbEventsUsingSeatMap }}</h1></div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="card-header"><h3><span class="fa fa-ticket"> </span> Résumé des ventes</h3></div>
+                                <div class="card-body">
+                                    <div class="media d-flex">
+                                        <div class="media-body text-right">                                    
+                                            <h1 class="text-info">{{  nbCheckout }}</h1>
+                                            <span>Nombre de commandes</span>
+                                        </div>
+                                        <div class="media-body text-right">                                    
+                                            <h1 class="text-info">{{  nbTickets }}</h1>
+                                            <span>Billets vendus</span>
+                                        </div>
+                                        <div class="media-body text-right">                                    
+                                            <h1 class="text-info">{{ nbChecked }}</h1>
+                                            <span>Billets checkés</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end code HH -->
+                
+        </div>
+    </div>
+{% endblock %}
+

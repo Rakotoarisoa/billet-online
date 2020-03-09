@@ -3,7 +3,7 @@
 
 namespace AppBundle\Controller\Api;
 use AppBundle\Entity\Evenement;
-use AppBundle\Entity\TypeBillet;
+use AppBundle\Entity\Billet;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -31,19 +31,91 @@ class TypeBilletController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Get("/api/typeBillet/{id}")
+     * @Rest\Get("/api/typeBilletLeft/{id}")
      * Get Event by Id
-     * @param $id
+     * @param $id de l'évènement
      * @return View|object|null
      */
-    public function getTicketTypeById($id)
+    public function getTicketTypeByEvent($id)
     {
-        $restResult = $this->getDoctrine()->getRepository(TypeBillet::class)->find($id);
+        //$id : id de l'évènement
+        $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        //$restResult = $this->getDoctrine()->getRepository(TypeBillet::class)->findBy(["evenement"=>$evenement,"active" => true]);
+        //$restResult = $this->getDoctrine()->getRepository(Billet::class)->getListTicketsByType($evenement);
+        $restResult = $this->getDoctrine()->getRepository(Billet::class)->getLeftTicketsByType($evenement);
         if ($restResult === null) {
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
-        return $restResult;
+        return View::create($restResult,Response::HTTP_OK);
     }
+    /**
+     * @Rest\Get("/api/typeBillet/{id}")
+     * Get Event by Id
+     * @param $id de l'évènement
+     * @return View|object|null
+     */
+    public function getTicketListTypeByEvent($id)
+    {
+        //$id : id de l'évènement
+        $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        //$restResult = $this->getDoctrine()->getRepository(TypeBillet::class)->findBy(["evenement"=>$evenement,"active" => true]);
+        //$restResult = $this->getDoctrine()->getRepository(Billet::class)->getListTicketsByType($evenement);
+        $restResult = $this->getDoctrine()->getRepository(Billet::class)->getListTicketsByType($evenement);
+        if ($restResult === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
+        return View::create($restResult,Response::HTTP_OK);
+    }
+    /**
+     * @Rest\Get("/api/typeBillet/seat-map/for-edit/{id}")
+     * Get Event by Id
+     * @param $id de l'évènement
+     * @return View|object|null
+     */
+    public function getTicketListSeatMapTypeByEvent($id)
+    {
+        //$id : id de l'évènement
+        $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        $restResult = $this->getDoctrine()->getRepository(Billet::class)->getSeatMapListTicketsByType($evenement);
+        if ($restResult === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
+        return View::create($restResult,Response::HTTP_OK);
+    }
+    /**
+     * @Rest\Get("/api/typeBillet/admission-only/{id}")
+     * Get Event by Id
+     * @param $id de l'évènement
+     * @return View|object|null
+     */
+    public function getTicketListForAdmissionTypeByEvent($id)
+    {
+        //$id : id de l'évènement
+        $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        $restResult = $this->getDoctrine()->getRepository(Billet::class)->getAdmissionOnlyListTicketsByType($evenement);
+        if ($restResult === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
+        return View::create($restResult,Response::HTTP_OK);
+    }
+    /**
+     * @Rest\Get("/api/typeBillet/front_end/admission-only/{id}")
+     * Get Event by Id
+     * @param $id de l'évènement
+     * @return View|object|null
+     */
+    public function getTicketListForAdmissionFrontEndTypeByEvent($id)
+    {
+        //$id : id de l'évènement
+        //compter les billetsvendus
+        $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
+        $restResult = $this->getDoctrine()->getRepository(Billet::class)->getLeftTicketsAdmissionOnlyFrontEndByType($evenement);
+        if ($restResult === null) {
+            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        }
+        return View::create($restResult,Response::HTTP_OK);
+    }
+
     /**
      * @Rest\Get("/api/event/update/{id}")
      * @param $id

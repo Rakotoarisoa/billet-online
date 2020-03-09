@@ -1,5 +1,31 @@
 {% extends "FOSUserBundle::layout.html.twig" %}
-
+{% block breadcrumb %}
+    <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/cover.jpg') }})">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+                <h2>Inscription</h2>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
 {% block fos_user_content %}
 {% include "@FOSUser/Registration/register_content.html.twig" %}
 {% endblock fos_user_content %}
+{% block contact %}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('build/kartik-v/css/fileinput.min.css') }}"/>
+    <script src="{{ asset('build/kartik-v/js/plugins/piexif.min.js')  }}" type="text/javascript"></script>
+    <script src="{{ asset('build/kartik-v/js/fileinput.min.js')  }}" type="text/javascript"></script>
+    <script src="{{ asset('build/kartik-v/js/locales/fr.js')  }}" type="text/javascript"></script>
+    <script type="text/javascript">
+        $("#fos_user_registration_form_image").fileinput({
+            showUpload: true,
+            language: 'fr',
+            theme :'fa',
+            showUploadButton: true
+
+        });
+    </script>
+{% endblock %}

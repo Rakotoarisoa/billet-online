@@ -6,3 +6,16 @@ fos_user:
 fos_user_registration_register:
     path: /inscription
     controller: AppBundle\Controller\RegistrationController::registerAction
+fos_user_resetting_request:
+    controller: fos_user.resetting.controller:requestAction
+    path: /mot-de-passe-oublie/demande
+_liip_imagine:
+    resource: "@LiipImagineBundle/Resources/config/routing.yaml"
+admin_area:
+    resource: '@SonataAdminBundle/Resources/config/routing/sonata_admin.xml'
+    prefix: /admin
+
+_sonata_admin:
+    resource: .
+    type: sonata_admin
+    prefix: /admin

@@ -16,19 +16,22 @@
                                         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                                     </div>
                                 {% endif %}
-
                                     {% if app.request.hasPreviousSession %}
                                         {% for type, messages in app.session.flashbag.all() %}
                                             {% for message in messages %}
-                                                <p class="alert alert-danger">
+
                                                 <div class="flash-{{ type }}">
-                                                    {{ message }}
+                                                    <p class="alert alert-danger"> {{ message }}</p>
                                                 </div>
-                                                </p>
+
                                             {% endfor %}
                                         {% endfor %}
                                     {% endif %}
-
+                                    {% if app.session.get('sf_redirect')['route'] is defined  %}
+                                        <div class="flash-error">
+                                            <p class="alert alert-danger"> Veuiller vous connecter pour pouvoir accéder à cette page</p>
+                                        </div>
+                                    {% endif %}
                                 <div class="form-group">
                                     <label for="username">{{ 'security.login.username'|trans }}</label>
                                     <input name="_username" type="text" class="form-control" id="username"
@@ -38,6 +41,7 @@
                                 <div class="form-group">
                                     <label for="password">{{ 'security.login.password'|trans }}</label>
                                     <input name="_password" type="password" class="form-control" id="password">
+                                    <small class="text-muted"><a href="{{  path('fos_user_resetting_request')  }}"> Mot de passe oublié? </a></small>
                                 </div>
                                 <div class="checkbox">
                                     <input type="checkbox" id="remember_me" name="_remember_me" value="on"/>
@@ -46,7 +50,9 @@
                                 <button id="_submit" name="_submit" type="submit"
                                         class="btn oneMusic-btn mt-30">{{ 'security.login.submit'|trans }}</button>
                             </form>
-                            <p class="text-muted">Pas encore inscrit? <a href="{{  path('fos_user_registration_register')  }}">Inscrivez-vous</a></p>
+                            <div class="row">
+                                <div class="col"><p class="text-muted"><a href="{{  path('fos_user_registration_register')  }}">Pas encore inscrit?</a></p></div>
+                            </div>
                         </div>
                     </div>
                 </div>

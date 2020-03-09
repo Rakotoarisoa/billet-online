@@ -25,14 +25,6 @@
             <div class="container">
                 <p style="font-size: 20px;" class="pull-right">
                     {% if ticketState is not empty %}
-                        {% if ticketState['vendus'] is defined %}
-                            <span
-                                    class="badge badge-danger">{{ ticketState['vendus'] }}</span> billets
-                            vendus
-                        {% endif %}
-                        {% if ticketState['vendus'] is defined and  ticketState['restants'] is defined %}
-                            ,
-                        {% endif %}
                         {% if ticketState['restants'] is defined %}
                             <span class="badge badge-success">{{ ticketState['restants'] }}</span> billets restants
                         {% endif %}
@@ -41,12 +33,12 @@
                 <div id="ticketList">Loading...</div>
                 {% if event.isUsingSeatMap %}
                     <p>
-                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span
+                        <a href="{{ url('viewBuyMap',{'idEvent':event.id}) }}"><span
                                     class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_seat_map'|trans }}</a>
                     </p>
                 {% else %}
                     <p>
-                        <a href="{{ url('viewBuyMap',{'slugEvent':event.titreEvenementSlug,'date':event.dateDebutEvent|date("Y-m-d"),'idEvent':event.id}) }}"><span
+                        <a href="{{ url('viewBuyMap',{'idEvent':event.id}) }}"><span
                                     class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
                     </p>
                 {% endif %}
@@ -72,7 +64,7 @@
                                                 </select>
                                                 <input type="hidden" value="" name="type_billet">
                                                 <input type="hidden" value="{{ event.id }}" name="event_id">
-                                                <input type="hidden" value="{{ path('viewTicketList',{'date': event.dateDebutEvent|date("Y-m-d"),'slugEvent': event.titreEvenementSlug}) }}" name="redirect">
+                                                <input type="hidden" value="{{ path('viewTicketList',{'id': event.id}) }}" name="redirect">
                                                 {{ 'events.tickets'|trans }}
                                             </label>
 
@@ -115,7 +107,7 @@
                 var nbr_billets = $(e.relatedTarget).data('nbr'), type_billet = $(e.relatedTarget).data('type');
                 $("#select_nb_billets").empty();
                 //populate the select option
-                for (var i = 1; i <= nbr_billets; i++) {
+                for (var i = 1; i <= 10/*nbr_billets*/; i++) {
                     $("#select_nb_billets").append('<option value="' + i + '">' + i + '</option>');
                 }
                 $("input[name|='type_billet']").val(type_billet);

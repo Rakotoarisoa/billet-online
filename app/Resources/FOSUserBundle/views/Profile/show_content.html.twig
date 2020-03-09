@@ -1,27 +1,237 @@
 {% trans_default_domain 'FOSUserBundle' %}
 {% block body %}
-<section class="section-padding-100">
-    <div class="container">
-        <div class="fos_user_user_show">
-            <div class="col-sm-9 col-lg-9">
-                <!-- page content -->
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ label }}" role="alert">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endfor %}
+    <section class=" section-padding-100">
+        <div class="container  bootstrap snippet">
+            <div class="row">
+                    <div class="col-sm-4 text-center">
+                        <h1 class="text-info"><i class="fas fa-user"></i> MON COMPTE</h1>
+                    </div>
+                    <div class="col-sm-8 text-right">
+                         {% if is_granted('ROLE_USER_MEMBER') %}
+                            <a href="{{ path('createEvent') }}" class="btn btn-danger"><i class="fas fa-edit"></i> Créer un évenement</a>                    
+                            <a href="{{ path('viewEventUserAdmin') }}" class="btn btn-dark"><i class="fas fa-list-ul"></i> Gérer les évenements</a>
+                        {% endif %}
+                    </div>
             </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">{{ 'profile.show.username'|trans }}: <p class="badge badge-success">{{ user.username }}</p></li>
-                <li class="list-group-item">{{ 'profile.show.email'|trans }}: {{ user.email }}</li>
-                <a href="{{ path('fos_user_profile_edit') }}" class="btn btn-outline-dark">Modifier mes informations</a>
-            </ul>
-        </div>
-    </div>
-</section>
+            <br/>
+            <div class="row">
+                <div class="col-sm-4 text-center"><!--left col-->
+                        <div class="card">
+                            <a href="/" class="pull-right"><img width="100%" title="profile image" class="rounded-circle"
+                                                                src="..//img/users/{{ app.user.image }}"></a>
+                            <div class="card-footer">
+                                <h4>{{ app.user.username }}</h4>
+                            </div>
+                        </div>
+                    <br/>
+                    <ul class="list-group">
+                        <li class="list-group-item bg bg-gray">Informations utilisateur <i
+                                    class="fa fa-info-circle fa-1x"></i></li>
+                        <li class="list-group-item text-right"><span
+                                    class="pull-left"><strong>Nom</strong></span> {{ app.user.nom }}</li>
+                        <li class="list-group-item text-right"><span
+                                    class="pull-left"><strong>Prénom</strong></span> {{ app.user.prenom }}</li>
+                        <li class="list-group-item text-right"><span
+                                    class="pull-left"><strong>Adresse e-mail</strong></span> {{ app.user.email }}</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Date d'adhésion</strong></span> {{ app.user.dateEnregistrement|date('d-m-Y') }}
+                        </li>
+                    </ul>
+                    <br/>
+                    <div class="card">
+                        <div class="card-header">Site web</div>
+                        <div class="card-body"><a href="{{ app.user.website }}">{{ app.user.website }}</a></div>
+                    </div>
+                    <br/>
+
+                    <ul class="list-group">
+                        <li class="list-group-item text-muted">Activités <i class="fa fa-dashboard fa-1x"></i></li>
+                        <li class="list-group-item text-right"><span
+                                    class="pull-left"><strong>Evènements</strong></span> {{ app.user.nom }}</li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong> Billets</strong></span>
+                            13
+                        </li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Posts</strong></span> 37
+                        </li>
+                        <li class="list-group-item text-right"><span class="pull-left"><strong>Followers</strong></span>
+                            78
+                        </li>
+                    </ul>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Social Media</div>
+                        <div class="panel-body">
+                            <i class="fa fa-facebook fa-2x"></i>
+                            <i class="fa fa-github fa-2x"></i>
+                            <i class="fa fa-twitter fa-2x"></i>
+                            <i class="fa fa-pinterest fa-2x"></i>
+                            <i class="fa fa-google-plus fa-2x"></i>
+                        </div>
+                    </div>
+
+                </div><!--/col-3-->
+                <div class="col-sm-8">
+
+                    <ul class="nav nav-pills nav-justified" id="myTab">
+                        <li class="nav-item active bg-gray"><a href="#home" data-toggle="tab">Journal d'activités</a>
+                        </li>
+                        <li class="nav-item bg-gray"><a href="#messages" data-toggle="tab">Messages</a></li>
+                        <li class="nav-item bg-gray"><a href="#settings" data-toggle="tab">Paramètres</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="home">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Type</th>
+                                        <th>Information</th>
+                                        <th>Date</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody id="items">
+                                    {% for log in app.user.logs %}
+                                    <tr>
+                                        <td>1</td>
+                                        <td>{{ log.type }}</td>
+                                        <td>{{ log.message }}</td>
+                                        <td>{{ log.createdAt|localizeddate() }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-4 col-md-offset-4 text-center">
+                                        <ul class="pagination" id="myPager"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        </div><!--/tab-pane-->
+                        <div class="tab-pane" id="messages">
+                            <h2></h2>
+                            <ul class="list-group">
+                                <li class="list-group-item text-muted">Inbox</li>
+                                <li class="list-group-item text-right"><a href="#" class="pull-left">Here is your a link
+                                        to the latest summary report from the..</a> 2.13.2014
+                                </li>
+                                <li class="list-group-item text-right"><a href="#" class="pull-left">Hi Joe, There has
+                                        been a request on your account since that was..</a> 2.11.2014
+                                </li>
+                                <li class="list-group-item text-right"><a href="#" class="pull-left">Nullam sapien
+                                        massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014
+                                </li>
+                                <li class="list-group-item text-right"><a href="#" class="pull-left">Thllam sapien
+                                        massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014
+                                </li>
+                                <li class="list-group-item text-right"><a href="#" class="pull-left">Wesm sapien
+                                        massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014
+                                </li>
+                                <li class="list-group-item text-right"><a href="#" class="pull-left">For therepien
+                                        massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014
+                                </li>
+                                <li class="list-group-item text-right"><a href="#" class="pull-left">Also we, havesapien
+                                        massaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014
+                                </li>
+                                <li class="list-group-item text-right"><a href="#" class="pull-left">Swedish chef is
+                                        assaortor. A lobortis vitae, condimentum justo...</a> 2.11.2014
+                                </li>
+
+                            </ul>
+
+                        </div><!--/tab-pane-->
+                        <div class="tab-pane" id="settings">
+
+
+                            <hr>
+                            <form class="form" action="##" method="post" id="registrationForm">
+                                <div class="form-group">
+
+                                    <div class="col-xs-6">
+                                        <label for="first_name"><h4>First name</h4></label>
+                                        <input type="text" class="form-control" name="first_name" id="first_name"
+                                               placeholder="first name" title="enter your first name if any.">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    <div class="col-xs-6">
+                                        <label for="last_name"><h4>Last name</h4></label>
+                                        <input type="text" class="form-control" name="last_name" id="last_name"
+                                               placeholder="last name" title="enter your last name if any.">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+
+                                    <div class="col-xs-6">
+                                        <label for="phone"><h4>Phone</h4></label>
+                                        <input type="text" class="form-control" name="phone" id="phone"
+                                               placeholder="enter phone" title="enter your phone number if any.">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-xs-6">
+                                        <label for="mobile"><h4>Mobile</h4></label>
+                                        <input type="text" class="form-control" name="mobile" id="mobile"
+                                               placeholder="enter mobile number"
+                                               title="enter your mobile number if any.">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    <div class="col-xs-6">
+                                        <label for="email"><h4>Email</h4></label>
+                                        <input type="email" class="form-control" name="email" id="email"
+                                               placeholder="you@email.com" title="enter your email.">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    <div class="col-xs-6">
+                                        <label for="email"><h4>Location</h4></label>
+                                        <input type="email" class="form-control" id="location" placeholder="somewhere"
+                                               title="enter a location">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    <div class="col-xs-6">
+                                        <label for="password"><h4>Password</h4></label>
+                                        <input type="password" class="form-control" name="password" id="password"
+                                               placeholder="password" title="enter your password.">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    <div class="col-xs-6">
+                                        <label for="password2"><h4>Verify</h4></label>
+                                        <input type="password" class="form-control" name="password2" id="password2"
+                                               placeholder="password2" title="enter your password2.">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-12">
+                                        <br>
+                                        <button class="btn btn-lg btn-success" type="submit"><i
+                                                    class="glyphicon glyphicon-ok-sign"></i> Save
+                                        </button>
+                                        <button class="btn btn-lg" type="reset"><i
+                                                    class="glyphicon glyphicon-repeat"></i> Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div><!--/tab-pane-->
+                </div><!--/tab-content-->
+
+            </div><!--/col-9-->
+        </div><!--/row-->
+    </section>
 {% endblock %}

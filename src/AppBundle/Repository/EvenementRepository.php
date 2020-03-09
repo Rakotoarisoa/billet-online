@@ -4,6 +4,8 @@ namespace AppBundle\Repository;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\User;
 use AppBundle\Entity\LieuEvenement;
+use AppBundle\Entity\TypeBillet;
+use AppBundle\Entity\Billet;
 use Doctrine\ORM\EntityRepository;
 /**
  * EvenementRepository
@@ -13,15 +15,22 @@ use Doctrine\ORM\EntityRepository;
  */
 class EvenementRepository extends EntityRepository
 {
-    public function search($titre=null,$lieu=null,$date=null)
+    public function search($titre=null,$lieu=null,$date=null,$cat=null)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT e.titreEvenementSlug, e.titreEvenement, e.imageEvent, e.dateDebutEvent, e.dateFinEvent, lieu.nomSalle FROM AppBundle:Evenement e
-            LEFT JOIN AppBundle:LieuEvenement lieu WITH e.lieuEvenement=lieu.id
-           WHERE e.titreEvenement LIKE :titre AND lieu.nomSalle LIKE :lieu AND e.dateDebutEvent LIKE :date AND e.isPublished = 1')
+            ->createQuery('SELECT e.id,e.titreEvenementSlug, e.titreEvenement, e.imageEvent, e.dateDebutEvent, e.dateFinEvent, lieu.nomSalle FROM AppBundle:Evenement e
+            LEFT JOIN AppBundle:LieuEvenement lieu WITH e.lieuEvenement=lieu.id JOIN AppBundle:CategorieEvenement cat WITH e.categorieEvenement=cat.id
+           WHERE 
+           e.titreEvenement LIKE :titre AND 
+           lieu.nomSalle LIKE :lieu AND 
+           e.dateDebutEvent LIKE :date AND
+           cat.libelle LIKE :cat AND
+            e.isPublished = 1
+            ORDER BY e.dateDebutEvent DESC')
             ->setParameter('titre', '%'.$titre.'%')
             ->setParameter('lieu', '%'.$lieu.'%')
             ->setParameter('date', '%'.$date.'%')
+            ->setParameter('cat','%'.$cat.'%')
             ->getResult();
     }
     public function getAllEvents()
@@ -58,4 +67,94 @@ class EvenementRepository extends EntityRepository
         }
         return false;
     }
+
+    /**
+     * get Event with search and user
+     */
+
+    public function getSearchEvent($event_name=null,$event_creator=null,$user=null){ 
+        
+        $qbEvent = $this->createQueryBuilder('e')
+                        ->andWhere('1 = 1')
+                        ->andWhere('e.user = :user')
+                        ->setParameter('user',$user);                        
+            
+        if($event_name){
+            $qbEvent->andWhere('e.titreEvenement LIKE :titreEvenement')
+                    ->setParameter('titreEvenement','%'.$event_name.'%');
+
+        }
+        // if($event_state){
+        //     $qbEvent->andWhere('e.titreEvenement LIKE :titreEvenement')
+        //             ->setParameter('titreEvenement','%'.$event_state.'%');
+
+        // }*/
+        if($event_creator){
+            $qbEvent->andWhere('e.organisation LIKE :organisation')
+                    ->setParameter('organisation','%'.$event_creator.'%');
+
+        }
+        $qbEvent->orderBy('e.dateDebutEvent','DESC');
+        return $qbEvent->getQuery()
+                       ->execute();
+                    
+    }
+
+
+    /**
+     * get Ticket in Event
+     */
+    public function getAllTicketsEvents($event = null, $billet_place = null,$billet_type = null ,$billet_checked = 0){
+        $query='SELECT b
+                            FROM AppBundle:Evenement e
+                            LEFT JOIN AppBundle:TypeBillet t WITH e.id = t.evenement
+                            LEFT JOIN AppBundle:Billet b WITH t.id = b.typeBillet
+                            WHERE e.id=:event';
+        if($billet_checked != null){
+            $query.= ' and b.checked=:checked';
+            return $this->getEntityManager()
+                ->createQuery($query)
+                ->setParameter('event', $event)
+                ->setParameter('checked', $billet_checked)
+                ->getResult();
+        }
+        else{
+            return $this->getEntityManager()
+                ->createQuery($query)
+                ->setParameter('event', $event)
+                ->getResult();
+        }
+
+    }
+
+
+    /**
+     * get Count checked in Event
+     */
+    public function getCountTicketsEvents($event = null, $billet_place = null,$billet_type = null ,$billet_checked = null){
+        return $this->getEntityManager()
+            ->createQuery('SELECT count(b) as nbAllBillet
+                            FROM AppBundle:Evenement e
+                            LEFT JOIN AppBundle:TypeBillet t WITH e.id = t.evenement
+                            LEFT JOIN AppBundle:Billet b WITH t.id = b.typeBillet
+                            WHERE e.id=:event')
+                ->setParameter('event', $event)           
+                ->getResult();        
+    }
+
+    /**
+     * get Count checked in Event
+     */
+    public function getCountTicketsEventsChecked($event = null, $billet_place = null,$billet_type = null ,$billet_checked = null){
+        return $this->getEntityManager()
+            ->createQuery('SELECT count(b) as nbAllBillet
+                            FROM AppBundle:Evenement e
+                            LEFT JOIN AppBundle:TypeBillet t WITH e.id = t.evenement
+                            LEFT JOIN AppBundle:Billet b WITH t.id = b.typeBillet
+                            WHERE e.id=:event AND b.checked = True')
+                ->setParameter('event', $event)           
+                ->getResult();        
+    }
+
+    
 }

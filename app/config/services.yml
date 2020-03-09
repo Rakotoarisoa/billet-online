@@ -13,14 +13,18 @@ services:
         # this means you cannot fetch services directly from the container via $container->get()
         # if you need to do this, you can override this setting on individual services
         public: false
-
+    app.form.flow.create_event:
+        class: AppBundle\Form\CreateEventFormFlow
+        autoconfigure: true
+        public: true
     # makes classes in src/AppBundle available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
+
     AppBundle\:
         resource: '../../src/AppBundle/*'
         # you can exclude directories or files
         # but if a service is unused, it's removed anyway
-        exclude: '../../src/AppBundle/{Entity,Repository,Tests}'
+        exclude: '../../src/AppBundle/{Entity,Tests}'
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
@@ -31,7 +35,6 @@ services:
     # use the fully-qualified class name as the service id
     AppBundle\Utils\Slugger:
         public: false
-
     # add more services, or override services that need manual wiring
     # AppBundle\Service\ExampleService:
     #     arguments:
@@ -45,4 +48,70 @@ services:
             - { name: form.type, alias: app_user_registration }
 
         # ...
+    twig.extension.intl:
+        class: Twig_Extensions_Extension_Intl
+        tags:
+            - { name: twig.extension }
+    admin.billet:
+        class: AppBundle\Admin\BilletAdmin
+        arguments: [~, AppBundle\Entity\Billet, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Gestion de Billets', label: Billet ,icon: "<i class=\"fa fa-ticket\"></i>"}
+    admin.typebillet:
+        class: AppBundle\Admin\TypeBilletAdmin
+        arguments: [~, AppBundle\Entity\TypeBillet, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Gestion de Billets', label: 'Type Billet' }
+    admin.categorieevenement:
+        class: AppBundle\Admin\CategorieEvenementAdmin
+        arguments: [~, AppBundle\Entity\CategorieEvenement, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Evènement', label: 'Catégorie évenement' }
+    admin.lieuevenement:
+        class: AppBundle\Admin\LieuEvenementAdmin
+        arguments: [~, AppBundle\Entity\LieuEvenement, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Evènement', label: "Lieu d'évènement",icon: "<i class=\"fa fa-map-marker\"></i>" }
+    admin.evenement:
+        class: AppBundle\Admin\EvenementAdmin
+        arguments: [~, AppBundle\Entity\Evenement, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Evènement', label: 'Evenement',icon: "<i class=\"fa fa-folder\"></i>" }
+    admin.user:
+        class: AppBundle\Admin\UserAdmin
+        arguments: [~, AppBundle\Entity\User, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Utilisateurs et Droits', label: 'Utilisateurs',icon: "<i class=\"fa fa-user\"></i>" }
+    admin.shop:
+        class: AppBundle\Admin\ShopAdmin
+        arguments: [~, AppBundle\Entity\Shop, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Point de vente', label: 'Point de vente',icon: "<i class=\"fa fa-shop\"></i>" }
+    admin.pays:
+        class: AppBundle\Admin\PaysAdmin
+        arguments: [~, AppBundle\Entity\Pays, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Configurations générales', label: 'Pays' }
+    admin.devise:
+        class: AppBundle\Admin\DeviseAdmin
+        arguments: [~, AppBundle\Entity\Devise, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Configurations générales', label: 'Devise' }
+    admin.log:
+        class: AppBundle\Admin\LogAdmin
+        arguments: [~, AppBundle\Entity\Log, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: 'Journal activités', label: 'Journal' }
+    app.manager.log:
+        class: AppBundle\Manager\LogManager
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@translator"
+    AppBundle\Events\DatabaseActivitySubscriber:
+        tags:
+            - { name: 'doctrine.event_subscriber' }
+
+    
+            
+
 

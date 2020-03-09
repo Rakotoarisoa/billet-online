@@ -1,25 +1,64 @@
 {% extends 'base.html.twig' %}
-{% block title%}
-   {{  event.titreEvenement }} | Plan de salle
+{% block header %}
 {% endblock %}
-{% block breadcrumb_content %}
-    <p>{{  event.titreEvenement }}</p>
-    <h2>Plan de salle</h2>
+{% block title %}
+    {{ event.titreEvenement }} | Plan de salle
+{% endblock %}
+{% block breadcrumb %}
+    <!--<section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
+        <div class="bradcumbContent">
+            {% block breadcrumb_content %}
+            {% endblock %}
+        </div>
+    </section>-->
 {% endblock %}
 {% block body %}
     {% block content %}
-        <div id="vue-app-user" class="container-fluid">
-            <!-- Vertical toolbar -->
-            <p class="font-weight-light text-justify">Sélectionner une place pour pouvoir réserver .</p>
-            <div class="row">
-                <div class="col-sm-12">
-                    <canvas-element-user></canvas-element-user>
+        {{ parent() }}
+        <section>
+            <div class="">
+                <div class="row mr-15 mt-15 ml-15 mb-15">
+                    <div class="col-sm-8">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <h3 class="mb-0"><a href="{{ url('viewSingle',{'id':event.id}) }}">{{ event.titreEvenement }}</a></h3>
+                            <div class="mb-1 text-muted">
+                                {% if event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") == event.dateFinEvent|date("d M Y") %}
+                                    <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}
+                                    jusqu' à {{ event.dateFinEvent|localizeddate('none','none',null,null,"hh:mm") }}
+                                {% elseif event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") != event.dateFinEvent|date("d M Y") %}
+
+                                    <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }} jusqu'
+                                    à {{ event.dateFinEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}
+                                {% else %}
+                                    <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}
+                                {% endif %}
+                            </div>
+                            <div class="text-muted"><span class="fa fa-map-marker"></span> {{ event.lieuEvenement.nomSalle }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <div class="col">
+                                <a href="{{ url('viewList') }}" class="btn btn-link pull-right">{{ 'events.back_homepage'|trans }}</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <a href="" class="btn btn-link text-danger pull-right"> Besoin d'aide ?</a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <a href="{{ path('viewEventUpdate',{'id':event.id}) }}" class="btn btn-danger pull-right"> Modifier l'évènement</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="root" data-event-id="{{ event.id }}">
                 </div>
             </div>
-        </div>
-        <p>
-            <a href="{{ url('viewEventAdmin',{'id':event.id,'user':app.user.username,}) }}"><span class="fa fa-arrow-left"></span>&nbsp;{{ 'events.return_to_event'|trans }}</a>
-        </p>
+        </section>
     {% endblock %}
     {% block contact %}{% endblock %}
     {% block javascripts %}
@@ -34,9 +73,10 @@
         <script src="{{ asset('js/plugins/plugins.js') }}"></script>
         <!-- Active js -->
         <script src="{{ asset('js/active.js') }}"></script>
-
-        <script type="text/javascript" src="{{ asset('js/fabric.js') }}"></script>
         <!-- Vue js -->
         <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
+
     {% endblock %}
+{% endblock %}
+{% block footer %}
 {% endblock %}

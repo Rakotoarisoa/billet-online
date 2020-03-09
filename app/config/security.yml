@@ -36,12 +36,15 @@ security:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin/, role: ROLE_ADMIN }
-        - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/user,role : ROLE_USER_MEMBER}
+        - { path: ^/admin', roles: ROLE_ADMIN }
 
     role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: ROLE_ADMIN
+        ROLE_USER:        ROLE_USER
+        ROLE_USER_MEMBER: ROLE_USER
+        ROLE_USER_SHOP: ROLE_USER
+        ROLE_ADMIN:       [ROLE_USER, ROLE_USER_MEMBER,ROLE_USER_SHOP]
+        ROLE_SUPER_ADMIN: ROLE_ADMIN,ROLE_USER_SHOP
     # Learn more about services, parameters and containers at
     # http://symfony.com/doc/current/book/service_container.html
 parameters:
@@ -60,7 +63,6 @@ services:
             # you can exclude directories or files
             # but if a service is unused, it's removed anyway
         exclude: '../../src/AppBundle/{Entity,Repository}'
-
     app.form_login_authenticator:
         class: AppBundle\Security\FormLoginAuthenticator
         arguments: ["@router", "@security.password_encoder"]

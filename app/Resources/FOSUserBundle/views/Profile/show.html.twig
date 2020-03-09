@@ -1,5 +1,5 @@
 {% extends "@FOSUser/layout.html.twig" %}
-
+{% block title  %} Profil | {{ app.user.username }}{% endblock %}
 {% block fos_user_content %}
 {% include "@FOSUser/Profile/show_content.html.twig" %}
 {% endblock fos_user_content %}

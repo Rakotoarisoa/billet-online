@@ -4,9 +4,7 @@
 namespace AppBundle\Controller;
 
 
-use AppBundle\Entity\Billet;
 use AppBundle\Entity\CategorieEvenement;
-use AppBundle\Form\RechercheBilletType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

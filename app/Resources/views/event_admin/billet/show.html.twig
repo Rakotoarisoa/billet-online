@@ -34,22 +34,18 @@
                         <th>Estvendu</th>
                         <td>{% if billet.estVendu %}Yes{% else %}No{% endif %}</td>
                     </tr>
-                    <tr>
-                        <th>Prix</th>
-                        <td>{{ billet.prix }}</td>
-                    </tr>
                     </tbody>
                 </table>
 
                 <div class="row col-md-5">
                     <div class="col">
                         <a class=""
-                           href="{{ path('billet_index',{ 'userId':app.user.username,'event':event.titreEvenementSlug}) }}">Retourner
+                           href="{{ path('billet_index',{ 'userId':app.user.id,'event':event.id}) }}">Retourner
                             vers la liste des billets</a>
                     </div>
                     <div class="col">
                         <a class="btn btn-success"
-                           href="{{ path('billet_edit', { 'userId':app.user.username,'event':event.titreEvenementSlug,'id': billet.id }) }}">Editer</a>
+                           href="{{ path('billet_edit', { 'userId':app.user.id,'event':event.id,'id': billet.id }) }}">Editer</a>
                     </div>
                     <div class="col">
                         {{ form_start(delete_form) }}

@@ -2,6 +2,7 @@
 var Encore = require('@symfony/webpack-encore');
 
 Encore
+    .disableSingleRuntimeChunk()
 // directory where compiled assets will be stored
     .setOutputPath('web/build/')
     // public path used by the web server to access the output path
@@ -15,15 +16,20 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if you JavaScript imports CSS.
      */
+    .enableReactPreset()
     .addEntry('js/app', './web/js/app.js')
     .addStyleEntry('css/app','./web/css/app.css')
-    .enableVueLoader()
     .copyFiles([
         {from: './node_modules/ckeditor/', to: 'ckeditor/[path][name].[ext]', pattern: /\.(js|css)$/, includeSubdirectories: false},
         {from: './node_modules/ckeditor/adapters', to: 'ckeditor/adapters/[path][name].[ext]'},
         {from: './node_modules/ckeditor/lang', to: 'ckeditor/lang/[path][name].[ext]'},
         {from: './node_modules/ckeditor/plugins', to: 'ckeditor/plugins/[path][name].[ext]'},
-        {from: './node_modules/ckeditor/skins', to: 'ckeditor/skins/[path][name].[ext]'}
+        {from: './node_modules/ckeditor/skins', to: 'ckeditor/skins/[path][name].[ext]'},
+        {from: './vendor/kartik-v/bootstrap-fileinput/js',to:'kartik-v/js/[path][name].[ext]', pattern: /\.(js)$/, includeSubdirectories: true},
+        {from: './vendor/kartik-v/bootstrap-fileinput/css',to:'kartik-v/css/[path][name].[ext]', pattern: /\.(css)$/},
+        {from: './vendor/kartik-v/bootstrap-fileinput/img',to:'kartik-v/img/[path][name].[ext]', pattern: /\.(gif)$/},
+        {from: './vendor/kartik-v/bootstrap-fileinput/themes/fa',to:'kartik-v/themes/[path][name].[ext]', pattern: /\.(js)$/}
+
     ])
     /*
      * FEATURE CONFIG
@@ -37,6 +43,12 @@ Encore
     .enableSourceMaps(!Encore.isProduction())
     // enables hashed filenames (e.g. app.abc123.css)
     .enableVersioning(Encore.isProduction())
+    .configureBabel(function (babelConfig) {
+            babelConfig.plugins = [
+                    "@babel/plugin-proposal-object-rest-spread","@babel/plugin-proposal-class-properties",
+                    "@babel/plugin-transform-runtime"
+            ]
+    })
 ;
 
 module.exports = Encore.getWebpackConfig();

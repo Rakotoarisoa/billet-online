@@ -42,7 +42,7 @@
                         <a href="{# path('billet_new',{'userId':app.user.username,'event':event.titreEvenementSlug}) }}">{{ 'events.table_view.event_create_ticket'|trans #}</a>
                     </li>-->
                     <li>
-                        <a href="{{ path('generateTickets',{'event':event.getTitreEvenementSlug,'userId':app.user.usernameCanonical}) }}">{{ 'events.table_view.event_generate_tickets'|trans }}</a>
+                        <a href="{{ path('generateTickets',{'event':event.id,'userId':app.user.id}) }}">{{ 'events.table_view.event_generate_tickets'|trans }}</a>
                     </li>
                 </ul>
                 <br/>
@@ -94,9 +94,9 @@
                             <td>
 
                                 <a class="btn btn-success"
-                                   href="{{ path('billet_show', { 'userId':app.user.username,'event':event.titreEvenementSlug,'id': billet.id }) }}">Afficher</a>
+                                   href="{{ path('billet_show', { 'userId':app.user.id,'event':event.id,'id': billet.id }) }}">Afficher</a>
                                 <a class="btn btn-danger"
-                                   href="{{ path('billet_edit', { 'userId':app.user.username,'event':event.titreEvenementSlug,'id': billet.id }) }}">Editer</a>
+                                   href="{{ path('billet_edit', { 'userId':app.user.id,'event':event.id,'id': billet.id }) }}">Editer</a>
 
                             </td>
                         </tr>
@@ -144,7 +144,7 @@
                                                 <input type="hidden" value="" name="type_billet">
                                                 <input type="hidden" value="{{ event.id }}" name="event_id">
                                                 <input type="hidden"
-                                                       value="{{ path('viewTicketList',{'date': event.dateDebutEvent|date("Y-m-d"),'slugEvent': event.titreEvenementSlug}) }}"
+                                                       value="{{ path('viewTicketList',{'id': event.id}) }}"
                                                        name="redirect">
                                                 {{ 'events.tickets'|trans }}
                                             </label>

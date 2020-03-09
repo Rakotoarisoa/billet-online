@@ -4,57 +4,93 @@
     Création d'évènement | {{ app.user.username }}
 {% endblock %}
 {% block breadcrumb %}
-    <section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
+    <!--<section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
         <div class="bradcumbContent">
             {% block breadcrumb_content %}
                 <h2>{{ event.titreEvenement }}</h2>
             {% endblock %}
         </div>
-    </section>
+    </section>-->
 {% endblock %}
 {% block body %}
     {% block content %}
         <!-- ##### Event Registration Area Start ##### -->
+        {{ parent() }}
         <section class="section-padding-100">
             <div class="container">
-                <div class="col-12 col-lg-12">
-                    <table class="table table-bordered table-responsive">
-                        <tr>
-                            <td ><p class="text text-xl-right">{{ 'events.table_view.event_title'|trans }}</p></td><td>{{ event.titreEvenement }}</td>
-                        </tr>
-                        <tr>
-                            <td><p class="text text-xl-right"><span class="fa fa-calendar"></span> {{ 'events.table_view.event_date_start'|trans }}</p></td><td><p class="text card-text">{{ event.dateDebutEvent|date('d-m-Y H:m:s') }}</p></td>
-                        </tr>
-                        <tr>
-                            <td><p class="text text-xl-right"><span class="fa fa-calendar"></span> {{ 'events.table_view.event_date_end'|trans }}</p></td><td><p class="text card-text">{{ event.dateFinEvent|date('d-m-Y') }}</p></td>
-                        </tr>
-                        <tr>
-                            <td><p class="text text-xl-right">{{ 'events.table_view.event_desc'|trans }}</p></td><td><blockquote class="blockquote">{{ event.description|raw }}</blockquote></td>
-                        </tr>
-                        <tr>
-                            <td><p class="text text-xl-right">{{ 'events.table_view.event_publish'|trans }}</p></td><td>{%   if event.isPublished  %}Oui <span class="fa fa-check"></span><p class="text-muted">{{ 'events.table_view.event_published_info'|trans }}</p>{% else %}Non <span class="fa fa-2x fa-close"></span><p class="text-muted">{{ 'events.table_view.event_no_published_info'|trans }}</p>{% endif %}</td>
-                        </tr>
-                        <tr>
-                            <td><p class="text text-xl-right"><span class="fa fa-image"></span> {{ 'events.table_view.event_image'|trans }}</p></td><td><img width="150px;" class="img-thumbnail img-fluid" height="150px;" src="{{ asset(event.imageEvent) }}"></td>
-                        </tr>
-                        <tr>
-                            <td><p class="text text-xl-right"><span class="fa fa-palette"></span>{{ 'events.table_view.event_lieu'|trans }}</p></td><td>{{ event.lieuEvenement.nomSalle }}</td>
-                        </tr>
-                        <tr>
-                            <td><p class="text text-xl-right">{{ 'events.table_view.event_cat'|trans }}</p></td><td>{{ event.categorieEvenement.libelle }}</td>
-                        </tr>
-                        <tr>
-                            <td><p class="text text-xl-right">{{ 'events.table_view.event_org'|trans }}</p></td><td><p class="text">{{ event.organisation }}</p></td>
-                        </tr>
-                    </table>
-                    <div class="btn-group">
-                        <a href="{{ path('viewEventMapAdmin',{'id':event.id,'userId':app.user.usernameCanonical}) }}" class="btn btn-outline-dark text-center">{{ 'events.table_view.event_seatmap'|trans }}</p></a><a href="{{ path('billet_index',{'userId':app.user.usernameCanonical,'event':event.titreEvenementSlug}) }}" class="btn btn-outline-dark">{{ 'events.table_view.event_billets'|trans }}</a></div>
+                <div class="col-6 col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Information sur l' évènement {{ event.titreEvenement }}</h5>
+                        </div>
+                        <div class="card-body">
+
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_title'|trans }}</div>
+                                <div class="col-sm-6">{{ event.titreEvenement }}</div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_date_start'|trans }}</div>
+                                <div class="col-sm-6">{{ event.dateDebutEvent|date('d-m-Y H:m:s') }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_date_end'|trans }}</div>
+                                <div class="col-sm-6">{{ event.dateFinEvent|date('d-m-Y H:m:s') }}</div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_desc'|trans }}</div>
+                                <div class="col-sm-6">{{ event.description|raw }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_image'|trans }}</div>
+                                <img src="{{ event.imageEvent?vich_uploader_asset(event,'image','AppBundle\\Entity\\Evenement')|imagine_filter('list_event_view'):"https://via.placeholder.com/400x300?text=IMAGE+NON+DISPONIBLE"  }}">
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_lieu'|trans }}</div>
+                                <div class="col-sm-6">{{ event.lieuEvenement.nomSalle }}</div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_cat'|trans }}</div>
+                                <div class="col-sm-6">{{ event.categorieEvenement.libelle }}</div>
+                            </div>
+                            <hr/>
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_org'|trans }}</div>
+                                <div class="col-sm-6">{{ event.organisation }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">{{ 'events.table_view.event_publish'|trans }}</div>
+                                <div class="col-sm-6">{% if event.isPublished %}Oui <span class="fa fa-check"></span><p
+                                            class="text-muted">{{ 'events.table_view.event_published_info'|trans }}</p>{% else %}Non
+                                        <span class="fa fa-2x fa-close"></span><p
+                                                class="text-muted">{{ 'events.table_view.event_no_published_info'|trans }}</p>{% endif %}
+                                </div>
+                            </div>
+
+                            <div class="card-footer text-muted justify-content-center">
+                                <a class="btn btn-success"
+                                   href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}">Modifier les
+                                    informations</a>
+                                {% if event.isUsingSeatMap %}
+                                    <a class="btn btn-secondary"
+                                       href="{{ path('viewCreateMap',{'userId':app.user.id,'id':event.id}) }}">Plan de
+                                        salle</a>
+                                {% endif %}
+                                <a class="btn btn-info"
+                                   href="{{ path('generateTickets',{'userId':app.user.id,'event':event.id}) }}">Billets</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
     {% endblock %}
     {% block javascripts %}
-        {{  parent()}}
+        {{ parent() }}
     {% endblock %}
 {% endblock %}
 {% block contact %}{% endblock %}

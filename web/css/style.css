@@ -1,6 +1,7 @@
 /* [Master Stylesheet - v1.0] */
-/* :: 1.0 Import Fonts */
-@import url("https://fonts.googleapis.com/css?family=Archivo+Narrow:400,400i,500,500i,600,600i,700,700i");
+/* :: 1.0 Import Fonts
+@import url(eds.css);
+/*@import url("https://fonts.googleapis.com/css?family=Archivo+Narrow:400,400i,500,500i,600,600i,700,700i");*/
 /* :: 2.0 Import All CSS */
 @import url(bootstrap.min.css);
 @import url(classy-nav.css);
@@ -16,7 +17,7 @@
   padding: 0; }
 
 body {
-  font-family: "Archivo Narrow", sans-serif;
+  font-family: Neue Plak,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,Helvetica,Tahoma,Arial,sans-serif; /** origin : "Archivo Narrow", sans-serif */
   font-size: 14px; }
 
 h1,
@@ -36,7 +37,10 @@ p {
   font-size: 15px;
   line-height: 2;
   font-weight: 400; }
-
+label.required:after {
+  content: " * ";
+  color: red;
+}
 a,
 a:hover,
 a:focus {
@@ -45,10 +49,16 @@ a:focus {
   text-decoration: none;
   outline: 0 solid transparent;
   color: #000000;
-  font-weight: 700;
-  font-size: 16px;
+  /*font-weight: 700;
+  font-size: 16px;*/
   font-family: "Archivo Narrow", sans-serif; }
-
+a.link_table_admin_user{
+  font-weight: inherit;
+}
+a.link_table_admin_user:hover{
+  font-weight: inherit;
+  color:blue;
+}
 ul,
 ol {
   margin: 0; }
@@ -128,19 +138,25 @@ img {
 /* :: 3.3.0 Section Padding */
 .section-padding-100 {
   padding-top: 100px;
-  padding-bottom: 100px; }
+  padding-bottom: 100px;
+  min-height:800px;
+}
 
 .section-padding-100-0 {
   padding-top: 100px;
-  padding-bottom: 0; }
+  padding-bottom: 0;
+  min-height:800px;}
 
 .section-padding-0-100 {
   padding-top: 0;
-  padding-bottom: 100px; }
+  padding-bottom: 100px;
+  min-height:800px;}
 
 .section-padding-100-70 {
   padding-top: 100px;
-  padding-bottom: 70px; }
+  padding-bottom: 70px;
+  min-height:800px;
+}
 
 /* :: 3.4.0 Section Heading */
 .section-heading {
@@ -185,13 +201,20 @@ img {
     position: relative;
     width: 64px;
     height: 64px; }
+  .preloader .lds-ellipsis .logo{
+      background: none;
+      top: -100px;
+      left:-80px !important;
+      width:200px;
+      animation: none;
+  }
     .preloader .lds-ellipsis div {
       position: absolute;
       top: 27px;
       width: 11px;
       height: 11px;
       border-radius: 50%;
-      background: #000000;
+      background: #19868a;
       animation-timing-function: cubic-bezier(0, 1, 1, 0); }
       .preloader .lds-ellipsis div:nth-child(1) {
         left: 6px;
@@ -369,32 +392,31 @@ img {
 
 /* :: 4.0 Header Area CSS */
 .header-area {
-  position: absolute;
-  z-index: 1000;
+  position: relative;
   width: 100%;
-  top: 20px;
-  left: 0;
-  z-index: 1000; }
-  .header-area .oneMusic-main-menu {
-    position: relative;
-    width: 100%;
-    height: 85px;
-    background-color: transparent; }
-    @media only screen and (max-width: 767px) {
-      .header-area .oneMusic-main-menu {
-        height: 70px; } }
-    .header-area .oneMusic-main-menu .classy-nav-container {
-      background-color: transparent; }
-    .header-area .oneMusic-main-menu .classy-navbar {
-      background-color: transparent;
-      height: 85px;
-      padding: 0; }
-      @media only screen and (max-width: 767px) {
-        .header-area .oneMusic-main-menu .classy-navbar {
-          height: 70px; } }
-      .header-area .oneMusic-main-menu .classy-navbar .classynav ul li a {
-        font-weight: 700;
-        /*text-transform: capitalize;*/
+  /** Andry Edit top: 20px;*/
+   left: 0;
+   z-index: 1000; }
+   .header-area .oneMusic-main-menu {
+     position: relative;
+     width: 100%;
+     height: 85px;
+     /** Andry Edit */background-color: #333;  }
+     @media only screen and (max-width: 767px) {
+       .header-area .oneMusic-main-menu {
+         height: 70px; } }
+     .header-area .oneMusic-main-menu .classy-nav-container {
+       background-color: transparent; }
+     .header-area .oneMusic-main-menu .classy-navbar {
+       background-color: transparent;
+       height: 85px;
+       padding: 0; }
+       @media only screen and (max-width: 767px) {
+         .header-area .oneMusic-main-menu .classy-navbar {
+           height: 70px; } }
+       .header-area .oneMusic-main-menu .classy-navbar .classynav ul li a {
+         /* Andry Edit font-weight: 700;
+         text-transform: capitalize;*/
         color: #ffffff;
         font-size: 16px; }
         .header-area .oneMusic-main-menu .classy-navbar .classynav ul li a:hover, .header-area .oneMusic-main-menu .classy-navbar .classynav ul li a:focus {
@@ -445,7 +467,8 @@ img {
     .header-area .oneMusic-main-menu .login-register-cart-button {
       position: relative;
       z-index: 1;
-      margin-left: 100px; }
+      /** Andry Edit
+      margin-left: 100px;*/ }
       @media only screen and (min-width: 768px) and (max-width: 991px) {
         .header-area .oneMusic-main-menu .login-register-cart-button {
           margin-left: 12px;
@@ -462,7 +485,7 @@ img {
           transition-duration: 500ms;
           margin-bottom: 0;
           color: #fff;
-          font-weight: 700;
+          /* Andry Edit font-weight: 700;*/
           font-size: 16px;
           cursor: pointer;
           line-height: 1; }
@@ -504,8 +527,11 @@ img {
     top: 0;
     left: 0;
     z-index: 9999;
-    background-color: #19868a;
+    background-color: /*Andry Edit */#333;
     box-shadow: 0 5px 50px 15px rgba(0, 0, 0, 0.2); }
+.is-sticky{
+  z-index:9999;
+}
     @media only screen and (max-width: 767px) {
       .header-area .is-sticky .oneMusic-main-menu {
         height: 70px; } }
@@ -677,7 +703,19 @@ img {
   -webkit-transition-duration: 500ms;
   transition-duration: 500ms; }
   .single-event-area img {
-    width: 100%; }
+    width: 100%;
+    height: 200px;
+    -webkit-transition: All 1s ease;
+    transition  : All 1s ease;
+  }
+.single-event-area img:hover{
+  -webkit-transition: All 1s ease;
+  transition  : All 1s ease;
+  -webkit-transform: scale(1.5);
+}
+.event-thumbnail{
+  overflow: hidden;
+}
   .single-event-area .event-text {
     text-align: center;
     position: relative;
@@ -798,7 +836,7 @@ img {
 
 .browse-by-catagories {
   position: relative;
-  z-index: 1; }
+  z-index: 2; }
   .browse-by-catagories a {
     display: inline-block;
     background-color: #f4f4f4;
@@ -826,7 +864,7 @@ img {
     .browse-by-catagories a:hover, .browse-by-catagories a:focus, .browse-by-catagories a.active {
       border: 2px solid #000000; }
     .browse-by-catagories a:first-child {
-      border-color: transparent;
+      /*border-color: transparent;*/
       background-color: transparent; }
 
 .single-album {
@@ -1207,9 +1245,9 @@ img {
   .footer-area .copywrite-text {
     font-size: 12px;
     margin-bottom: 0;
-    color: rgba(166, 165, 165, 0.54); }
+    color: #FFF; }
     .footer-area .copywrite-text a {
-      color: rgba(166, 165, 165, 0.54);
+      color: #FFF;/* Andry Edit rgba(166, 165, 165, 0.54);*/
       font-size: 12px; }
       .footer-area .copywrite-text a:hover, .footer-area .copywrite-text a:focus {
         color: #fff; }
@@ -1231,9 +1269,10 @@ img {
         justify-content: center;
         margin-top: 30px; } }
   .footer-area .footer-nav li a {
-    color: #898888;
+    color: #FFF;/* Andry edit #898888*/;
     font-size: 16px;
-    padding: 0 20px; }
+    padding: 0 20px;
+    font-weight: inherit;}
     @media only screen and (min-width: 768px) and (max-width: 991px) {
       .footer-area .footer-nav li a {
         padding: 0 10px;
@@ -1252,10 +1291,10 @@ img {
   position: relative;
   z-index: 10;
   width: 100%;
-  height: 500px; }
+  height: 100%;}
   @media only screen and (max-width: 767px) {
     .breadcumb-area {
-      height: 270px; } }
+      /*height: 0;*/ } }
   .breadcumb-area .bradcumbContent {
     position: absolute;
     background-color: #fff;
@@ -1295,7 +1334,7 @@ img {
     position: relative;
     z-index: 1; }
     .single-blog-post .blog-post-thumb .post-date {
-      width: 76px;
+      width: 100px;
       height: 106px;
       border: 1px solid #000000;
       text-align: center;
@@ -1392,7 +1431,16 @@ p.isPublished{
   padding: 5px 15px;
   line-height: 1;
 }
-
+div.date-single-event{
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 5px 15px;
+  line-height: 1;
+  z-index:5;
+}
 .blog-sidebar-area {
   position: relative;
   z-index: 1; }
@@ -1720,3 +1768,46 @@ p.isPublished{
 /* ====== The End ====== */
 
 /*# sourceMappingURL=style.css.map */
+
+
+/*======== Admin event by HH ========== */
+.sub-media{
+  position: relative;    
+  padding-left: 25px;    
+  font-size: 13px;
+}
+.day_{
+  font-weight: 200; 
+  display: block; 
+  color: #1e1e1f;
+  line-height: 1em; 
+  white-space: nowrap; 
+  text-align: center;    
+  font-size: 40px;
+}
+.month_{
+  font-family: arial; 
+  font-weight: bold;   
+  font-size: 14px;  
+  letter-spacing: 2px; 
+  text-transform: uppercase;    
+  white-space: nowrap;
+  color: #b11a43;
+  font-weight: bold;
+  text-align: center;
+}
+.year_{
+  font-family: arial;
+  font-size: 14px;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  color: #1e1e1f;
+  font-weight: bold;
+  text-align: center;
+}
+
+/*======== Admin event by HH =========  */
+/*----Pagination -----*/
+.previous-link,.next-link{
+  width:100px !important;
+}
