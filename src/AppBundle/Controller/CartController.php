@@ -11,17 +11,18 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\TypeBillet;
+use AppBundle\Entity\LockedSeat;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Billet;
 use AppBundle\Entity\UserCheckout;
 use AppBundle\Events\Reservation\RegisteredReservationEvent;
 use AppBundle\Utils\Cart;
 use AppBundle\Utils\CartItem;
+use AppBundle\Entity\Sessions;
 use Doctrine\Common\Collections\ArrayCollection;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\Form\Factory\FactoryInterface;
 use FOS\UserBundle\FOSUserEvents;
-use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -125,6 +126,7 @@ class CartController extends Controller
     //Search Section and Seat into array to Lock
     private function unlockSeat($array, $section = '', $seat = '', $id)
     {
+        if($array != null){
         foreach ($array as $key => $value) {
             if (is_array($value) && array_key_exists('mapping', $value) && $value['nom'] == trim($section)) {
                 foreach ($value['mapping'] as $mapKey => $mapValue) {
@@ -144,6 +146,7 @@ class CartController extends Controller
                 $em->flush();
             }
         }
+    }
     }
 
     /**
@@ -168,7 +171,10 @@ class CartController extends Controller
     private function lockItemSeat(Evenement $event, $section, $place){
 
     }
-
+    private function locked_seat($event,$section,$seat){
+        $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['evenement'=>$event,'section_id'=>$section,'seat_id'=>$seat]);
+        return $locked_seat;
+    }
     /**
      *  Adds the book to cart list
      *
@@ -192,9 +198,14 @@ class CartController extends Controller
         if ($request->request->has('section_id') && $request->request->has('place_id')) {
             $section_id = $request->request->get('section_id');
             $place_id = $request->request->get('place_id');
-
             if($this->cart->alreadyExists($section_id,$place_id,$type_billet->getLibelle())){
                 return new Response('Le billet est déjà commandé', Response::HTTP_ALREADY_REPORTED);
+            }
+        } 
+        if(count($this->cart->getItems()) > 0){
+            $items=$this->cart->getItems();
+            if($items[0] != null && (int)$items[0]->getEvenement()->getId()  != (int)$event_id){
+                    $this->clearCartAction();
             }
         }
         for ($i = 0; $i < $nbr_billets; $i++) {
@@ -243,7 +254,6 @@ class CartController extends Controller
         $user_checkout = $this->getDoctrine()->getRepository(UserCheckout::class)->findOneBy(['email' => (string)$buyer_data['email']]);
         try {
             if (!isset($user_checkout) && $this->isCsrfTokenValid('checkout_info', $buyer_data['_token'])) {
-
                 $user_checkout = new  UserCheckout();
                 $user_checkout->setNom((string)$buyer_data['nom']);
                 $user_checkout->setPrenom((string)$buyer_data['prenom']);

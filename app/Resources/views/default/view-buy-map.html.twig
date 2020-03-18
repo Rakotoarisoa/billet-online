@@ -54,6 +54,7 @@
                     </div>
                 </div>
             </div>
+            {% if event.isUsingSeatmap or event.etatSalle != null %}
             <div id="root" data-event-id="{{ event.id }}" data-is-front="true" class="container-fluid">
                 <div class="preloader d-flex align-items-center justify-content-center">
                     <div class="lds-ellipsis">
@@ -64,6 +65,13 @@
                     </div>
                 </div>
             </div>
+            {% else %}
+            <div class="row">
+                <div class="col">
+                    <p style="text-align:center;">Le plan de salle n'est pas disponible ou a été désactivé</p>
+                </div>
+            </div>
+            {% endif%}
         </section>
         <div class="modal" id="checkout_command" role="dialog" data-backdrop="static"
              data-keyboard="false">

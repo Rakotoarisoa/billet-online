@@ -26,7 +26,6 @@ class CartItem
     /** @var string section*/
     protected $section;
     /** @var Evenement evenement
-     * @Serializer\Exclude
      */
     protected $evenement;
 

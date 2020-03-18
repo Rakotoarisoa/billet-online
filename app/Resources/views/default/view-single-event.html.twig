@@ -1,1085 +1,1065 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/jquery-steps.css') }}"/>
+	{{ parent() }}
+	<link rel="stylesheet" href="{{ asset('css/jquery-steps.css') }}"/>
 {% endblock %}
 {% block title %}
-    {{ event.titreEvenement }} | {{ event.dateDebutEvent|date('d-m-Y') }}
+	{{ event.titreEvenement }}
+	|
+	{{ event.categorieEvenement.libelle ~' du '~ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm")}}
 {% endblock %}
 {% block breadcrumb %}
-    <!-- <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
+<!-- <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
         <div class="bradcumbContent">
             {% block breadcrumb_content %}
                 <p>Parcourir</p>
                 <h2>{{ event.titreEvenement }}</h2>
             {% endblock %}
         </div>
-    </section>-->
-{% endblock %}
+    </section>-->{% endblock %}
 {% block body %}
-    {% set devise = event.devise.code %}
-    <!-- ##### Events Area Start ##### -->
-    {% block content %}
-        {{ parent() }}
-        <div class="blog-area section-padding-0-100">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 col-lg-9">
-                        <!-- Single Post Start -->
-                        <div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
-                            <!-- Post Thumb -->
-                            <div class="blog-post-thumb mt-30">
-                                <a href="#"><img
-                                            src="{{ event.imageevent?vich_uploader_asset(event,'image')|imagine_filter('single_event_view'):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE" }}"
-                                            alt="{{ event.titreEvenement }}"></a>
-                                <!-- Post Date -->
-                                <div class="post-date">
-                                    <span class="day_">{{ event.dateDebutEvent|date('d') }}</span>
-                                    <span class="month_">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,'MMM Y') }}</span>
-                                </div>
-                            </div>
-                            <!-- Blog Content -->
-                            <div class="blog-content">
-                                <!-- Post Title -->
-                                <div class="row align-items-center">
-                                    <div class="col-md-6">
-                                        <!-- Post Meta -->
-                                        <div class="row">
-                                            <div class="col">
-                                                <a href="#" class="post-title">{{ event.titreEvenement }}</a>
-                                            </div>
-                                            {% if is_granted("IS_AUTHENTICATED_REMEMBERED") and app.user == event.user %}
-                                                <div class="col">
-                                                    <a target="_blank"
-                                                       href="{{ path('viewEventUpdate',{'id':event.id}) }}"
-                                                       class="btn btn-danger text-white  pull-right">Modifier
-                                                        l'évènement</a>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                        <hr/>
-                                        <div class="row">
-                                            <div class="col col-md-auto">
-                                                <p>Organisé par : <b>{{ event.organisation }}</b></p>
-                                            </div>
-                                            <div class="col col-md-auto">
-                                                <p><i class="fa fa-map-marker"></i> {{ event.lieuEvenement.nomSalle }}
-                                                </p>
-                                            </div>
-                                            <div class="col col-md-auto">
-                                                {% if event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") == event.dateFinEvent|date("d M Y") %}
-                                                    <p>
-                                                        <span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
-                                                    </p>
-                                                    <p>
-                                                        <span class="fa fa-clock"></span> jusqu'
-                                                        à
-                                                        <b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"hh:mm") }}</b>
-                                                    </p>
-                                                {% elseif event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") != event.dateFinEvent|date("d M Y") %}
-                                                    <p>
-                                                        <span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
-                                                    </p>
-                                                    <p>
-                                                        <span class="fa fa-clock"></span> jusqu'
-                                                        à
-                                                        <b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
-                                                    </p>
-                                                {% else %}
-                                                    <p>
-                                                        <span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
-                                                    </p>
+{% set devise = event.devise.code %}
+<!-- ##### Events Area Start ##### -->
+{% block content %}
+	{{ parent() }}
+	<div class="blog-area section-padding-0-100">
+		<div class="container">
+			<div class="row">
+				<div
+					class="col-12 col-lg-9">
+					<!-- Single Post Start -->
+					<div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
+						<!-- Post Thumb -->
+						<div class="blog-post-thumb mt-30">
+							<a href="#"><img src="{{ event.imageevent?vich_uploader_asset(event,'image')|imagine_filter('single_event_view'):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE" }}" alt="{{ event.titreEvenement }}"></a>
+							<!-- Post Date -->
+							<div class="post-date">
+								<span class="day_">{{ event.dateDebutEvent|date('d') }}</span>
+								<span class="month_">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,'MMM Y') }}</span>
+							</div>
+						</div>
+						<!-- Blog Content -->
+						<div
+							class="blog-content">
+							<!-- Post Title -->
+							<div class="row">
+								<div
+									class="col-md-6">
+									<!-- Post Meta -->
+									<div class="row">
+										<div class="col">
+											<a href="#" class="post-title">{{ event.titreEvenement }}</a>
+										</div>
+										{% if is_granted("IS_AUTHENTICATED_REMEMBERED") and app.user == event.user %}
+											<div class="col">
+												<a target="_blank" href="{{ path('viewEventUpdate',{'id':event.id}) }}" class="btn btn-danger text-white  pull-right">Modifier
+																																																																																																																					                                                        l'évènement</a>
+											</div>
+										{% endif %}
+									</div>
+									<hr/>
+									<div class="row">
+										<div class="col col-md-auto">
+											<p>Organisé par :
+												<b>{{ event.organisation }}</b>
+											</p>
+										</div>
+										<div class="col col-md-auto">
+											<p>
+												<i class="fa fa-map-marker"></i>
+												{{ event.lieuEvenement.nomSalle }}
+											</p>
+										</div>
+										<div class="col col-md-auto">
+											{% if event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") == event.dateFinEvent|date("d M Y") %}
+												<p>
+													<span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+												</p>
+												<p>
+													<span class="fa fa-clock"></span>
+													jusqu'
+																																																																																																																					                                                        à
+													<b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"hh:mm") }}</b>
+												</p>
+											{% elseif event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") != event.dateFinEvent|date("d M Y") %}
+												<p>
+													<span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+												</p>
+												<p>
+													<span class="fa fa-clock"></span>
+													jusqu'
+																																																																																																																					                                                        à
+													<b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+												</p>
+											{% else %}
+												<p>
+													<span class="fa fa-clock"></span>&nbsp;<b>{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
+												</p>
 
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        {% if ticketNumber is defined and ticketNumber|length > 0 %}
-                                            {% set maxPrice,minPrice,dispo=0,999999999,false %}
-                                            {% for type in ticketNumber %}
-                                                {% if type.estDisponible %}
-                                                    {% set maxPrice = max(type.prix, maxPrice) %}
-                                                    {% set minPrice = min(type.prix, minPrice) %}
-                                                    {% set dispo=true %}
-                                                {% endif %}
-                                            {% endfor %}
-                                            {% if dispo %}
-                                                <div class="row">
-                                                    {% if event.isUsingSeatMap %}
-                                                        <div class="col">
-                                                            <a id="view_seat_map"
-                                                               class="btn btn-outline-danger text-dark"
-                                                               href="{{ path('viewBuyMap',{'idEvent': event.id}) }}"
-                                                               target="_blank"><span
-                                                                        class="fa fa-map"></span> Plan de salle</a>
-                                                        </div>
-                                                    {% endif %}
-                                                    <div class="col">
-                                                        <a class="btn btn-success text text-white pull-right"
-                                                           style="text-transform: none;" data-toggle="modal"
-                                                           data-target="#checkout_command">{{ 'events.buy_tickets'|trans }}
-                                                            <i class="fa fa-ticket">&nbsp;</i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <mark class="text text-light-blue pull-right">
-                                                            <span class="text text-danger">*</span>
-                                                            entre {{ devise }}
-                                                            <span>{{ minPrice|number_format(2, '.', ' ') }}</span>
-                                                            - {{ devise }}
-                                                            <span>{{ maxPrice|number_format(2, '.', ' ') }}</span>
-                                                        </mark>
-                                                    </div>
-                                                </div>
+											{% endif %}
+										</div>
+									</div>
+									<div id="clockdiv " class="row d-none d-sm-flex">
+										<div class="col-sm col-md-3">
+											<p id="day" class="days display-4"></p>
+											<div class="font-weight-bold ">Jours</div>
+										</div>
+										<div class="col-sm col-md-3">
+											<p class="hours display-4 " id="hour"></p>
+											<div class="font-weight-bold">Heures</div>
+										</div>
+										<div class="col-sm col-md-3">
+											<p class="minutes display-4" id="minute"></p>
+											<div class="font-weight-bold">Minutes</div>
+										</div>
+										<div class="col-sm col-md-3">
+											<p class="seconds display-4" id="second"></p>
+											<div class="font-weight-bold">Secondes</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									{% if ticketNumber is defined and ticketNumber|length > 0 %}
+										{% set maxPrice,minPrice,dispo=0,999999999,false %}
+										{% for type in ticketNumber %}
+											{% if type.estDisponible %}
+												{% set maxPrice = max(type.prix, maxPrice) %}
+												{% set minPrice = min(type.prix, minPrice) %}
+												{% set dispo=true %}
+											{% endif %}
+										{% endfor %}
+										{% if dispo %}
+											<div class="row">
+												{% if event.isUsingSeatMap %}
+													<div class="col">
+														<a id="view_seat_map" class="btn btn-outline-danger text-dark" href="{{ path('viewBuyMap',{'idEvent': event.id}) }}" target="_blank">
+															<span class="fa fa-map"></span>
+															Plan de salle</a>
+													</div>
+												{% endif %}
+												<div class="col">
+													<a class="btn btn-success text text-white pull-right" style="text-transform: none;" data-toggle="modal" data-target="#checkout_command">{{ 'events.buy_tickets'|trans }}
+														<i class="fa fa-ticket">&nbsp;</i>
+													</a>
+												</div>
+											</div>
+											<br/>
+											<div class="row">
+												<div class="col align-items-center">
+													<ul class="list-group mb-3">
+														{% for billet in ticketNumber %}
 
-                                            {% else %}
-                                                <p class="info text-danger pull-right">{{ 'events.ticket_off'|trans }} </p>
+															<li class="list-group-item d-flex justify-content-between lh-condensed">
+																<div>
+																	<h6 class="my-0">{{billet.libelle}}</h6>
+																	<small class="text-muted">{{billet.descriptions|raw}}</small>
+																</div>
+																<span class="text-muted">{{ billet.estDisponible?event.devise.code ~' '~billet.prix:'Billet épuisé' }}</span>
+															</li>
+														{% endfor %}
+													</ul>
+												</div>
+											</div>
+										{% else %}
+											<p class="info text-danger pull-right">{{ 'events.ticket_off'|trans }}
+											</p>
 
-                                            {% endif %}
-                                        {% else %}
-                                            <p class="info text-danger pull-right">Pas de billets disponibles</p>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <hr/>
-                                <div id="clockdiv " class="row d-none d-sm-flex">
-                                    <div class="col-sm col-md-3">
-                                        <p id="day" class="days display-4"></p>
-                                        <div class="font-weight-bold ">Jours</div>
-                                    </div>
-                                    <div class="col-sm col-md-3">
-                                        <p class="hours display-4 " id="hour"></p>
-                                        <div class="font-weight-bold">Heures</div>
-                                    </div>
-                                    <div class="col-sm col-md-3">
-                                        <p class="minutes display-4" id="minute"></p>
-                                        <div class="font-weight-bold">Minutes</div>
-                                    </div>
-                                    <div class="col-sm col-md-3">
-                                        <p class="seconds display-4" id="second"></p>
-                                        <div class="font-weight-bold">Secondes</div>
-                                    </div>
-                                </div>
-                                <!-- Post Excerpt -->
-                                <hr class="d-none d-sm-flex"/>
-                                <p>{{ event.description|raw }}</p>
-                            </div>
-                        </div>
+										{% endif %}
+									{% else %}
+										<p class="info text-danger pull-right">Pas de billets disponibles</p>
+									{% endif %}
+								</div>
+							</div>
 
-                        <div class="modal" id="checkout_command" role="dialog" data-backdrop="static"
-                             data-keyboard="false">
-                            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <div class="col"></div>
-                                        <div class="col">
-                                            <div class="row"><p class="modal-title mx-auto" id="exampleModalLabel">
-                                                    Commander</p></div>
-                                            <div class="row">
-                                                <small class="mx-auto">Temps restant pour commander: <span
-                                                            class="time_left">00:00</span></small>
-                                            </div>
-                                        </div>
-                                        <div class="col">
-                                            <button type="button" class="close closeConfirm"
-                                                    aria-label="Fermer">
-                                                <span>&times;</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <!-- Panel 1 body -->
-                                            <div class="col-lg-7">
-                                                <div id="checkout_steps">
-                                                    <div class="step-app">
-                                                        <ul class="step-steps">
-                                                            <li><a href="#tab1"><span class="number">1</span> Step 1</a>
-                                                            </li>
-                                                            <li><a href="#tab2"><span class="number">2</span> Step 2</a>
-                                                            </li>
-                                                            <li><a href="#tab3"><span class="number">3</span> Step 3</a>
-                                                            </li>
-                                                        </ul>
-                                                        <div class="step-content">
-                                                            <div class="step-tab-panel" id="tab1">
-                                                                <div class="container-fluid">
-                                                                    <h6 class="mx-auto">1.Choisissez des articles</h6>
-                                                                    <hr/>
+							<!-- Post Excerpt -->
+							<hr class="d-none d-sm-flex"/>
+							<p>{{ event.description|raw }}</p>
+						</div>
+					</div>
 
-                                                                    <form name="form_select_items"
-                                                                          id="form_select_items">
-                                                                        <div class="list-group">
-                                                                            {% set i=1 %}
-                                                                            {% for type in event.typeBillets %}
-                                                                                {% if type.isAdmission and (type.quantite - type.billets|length) > 0 %}
-                                                                                    <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
-                                                                                        <div class="row d-flex w-100 justify-content-between">
-                                                                                            <div class="col-6">
-                                                                                                <h5 class="mb-1">{{ type.libelle }}</h5>
-                                                                                            </div>
-                                                                                            <div class="col">
-                                                                                                <select class="form-control col-6 pull-right fillOne"
-                                                                                                        name="{{ type.libelle }}"
-                                                                                                        id="billet_{{ i }}"
-                                                                                                        data-price="{{ type.prix }}"
-                                                                                                        data-name="{{ type.libelle }}">
-                                                                                                    <option selected></option>
-                                                                                                    {% if (type.quantite - type.billets|length) > 0 %}
-                                                                                                        {% for i in 1..min((type.quantite - type.billets|length),max_command_per_ticket) %}
-                                                                                                            <option value="{{ type.libelle }}:{{ type.prix }}:{{ i }}">
-                                                                                                                {{ i }}
-                                                                                                            </option>
-                                                                                                        {% endfor %}
-                                                                                                    {% endif %}
-                                                                                                </select>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div class="row message_errors">
-                                                                                            <div class="col-12">
-                                                                                                <span class="text-danger error"></span>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <small>{{ devise }} {{ type.prix }}</small>
-                                                                                        <br/>
-                                                                                        <small>{{ type.description|raw }}</small>
-                                                                                    </div>
-                                                                                    {% set i=i+1 %}
-                                                                                {% elseif type.isAdmission and (type.quantite - type.billets|length) <= 0 %}
-                                                                                    <div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
-                                                                                        <div class="row d-flex w-100 justify-content-between">
-                                                                                            <div class="col-6">
-                                                                                                <h5 class="mb-1">{{ type.libelle }}</h5>
-                                                                                                <div class="col">Billet
-                                                                                                    épuisé
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                {% endif %}
-                                                                            {% endfor %}
-                                                                        </div>
-                                                                    </form>
-                                                                    <br/>
-                                                                    <!--<div class="row">
-                                                                        <div class="col">
-                                                                            <button data-direction="next"
-                                                                                    class="btn btn-danger pull-right"
-                                                                                    type="button"
-                                                                            >Continuer
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>-->
-                                                                </div>
-                                                            </div>
-                                                            <div class="step-tab-panel" id="tab2">
-                                                                <div class="container-fluid">
-                                                                    <h6>Informations sur l'acheteur</h6>
-                                                                    {% set nom,prenom,email,adresse,country,zipCode='','','','','','' %}
-                                                                    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-                                                                        {% set nom,prenom,email,adresse,country,zipCode = app.user.nom,app.user.prenom,app.user.email,app.user.adresse,app.user.pays,app.user.codePostal %}
-                                                                    {% endif %}
-                                                                    <form id="frmInfo">
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-6">
-                                                                                <label for="inputEmail4">Nom <span
-                                                                                            class="text-danger">*</span></label>
-                                                                                <input type="nom" class="form-control"
-                                                                                       id="nom" placeholder="Nom"
-                                                                                       name="nom"
-                                                                                       value="{{ nom }}" required>
-                                                                                <span class="text text-danger input-error"></span>
+					<div class="modal" id="checkout_command" role="dialog" data-backdrop="static" data-keyboard="false">
+						<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<div class="col"></div>
+									<div class="col">
+										<div class="row">
+											<p class="modal-title mx-auto" id="exampleModalLabel">
+												Commander</p>
+										</div>
+										<div class="row">
+											<small class="mx-auto">Temps restant pour commander:
+												<span class="time_left">00:00</span>
+											</small>
+										</div>
+									</div>
+									<div class="col">
+										<button type="button" class="close closeConfirm" aria-label="Fermer">
+											<span>&times;</span>
+										</button>
+									</div>
+								</div>
+								<div class="modal-body">
+									<div
+										class="row">
+										<!-- Panel 1 body -->
+										<div class="col-lg-7">
+											<div id="checkout_steps">
+												<div class="step-app">
+													<ul class="step-steps">
+														<li>
+															<a href="#tab1">
+																<span class="number">1</span>
+																Step 1</a>
+														</li>
+														<li>
+															<a href="#tab2">
+																<span class="number">2</span>
+																Step 2</a>
+														</li>
+														<li>
+															<a href="#tab3">
+																<span class="number">3</span>
+																Step 3</a>
+														</li>
+													</ul>
+													<div class="step-content">
+														<div class="step-tab-panel" id="tab1">
+															<div class="container-fluid">
+																<h6 class="mx-auto">1.Choisissez des articles</h6>
+																<hr/>
 
-                                                                            </div>
-                                                                            <div class="form-group col-md-6">
-                                                                                <label for="inputPassword4">Prénom <span
-                                                                                            class="text-danger">*</span></label>
-                                                                                <input type="prenom"
-                                                                                       class="form-control" id="prenom"
-                                                                                       placeholder="Prénom"
-                                                                                       name="prenom"
-                                                                                       value="{{ prenom }}" required>
-                                                                                <span class="text text-danger input-error"></span>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-12">
-                                                                                <label for="inputEmail4">Email <span
-                                                                                            class="text-danger">*</span></label>
-                                                                                <input type="email" class="form-control"
-                                                                                       id="email"
-                                                                                       placeholder="Adresse e-mail"
-                                                                                       name="email" value="{{ email }}"
-                                                                                       required>
-                                                                                <span class="text text-danger input-error"></span>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label for="inputAddress">Adresse</label>
-                                                                            <input type="text" class="form-control"
-                                                                                   id="inputAddress"
-                                                                                   placeholder="Adresse" name="adresse"
-                                                                                   value="{{ adresse }}">
-                                                                        </div>
-                                                                        <div class="form-row">
-                                                                            <div class="form-group col-md-5">
-                                                                                <label for="pays">Pays</label>
-                                                                                <select class="form-control"
-                                                                                        name="pays">
-                                                                                    <option>Votre pays..</option>
-                                                                                    {% for country_item in country %}
-                                                                                        <option value="{{ country_item.code }}">{{ country_item.libelle }}</option>
-                                                                                    {% endfor %}
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="form-group col-md-4">
-                                                                                <label for="region">Région</label>
-                                                                                <select id="region"
-                                                                                        class="form-control"
-                                                                                        name="region">
-                                                                                    <option value="" selected>Votre
-                                                                                        région...
-                                                                                    </option>
-                                                                                    <option>...</option>
-                                                                                </select>
-                                                                            </div>
-                                                                            <div class="form-group col-md-3">
-                                                                                <label for="code_zip">Code
-                                                                                    postal</label>
-                                                                                <input type="text" class="form-control"
-                                                                                       id="inputZip" name="code_zip"
-                                                                                       value="{{ zipCode }}">
-                                                                            </div>
-                                                                        </div>
-                                                                        <hr/>
-                                                                        <div class="form-group">
-                                                                            <label for="inputAddress2"><h6>Méthode de
-                                                                                    paiement</h6></label>
-                                                                            {% if(is_granted('ROLE_USER_SHOP')) %}
-                                                                                <div class="row">
-                                                                                    <div class="col-6">
-                                                                                        <input type="radio"
-                                                                                               class="form-check-input"
-                                                                                               name="paymentMethod"
-                                                                                               value="point_de_vente"
-                                                                                               checked>
-                                                                                        <span class="fa fa-home fa-2x"></span>
-                                                                                        Point de vente
-                                                                                    </div>
-                                                                                </div>
-                                                                            {% else %}
-                                                                                <div class="row">
-                                                                                    <div class="col-6">
-                                                                                        <input type="radio"
-                                                                                               class="form-check-input"
-                                                                                               name="paymentMethod"
-                                                                                               disabled>
-                                                                                        <span class="fa fa-credit-card fa-2x"></span>
-                                                                                        Carte bancaire
-                                                                                    </div>
-                                                                                </div>
-                                                                                <hr/>
-                                                                                <div class="row">
-                                                                                    <div class="col-6">
-                                                                                        <input type="radio"
-                                                                                               class="form-check-input"
-                                                                                               name="paymentMethod"
-                                                                                               value="Paypal" checked>
-                                                                                        <span class="fa fa-paypal fa-2x"></span>
-                                                                                        Paypal
-                                                                                    </div>
-                                                                                </div>
-                                                                                <hr/>
-                                                                                <div class="row">
-                                                                                    <div class="col-6">
-                                                                                        <input type="radio"
-                                                                                               class="form-check-input"
-                                                                                               name="paymentMethod"
-                                                                                               disabled>
-                                                                                        <img
-                                                                                                src="{{ asset('img/logo-mvola.png.png') }}"
-                                                                                                width="100"
-                                                                                                height="30"/>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <input type="hidden" name="_token"
-                                                                                       value="{{ csrf_token('checkout_info') }}"/>
-                                                                                <hr/>
-                                                                            {% endif %}
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
+																<form name="form_select_items" id="form_select_items">
+																	<div class="list-group">
+																		{% set i=1 %}
+																		{% for type in event.typeBillets %}
+																			{% if type.isAdmission and (type.quantite - type.billets|length) > 0 %}
+																				<div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
+																					<div class="row d-flex w-100 justify-content-between">
+																						<div class="col-6">
+																							<h5 class="mb-1">{{ type.libelle }}</h5>
+																						</div>
+																						<div class="col">
+																							<select class="form-control col-6 pull-right fillOne" name="{{ type.libelle }}" id="billet_{{ i }}" data-price="{{ type.prix }}" data-name="{{ type.libelle }}">
+																								<option selected></option>
+																								{% if (type.quantite - type.billets|length) > 0 %}
+																									{% for i in 1..min((type.quantite - type.billets|length),max_command_per_ticket) %}
+																										<option value="{{ type.libelle }}:{{ type.prix }}:{{ i }}">
+																											{{ i }}
+																										</option>
+																									{% endfor %}
+																								{% endif %}
+																							</select>
+																						</div>
+																					</div>
+																					<div class="row message_errors">
+																						<div class="col-12">
+																							<span class="text-danger error"></span>
+																						</div>
+																					</div>
+																					<small>{{ devise }}
+																						{{ type.prix }}</small>
+																					<br/>
+																					<small>{{ type.description|raw }}</small>
+																				</div>
+																				{% set i=i+1 %}
+																			{% elseif type.isAdmission and (type.quantite - type.billets|length) <= 0 %}
+																				<div class="list-group-item list-group-item-action flex-column align-items-start  parent_item">
+																					<div class="row d-flex w-100 justify-content-between">
+																						<div class="col-6">
+																							<h5 class="mb-1">{{ type.libelle }}</h5>
+																							<div class="col">Billet
+																																																																																																																																																																																																																						                                                                                                    épuisé
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																			{% endif %}
+																		{% endfor %}
+																	</div>
+																</form>
+																<br/>
+																<!--<div class="row">
+																																																																																																																																														                                                                        <div class="col">
+																																																																																																																																														                                                                            <button data-direction="next"
+																																																																																																																																														                                                                                    class="btn btn-danger pull-right"
+																																																																																																																																														                                                                                    type="button"
+																																																																																																																																														                                                                            >Continuer
+																																																																																																																																														                                                                            </button>
+																																																																																																																																														                                                                        </div>
+																																																																																																																																														                                                                    </div>-->
+															</div>
+														</div>
+														<div class="step-tab-panel" id="tab2">
+															<div class="container-fluid">
+																<h6>Informations sur l'acheteur</h6>
+																{% set nom,prenom,email,adresse,country,zipCode='','','','','','' %}
+																{% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+																	{% set nom,prenom,email,adresse,country,zipCode = app.user.nom,app.user.prenom,app.user.email,app.user.adresse,app.user.pays,app.user.codePostal %}
+																{% endif %}
+																<form id="frmInfo">
+																	<div class="form-row">
+																		<div class="form-group col-md-6">
+																			<label for="inputEmail4">Nom
+																				<span class="text-danger">*</span>
+																			</label>
+																			<input type="nom" class="form-control" id="nom" placeholder="Nom" name="nom" value="{{ nom }}" required>
+																			<span class="text text-danger input-error"></span>
 
-                                                            </div>
-                                                            <div class="step-tab-panel" id="tab3">
-                                                                <h3>Paiement de la facture</h3>
-                                                                <div class="container-fluid">
-                                                                    <p class="paymentInfo"></p>
-                                                                    <div class="form-row">
-                                                                        <div class="col-12">
-                                                                            <div id="btnPaypal"></div>
-                                                                            <form class="form_order_method"
-                                                                                  method="post" novalidate>
-                                                                            </form>
-                                                                            <form id="form_printer" class="form_printer"
-                                                                                  method="post"
-                                                                                  enctype="multipart/form-data">
-                                                                                <input type="hidden" name="order_method"
-                                                                                       value="print"/>
-                                                                                <input type="hidden" name="_token"
-                                                                                       value="print"/>
-                                                                            </form>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row text-center payment-loader">
-                                                                        <div class="col loader">
-                                                                            <div class="row">
-                                                                                <div class="col">
-                                                                                    <img src="{{ asset('img/loader.gif') }}"
-                                                                                         width="200px"/></div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col">
-                                                                                    <span>Veuiller patienter pendant l'enregistrement de vos informations</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row card payment-success">
-                                                                        <div class="col-12">
-                                                                            <div class="row text-center">
-                                                                                <div class="col">
-                                                                                    <span class="fa fa-check-circle text-success fa-3x "></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col">
-                                                                                    Merci, la commande a été effectué
-                                                                                    avec succès. Veuiller vérifier vos
-                                                                                    billets selon votre méthode de
-                                                                                    paiement
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row card payment-failure">
-                                                                        <div class="col-12">
-                                                                            <div class="row text-center">
-                                                                                <div class="col">
-                                                                                    <span class="fa fa-warning text-danger fa-3x "></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col">
-                                                                                    Désolé, le process n'a pas abouti.
-                                                                                    Veuiller recommencer
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row card register-failure">
-                                                                        <div class="col-12">
-                                                                            <div class="row text-center">
-                                                                                <div class="col">
-                                                                                    <span class="fa fa-warning text-danger fa-3x "></span>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row">
-                                                                                <div class="col">
-                                                                                    Merci, la commande
-                                                                                    a
-                                                                                    abouti
-                                                                                    mais des erreurs internes se sont
-                                                                                    produites
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <br/>
-                                                            </div>
-                                                        </div>
-                                                        <div class="step-footer row">
-                                                            <div class="col">
-                                                                <button data-direction="prev"
-                                                                        class="btn btn-secondary step-btn">Précédent
-                                                                </button>
-                                                            </div>
-                                                            <div col="col">
-                                                                <button data-direction="next"
-                                                                        class="btn btn-danger pull-right step-btn">
-                                                                    Continuer
-                                                                </button>
-                                                                <button data-direction="finish"
-                                                                        class="btn btn-success step-btn step-btn-finish">
-                                                                    Terminé
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+																		</div>
+																		<div class="form-group col-md-6">
+																			<label for="inputPassword4">Prénom
+																				<span class="text-danger">*</span>
+																			</label>
+																			<input type="prenom" class="form-control" id="prenom" placeholder="Prénom" name="prenom" value="{{ prenom }}" required>
+																			<span class="text text-danger input-error"></span>
+																		</div>
+																	</div>
+																	<div class="form-row">
+																		<div class="form-group col-md-12">
+																			<label for="inputEmail4">Email
+																				<span class="text-danger">*</span>
+																			</label>
+																			<input type="email" class="form-control" id="email" placeholder="Adresse e-mail" name="email" value="{{ email }}" required>
+																			<span class="text text-danger input-error"></span>
+																		</div>
+																	</div>
+																	<div class="form-group">
+																		<label for="inputAddress">Adresse</label>
+																		<input type="text" class="form-control" id="inputAddress" placeholder="Adresse" name="adresse" value="{{ adresse }}">
+																	</div>
+																	<div class="form-row">
+																		<div class="form-group col-md-5">
+																			<label for="pays">Pays</label>
+																			<select class="form-control" name="pays">
+																				<option>Votre pays..</option>
+																				{% for country_item in country %}
+																					<option value="{{ country_item.code }}">{{ country_item.libelle }}</option>
+																				{% endfor %}
+																			</select>
+																		</div>
+																		<div class="form-group col-md-4">
+																			<label for="region">Région</label>
+																			<select id="region" class="form-control" name="region">
+																				<option value="" selected>Votre
+																																																																																																																																																																																											                                                                                        région...
+																				</option>
+																				<option>...</option>
+																			</select>
+																		</div>
+																		<div class="form-group col-md-3">
+																			<label for="code_zip">Code
+																																																																																																																																																																																		                                                                                    postal</label>
+																			<input type="text" class="form-control" id="inputZip" name="code_zip" value="{{ zipCode }}">
+																		</div>
+																	</div>
+																	<hr/>
+																	<div class="form-group">
+																		<label for="inputAddress2">
+																			<h6>Méthode de
+																																																																																																																																																																																		                                                                                    paiement</h6>
+																		</label>
+																		{% if(is_granted('ROLE_USER_SHOP')) %}
+																			<div class="row">
+																				<div class="col-6">
+																					<input type="radio" class="form-check-input" name="paymentMethod" value="point_de_vente" checked>
+																					<span class="fa fa-home fa-2x"></span>
+																					Point de vente
+																				</div>
+																			</div>
+																		{% else %}
+																			<div class="row">
+																				<div class="col-6">
+																					<input type="radio" class="form-check-input" name="paymentMethod" disabled>
+																					<span class="fa fa-credit-card fa-2x"></span>
+																					Carte bancaire
+																				</div>
+																			</div>
+																			<hr/>
+																			<div class="row">
+																				<div class="col-6">
+																					<input type="radio" class="form-check-input" name="paymentMethod" value="Paypal" checked>
+																					<span class="fa fa-paypal fa-2x"></span>
+																					Paypal
+																				</div>
+																			</div>
+																			<hr/>
+																			<div class="row">
+																				<div class="col-6">
+																					<input type="radio" class="form-check-input" name="paymentMethod" disabled>
+																					<img src="{{ asset('img/logo-mvola.png.png') }}" width="100" height="30"/>
+																				</div>
+																			</div>
+																			<input type="hidden" name="_token" value="{{ csrf_token('checkout_info') }}"/>
+																			<hr/>
+																		{% endif %}
+																	</div>
+																</form>
+															</div>
 
-                                            </div>
-                                            <!-- Panel 2 body-->
-                                            <div class="col-lg-5">
-                                                <div class="container-fluid">
+														</div>
+														<div class="step-tab-panel" id="tab3">
+															<h3>Paiement de la facture</h3>
+															<div class="container-fluid">
+																<p class="paymentInfo"></p>
+																<div class="form-row">
+																	<div class="col-12">
+																		<div id="btnPaypal"></div>
+																		<form class="form_order_method" method="post" novalidate></form>
+																		<form id="form_printer" class="form_printer" method="post" enctype="multipart/form-data">
+																			<input type="hidden" name="order_method" value="print"/>
+																			<input type="hidden" name="_token" value="print"/>
+																		</form>
+																	</div>
+																</div>
+																<div class="row text-center payment-loader">
+																	<div class="col loader">
+																		<div class="row">
+																			<div class="col">
+																				<img src="{{ asset('img/loader.gif') }}" width="200px"/></div>
+																		</div>
+																		<div class="row">
+																			<div class="col">
+																				<span>Veuiller patienter pendant l'enregistrement de vos informations</span>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="row card payment-success">
+																	<div class="col-12">
+																		<div class="row text-center">
+																			<div class="col">
+																				<span class="fa fa-check-circle text-success fa-3x "></span>
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="col">
+																				Merci, la commande a été effectué
+																																																																																																																																																																																		                                                                                    avec succès. Veuiller vérifier vos
+																																																																																																																																																																																		                                                                                    billets selon votre méthode de
+																																																																																																																																																																																		                                                                                    paiement
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="row card payment-failure">
+																	<div class="col-12">
+																		<div class="row text-center">
+																			<div class="col">
+																				<span class="fa fa-warning text-danger fa-3x "></span>
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="col">
+																				Désolé, le process n'a pas abouti.
+																																																																																																																																																																																		                                                                                    Veuiller recommencer
+																			</div>
+																		</div>
+																	</div>
+																</div>
+																<div class="row card register-failure">
+																	<div class="col-12">
+																		<div class="row text-center">
+																			<div class="col">
+																				<span class="fa fa-warning text-danger fa-3x "></span>
+																			</div>
+																		</div>
+																		<div class="row">
+																			<div class="col">
+																				Merci, la commande
+																																																																																																																																																																																		                                                                                    a
+																																																																																																																																																																																		                                                                                    abouti
+																																																																																																																																																																																		                                                                                    mais des erreurs internes se sont
+																																																																																																																																																																																		                                                                                    produites
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															<br/>
+														</div>
+													</div>
+													<div class="step-footer row">
+														<div class="col">
+															<button data-direction="prev" class="btn btn-secondary step-btn">Précédent
+															</button>
+														</div>
+														<div col="col">
+															<button data-direction="next" class="btn btn-danger pull-right step-btn">
+																Continuer
+															</button>
+															<button data-direction="finish" class="btn btn-success step-btn step-btn-finish">
+																Terminé
+															</button>
+														</div>
+													</div>
+												</div>
+											</div>
 
-                                                    <h6 class="mx-auto">Résumé de la commande</h6>
-                                                    <hr/>
-                                                    <div id="data_cart">
-                                                        <div class="row">
-                                                            <div class="col">Veuillez ajouter vos commandes</div>
-                                                        </div>
-                                                    </div>
-                                                    <hr/>
-                                                    <div class="row sub-total">
-                                                        <div class="col-8">Sous-total</div>
-                                                        <div class="col sub_total_value">
-                                                            <span class="currency">{{ devise }} </span> 0
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-8">Frais</div>
-                                                        <div class="col">
-                                                            <span class="currency frais">{{ devise }} </span> 0
-                                                        </div>
-                                                    </div>
-                                                    <hr/>
-                                                    <div class="row total">
-                                                        <div class="col-8"><h6>Total</h6></div>
-                                                        <div class="col total_value">
-                                                            <span class="currency">{{ devise }} </span> 0
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Panels end -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal fade" id="confirmCloseCheckout" role="dialog" data-backdrop="false">
-                            <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="close">Fermer la fenêtre</h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row text-center">
-                                            <div class="col">Etes-vous sur de vouloir fermer la fenêtre, vos commandes
-                                                seront annulées.
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div class="row text-center">
-                                            <div class="col-12">
-                                                <button class="btn btn-danger confirmclosed">Oui</button>
-                                                <button class="btn btn-primary" data-dismiss="modal">Non</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-lg-3">
-                        <div class="blog-sidebar-area">
-                            <!-- Widget Area -->
-                            <div class="single-widget-area mb-30">
-                                <img src="{{ asset('img/events/Bodo.png') }}"/>
-                            </div>
+										</div>
+										<!-- Panel 2 body-->
+										<div class="col-lg-5">
+											<div class="container-fluid">
 
-                            <!-- Widget Area -->
-                            <div class="single-widget-area mb-30">
-                                <a href="#"><img src="{{ asset('img/events/reveillon.jpg') }}" alt=""></a>
-                            </div>
-                            <!-- Widget Area -->
-                            <div class="single-widget-area mb-30">
-                                <div class="widget-title">
-                                    <h5>Catégories</h5>
-                                </div>
-                                <div class="widget-content">
-                                    <ul class="tags">
-                                        {% for cat in catList %}
-                                            <li><a href="#">{{ cat.libelle }}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+												<h6 class="mx-auto">Résumé de la commande</h6>
+												<hr/>
+												<div id="data_cart">
+													<div class="row">
+														<div class="col">Veuillez ajouter vos commandes</div>
+													</div>
+												</div>
+												<hr/>
+												<div class="row sub-total">
+													<div class="col-8">Sous-total</div>
+													<div class="col sub_total_value">
+														<span class="currency">{{ devise }}
+														</span>
+														0
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-8">Frais</div>
+													<div class="col">
+														<span class="currency frais">{{ devise }}
+														</span>
+														0
+													</div>
+												</div>
+												<hr/>
+												<div class="row total">
+													<div class="col-8">
+														<h6>Total</h6>
+													</div>
+													<div class="col total_value">
+														<span class="currency">{{ devise }}
+														</span>
+														0
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<!-- Panels end -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal fade" id="confirmCloseCheckout" role="dialog" data-backdrop="false">
+						<div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="close">Fermer la fenêtre</h5>
+								</div>
+								<div class="modal-body">
+									<div class="row text-center">
+										<div class="col">Etes-vous sur de vouloir fermer la fenêtre, vos commandes
+																																																																																																	                                                seront annulées.
+										</div>
+									</div>
+									<br>
+									<div class="row text-center">
+										<div class="col-12">
+											<button class="btn btn-danger confirmclosed">Oui</button>
+											<button class="btn btn-primary" data-dismiss="modal">Non</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 col-lg-3">
+					<div
+						class="blog-sidebar-area">
+						<!-- Widget Area -->
+						<div class="single-widget-area mb-30">
+							<img src="{{ asset('img/events/Bodo.png') }}"/>
+						</div>
 
-    {% endblock %}
-    {% block javascripts %}
-        {{ parent() }}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
-        <script type="text/javascript" src="{{ asset('js/jquery-steps.js') }}"></script>
-        <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency={{ devise }}"></script>
-        <script type="text/javascript">
-            let cart_items = [];
-            let steps_api = null;
-            let total_price = 0;
-            let counter = '';
-
-            function resetForm(id_form) {
-                $("#" + id_form).find('input[type="radio"]').val('');
-                $("#" + id_form).find('input[type="text"]').val('');
-                $("#" + id_form).find('input[type="password"]').val('');
-                $("#" + id_form).find('input[type="checkbox"]').removeAttr("checked");
-                $("#" + id_form).find('select option').removeAttr("selected");
-                $("#" + id_form).find('textarea').val('');
-            }
-
-            //-------------------------------modal management-------------
-            $('#view_seat_map').on('click', function () {
-                $.get('/res_billet/clear');
-            });
-            $('#checkout_command').on('shown.bs.modal', function () {
-                $.get('/res_billet/clear');
-                //--------------------------------steps management
-                let form_select_item = $('#form_select_items');
-                let rules_select_items = {}, messages_select_items = {};
-                $('#form_select_items select').each(function (i, val) {
-                    rules_select_items[val.getAttribute('name')] = {require_from_group: [1, ".fillOne"]};
-                    messages_select_items[val.getAttribute('name')] = {require_from_group: "Veuiller choisir au moins 1 billet pour continuer"}
-                });
-                let form_select_item_validator = form_select_item.validate({
-                    rules: rules_select_items,
-                    messages: messages_select_items,
-                    submitHandler: function (form) {
-                        return false;
-                    },
-                    errorPlacement: function (error, element) {
-                        error.appendTo(element.parents('.parent_item').find('.message_errors').find('.error'));
-                    }
-                });
-
-                let frmInfo = $('#frmInfo');
-                let frmInfoValidator = frmInfo.validate({
-                    rules: {
-                        nom: {required: true},
-                        prenom: {required: true},
-                        email: {
-                            required: true,
-                            email: true
-                        }
-                    },
-                    messages: {
-                        nom: {required: 'Veuillez insérer votre nom'},
-                        prenom: {required: 'Veuillez insérer votre prénom'},
-                        email: {
-                            required: 'Veuillez insérer votre e-mail',
-                            email: 'Veuillez insérer un e-mail valide'
-                        }
-                    },
-                    submitHandler: function (form) {
-                        return false;
-                    },
-                    errorPlacement: function (error, element) {
-                        error.appendTo(element.parents('.form-group').find('.input-error'));
-                    }
-                });
-                $(".step-steps").hide();
-                steps_api = $('#checkout_steps').steps({
-                    onChange: function (currentIndex, newIndex, stepDirection) {
-                        if (stepDirection === 'forward') {
-                            if (newIndex === 1 && currentIndex === newIndex - 1) {
-                                let data = form_select_item.serializeArray();
-                                $('#data_cart').empty();
-                                $.each(data, function (i, field) {
-                                    let total_container = null;
-                                    if (field.value !== "") {
-                                        let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
-                                        let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
-                                        let item_price = $("<div class='col'>{{ devise }} </div>").append(parsed[1] * parsed[2]);
-                                        let item_container = $("<div class='row'></div>").append(item_label, item_price);
-                                        $.post('/res_billet/add/', {
-                                            event_id: {{ event.id }},
-                                            select_nb_billets: parseInt(parsed[2]),
-                                            type_billet: parsed[0],
-                                            section_id: '-',
-                                            place_id: '-',
-                                            redirect: '/'
-                                        });
-                                        $('#data_cart').append(item_container);
-                                    }
-                                });
-                                $('.total').html('<div class="col loader text-center"><img style="width:100px" src="{{ asset('img/loader.gif') }}"></div>');
-                                $.get("/api/cart/get_total", function (total) {
-                                    total_price = total;
-                                    let item_label = $("<div class='col-7'></div>").append("<h6>Total</h6>");
-                                    let item_price = $("<div class='col total_value'>{{ devise }} </div>").append(total);
-                                    $(".total").empty();
-                                    $(".total").append(item_label, item_price);
-                                });
-                                return form_select_item.valid();
-                            }
-                            if (newIndex === 2 && currentIndex === newIndex - 1) {
-                                let data_payment_method = null;
-                                counter = start_counter();
-                                $('.payment-success').hide();
-                                $('.payment-failure').hide();
-                                $('.register-failure').hide();
-                                $('.payment-loader').hide();
-                                $.post("/res_billet/send_buyer_info", frmInfo.serialize(), function (data) {
-                                    console.log(data);
-                                });
-                                $.get('/api/cart/list', function (data) {
-                                    cart_items = data;
-                                });
-                                $.each(frmInfo.serializeArray(), function (index, el) {
-                                    if (el.name === "paymentMethod") {
-                                        data_payment_method = el;
-                                    }
-                                });
-                                switch (data_payment_method.value) {
-                                    case 'Paypal':
-                                        $(".form_order_method").empty();
-                                        $(".paymentInfo").text('Voici avez choisi paypal comme mode de paiement,\n' +
-                                            '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
-                                            '                                                                    fois le paiement effectué , vous serez redirigé\n' +
-                                            '                                                                    automatiquement sur la page.');
-                                        paypal.Buttons({
-                                            style: {
-                                                layout: 'horizontal'
-                                            },
-                                            createOrder: function (data, actions) {
-                                                // Set up the transaction
-                                                return actions.order.create({
-                                                    purchase_units: [{
-                                                        application_context: {
-                                                            brand_name: 'Ivenco',
-                                                            return_url: '/res_billet/checkout',
-                                                            cancel_url: '/res_billet/cancel'
-                                                        },
-                                                        amount: {
-                                                            breakdown: {
-                                                                item_total: {
-                                                                    currency_code: "{{ devise }}",
-                                                                    value: total_price
-                                                                }
-                                                            },
-                                                            currency_code: "{{ devise }}",
-                                                            value: total_price
-                                                        },
-                                                        items:
-                                                            transformItemsPaypalFormat(cart_items)
-                                                    }],
-
-                                                });
-                                            },
-                                            onApprove: function (data, actions) {
-                                                // Capture the funds from the transaction
-                                                return actions.order.capture().then(function (details) {
-                                                    $(document).ajaxStart(function () {
-                                                        $('.payment-loader').show();
-                                                    });
-                                                    $(document).ajaxStop(function () {
-                                                        $('.payment-loader').hide();
-                                                    });
-                                                    // Show a success message to your buyer
-                                                    $.get('/res_billet/checkout')
-                                                        .done(function () {
-                                                            $('.payment-success').show();
-                                                            $('#btnPaypal').hide();
-                                                        })
-                                                        .fail(function () {
-                                                            $('.register-failure').show();
-                                                        })
-                                                        .always(function () {
-                                                            console.log("finished");
-                                                        });
-                                                    console.log('Transaction completed by ' + details.payer.name.given_name);
-                                                    //location.href = "/res_billet/checkout";
-                                                });
-                                            },
-                                            onError: function (error) {
-                                                $('.payment-failure').show();
-                                            }
-                                        }).render('#btnPaypal');
-                                        return frmInfo.valid();
-                                        {% if is_granted('ROLE_USER_SHOP') %}
-                                    case 'point_de_vente':
-                                        let user_name = '{{ app.user.username }}';
-                                        let shop_name = '{{ app.user.pointDeVente.nom|escape("js") }}';
-                                        $(".paymentInfo").append('<p><b>' + user_name + '</b>,administrateur du point de vente: <b>' + shop_name + '</b></p>');
-                                        let form_order_method = $(".form_order_method");
-                                        form_order_method.append("<div class=\"form-group\">\n" +
-                                            "                                                                                    <h6>Veuiller choisir le mode d\'envoi des billets</h6>\n" +
-                                            "                                                                                    <div class=\"row\">\n" +
-                                            "                                                                                        <div class=\"col-6\">\n" +
-                                            "                                                                                           <input name=\"_token\" type=\"hidden\" value=\"{{ csrf_token('order-method') }}\">\n" +
-                                            "                                                                                            <input type=\"radio\"\n" +
-                                            "                                                                                                   class=\"form-check-input\"\n" +
-                                            "                                                                                                   name=\"order_method\"\n" +
-                                            "                                                                                                   value=\"print\" checked>\n" +
-                                            "                                                                                            <span class=\"fa fa-print fa-2x\"></span>\n" +
-                                            "                                                                                            Imprimer les billets\n" +
-                                            "                                                                                        </div>\n" +
-                                            "                                                                                    </div>\n" +
-                                            "                                                                                    <hr/>\n" +
-                                            "                                                                                    <div class=\"row\">\n" +
-                                            "                                                                                        <div class=\"col-6\">\n" +
-                                            "                                                                                            <input type=\"radio\"\n" +
-                                            "                                                                                                   class=\"form-check-input\"\n" +
-                                            "                                                                                                   name=\"order_method\"\n" +
-                                            "                                                                                                   value=\"send_email\"/>\n" +
-                                            "                                                                                            <span class=\"fa fa-mail-forward fa-2x\"></span>\n" +
-                                            "                                                                                            Envoyer via e-mail\n" +
-                                            "                                                                                        </div>\n" +
-                                            "                                                                                    </div>\n" +
-                                            "                                                                                    <hr/>\n" +
-                                            "                                                                                    <div class=\"row\">\n" +
-                                            "                                                                                        <div class=\"col-6\">\n" +
-                                            "                                                                                            <input type=\"submit\"\n" +
-                                            "                                                                                                   class=\"form-check-input btn btn-success\"\n" +
-                                            "                                                                                                   value=\"Valider\"/>\n" +
-                                            "                                                                                        </div>\n" +
-                                            "                                                                                    </div>\n" +
-                                            "                                                                                    <br/>\n" +
-                                            "                                                                                </div>");
-
-                                        form_order_method.on('submit', function (e) {
-                                            e.preventDefault();
-                                            let data_order_method = form_order_method.serializeArray();
-                                            let order_method = '';
-                                            let token = '';
-                                            e.preventDefault();
-                                            $.each(data_order_method, function (index, el) {
-                                                if (el.name === "order_method") {
-                                                    order_method = el.value;
-                                                }
-                                                if (el.name === '_token') {
-                                                    token = el.value;
-                                                }
-                                            });
-
-                                            $(document).ajaxStart(function () {
-                                                $('.payment-loader').show();
-                                            });
-                                            $(document).ajaxStop(function () {
-                                                $('.payment-loader').hide();
-                                            });
-                                            if (order_method === 'print') {
-                                                var xhr = new XMLHttpRequest();
-                                                xhr.open("POST", "{{ path('cart_print_mail')|escape('js') }}");
-                                                xhr.responseType = 'arraybuffer';
-                                                xhr.onload = function () {
-                                                    if (this.status === 200) {
-                                                        var filename = "";
-                                                        var disposition = xhr.getResponseHeader('Content-Disposition');
-                                                        if (disposition && disposition.indexOf('attachment') !== -1) {
-                                                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                                                            var matches = filenameRegex.exec(disposition);
-                                                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-                                                        }
-                                                        var type = xhr.getResponseHeader('Content-Type');
-
-                                                        var blob;
-                                                        if (typeof File === 'function') {
-                                                            try {
-                                                                blob = new File([this.response], filename, {type: type});
-                                                            } catch (e) { /* Edge */
-                                                            }
-                                                        }
-                                                        if (typeof blob === 'undefined') {
-                                                            blob = new Blob([this.response], {type: type});
-                                                        }
-
-                                                        if (typeof window.navigator.msSaveBlob !== 'undefined') {
-                                                            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-                                                            window.navigator.msSaveBlob(blob, filename);
-                                                        } else {
-                                                            var URL = window.URL || window.webkitURL;
-                                                            var downloadUrl = URL.createObjectURL(blob);
-
-                                                            if (filename) {
-                                                                // use HTML5 a[download] attribute to specify filename
-                                                                var a = document.createElement("a");
-                                                                // safari doesn't support this yet
-                                                                if (typeof a.download === 'undefined') {
-                                                                    window.location = downloadUrl;
-                                                                } else {
-                                                                    a.href = downloadUrl;
-                                                                    a.download = filename;
-                                                                    document.body.appendChild(a);
-                                                                    a.click();
-                                                                }
-                                                            } else {
-                                                                window.location = downloadUrl;
-                                                            }
-                                                            setTimeout(function () {
-                                                                URL.revokeObjectURL(downloadUrl);
-                                                            }, 100); // cleanup
-                                                        }
-                                                    }
-                                                };
-                                                xhr.onloadend = function () {
-                                                    $('.payment-success').show();
-                                                    $('.payment-loader').hide();
-                                                    $('.payment-loader').hide();
-                                                    $('.form_order_method').empty();
-                                                };
-                                                xhr.onloadstart = function () {
-                                                    $('.form_order_method').hide();
-                                                    $('.payment-loader').show();
-                                                };
-                                                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                                                var formData = new FormData(document.getElementById("form_printer"));
-                                                xhr.send(formData);
-                                                return frmInfo.valid();
-                                            } else if (order_method === 'send_email') {
-                                                $.post('{{ path('cart_print_mail')|escape('js') }}', {
-                                                    order_method: order_method,
-                                                    _token: token
-                                                }).done(function (data) {
-                                                    $('.payment-success').show();
-                                                    $('.form_order_method').empty();
-                                                    return frmInfo.valid();
-                                                }).fail(function () {
-                                                    $('.payment-failure').show();
-                                                    $('.form_order_method').empty();
-                                                });
-                                            }
-                                        });
-                                        {% endif %}
-                                    default:
-                                        console.log("default");
-                                        break;
-                                }
-                                $("#btnPaypal").empty();
-
-                            }
-                        }
-                        if (stepDirection === 'backward') {
-                            if (newIndex === 0 && currentIndex === newIndex + 1) {
-                                clearInterval(counter);
-                                $.get('/res_billet/clear', function () {
-                                    $('#data_cart').empty();
-                                    $('#data_cart').append("<div class='row'><div class='col'>Veuillez ajouter vos commandes</div>");
-                                    $('.total_value').empty().append("0");
-                                });
-                            }
-                            if (newIndex === 1 && currentIndex === newIndex + 1) {
-                                $("#btnPaypal").find('.paypal-buttons').remove();
-                                $(".paymentInfo").empty();
-                                $(".form_order_method").empty();
-                            }
-                            if (newIndex === 2 && currentIndex === newIndex + 1) {
-                            }
-
-                        }
-                        return true;
-                    },
-                    showBackButton: true,
-                    onFinish: function () {
-                        if ($('.payment-success').is(':visible') || $('.payment-failure').is(':visible') || $('.register-failure').is(':visible')) {
-                            $.get('/res_billet/clear');
-                            $('#checkout_command').modal('hide');
-                            location.reload();
-                        } else {
-                            alert('Veuiller procéder au paiement. Pour fermer le dialogue cliquer sur x. ');
-                        }
-                    }
-                });
-            });
-            $('.closeConfirm').click(function () { //Close Button on Form Modal to trigger Warning Modal
-                $('#confirmCloseCheckout').modal('show').on('shown.bs.modal', function () { //Show Warning Modal and use `show` event listener
-                    $('.confirmclosed').click(function () { //Warning Modal Confirm Close Button
-                        $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
-                        $('#checkout_command').modal('hide'); //Hide Form Modal
-                        $.get('/res_billet/clear');
-                        location.reload();
-                    });
-                });
-            });
-
-            $('#checkout_command').on('hidden.bs.modal', function () {
-                $.get('/res_billet/clear');
-                resetForm('form_select_items');
-                resetForm('frmInfo');
-                location.reload();
-            });
-            let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
-
-            function start_counter() {
-                let start_counter = 8 * 60;//8 * 60;
-                let checkout_timer = setInterval(function () {
-                    --start_counter;
-                    $('.time_left').text(format(start_counter));
-                    if (start_counter === 0) {
-                        clearInterval(checkout_timer);
-                        $.get('/res_billet/clear');
-                        $('#checkout_command').modal('hide');
-                    }
-                }, 1000);
-                return start_counter;
-            }
-
-            function format(time) {
-                // Hours, minutes and seconds
-                let hrs = ~~(time / 3600);
-                let mins = ~~((time % 3600) / 60);
-                let secs = ~~time % 60;
-
-                // Output like "1:01" or "4:03:59" or "123:03:59"
-                let ret = "";
-                if (hrs > 0) {
-                    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-                }
-                ret += "" + mins + ":" + (secs < 10 ? "0" : "");
-                ret += "" + secs;
-                return ret;
-            }
-
-            function transformItemsPaypalFormat(cart_items) {
-                let formatted_cart = [];
-                cart_items.forEach(function (el) {
-                    let item = {
-                        name: el.category_str,
-                        quantity: el.quantity,
-                        currency: "{{ devise }}",
-                        unit_amount: {
-                            value: el.price,
-                            currency_code: "{{ devise }}"
-                        }
-                    };
-                    formatted_cart.push(item);
-                });
-                return formatted_cart;
-            }
-
-            let x = setInterval(function () {
-                let now = new Date().getTime();
-                let t = deadline - now;
-                let days = Math.floor(t / (1000 * 60 * 60 * 24));
-                let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                let minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
-                let seconds = Math.floor((t % (1000 * 60)) / 1000);
-                document.getElementById("day").innerHTML = days;
-                document.getElementById("hour").innerHTML = hours;
-                document.getElementById("minute").innerHTML = minutes;
-                document.getElementById("second").innerHTML = seconds;
-                if (t < 0) {
-                    clearInterval(x);
-                    //document.getElementById("clockdiv").innerHTML = "L' évènement est passé";
-                    document.getElementById("day").innerHTML = '0';
-                    document.getElementById("hour").innerHTML = '0';
-                    document.getElementById("minute").innerHTML = '0';
-                    document.getElementById("second").innerHTML = '0';
-                }
-            }, 1000);
-        </script>
-        <script type="text/javascript" src="{{ asset('js/js.event.single.management.js') }}"></script>
-    {% endblock %}
+						<!-- Widget Area -->
+						<div class="single-widget-area mb-30">
+							<a href="#"><img src="{{ asset('img/events/reveillon.jpg') }}" alt=""></a>
+						</div>
+						<!-- Widget Area -->
+						<div class="single-widget-area mb-30">
+							<div class="widget-title">
+								<h5>Catégories</h5>
+							</div>
+							<div class="widget-content">
+								<ul class="tags">
+									{% for cat in catList %}
+										<li>
+											<a href="#">{{ cat.libelle }}</a>
+										</li>
+									{% endfor %}
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}
-{% block contact %}{% endblock %}
-
+{% block javascripts %}{{ parent() }}<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
+<script type="text/javascript" src="{{ asset('js/jquery-steps.js') }}"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency={{ devise }}"></script>
+<script type="text/javascript">let cart_items = [];
+									            let steps_api = null;
+									            let total_price = 0;
+									            let counter = '';
+									
+									            function resetForm(id_form) {
+									                $("#" + id_form).find('input[type="radio"]').val('');
+									                $("#" + id_form).find('input[type="text"]').val('');
+									                $("#" + id_form).find('input[type="password"]').val('');
+									                $("#" + id_form).find('input[type="checkbox"]').removeAttr("checked");
+									                $("#" + id_form).find('select option').removeAttr("selected");
+									                $("#" + id_form).find('textarea').val('');
+									            }
+									
+									            //-------------------------------modal management-------------
+									            $('#view_seat_map').on('click', function () {
+									                $.get('/res_billet/clear');
+									            });
+									            $('#checkout_command').on('shown.bs.modal', function () {
+									                $.get('/res_billet/clear');
+									                //--------------------------------steps management
+									                let form_select_item = $('#form_select_items');
+									                let rules_select_items = {}, messages_select_items = {};
+									                $('#form_select_items select').each(function (i, val) {
+									                    rules_select_items[val.getAttribute('name')] = {require_from_group: [1, ".fillOne"]};
+									                    messages_select_items[val.getAttribute('name')] = {require_from_group: "Veuiller choisir au moins 1 billet pour continuer"}
+									                });
+									                let form_select_item_validator = form_select_item.validate({
+									                    rules: rules_select_items,
+									                    messages: messages_select_items,
+									                    submitHandler: function (form) {
+									                        return false;
+									                    },
+									                    errorPlacement: function (error, element) {
+									                        error.appendTo(element.parents('.parent_item').find('.message_errors').find('.error'));
+									                    }
+									                });
+									
+									                let frmInfo = $('#frmInfo');
+									                let frmInfoValidator = frmInfo.validate({
+									                    rules: {
+									                        nom: {required: true},
+									                        prenom: {required: true},
+									                        email: {
+									                            required: true,
+									                            email: true
+									                        }
+									                    },
+									                    messages: {
+									                        nom: {required: 'Veuillez insérer votre nom'},
+									                        prenom: {required: 'Veuillez insérer votre prénom'},
+									                        email: {
+									                            required: 'Veuillez insérer votre e-mail',
+									                            email: 'Veuillez insérer un e-mail valide'
+									                        }
+									                    },
+									                    submitHandler: function (form) {
+									                        return false;
+									                    },
+									                    errorPlacement: function (error, element) {
+									                        error.appendTo(element.parents('.form-group').find('.input-error'));
+									                    }
+									                });
+									                $(".step-steps").hide();
+									                steps_api = $('#checkout_steps').steps({
+									                    onChange: function (currentIndex, newIndex, stepDirection) {
+									                        if (stepDirection === 'forward') {
+									                            if (newIndex === 1 && currentIndex === newIndex - 1) {
+									                                let data = form_select_item.serializeArray();
+									                                $('#data_cart').empty();
+									                                $.each(data, function (i, field) {
+									                                    let total_container = null;
+									                                    if (field.value !== "") {
+									                                        let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
+									                                        let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
+									                                        let item_price = $("<div class='col'>{{ devise }} </div>").append(parsed[1] * parsed[2]);
+									                                        let item_container = $("<div class='row'></div>").append(item_label, item_price);
+									                                        $.post('/res_billet/add/', {
+									                                            event_id: {{ event.id }},
+									                                            select_nb_billets: parseInt(parsed[2]),
+									                                            type_billet: parsed[0],
+									                                            section_id: '-',
+									                                            place_id: '-',
+									                                            redirect: '/'
+									                                        });
+									                                        $('#data_cart').append(item_container);
+									                                    }
+									                                });
+									                                $('.total').html('<div class="col loader text-center"><img style="width:100px" src="{{ asset('img/loader.gif') }}"></div>');
+									                                $.get("/api/cart/get_total", function (total) {
+									                                    total_price = total;
+									                                    let item_label = $("<div class='col-7'></div>").append("<h6>Total</h6>");
+									                                    let item_price = $("<div class='col total_value'>{{ devise }} </div>").append(total);
+									                                    $(".total").empty();
+									                                    $(".total").append(item_label, item_price);
+									                                });
+									                                return form_select_item.valid();
+									                            }
+									                            if (newIndex === 2 && currentIndex === newIndex - 1) {
+									                                let data_payment_method = null;
+									                                counter = start_counter();
+									                                $('.payment-success').hide();
+									                                $('.payment-failure').hide();
+									                                $('.register-failure').hide();
+									                                $('.payment-loader').hide();
+									                                $.post("/res_billet/send_buyer_info", frmInfo.serialize(), function (data) {
+									                                    console.log(data);
+									                                });
+									                                $.get('/api/cart/list', function (data) {
+									                                    cart_items = data;
+									                                });
+									                                $.each(frmInfo.serializeArray(), function (index, el) {
+									                                    if (el.name === "paymentMethod") {
+									                                        data_payment_method = el;
+									                                    }
+									                                });
+									                                switch (data_payment_method.value) {
+									                                    case 'Paypal':
+									                                        $(".form_order_method").empty();
+									                                        $(".paymentInfo").text('Voici avez choisi paypal comme mode de paiement,\n' +
+									                                            '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
+									                                            '                                                                    fois le paiement effectué , vous serez redirigé\n' +
+									                                            '                                                                    automatiquement sur la page.');
+									                                        paypal.Buttons({
+									                                            style: {
+									                                                layout: 'horizontal'
+									                                            },
+									                                            createOrder: function (data, actions) {
+									                                                // Set up the transaction
+									                                                return actions.order.create({
+									                                                    purchase_units: [{
+									                                                        application_context: {
+									                                                            brand_name: 'Ivenco',
+									                                                            return_url: '/res_billet/checkout',
+									                                                            cancel_url: '/res_billet/cancel'
+									                                                        },
+									                                                        amount: {
+									                                                            breakdown: {
+									                                                                item_total: {
+									                                                                    currency_code: "{{ devise }}",
+									                                                                    value: total_price
+									                                                                }
+									                                                            },
+									                                                            currency_code: "{{ devise }}",
+									                                                            value: total_price
+									                                                        },
+									                                                        items:
+									                                                            transformItemsPaypalFormat(cart_items)
+									                                                    }],
+									
+									                                                });
+									                                            },
+									                                            onApprove: function (data, actions) {
+									                                                // Capture the funds from the transaction
+									                                                return actions.order.capture().then(function (details) {
+									                                                    $(document).ajaxStart(function () {
+									                                                        $('.payment-loader').show();
+									                                                    });
+									                                                    $(document).ajaxStop(function () {
+									                                                        $('.payment-loader').hide();
+									                                                    });
+									                                                    // Show a success message to your buyer
+									                                                    $.get('/res_billet/checkout')
+									                                                        .done(function () {
+									                                                            $('.payment-success').show();
+									                                                            $('#btnPaypal').hide();
+									                                                        })
+									                                                        .fail(function () {
+									                                                            $('.register-failure').show();
+									                                                        })
+									                                                        .always(function () {
+									                                                            console.log("finished");
+									                                                        });
+									                                                    console.log('Transaction completed by ' + details.payer.name.given_name);
+									                                                    //location.href = "/res_billet/checkout";
+									                                                });
+									                                            },
+									                                            onError: function (error) {
+									                                                $('.payment-failure').show();
+									                                            }
+									                                        }).render('#btnPaypal');
+									                                        return frmInfo.valid();
+									                                        {% if is_granted('ROLE_USER_SHOP') %}
+									                                    case 'point_de_vente':
+									                                        let user_name = '{{ app.user.username }}';
+									                                        let shop_name = '{{ app.user.pointDeVente.nom|escape("js") }}';
+									                                        $(".paymentInfo").append('<p><b>' + user_name + '</b>,administrateur du point de vente: <b>' + shop_name + '</b></p>');
+									                                        let form_order_method = $(".form_order_method");
+									                                        form_order_method.append("<div class=\"form-group\">\n" +
+									                                            "                                                                                    <h6>Veuiller choisir le mode d\'envoi des billets</h6>\n" +
+									                                            "                                                                                    <div class=\"row\">\n" +
+									                                            "                                                                                        <div class=\"col-6\">\n" +
+									                                            "                                                                                           <input name=\"_token\" type=\"hidden\" value=\"{{ csrf_token('order-method') }}\">\n" +
+									                                            "                                                                                            <input type=\"radio\"\n" +
+									                                            "                                                                                                   class=\"form-check-input\"\n" +
+									                                            "                                                                                                   name=\"order_method\"\n" +
+									                                            "                                                                                                   value=\"print\" checked>\n" +
+									                                            "                                                                                            <span class=\"fa fa-print fa-2x\"></span>\n" +
+									                                            "                                                                                            Imprimer les billets\n" +
+									                                            "                                                                                        </div>\n" +
+									                                            "                                                                                    </div>\n" +
+									                                            "                                                                                    <hr/>\n" +
+									                                            "                                                                                    <div class=\"row\">\n" +
+									                                            "                                                                                        <div class=\"col-6\">\n" +
+									                                            "                                                                                            <input type=\"radio\"\n" +
+									                                            "                                                                                                   class=\"form-check-input\"\n" +
+									                                            "                                                                                                   name=\"order_method\"\n" +
+									                                            "                                                                                                   value=\"send_email\"/>\n" +
+									                                            "                                                                                            <span class=\"fa fa-mail-forward fa-2x\"></span>\n" +
+									                                            "                                                                                            Envoyer via e-mail\n" +
+									                                            "                                                                                        </div>\n" +
+									                                            "                                                                                    </div>\n" +
+									                                            "                                                                                    <hr/>\n" +
+									                                            "                                                                                    <div class=\"row\">\n" +
+									                                            "                                                                                        <div class=\"col-6\">\n" +
+									                                            "                                                                                            <input type=\"submit\"\n" +
+									                                            "                                                                                                   class=\"form-check-input btn btn-success\"\n" +
+									                                            "                                                                                                   value=\"Valider\"/>\n" +
+									                                            "                                                                                        </div>\n" +
+									                                            "                                                                                    </div>\n" +
+									                                            "                                                                                    <br/>\n" +
+									                                            "                                                                                </div>");
+									
+									                                        form_order_method.on('submit', function (e) {
+									                                            e.preventDefault();
+									                                            let data_order_method = form_order_method.serializeArray();
+									                                            let order_method = '';
+									                                            let token = '';
+									                                            e.preventDefault();
+									                                            $.each(data_order_method, function (index, el) {
+									                                                if (el.name === "order_method") {
+									                                                    order_method = el.value;
+									                                                }
+									                                                if (el.name === '_token') {
+									                                                    token = el.value;
+									                                                }
+									                                            });
+									
+									                                            $(document).ajaxStart(function () {
+									                                                $('.payment-loader').show();
+									                                            });
+									                                            $(document).ajaxStop(function () {
+									                                                $('.payment-loader').hide();
+									                                            });
+									                                            if (order_method === 'print') {
+									                                                var xhr = new XMLHttpRequest();
+									                                                xhr.open("POST", "{{ path('cart_print_mail')|escape('js') }}");
+									                                                xhr.responseType = 'arraybuffer';
+									                                                xhr.onload = function () {
+									                                                    if (this.status === 200) {
+									                                                        var filename = "";
+									                                                        var disposition = xhr.getResponseHeader('Content-Disposition');
+									                                                        if (disposition && disposition.indexOf('attachment') !== -1) {
+									                                                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+									                                                            var matches = filenameRegex.exec(disposition);
+									                                                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+									                                                        }
+									                                                        var type = xhr.getResponseHeader('Content-Type');
+									
+									                                                        var blob;
+									                                                        if (typeof File === 'function') {
+									                                                            try {
+									                                                                blob = new File([this.response], filename, {type: type});
+									                                                            } catch (e) { /* Edge */
+									                                                            }
+									                                                        }
+									                                                        if (typeof blob === 'undefined') {
+									                                                            blob = new Blob([this.response], {type: type});
+									                                                        }
+									
+									                                                        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+									                                                            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+									                                                            window.navigator.msSaveBlob(blob, filename);
+									                                                        } else {
+									                                                            var URL = window.URL || window.webkitURL;
+									                                                            var downloadUrl = URL.createObjectURL(blob);
+									
+									                                                            if (filename) {
+									                                                                // use HTML5 a[download] attribute to specify filename
+									                                                                var a = document.createElement("a");
+									                                                                // safari doesn't support this yet
+									                                                                if (typeof a.download === 'undefined') {
+									                                                                    window.location = downloadUrl;
+									                                                                } else {
+									                                                                    a.href = downloadUrl;
+									                                                                    a.download = filename;
+									                                                                    document.body.appendChild(a);
+									                                                                    a.click();
+									                                                                }
+									                                                            } else {
+									                                                                window.location = downloadUrl;
+									                                                            }
+									                                                            setTimeout(function () {
+									                                                                URL.revokeObjectURL(downloadUrl);
+									                                                            }, 100); // cleanup
+									                                                        }
+									                                                    }
+									                                                };
+									                                                xhr.onloadend = function () {
+									                                                    $('.payment-success').show();
+									                                                    $('.payment-loader').hide();
+									                                                    $('.payment-loader').hide();
+									                                                    $('.form_order_method').empty();
+									                                                };
+									                                                xhr.onloadstart = function () {
+									                                                    $('.form_order_method').hide();
+									                                                    $('.payment-loader').show();
+									                                                };
+									                                                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+									                                                var formData = new FormData(document.getElementById("form_printer"));
+									                                                xhr.send(formData);
+									                                                return frmInfo.valid();
+									                                            } else if (order_method === 'send_email') {
+									                                                $.post('{{ path('cart_print_mail')|escape('js') }}', {
+									                                                    order_method: order_method,
+									                                                    _token: token
+									                                                }).done(function (data) {
+									                                                    $('.payment-success').show();
+									                                                    $('.form_order_method').empty();
+									                                                    return frmInfo.valid();
+									                                                }).fail(function () {
+									                                                    $('.payment-failure').show();
+									                                                    $('.form_order_method').empty();
+									                                                });
+									                                            }
+									                                        });
+									                                        {% endif %}
+									                                    default:
+									                                        console.log("default");
+									                                        break;
+									                                }
+									                                $("#btnPaypal").empty();
+									
+									                            }
+									                        }
+									                        if (stepDirection === 'backward') {
+									                            if (newIndex === 0 && currentIndex === newIndex + 1) {
+									                                clearInterval(counter);
+									                                $.get('/res_billet/clear', function () {
+									                                    $('#data_cart').empty();
+									                                    $('#data_cart').append("<div class='row'><div class='col'>Veuillez ajouter vos commandes</div>");
+									                                    $('.total_value').empty().append("0");
+									                                });
+									                            }
+									                            if (newIndex === 1 && currentIndex === newIndex + 1) {
+									                                $("#btnPaypal").find('.paypal-buttons').remove();
+									                                $(".paymentInfo").empty();
+									                                $(".form_order_method").empty();
+									                            }
+									                            if (newIndex === 2 && currentIndex === newIndex + 1) {
+									                            }
+									
+									                        }
+									                        return true;
+									                    },
+									                    showBackButton: true,
+									                    onFinish: function () {
+									                        if ($('.payment-success').is(':visible') || $('.payment-failure').is(':visible') || $('.register-failure').is(':visible')) {
+									                            $.get('/res_billet/clear');
+									                            $('#checkout_command').modal('hide');
+									                            location.reload();
+									                        } else {
+									                            alert('Veuiller procéder au paiement. Pour fermer le dialogue cliquer sur x. ');
+									                        }
+									                    }
+									                });
+									            });
+									            $('.closeConfirm').click(function () { //Close Button on Form Modal to trigger Warning Modal
+									                $('#confirmCloseCheckout').modal('show').on('shown.bs.modal', function () { //Show Warning Modal and use `show` event listener
+									                    $('.confirmclosed').click(function () { //Warning Modal Confirm Close Button
+									                        $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
+									                        $('#checkout_command').modal('hide'); //Hide Form Modal
+									                        $.get('/res_billet/clear');
+									                        location.reload();
+									                    });
+									                });
+									            });
+									
+									            $('#checkout_command').on('hidden.bs.modal', function () {
+									                $.get('/res_billet/clear');
+									                resetForm('form_select_items');
+									                resetForm('frmInfo');
+									                location.reload();
+									            });
+									            let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
+									
+									            function start_counter() {
+									                let start_counter = 8 * 60;//8 * 60;
+									                let checkout_timer = setInterval(function () {
+									                    --start_counter;
+									                    $('.time_left').text(format(start_counter));
+									                    if (start_counter === 0) {
+									                        clearInterval(checkout_timer);
+									                        $.get('/res_billet/clear');
+									                        $('#checkout_command').modal('hide');
+									                    }
+									                }, 1000);
+									                return start_counter;
+									            }
+									
+									            function format(time) {
+									                // Hours, minutes and seconds
+									                let hrs = ~~(time / 3600);
+									                let mins = ~~((time % 3600) / 60);
+									                let secs = ~~time % 60;
+									
+									                // Output like "1:01" or "4:03:59" or "123:03:59"
+									                let ret = "";
+									                if (hrs > 0) {
+									                    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+									                }
+									                ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+									                ret += "" + secs;
+									                return ret;
+									            }
+									
+									            function transformItemsPaypalFormat(cart_items) {
+									                let formatted_cart = [];
+									                cart_items.forEach(function (el) {
+									                    let item = {
+									                        name: el.category_str,
+									                        quantity: el.quantity,
+									                        currency: "{{ devise }}",
+									                        unit_amount: {
+									                            value: el.price,
+									                            currency_code: "{{ devise }}"
+									                        }
+									                    };
+									                    formatted_cart.push(item);
+									                });
+									                return formatted_cart;
+									            }
+									
+									            let x = setInterval(function () {
+									                let now = new Date().getTime();
+									                let t = deadline - now;
+									                let days = Math.floor(t / (1000 * 60 * 60 * 24));
+									                let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+									                let minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+									                let seconds = Math.floor((t % (1000 * 60)) / 1000);
+									                document.getElementById("day").innerHTML = days;
+									                document.getElementById("hour").innerHTML = hours;
+									                document.getElementById("minute").innerHTML = minutes;
+									                document.getElementById("second").innerHTML = seconds;
+									                if (t < 0) {
+									                    clearInterval(x);
+									                    //document.getElementById("clockdiv").innerHTML = "L' évènement est passé";
+									                    document.getElementById("day").innerHTML = '0';
+									                    document.getElementById("hour").innerHTML = '0';
+									                    document.getElementById("minute").innerHTML = '0';
+									                    document.getElementById("second").innerHTML = '0';
+									                }
+									            }, 1000);
+									        </script>
+									        <script type="text/javascript" src="{{ asset('js/js.event.single.management.js') }}"></script>
+									    {% endblock %}
+									{% endblock %}
+									{% block contact %}{% endblock %}

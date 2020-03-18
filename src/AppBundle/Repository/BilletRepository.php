@@ -20,10 +20,11 @@ class BilletRepository extends EntityRepository
      */
     public function getListTicketsByType(Evenement $event)
     {
-        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.libelle, tb.prix as prix,
+        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.description as descriptions, tb.libelle, tb.prix as prix,
             CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
-            from AppBundle:TypeBillet tb
-            LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
+            from AppBundle:Evenement evt
+            LEFT JOIN AppBundle:TypeBillet tb WITH evt.id=tb.evenement
+            LEFT JOIN AppBundle:Billet b WITH b.typeBillet=tb.id
             WHERE evt.id= :idEvent AND tb.active = 1
             GROUP BY tb.id,prix
             ORDER BY tb.libelle DESC
@@ -37,8 +38,9 @@ class BilletRepository extends EntityRepository
     {
         return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.libelle, tb.prix as prix,
             CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
-            from AppBundle:TypeBillet tb
-            LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
+            from AppBundle:Evenement evt
+            LEFT JOIN AppBundle:TypeBillet tb WITH evt.id=tb.evenement
+            LEFT JOIN AppBundle:Billet b WITH b.typeBillet=tb.id
             WHERE evt.id= :idEvent AND tb.active = 1 AND tb.isAdmission = 0
             GROUP BY tb.id,prix
             ORDER BY tb.libelle DESC
@@ -69,10 +71,10 @@ class BilletRepository extends EntityRepository
     {
         return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets, tb.libelle, tb.prix as prix, tb.quantite as quantite,
             CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
-            from AppBundle:TypeBillet tb
-            JOIN AppBundle:Billet b WITH b.typeBillet=tb.id 
-            LEFT JOIN AppBundle:Evenement evt WITH evt.id=tb.evenement
-            WHERE evt.id= :idEvent and b.estVendu = 1 and tb.active = 1
+            from AppBundle:Evenement evt
+            LEFT JOIN AppBundle:TypeBillet tb WITH evt.id=tb.evenement
+            LEFT JOIN AppBundle:Billet b WITH b.typeBillet=tb.id
+            WHERE evt.id= :idEvent AND tb.estVendu = 1 and tb.active = 1
             GROUP BY tb.id 
             ORDER BY tb.libelle DESC
             ')

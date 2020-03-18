@@ -5,6 +5,11 @@ parameters:
 
 services:
     # default configuration for services in *this* file
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
+        public:    false
+        arguments:
+            - 'mysql:dbname=%database_name%; host=%database_host%; port=%database_port%'
+            - { db_table: 'sessions', db_username: '%database_user%', db_password: '%database_password%' }
     _defaults:
         # automatically injects dependencies in your services
         autowire: true

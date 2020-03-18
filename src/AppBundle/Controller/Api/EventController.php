@@ -4,6 +4,9 @@
 namespace AppBundle\Controller\Api;
 
 use AppBundle\Entity\Evenement;
+use AppBundle\Entity\LockedSeat;
+use AppBundle\Entity\Session;
+use AppBundle\Utils\Cart;
 use AppBundle\Entity\User;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -12,11 +15,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
+use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
+use Symfony\Component\HttpFoundation\Session\Session as dSession;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 
 class EventController extends AbstractFOSRestController
 {
-
     /**
      * @Rest\Get("/api/events/list")
      */
@@ -187,6 +192,7 @@ class EventController extends AbstractFOSRestController
         }
         return new Response('Error occured',500);
     }
+    
     /**
      * @Rest\Post("/api/event/seat/is-locked")
      */
@@ -196,24 +202,17 @@ class EventController extends AbstractFOSRestController
         if ($request->getMethod() != 'POST')
             return new MethodNotAllowedException(['POST']);
         if ($request->request->has('section_id') && $request->request->has('seat_id') && $request->request->has('table_event') && $request->request->has('lock_action') && $request->request->has('event_id')) {
-            $array = $request->request->get('table_event');
             $section = $request->request->get('section_id');
             $seat = $request->request->get('seat_id');
             $lock_action = $request->request->get('lock_action');
             $id = $request->request->get('event_id');
-            foreach ($array as $key => $value) {
-                if (is_array($value) && array_key_exists('mapping', $value) && $value['nom'] == trim($section)) {
-                    foreach ($value['mapping'] as $mapKey => $mapValue) {
-                        if (is_array($mapValue) && array_key_exists('seat_id', $mapValue) && array_key_exists('type', $mapValue) &&
-                            $mapValue['seat_id'] == trim($seat) && $mapValue['is_choosed'] == "true") {
-                            return JsonResponse::create(true);
-                        }
-                        else if($lock_action) {
-                            $this->lockSeat($array, $section, $seat, $id);
-                        }
-                    }
-                    return JsonResponse::create(false);
-                }
+            $event=$this->getDoctrine()->getRepository(Evenement::class)->find((int)$id);
+            $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['evenement'=>$event,'section_id'=>$section,'seat_id'=>$seat]);
+            if($locked_seat == null){
+                return JsonResponse::create(false);
+            }
+            else{
+                return JsonResponse::create(true); 
             }
         }
         return JsonResponse::create(false);
