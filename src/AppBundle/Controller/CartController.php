@@ -70,7 +70,13 @@ class CartController extends Controller
         $event = new GetResponseUserEvent($user);
         $dispatcher->dispatch(FOSUserEvents::REGISTRATION_INITIALIZE, $event);
         $form->setData($user);
-        return $this->render('default/cart.html.twig', ['cart' => $cart, 'form' => $form->createView()]);
+        $session_info_created=$this->session->getMetadataBag()->getCreated();
+        $session_info_lastUsed=$this->session->getMetadataBag()->getLastUsed();
+        $session_info_lifetime=$this->session->getMetadataBag()->getLifetime();
+        $session_info_created=\DateTime::createFromFormat( 'U', $session_info_created );
+        $session_info_lastUsed=\DateTime::createFromFormat( 'U', $session_info_lastUsed );
+        $session_info_lifetime=\DateTime::createFromFormat( 'U', $session_info_lifetime );
+        return $this->render('default/cart.html.twig', ['cart' => $cart, 'form' => $form->createView(),'lifetime'=> $session_info_lifetime,'lastUsed'=>$session_info_lastUsed,'created'=>$session_info_created]);
     }
 
     /**
@@ -83,10 +89,13 @@ class CartController extends Controller
         $items=$this->cart->getItems();
         if(count($items) >0) {
                 foreach ($items as $item){
-                    $this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
+                    //$this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
+                    $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(),'seat_id' => $item->getSeat(),'evenement'=>$item->getEvenement(),'sess_id'=>$this->session->getId()]);
+                    if(!empty($locked_seat)) $this->getDoctrine()->getManager()->remove($locked_seat);
                 }
                     $this->session->set('quantity', 0);
             $this->cart->clear();
+            $this->getDoctrine()->getManager()->flush();
             return $this->redirect('/res_billet/list');
         }
         else{
@@ -105,9 +114,27 @@ class CartController extends Controller
             $event=$item->getEvenement();
             $this->unlockSeat(unserialize($event->getEtatSalle()),$item->getSection(),$item->getSeat(),$event->getId());
             $this->cart->removeItem($request->request->get('id'));
+            $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(),'seat_id' => $item->getSeat(),'evenement'=>$event,'sess_id'=>$this->session->getId()]);
+            $this->getDoctrine()->getManager()->remove($locked_seat);
+            $this->getDoctrine()->getManager()->flush();
             return new Response('Done', Response::HTTP_OK);
         }
         return new Response('Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+    /**
+     * Clears the cart
+     *
+     * @Route("/res_billet/getSessions", name="cart_get_sessions")
+     */
+    public function getAllSessions()
+    {
+        $sessions=$this->getDoctrine()->getRepository(Sessions::class)->findAll();
+        foreach($sessions as $session){
+            var_dump($session->getSessData());
+        }
+            return new Response('Done', Response::HTTP_OK);
+
+        //return new Response('Error', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
     /**
      * Clears the cart
@@ -186,6 +213,7 @@ class CartController extends Controller
         }
         //Récupérer les billets à vendre
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event_id);//get Event entity
+        //$repo_locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class);
         $type_billet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $type_billet, 'evenement' => $event]);
         $section_id = '-';
         $place_id = '-';
@@ -209,6 +237,15 @@ class CartController extends Controller
             $item->setQuantity(1); // defaults to 1
             $item->setCategoryStr($type_billet->getLibelle());
             $this->cart->addItem($item);
+            if($section_id != '-' && $place_id != '-'){
+                $locked=new LockedSeat();
+                $locked->setEvenement($event);
+                $locked->setSectionId($section_id);
+                $locked->setSeatId($place_id);
+                $locked->setSessId($this->session->getId());
+                $this->getDoctrine()->getManager()->persist($locked);
+                $this->getDoctrine()->getManager()->flush();
+            }
         }
         return new Response('Section '.$section_id.' | Place n°'.$place_id.'  ajouté avec succès', Response::HTTP_OK);
 

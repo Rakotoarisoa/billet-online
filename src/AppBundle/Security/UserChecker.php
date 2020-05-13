@@ -2,6 +2,7 @@
 namespace AppBundle\Security;
 
 use AppBundle\Entity\User as AppUser;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Exception\AccountExpiredException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -13,6 +14,7 @@ class UserChecker implements UserCheckerInterface
         if (!$user instanceof AppUser) {
             return;
         }
+       
     }
 
     public function checkPostAuth(UserInterface $user)
