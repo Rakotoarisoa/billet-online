@@ -6,11 +6,16 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\LockedSeatRepository")
  * @ORM\Table(name = "locked_seat",uniqueConstraints={@UniqueConstraint(name="unique_seat_lock", columns={"seat_id","section_id" ,"id_evenement"})})
  */
 class LockedSeat
 {
+    public function __construct()
+    {
+        $this->time=time();
+    }
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -115,4 +120,16 @@ class LockedSeat
      * @ORM\Column(type="string",length=100)
      */
     private $section_id;
+    /**
+     * @ORM\Column(type="string",length=100)
+     */
+    private $time;
+
+    /**
+     * @return mixed
+     */
+    public function getTime()
+    {
+        return $this->time;
+    }
 }

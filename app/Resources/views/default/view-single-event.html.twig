@@ -6,7 +6,8 @@
 {% block title %}
 	{{ event.titreEvenement }}
 	|
-	{{ event.categorieEvenement.libelle ~' du '~ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm")}}
+	{{ event.categorieEvenement.libelle ~' du '~ event.dateDebutEvent|localizeddate
+	}}
 {% endblock %}
 {% block breadcrumb %}
 <!-- <section class="breadcumb-area bg-img bg-overlay" style="background-image: url({{ asset('img/breadcumb3.jpg') }}">
@@ -28,7 +29,8 @@
 				<div
 					class="col-12 col-lg-9">
 					<!-- Single Post Start -->
-					<div class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
+					<div
+						class="single-blog-post mb-100 wow fadeInUp" data-wow-delay="100ms">
 						<!-- Post Thumb -->
 						<div class="blog-post-thumb mt-30">
 							<a href="#"><img src="{{ event.imageevent?vich_uploader_asset(event,'image')|imagine_filter('single_event_view'):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE" }}" alt="{{ event.titreEvenement }}"></a>
@@ -53,7 +55,7 @@
 										{% if is_granted("IS_AUTHENTICATED_REMEMBERED") and app.user == event.user %}
 											<div class="col">
 												<a target="_blank" href="{{ path('viewEventUpdate',{'id':event.id}) }}" class="btn btn-danger text-white  pull-right">Modifier
-																																																																																																																					                                                        l'évènement</a>
+																																																																																																																																																												                                                        l'évènement</a>
 											</div>
 										{% endif %}
 									</div>
@@ -78,7 +80,7 @@
 												<p>
 													<span class="fa fa-clock"></span>
 													jusqu'
-																																																																																																																					                                                        à
+																																																																																																																																																												                                                        à
 													<b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"hh:mm") }}</b>
 												</p>
 											{% elseif event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") != event.dateFinEvent|date("d M Y") %}
@@ -88,7 +90,7 @@
 												<p>
 													<span class="fa fa-clock"></span>
 													jusqu'
-																																																																																																																					                                                        à
+																																																																																																																																																												                                                        à
 													<b>{{ event.dateFinEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}</b>
 												</p>
 											{% else %}
@@ -132,9 +134,9 @@
 											<div class="row">
 												{% if event.isUsingSeatMap %}
 													<div class="col">
-														<a id="view_seat_map" class="btn btn-outline-danger text-dark" href="{{ path('viewBuyMap',{'idEvent': event.id}) }}" target="_blank">
+														<a id="view_seat_map" class="btn btn-danger" href="{{ path('viewBuyMap',{'idEvent': event.id}) }}" target="_blank">
 															<span class="fa fa-map"></span>
-															Plan de salle</a>
+															Achat sur plan de salle</a>
 													</div>
 												{% endif %}
 												<div class="col">
@@ -148,13 +150,21 @@
 												<div class="col align-items-center">
 													<ul class="list-group mb-3">
 														{% for billet in ticketNumber %}
-
 															<li class="list-group-item d-flex justify-content-between lh-condensed">
 																<div>
-																	<h6 class="my-0">{{billet.libelle}}</h6>
-																	<small class="text-muted">{{billet.descriptions|raw}}</small>
+																	<h6 class="my-0" data-toggle="tooltip" data-placement="right" title="{{billet.descriptions|raw}}">{{billet.libelle}}</h6>
+																	<small class="text-muted">
+																		<span class="text-danger">*</span>
+																		<mark>
+																				<small>Disponible du
+																					{{ billet.debut|localizeddate('none','none',null,null,"d MMMM Y" ) }}
+																					jusqu' au
+																					{{ billet.fin|localizeddate('none','none',null,null,"d MMMM Y") }}</small>						
+																		</mark>
+																	</small>
 																</div>
-																<span class="text-muted">{{ billet.estDisponible?event.devise.code ~' '~billet.prix:'Billet épuisé' }}</span>
+
+																<span class="text-muted">{{ billet.estDisponible?event.devise.code ~' '~billet.prix:'Non disponible' }}</span>
 															</li>
 														{% endfor %}
 													</ul>
@@ -226,7 +236,8 @@
 													<div class="step-content">
 														<div class="step-tab-panel" id="tab1">
 															<div class="container-fluid">
-																<h6 class="mx-auto">1.Choisissez des articles</h6>
+																<h6 class="mx-auto">1. Choisissez des articles</h6>
+																<small><span class="text text-danger"></span>Billets d'admissions générales seulement</small>
 																<hr/>
 
 																<form name="form_select_items" id="form_select_items">
@@ -269,7 +280,7 @@
 																						<div class="col-6">
 																							<h5 class="mb-1">{{ type.libelle }}</h5>
 																							<div class="col">Billet
-																																																																																																																																																																																																																						                                                                                                    épuisé
+																																																																																																																																																																																																																																																																																														                                                                                                    épuisé
 																							</div>
 																						</div>
 																					</div>
@@ -280,14 +291,14 @@
 																</form>
 																<br/>
 																<!--<div class="row">
-																																																																																																																																														                                                                        <div class="col">
-																																																																																																																																														                                                                            <button data-direction="next"
-																																																																																																																																														                                                                                    class="btn btn-danger pull-right"
-																																																																																																																																														                                                                                    type="button"
-																																																																																																																																														                                                                            >Continuer
-																																																																																																																																														                                                                            </button>
-																																																																																																																																														                                                                        </div>
-																																																																																																																																														                                                                    </div>-->
+																																																																																																																																																																																														                                                                        <div class="col">
+																																																																																																																																																																																														                                                                            <button data-direction="next"
+																																																																																																																																																																																														                                                                                    class="btn btn-danger pull-right"
+																																																																																																																																																																																														                                                                                    type="button"
+																																																																																																																																																																																														                                                                            >Continuer
+																																																																																																																																																																																														                                                                            </button>
+																																																																																																																																																																																														                                                                        </div>
+																																																																																																																																																																																														                                                                    </div>-->
 															</div>
 														</div>
 														<div class="step-tab-panel" id="tab2">
@@ -342,14 +353,14 @@
 																			<label for="region">Région</label>
 																			<select id="region" class="form-control" name="region">
 																				<option value="" selected>Votre
-																																																																																																																																																																																											                                                                                        région...
+																																																																																																																																																																																																																																																										                                                                                        région...
 																				</option>
 																				<option>...</option>
 																			</select>
 																		</div>
 																		<div class="form-group col-md-3">
 																			<label for="code_zip">Code
-																																																																																																																																																																																		                                                                                    postal</label>
+																																																																																																																																																																																																																																														                                                                                    postal</label>
 																			<input type="text" class="form-control" id="inputZip" name="code_zip" value="{{ zipCode }}">
 																		</div>
 																	</div>
@@ -357,7 +368,7 @@
 																	<div class="form-group">
 																		<label for="inputAddress2">
 																			<h6>Méthode de
-																																																																																																																																																																																		                                                                                    paiement</h6>
+																																																																																																																																																																																																																																														                                                                                    paiement</h6>
 																		</label>
 																		{% if(is_granted('ROLE_USER_SHOP')) %}
 																			<div class="row">
@@ -435,9 +446,9 @@
 																		<div class="row">
 																			<div class="col">
 																				Merci, la commande a été effectué
-																																																																																																																																																																																		                                                                                    avec succès. Veuiller vérifier vos
-																																																																																																																																																																																		                                                                                    billets selon votre méthode de
-																																																																																																																																																																																		                                                                                    paiement
+																																																																																																																																																																																																																																														                                                                                    avec succès. Veuiller vérifier vos
+																																																																																																																																																																																																																																														                                                                                    billets selon votre méthode de
+																																																																																																																																																																																																																																														                                                                                    paiement
 																			</div>
 																		</div>
 																	</div>
@@ -452,7 +463,7 @@
 																		<div class="row">
 																			<div class="col">
 																				Désolé, le process n'a pas abouti.
-																																																																																																																																																																																		                                                                                    Veuiller recommencer
+																																																																																																																																																																																																																																														                                                                                    Veuiller recommencer
 																			</div>
 																		</div>
 																	</div>
@@ -467,10 +478,10 @@
 																		<div class="row">
 																			<div class="col">
 																				Merci, la commande
-																																																																																																																																																																																		                                                                                    a
-																																																																																																																																																																																		                                                                                    abouti
-																																																																																																																																																																																		                                                                                    mais des erreurs internes se sont
-																																																																																																																																																																																		                                                                                    produites
+																																																																																																																																																																																																																																														                                                                                    a
+																																																																																																																																																																																																																																														                                                                                    abouti
+																																																																																																																																																																																																																																														                                                                                    mais des erreurs internes se sont
+																																																																																																																																																																																																																																														                                                                                    produites
 																			</div>
 																		</div>
 																	</div>
@@ -553,7 +564,7 @@
 								<div class="modal-body">
 									<div class="row text-center">
 										<div class="col">Etes-vous sur de vouloir fermer la fenêtre, vos commandes
-																																																																																																	                                                seront annulées.
+																																																																																																																																		                                                seront annulées.
 										</div>
 									</div>
 									<br>
@@ -606,460 +617,460 @@
 <script type="text/javascript" src="{{ asset('js/jquery-steps.js') }}"></script>
 <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency={{ devise }}"></script>
 <script type="text/javascript">let cart_items = [];
-									            let steps_api = null;
-									            let total_price = 0;
-									            let counter = '';
-									
-									            function resetForm(id_form) {
-									                $("#" + id_form).find('input[type="radio"]').val('');
-									                $("#" + id_form).find('input[type="text"]').val('');
-									                $("#" + id_form).find('input[type="password"]').val('');
-									                $("#" + id_form).find('input[type="checkbox"]').removeAttr("checked");
-									                $("#" + id_form).find('select option').removeAttr("selected");
-									                $("#" + id_form).find('textarea').val('');
-									            }
-									
-									            //-------------------------------modal management-------------
-									            $('#view_seat_map').on('click', function () {
-									                $.get('/res_billet/clear');
-									            });
-									            $('#checkout_command').on('shown.bs.modal', function () {
-									                $.get('/res_billet/clear');
-									                //--------------------------------steps management
-									                let form_select_item = $('#form_select_items');
-									                let rules_select_items = {}, messages_select_items = {};
-									                $('#form_select_items select').each(function (i, val) {
-									                    rules_select_items[val.getAttribute('name')] = {require_from_group: [1, ".fillOne"]};
-									                    messages_select_items[val.getAttribute('name')] = {require_from_group: "Veuiller choisir au moins 1 billet pour continuer"}
-									                });
-									                let form_select_item_validator = form_select_item.validate({
-									                    rules: rules_select_items,
-									                    messages: messages_select_items,
-									                    submitHandler: function (form) {
-									                        return false;
-									                    },
-									                    errorPlacement: function (error, element) {
-									                        error.appendTo(element.parents('.parent_item').find('.message_errors').find('.error'));
-									                    }
-									                });
-									
-									                let frmInfo = $('#frmInfo');
-									                let frmInfoValidator = frmInfo.validate({
-									                    rules: {
-									                        nom: {required: true},
-									                        prenom: {required: true},
-									                        email: {
-									                            required: true,
-									                            email: true
-									                        }
-									                    },
-									                    messages: {
-									                        nom: {required: 'Veuillez insérer votre nom'},
-									                        prenom: {required: 'Veuillez insérer votre prénom'},
-									                        email: {
-									                            required: 'Veuillez insérer votre e-mail',
-									                            email: 'Veuillez insérer un e-mail valide'
-									                        }
-									                    },
-									                    submitHandler: function (form) {
-									                        return false;
-									                    },
-									                    errorPlacement: function (error, element) {
-									                        error.appendTo(element.parents('.form-group').find('.input-error'));
-									                    }
-									                });
-									                $(".step-steps").hide();
-									                steps_api = $('#checkout_steps').steps({
-									                    onChange: function (currentIndex, newIndex, stepDirection) {
-									                        if (stepDirection === 'forward') {
-									                            if (newIndex === 1 && currentIndex === newIndex - 1) {
-									                                let data = form_select_item.serializeArray();
-									                                $('#data_cart').empty();
-									                                $.each(data, function (i, field) {
-									                                    let total_container = null;
-									                                    if (field.value !== "") {
-									                                        let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
-									                                        let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
-									                                        let item_price = $("<div class='col'>{{ devise }} </div>").append(parsed[1] * parsed[2]);
-									                                        let item_container = $("<div class='row'></div>").append(item_label, item_price);
-									                                        $.post('/res_billet/add/', {
-									                                            event_id: {{ event.id }},
-									                                            select_nb_billets: parseInt(parsed[2]),
-									                                            type_billet: parsed[0],
-									                                            section_id: '-',
-									                                            place_id: '-',
-									                                            redirect: '/'
-									                                        });
-									                                        $('#data_cart').append(item_container);
-									                                    }
-									                                });
-									                                $('.total').html('<div class="col loader text-center"><img style="width:100px" src="{{ asset('img/loader.gif') }}"></div>');
-									                                $.get("/api/cart/get_total", function (total) {
-									                                    total_price = total;
-									                                    let item_label = $("<div class='col-7'></div>").append("<h6>Total</h6>");
-									                                    let item_price = $("<div class='col total_value'>{{ devise }} </div>").append(total);
-									                                    $(".total").empty();
-									                                    $(".total").append(item_label, item_price);
-									                                });
-									                                return form_select_item.valid();
-									                            }
-									                            if (newIndex === 2 && currentIndex === newIndex - 1) {
-									                                let data_payment_method = null;
-									                                counter = start_counter();
-									                                $('.payment-success').hide();
-									                                $('.payment-failure').hide();
-									                                $('.register-failure').hide();
-									                                $('.payment-loader').hide();
-									                                $.post("/res_billet/send_buyer_info", frmInfo.serialize(), function (data) {
-									                                    console.log(data);
-									                                });
-									                                $.get('/api/cart/list', function (data) {
-									                                    cart_items = data;
-									                                });
-									                                $.each(frmInfo.serializeArray(), function (index, el) {
-									                                    if (el.name === "paymentMethod") {
-									                                        data_payment_method = el;
-									                                    }
-									                                });
-									                                switch (data_payment_method.value) {
-									                                    case 'Paypal':
-									                                        $(".form_order_method").empty();
-									                                        $(".paymentInfo").text('Voici avez choisi paypal comme mode de paiement,\n' +
-									                                            '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
-									                                            '                                                                    fois le paiement effectué , vous serez redirigé\n' +
-									                                            '                                                                    automatiquement sur la page.');
-									                                        paypal.Buttons({
-									                                            style: {
-									                                                layout: 'horizontal'
-									                                            },
-									                                            createOrder: function (data, actions) {
-									                                                // Set up the transaction
-									                                                return actions.order.create({
-									                                                    purchase_units: [{
-									                                                        application_context: {
-									                                                            brand_name: 'Ivenco',
-									                                                            return_url: '/res_billet/checkout',
-									                                                            cancel_url: '/res_billet/cancel'
-									                                                        },
-									                                                        amount: {
-									                                                            breakdown: {
-									                                                                item_total: {
-									                                                                    currency_code: "{{ devise }}",
-									                                                                    value: total_price
-									                                                                }
-									                                                            },
-									                                                            currency_code: "{{ devise }}",
-									                                                            value: total_price
-									                                                        },
-									                                                        items:
-									                                                            transformItemsPaypalFormat(cart_items)
-									                                                    }],
-									
-									                                                });
-									                                            },
-									                                            onApprove: function (data, actions) {
-									                                                // Capture the funds from the transaction
-									                                                return actions.order.capture().then(function (details) {
-									                                                    $(document).ajaxStart(function () {
-									                                                        $('.payment-loader').show();
-									                                                    });
-									                                                    $(document).ajaxStop(function () {
-									                                                        $('.payment-loader').hide();
-									                                                    });
-									                                                    // Show a success message to your buyer
-									                                                    $.get('/res_billet/checkout')
-									                                                        .done(function () {
-									                                                            $('.payment-success').show();
-									                                                            $('#btnPaypal').hide();
-									                                                        })
-									                                                        .fail(function () {
-									                                                            $('.register-failure').show();
-									                                                        })
-									                                                        .always(function () {
-									                                                            console.log("finished");
-									                                                        });
-									                                                    console.log('Transaction completed by ' + details.payer.name.given_name);
-									                                                    //location.href = "/res_billet/checkout";
-									                                                });
-									                                            },
-									                                            onError: function (error) {
-									                                                $('.payment-failure').show();
-									                                            }
-									                                        }).render('#btnPaypal');
-									                                        return frmInfo.valid();
-									                                        {% if is_granted('ROLE_USER_SHOP') %}
-									                                    case 'point_de_vente':
-									                                        let user_name = '{{ app.user.username }}';
-									                                        let shop_name = '{{ app.user.pointDeVente.nom|escape("js") }}';
-									                                        $(".paymentInfo").append('<p><b>' + user_name + '</b>,administrateur du point de vente: <b>' + shop_name + '</b></p>');
-									                                        let form_order_method = $(".form_order_method");
-									                                        form_order_method.append("<div class=\"form-group\">\n" +
-									                                            "                                                                                    <h6>Veuiller choisir le mode d\'envoi des billets</h6>\n" +
-									                                            "                                                                                    <div class=\"row\">\n" +
-									                                            "                                                                                        <div class=\"col-6\">\n" +
-									                                            "                                                                                           <input name=\"_token\" type=\"hidden\" value=\"{{ csrf_token('order-method') }}\">\n" +
-									                                            "                                                                                            <input type=\"radio\"\n" +
-									                                            "                                                                                                   class=\"form-check-input\"\n" +
-									                                            "                                                                                                   name=\"order_method\"\n" +
-									                                            "                                                                                                   value=\"print\" checked>\n" +
-									                                            "                                                                                            <span class=\"fa fa-print fa-2x\"></span>\n" +
-									                                            "                                                                                            Imprimer les billets\n" +
-									                                            "                                                                                        </div>\n" +
-									                                            "                                                                                    </div>\n" +
-									                                            "                                                                                    <hr/>\n" +
-									                                            "                                                                                    <div class=\"row\">\n" +
-									                                            "                                                                                        <div class=\"col-6\">\n" +
-									                                            "                                                                                            <input type=\"radio\"\n" +
-									                                            "                                                                                                   class=\"form-check-input\"\n" +
-									                                            "                                                                                                   name=\"order_method\"\n" +
-									                                            "                                                                                                   value=\"send_email\"/>\n" +
-									                                            "                                                                                            <span class=\"fa fa-mail-forward fa-2x\"></span>\n" +
-									                                            "                                                                                            Envoyer via e-mail\n" +
-									                                            "                                                                                        </div>\n" +
-									                                            "                                                                                    </div>\n" +
-									                                            "                                                                                    <hr/>\n" +
-									                                            "                                                                                    <div class=\"row\">\n" +
-									                                            "                                                                                        <div class=\"col-6\">\n" +
-									                                            "                                                                                            <input type=\"submit\"\n" +
-									                                            "                                                                                                   class=\"form-check-input btn btn-success\"\n" +
-									                                            "                                                                                                   value=\"Valider\"/>\n" +
-									                                            "                                                                                        </div>\n" +
-									                                            "                                                                                    </div>\n" +
-									                                            "                                                                                    <br/>\n" +
-									                                            "                                                                                </div>");
-									
-									                                        form_order_method.on('submit', function (e) {
-									                                            e.preventDefault();
-									                                            let data_order_method = form_order_method.serializeArray();
-									                                            let order_method = '';
-									                                            let token = '';
-									                                            e.preventDefault();
-									                                            $.each(data_order_method, function (index, el) {
-									                                                if (el.name === "order_method") {
-									                                                    order_method = el.value;
-									                                                }
-									                                                if (el.name === '_token') {
-									                                                    token = el.value;
-									                                                }
-									                                            });
-									
-									                                            $(document).ajaxStart(function () {
-									                                                $('.payment-loader').show();
-									                                            });
-									                                            $(document).ajaxStop(function () {
-									                                                $('.payment-loader').hide();
-									                                            });
-									                                            if (order_method === 'print') {
-									                                                var xhr = new XMLHttpRequest();
-									                                                xhr.open("POST", "{{ path('cart_print_mail')|escape('js') }}");
-									                                                xhr.responseType = 'arraybuffer';
-									                                                xhr.onload = function () {
-									                                                    if (this.status === 200) {
-									                                                        var filename = "";
-									                                                        var disposition = xhr.getResponseHeader('Content-Disposition');
-									                                                        if (disposition && disposition.indexOf('attachment') !== -1) {
-									                                                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-									                                                            var matches = filenameRegex.exec(disposition);
-									                                                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-									                                                        }
-									                                                        var type = xhr.getResponseHeader('Content-Type');
-									
-									                                                        var blob;
-									                                                        if (typeof File === 'function') {
-									                                                            try {
-									                                                                blob = new File([this.response], filename, {type: type});
-									                                                            } catch (e) { /* Edge */
-									                                                            }
-									                                                        }
-									                                                        if (typeof blob === 'undefined') {
-									                                                            blob = new Blob([this.response], {type: type});
-									                                                        }
-									
-									                                                        if (typeof window.navigator.msSaveBlob !== 'undefined') {
-									                                                            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-									                                                            window.navigator.msSaveBlob(blob, filename);
-									                                                        } else {
-									                                                            var URL = window.URL || window.webkitURL;
-									                                                            var downloadUrl = URL.createObjectURL(blob);
-									
-									                                                            if (filename) {
-									                                                                // use HTML5 a[download] attribute to specify filename
-									                                                                var a = document.createElement("a");
-									                                                                // safari doesn't support this yet
-									                                                                if (typeof a.download === 'undefined') {
-									                                                                    window.location = downloadUrl;
-									                                                                } else {
-									                                                                    a.href = downloadUrl;
-									                                                                    a.download = filename;
-									                                                                    document.body.appendChild(a);
-									                                                                    a.click();
-									                                                                }
-									                                                            } else {
-									                                                                window.location = downloadUrl;
-									                                                            }
-									                                                            setTimeout(function () {
-									                                                                URL.revokeObjectURL(downloadUrl);
-									                                                            }, 100); // cleanup
-									                                                        }
-									                                                    }
-									                                                };
-									                                                xhr.onloadend = function () {
-									                                                    $('.payment-success').show();
-									                                                    $('.payment-loader').hide();
-									                                                    $('.payment-loader').hide();
-									                                                    $('.form_order_method').empty();
-									                                                };
-									                                                xhr.onloadstart = function () {
-									                                                    $('.form_order_method').hide();
-									                                                    $('.payment-loader').show();
-									                                                };
-									                                                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-									                                                var formData = new FormData(document.getElementById("form_printer"));
-									                                                xhr.send(formData);
-									                                                return frmInfo.valid();
-									                                            } else if (order_method === 'send_email') {
-									                                                $.post('{{ path('cart_print_mail')|escape('js') }}', {
-									                                                    order_method: order_method,
-									                                                    _token: token
-									                                                }).done(function (data) {
-									                                                    $('.payment-success').show();
-									                                                    $('.form_order_method').empty();
-									                                                    return frmInfo.valid();
-									                                                }).fail(function () {
-									                                                    $('.payment-failure').show();
-									                                                    $('.form_order_method').empty();
-									                                                });
-									                                            }
-									                                        });
-									                                        {% endif %}
-									                                    default:
-									                                        console.log("default");
-									                                        break;
-									                                }
-									                                $("#btnPaypal").empty();
-									
-									                            }
-									                        }
-									                        if (stepDirection === 'backward') {
-									                            if (newIndex === 0 && currentIndex === newIndex + 1) {
-									                                clearInterval(counter);
-									                                $.get('/res_billet/clear', function () {
-									                                    $('#data_cart').empty();
-									                                    $('#data_cart').append("<div class='row'><div class='col'>Veuillez ajouter vos commandes</div>");
-									                                    $('.total_value').empty().append("0");
-									                                });
-									                            }
-									                            if (newIndex === 1 && currentIndex === newIndex + 1) {
-									                                $("#btnPaypal").find('.paypal-buttons').remove();
-									                                $(".paymentInfo").empty();
-									                                $(".form_order_method").empty();
-									                            }
-									                            if (newIndex === 2 && currentIndex === newIndex + 1) {
-									                            }
-									
-									                        }
-									                        return true;
-									                    },
-									                    showBackButton: true,
-									                    onFinish: function () {
-									                        if ($('.payment-success').is(':visible') || $('.payment-failure').is(':visible') || $('.register-failure').is(':visible')) {
-									                            $.get('/res_billet/clear');
-									                            $('#checkout_command').modal('hide');
-									                            location.reload();
-									                        } else {
-									                            alert('Veuiller procéder au paiement. Pour fermer le dialogue cliquer sur x. ');
-									                        }
-									                    }
-									                });
-									            });
-									            $('.closeConfirm').click(function () { //Close Button on Form Modal to trigger Warning Modal
-									                $('#confirmCloseCheckout').modal('show').on('shown.bs.modal', function () { //Show Warning Modal and use `show` event listener
-									                    $('.confirmclosed').click(function () { //Warning Modal Confirm Close Button
-									                        $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
-									                        $('#checkout_command').modal('hide'); //Hide Form Modal
-									                        $.get('/res_billet/clear');
-									                        location.reload();
-									                    });
-									                });
-									            });
-									
-									            $('#checkout_command').on('hidden.bs.modal', function () {
-									                $.get('/res_billet/clear');
-									                resetForm('form_select_items');
-									                resetForm('frmInfo');
-									                location.reload();
-									            });
-									            let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
-									
-									            function start_counter() {
-									                let start_counter = 8 * 60;//8 * 60;
-									                let checkout_timer = setInterval(function () {
-									                    --start_counter;
-									                    $('.time_left').text(format(start_counter));
-									                    if (start_counter === 0) {
-									                        clearInterval(checkout_timer);
-									                        $.get('/res_billet/clear');
-									                        $('#checkout_command').modal('hide');
-									                    }
-									                }, 1000);
-									                return start_counter;
-									            }
-									
-									            function format(time) {
-									                // Hours, minutes and seconds
-									                let hrs = ~~(time / 3600);
-									                let mins = ~~((time % 3600) / 60);
-									                let secs = ~~time % 60;
-									
-									                // Output like "1:01" or "4:03:59" or "123:03:59"
-									                let ret = "";
-									                if (hrs > 0) {
-									                    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
-									                }
-									                ret += "" + mins + ":" + (secs < 10 ? "0" : "");
-									                ret += "" + secs;
-									                return ret;
-									            }
-									
-									            function transformItemsPaypalFormat(cart_items) {
-									                let formatted_cart = [];
-									                cart_items.forEach(function (el) {
-									                    let item = {
-									                        name: el.category_str,
-									                        quantity: el.quantity,
-									                        currency: "{{ devise }}",
-									                        unit_amount: {
-									                            value: el.price,
-									                            currency_code: "{{ devise }}"
-									                        }
-									                    };
-									                    formatted_cart.push(item);
-									                });
-									                return formatted_cart;
-									            }
-									
-									            let x = setInterval(function () {
-									                let now = new Date().getTime();
-									                let t = deadline - now;
-									                let days = Math.floor(t / (1000 * 60 * 60 * 24));
-									                let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-									                let minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
-									                let seconds = Math.floor((t % (1000 * 60)) / 1000);
-									                document.getElementById("day").innerHTML = days;
-									                document.getElementById("hour").innerHTML = hours;
-									                document.getElementById("minute").innerHTML = minutes;
-									                document.getElementById("second").innerHTML = seconds;
-									                if (t < 0) {
-									                    clearInterval(x);
-									                    //document.getElementById("clockdiv").innerHTML = "L' évènement est passé";
-									                    document.getElementById("day").innerHTML = '0';
-									                    document.getElementById("hour").innerHTML = '0';
-									                    document.getElementById("minute").innerHTML = '0';
-									                    document.getElementById("second").innerHTML = '0';
-									                }
-									            }, 1000);
-									        </script>
-									        <script type="text/javascript" src="{{ asset('js/js.event.single.management.js') }}"></script>
-									    {% endblock %}
-									{% endblock %}
-									{% block contact %}{% endblock %}
+												            let steps_api = null;
+												            let total_price = 0;
+												            let counter = '';
+												
+												            function resetForm(id_form) {
+												                $("#" + id_form).find('input[type="radio"]').val('');
+												                $("#" + id_form).find('input[type="text"]').val('');
+												                $("#" + id_form).find('input[type="password"]').val('');
+												                $("#" + id_form).find('input[type="checkbox"]').removeAttr("checked");
+												                $("#" + id_form).find('select option').removeAttr("selected");
+												                $("#" + id_form).find('textarea').val('');
+												            }
+												
+												            //-------------------------------modal management-------------
+												            $('#view_seat_map').on('click', function () {
+												                $.get('/res_billet/clear');
+												            });
+												            $('#checkout_command').on('shown.bs.modal', function () {
+												                $.get('/res_billet/clear');
+												                //--------------------------------steps management
+												                let form_select_item = $('#form_select_items');
+												                let rules_select_items = {}, messages_select_items = {};
+												                $('#form_select_items select').each(function (i, val) {
+												                    rules_select_items[val.getAttribute('name')] = {require_from_group: [1, ".fillOne"]};
+												                    messages_select_items[val.getAttribute('name')] = {require_from_group: "Veuiller choisir au moins 1 billet pour continuer"}
+												                });
+												                let form_select_item_validator = form_select_item.validate({
+												                    rules: rules_select_items,
+												                    messages: messages_select_items,
+												                    submitHandler: function (form) {
+												                        return false;
+												                    },
+												                    errorPlacement: function (error, element) {
+												                        error.appendTo(element.parents('.parent_item').find('.message_errors').find('.error'));
+												                    }
+												                });
+												
+												                let frmInfo = $('#frmInfo');
+												                let frmInfoValidator = frmInfo.validate({
+												                    rules: {
+												                        nom: {required: true},
+												                        prenom: {required: true},
+												                        email: {
+												                            required: true,
+												                            email: true
+												                        }
+												                    },
+												                    messages: {
+												                        nom: {required: 'Veuillez insérer votre nom'},
+												                        prenom: {required: 'Veuillez insérer votre prénom'},
+												                        email: {
+												                            required: 'Veuillez insérer votre e-mail',
+												                            email: 'Veuillez insérer un e-mail valide'
+												                        }
+												                    },
+												                    submitHandler: function (form) {
+												                        return false;
+												                    },
+												                    errorPlacement: function (error, element) {
+												                        error.appendTo(element.parents('.form-group').find('.input-error'));
+												                    }
+												                });
+												                $(".step-steps").hide();
+												                steps_api = $('#checkout_steps').steps({
+												                    onChange: function (currentIndex, newIndex, stepDirection) {
+												                        if (stepDirection === 'forward') {
+												                            if (newIndex === 1 && currentIndex === newIndex - 1) {
+												                                let data = form_select_item.serializeArray();
+												                                $('#data_cart').empty();
+												                                $.each(data, function (i, field) {
+												                                    let total_container = null;
+												                                    if (field.value !== "") {
+												                                        let parsed = field.value.split(":"); //[0] is name, [1] is price, [2] is number
+												                                        let item_label = $("<div class='col-8'></div>").text(parsed[2] + "x " + "Billet " + parsed[0]);
+												                                        let item_price = $("<div class='col'>{{ devise }} </div>").append(parsed[1] * parsed[2]);
+												                                        let item_container = $("<div class='row'></div>").append(item_label, item_price);
+												                                        $.post('/res_billet/add/', {
+												                                            event_id: {{ event.id }},
+												                                            select_nb_billets: parseInt(parsed[2]),
+												                                            type_billet: parsed[0],
+												                                            section_id: '-',
+												                                            place_id: '-',
+												                                            redirect: '/'
+												                                        });
+												                                        $('#data_cart').append(item_container);
+												                                    }
+												                                });
+												                                $('.total').html('<div class="col loader text-center"><img style="width:100px" src="{{ asset('img/loader.gif') }}"></div>');
+												                                $.get("/api/cart/get_total", function (total) {
+												                                    total_price = total;
+												                                    let item_label = $("<div class='col-7'></div>").append("<h6>Total</h6>");
+												                                    let item_price = $("<div class='col total_value'>{{ devise }} </div>").append(total);
+												                                    $(".total").empty();
+												                                    $(".total").append(item_label, item_price);
+												                                });
+												                                return form_select_item.valid();
+												                            }
+												                            if (newIndex === 2 && currentIndex === newIndex - 1) {
+												                                let data_payment_method = null;
+												                                counter = start_counter();
+												                                $('.payment-success').hide();
+												                                $('.payment-failure').hide();
+												                                $('.register-failure').hide();
+												                                $('.payment-loader').hide();
+												                                $.post("/res_billet/send_buyer_info", frmInfo.serialize(), function (data) {
+												                                    console.log(data);
+												                                });
+												                                $.get('/api/cart/list', function (data) {
+												                                    cart_items = data;
+												                                });
+												                                $.each(frmInfo.serializeArray(), function (index, el) {
+												                                    if (el.name === "paymentMethod") {
+												                                        data_payment_method = el;
+												                                    }
+												                                });
+												                                switch (data_payment_method.value) {
+												                                    case 'Paypal':
+												                                        $(".form_order_method").empty();
+												                                        $(".paymentInfo").text('Voici avez choisi paypal comme mode de paiement,\n' +
+												                                            '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
+												                                            '                                                                    fois le paiement effectué , vous serez redirigé\n' +
+												                                            '                                                                    automatiquement sur la page.');
+												                                        paypal.Buttons({
+												                                            style: {
+												                                                layout: 'horizontal'
+												                                            },
+												                                            createOrder: function (data, actions) {
+												                                                // Set up the transaction
+												                                                return actions.order.create({
+												                                                    purchase_units: [{
+												                                                        application_context: {
+												                                                            brand_name: 'Ivenco',
+												                                                            return_url: '/res_billet/checkout',
+												                                                            cancel_url: '/res_billet/cancel'
+												                                                        },
+												                                                        amount: {
+												                                                            breakdown: {
+												                                                                item_total: {
+												                                                                    currency_code: "{{ devise }}",
+												                                                                    value: total_price
+												                                                                }
+												                                                            },
+												                                                            currency_code: "{{ devise }}",
+												                                                            value: total_price
+												                                                        },
+												                                                        items:
+												                                                            transformItemsPaypalFormat(cart_items)
+												                                                    }],
+												
+												                                                });
+												                                            },
+												                                            onApprove: function (data, actions) {
+												                                                // Capture the funds from the transaction
+												                                                return actions.order.capture().then(function (details) {
+												                                                    $(document).ajaxStart(function () {
+												                                                        $('.payment-loader').show();
+												                                                    });
+												                                                    $(document).ajaxStop(function () {
+												                                                        $('.payment-loader').hide();
+												                                                    });
+												                                                    // Show a success message to your buyer
+												                                                    $.get('/res_billet/checkout')
+												                                                        .done(function () {
+												                                                            $('.payment-success').show();
+												                                                            $('#btnPaypal').hide();
+												                                                        })
+												                                                        .fail(function () {
+												                                                            $('.register-failure').show();
+												                                                        })
+												                                                        .always(function () {
+												                                                            console.log("finished");
+												                                                        });
+												                                                    console.log('Transaction completed by ' + details.payer.name.given_name);
+												                                                    //location.href = "/res_billet/checkout";
+												                                                });
+												                                            },
+												                                            onError: function (error) {
+												                                                $('.payment-failure').show();
+												                                            }
+												                                        }).render('#btnPaypal');
+												                                        return frmInfo.valid();
+												                                        {% if is_granted('ROLE_USER_SHOP') %}
+												                                    case 'point_de_vente':
+												                                        let user_name = '{{ app.user.username }}';
+												                                        let shop_name = '{{ app.user.pointDeVente.nom|escape("js") }}';
+												                                        $(".paymentInfo").append('<p><b>' + user_name + '</b>,administrateur du point de vente: <b>' + shop_name + '</b></p>');
+												                                        let form_order_method = $(".form_order_method");
+												                                        form_order_method.append("<div class=\"form-group\">\n" +
+												                                            "                                                                                    <h6>Veuiller choisir le mode d\'envoi des billets</h6>\n" +
+												                                            "                                                                                    <div class=\"row\">\n" +
+												                                            "                                                                                        <div class=\"col-6\">\n" +
+												                                            "                                                                                           <input name=\"_token\" type=\"hidden\" value=\"{{ csrf_token('order-method') }}\">\n" +
+												                                            "                                                                                            <input type=\"radio\"\n" +
+												                                            "                                                                                                   class=\"form-check-input\"\n" +
+												                                            "                                                                                                   name=\"order_method\"\n" +
+												                                            "                                                                                                   value=\"print\" checked>\n" +
+												                                            "                                                                                            <span class=\"fa fa-print fa-2x\"></span>\n" +
+												                                            "                                                                                            Imprimer les billets\n" +
+												                                            "                                                                                        </div>\n" +
+												                                            "                                                                                    </div>\n" +
+												                                            "                                                                                    <hr/>\n" +
+												                                            "                                                                                    <div class=\"row\">\n" +
+												                                            "                                                                                        <div class=\"col-6\">\n" +
+												                                            "                                                                                            <input type=\"radio\"\n" +
+												                                            "                                                                                                   class=\"form-check-input\"\n" +
+												                                            "                                                                                                   name=\"order_method\"\n" +
+												                                            "                                                                                                   value=\"send_email\"/>\n" +
+												                                            "                                                                                            <span class=\"fa fa-mail-forward fa-2x\"></span>\n" +
+												                                            "                                                                                            Envoyer via e-mail\n" +
+												                                            "                                                                                        </div>\n" +
+												                                            "                                                                                    </div>\n" +
+												                                            "                                                                                    <hr/>\n" +
+												                                            "                                                                                    <div class=\"row\">\n" +
+												                                            "                                                                                        <div class=\"col-6\">\n" +
+												                                            "                                                                                            <input type=\"submit\"\n" +
+												                                            "                                                                                                   class=\"form-check-input btn btn-success\"\n" +
+												                                            "                                                                                                   value=\"Valider\"/>\n" +
+												                                            "                                                                                        </div>\n" +
+												                                            "                                                                                    </div>\n" +
+												                                            "                                                                                    <br/>\n" +
+												                                            "                                                                                </div>");
+												
+												                                        form_order_method.on('submit', function (e) {
+												                                            e.preventDefault();
+												                                            let data_order_method = form_order_method.serializeArray();
+												                                            let order_method = '';
+												                                            let token = '';
+												                                            e.preventDefault();
+												                                            $.each(data_order_method, function (index, el) {
+												                                                if (el.name === "order_method") {
+												                                                    order_method = el.value;
+												                                                }
+												                                                if (el.name === '_token') {
+												                                                    token = el.value;
+												                                                }
+												                                            });
+												
+												                                            $(document).ajaxStart(function () {
+												                                                $('.payment-loader').show();
+												                                            });
+												                                            $(document).ajaxStop(function () {
+												                                                $('.payment-loader').hide();
+												                                            });
+												                                            if (order_method === 'print') {
+												                                                var xhr = new XMLHttpRequest();
+												                                                xhr.open("POST", "{{ path('cart_print_mail')|escape('js') }}");
+												                                                xhr.responseType = 'arraybuffer';
+												                                                xhr.onload = function () {
+												                                                    if (this.status === 200) {
+												                                                        var filename = "";
+												                                                        var disposition = xhr.getResponseHeader('Content-Disposition');
+												                                                        if (disposition && disposition.indexOf('attachment') !== -1) {
+												                                                            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+												                                                            var matches = filenameRegex.exec(disposition);
+												                                                            if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+												                                                        }
+												                                                        var type = xhr.getResponseHeader('Content-Type');
+												
+												                                                        var blob;
+												                                                        if (typeof File === 'function') {
+												                                                            try {
+												                                                                blob = new File([this.response], filename, {type: type});
+												                                                            } catch (e) { /* Edge */
+												                                                            }
+												                                                        }
+												                                                        if (typeof blob === 'undefined') {
+												                                                            blob = new Blob([this.response], {type: type});
+												                                                        }
+												
+												                                                        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+												                                                            // IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+												                                                            window.navigator.msSaveBlob(blob, filename);
+												                                                        } else {
+												                                                            var URL = window.URL || window.webkitURL;
+												                                                            var downloadUrl = URL.createObjectURL(blob);
+												
+												                                                            if (filename) {
+												                                                                // use HTML5 a[download] attribute to specify filename
+												                                                                var a = document.createElement("a");
+												                                                                // safari doesn't support this yet
+												                                                                if (typeof a.download === 'undefined') {
+												                                                                    window.location = downloadUrl;
+												                                                                } else {
+												                                                                    a.href = downloadUrl;
+												                                                                    a.download = filename;
+												                                                                    document.body.appendChild(a);
+												                                                                    a.click();
+												                                                                }
+												                                                            } else {
+												                                                                window.location = downloadUrl;
+												                                                            }
+												                                                            setTimeout(function () {
+												                                                                URL.revokeObjectURL(downloadUrl);
+												                                                            }, 100); // cleanup
+												                                                        }
+												                                                    }
+												                                                };
+												                                                xhr.onloadend = function () {
+												                                                    $('.payment-success').show();
+												                                                    $('.payment-loader').hide();
+												                                                    $('.payment-loader').hide();
+												                                                    $('.form_order_method').empty();
+												                                                };
+												                                                xhr.onloadstart = function () {
+												                                                    $('.form_order_method').hide();
+												                                                    $('.payment-loader').show();
+												                                                };
+												                                                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+												                                                var formData = new FormData(document.getElementById("form_printer"));
+												                                                xhr.send(formData);
+												                                                return frmInfo.valid();
+												                                            } else if (order_method === 'send_email') {
+												                                                $.post('{{ path('cart_print_mail')|escape('js') }}', {
+												                                                    order_method: order_method,
+												                                                    _token: token
+												                                                }).done(function (data) {
+												                                                    $('.payment-success').show();
+												                                                    $('.form_order_method').empty();
+												                                                    return frmInfo.valid();
+												                                                }).fail(function () {
+												                                                    $('.payment-failure').show();
+												                                                    $('.form_order_method').empty();
+												                                                });
+												                                            }
+												                                        });
+												                                        {% endif %}
+												                                    default:
+												                                        console.log("default");
+												                                        break;
+												                                }
+												                                $("#btnPaypal").empty();
+												
+												                            }
+												                        }
+												                        if (stepDirection === 'backward') {
+												                            if (newIndex === 0 && currentIndex === newIndex + 1) {
+												                                clearInterval(counter);
+												                                $.get('/res_billet/clear', function () {
+												                                    $('#data_cart').empty();
+												                                    $('#data_cart').append("<div class='row'><div class='col'>Veuillez ajouter vos commandes</div>");
+												                                    $('.total_value').empty().append("0");
+												                                });
+												                            }
+												                            if (newIndex === 1 && currentIndex === newIndex + 1) {
+												                                $("#btnPaypal").find('.paypal-buttons').remove();
+												                                $(".paymentInfo").empty();
+												                                $(".form_order_method").empty();
+												                            }
+												                            if (newIndex === 2 && currentIndex === newIndex + 1) {
+												                            }
+												
+												                        }
+												                        return true;
+												                    },
+												                    showBackButton: true,
+												                    onFinish: function () {
+												                        if ($('.payment-success').is(':visible') || $('.payment-failure').is(':visible') || $('.register-failure').is(':visible')) {
+												                            $.get('/res_billet/clear');
+												                            $('#checkout_command').modal('hide');
+												                            location.reload();
+												                        } else {
+												                            alert('Veuiller procéder au paiement. Pour fermer le dialogue cliquer sur x. ');
+												                        }
+												                    }
+												                });
+												            });
+												            $('.closeConfirm').click(function () { //Close Button on Form Modal to trigger Warning Modal
+												                $('#confirmCloseCheckout').modal('show').on('shown.bs.modal', function () { //Show Warning Modal and use `show` event listener
+												                    $('.confirmclosed').click(function () { //Warning Modal Confirm Close Button
+												                        $('#confirmCloseCheckout').modal('hide'); //Hide Warning Modal
+												                        $('#checkout_command').modal('hide'); //Hide Form Modal
+												                        $.get('/res_billet/clear');
+												                        location.reload();
+												                    });
+												                });
+												            });
+												
+												            $('#checkout_command').on('hidden.bs.modal', function () {
+												                $.get('/res_billet/clear');
+												                resetForm('form_select_items');
+												                resetForm('frmInfo');
+												                location.reload();
+												            });
+												            let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
+												
+												            function start_counter() {
+												                let start_counter = 8 * 60;//8 * 60;
+												                let checkout_timer = setInterval(function () {
+												                    --start_counter;
+												                    $('.time_left').text(format(start_counter));
+												                    if (start_counter === 0) {
+												                        clearInterval(checkout_timer);
+												                        $.get('/res_billet/clear');
+												                        $('#checkout_command').modal('hide');
+												                    }
+												                }, 1000);
+												                return start_counter;
+												            }
+												
+												            function format(time) {
+												                // Hours, minutes and seconds
+												                let hrs = ~~(time / 3600);
+												                let mins = ~~((time % 3600) / 60);
+												                let secs = ~~time % 60;
+												
+												                // Output like "1:01" or "4:03:59" or "123:03:59"
+												                let ret = "";
+												                if (hrs > 0) {
+												                    ret += "" + hrs + ":" + (mins < 10 ? "0" : "");
+												                }
+												                ret += "" + mins + ":" + (secs < 10 ? "0" : "");
+												                ret += "" + secs;
+												                return ret;
+												            }
+												
+												            function transformItemsPaypalFormat(cart_items) {
+												                let formatted_cart = [];
+												                cart_items.forEach(function (el) {
+												                    let item = {
+												                        name: el.category_str,
+												                        quantity: el.quantity,
+												                        currency: "{{ devise }}",
+												                        unit_amount: {
+												                            value: el.price,
+												                            currency_code: "{{ devise }}"
+												                        }
+												                    };
+												                    formatted_cart.push(item);
+												                });
+												                return formatted_cart;
+												            }
+												
+												            let x = setInterval(function () {
+												                let now = new Date().getTime();
+												                let t = deadline - now;
+												                let days = Math.floor(t / (1000 * 60 * 60 * 24));
+												                let hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+												                let minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
+												                let seconds = Math.floor((t % (1000 * 60)) / 1000);
+												                document.getElementById("day").innerHTML = days;
+												                document.getElementById("hour").innerHTML = hours;
+												                document.getElementById("minute").innerHTML = minutes;
+												                document.getElementById("second").innerHTML = seconds;
+												                if (t < 0) {
+												                    clearInterval(x);
+												                    //document.getElementById("clockdiv").innerHTML = "L' évènement est passé";
+												                    document.getElementById("day").innerHTML = '0';
+												                    document.getElementById("hour").innerHTML = '0';
+												                    document.getElementById("minute").innerHTML = '0';
+												                    document.getElementById("second").innerHTML = '0';
+												                }
+												            }, 1000);
+												        </script>
+												        <script type="text/javascript" src="{{ asset('js/js.event.single.management.js') }}"></script>
+												    {% endblock %}
+												{% endblock %}
+												{% block contact %}{% endblock %}

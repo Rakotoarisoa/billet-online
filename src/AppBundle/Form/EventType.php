@@ -48,7 +48,7 @@ class EventType extends AbstractType
                         'constraints' => [
                             new Assert\Count([
                                 'min' => 1,
-                                'minMessage' => 'Au moins 1 type de billets est requis',
+                                'minMessage' => 'Au moins un type de billets est requis',
                                 // also has max and maxMessage just like the Length constraint
                             ])]
                     ])

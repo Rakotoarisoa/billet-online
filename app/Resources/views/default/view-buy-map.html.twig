@@ -447,6 +447,7 @@
 
             //-------------------------------modal management-------------
             $('#checkout_command').on('shown.bs.modal', function () {
+                counter = start_counter();
                 $('#data_cart').empty();
                 let data_cart = null;
                 $.get("/api/cart/list", function (data) {
@@ -525,7 +526,6 @@
                     onChange: function (currentIndex, newIndex, stepDirection) {
                         if (stepDirection === 'forward') {
                             if (newIndex === 1 && currentIndex === newIndex - 1) {
-                                counter = start_counter();
                                 $('.payment-success').hide();
                                 $('.payment-failure').hide();
                                 $('.register-failure').hide();
@@ -812,6 +812,7 @@
                 });
             });
             $('#checkout_command').on('hidden.bs.modal', function () {
+                clearInterval(counter);
                 $.get('/res_billet/clear');
                 resetForm('form_select_items');
                 resetForm('frmInfo');
@@ -820,7 +821,7 @@
             let deadline = new Date("{{ event.dateDebutEvent|date("M d, Y H:i:s") }}").getTime();
 
             function start_counter() {
-                let start_counter = 8 * 60;//8 * 60;
+                let start_counter = 10*60;
                 let checkout_timer = setInterval(function () {
                     --start_counter;
                     $('.time_left').text(format(start_counter));
@@ -839,7 +840,6 @@
                 let mins = ~~((time % 3600) / 60);
                 let secs = ~~time % 60;
 
-                // Output like "1:01" or "4:03:59" or "123:03:59"
                 let ret = "";
                 if (hrs > 0) {
                     ret += "" + hrs + ":" + (mins < 10 ? "0" : "");

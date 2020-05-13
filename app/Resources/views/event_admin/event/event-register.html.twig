@@ -4,7 +4,7 @@
 {% macro printBilletItemRow(typeBilletForm,i) %}
     <div class="js-type-item">
         <div class="row mb-1 align-items-end">
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 {{ form_label(typeBilletForm.libelle) }}
                 {{ form_widget(typeBilletForm.libelle) }}
                 <small>{{ form_errors(typeBilletForm.libelle) }}</small>
@@ -14,7 +14,7 @@
                 {{ form_widget(typeBilletForm.prix) }}
                 <small>{{ form_errors(typeBilletForm.prix) }}</small>
             </div>
-            <div class="col-sm-1">
+            <div class="col-sm-2">
                 {{ form_label(typeBilletForm.quantite) }}
                 {{ form_widget(typeBilletForm.quantite) }}
                 <small>{{ form_errors(typeBilletForm.quantite) }}</small>
@@ -32,9 +32,6 @@
             </div>
         </div>
         <div class="row">
-            <div class="col">
-                <div class="collapse" id="billet_{{ i }}">
-                    <div class="row">
                         <div class="col">
                             <span class="text-muted"> {{ form_label(typeBilletForm.dateDebut) }}</span>
                             {{ form_widget(typeBilletForm.dateDebut) }}
@@ -43,7 +40,10 @@
                             <span class="text-muted"> {{ form_label(typeBilletForm.dateFin) }}</span>
                             {{ form_widget(typeBilletForm.dateFin) }}
                         </div>
-                    </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="collapse" id="billet_{{ i }}">
                     <div class="row">
                         <div class="col">
                             <span class="text-muted">{{ form_label(typeBilletForm.description) }}</span>
@@ -155,8 +155,7 @@
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ form_label(form.devise) }}</label>
                                     {{ form_widget(form.devise) }}
-                                    <small id="devise" class="form-text text-muted">Sélectionner la devise à utiliser si
-                                        le client utilise un mode de paiement autre que le mobile banking
+                                    <small id="devise" class="form-text text-muted">Sélectionner la devise à utiliser 
                                     </small>
                                 </div>
                                 <br/>
@@ -185,8 +184,9 @@
                                             {{ formMacros.printBilletItemRow(typeBilletForm,i) }}
                                             {% set i=i+1 %}
                                         {% endfor %}
-                                        <span class="text-center fa fa-plus-circle fa-2x js-add-type">
-                                        </span>
+                                        <a class="btn btn-link text-center js-add-type">
+                                            Ajouter un type de billet
+                                        </a>
                                     </div>
                                     {{ form_widget(form.typeBillets) }}
                                     {{ form_errors(form.typeBillets) }}
@@ -488,6 +488,7 @@
                 $('.dateFin').data("DateTimePicker").minDate(new Date());
                 $(".dateDebut").on("dp.change", function (e) {
                     $('.dateFin').data("DateTimePicker").minDate(e.date);
+                    $('.date-fin-billet').data("DateTimePicker").maxDate(e.date);
                 });
                 $(".dateFin").on("dp.change", function (e) {
                     $('.dateDebut').data("DateTimePicker").maxDate(e.date);

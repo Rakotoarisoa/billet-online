@@ -5,6 +5,7 @@ namespace AppBundle\Repository;
 use AppBundle\Entity\Billet;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\TypeBillet;
+use DateTime;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -20,8 +21,8 @@ class BilletRepository extends EntityRepository
      */
     public function getListTicketsByType(Evenement $event)
     {
-        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.quantite as quantite, tb.description as descriptions, tb.libelle, tb.prix as prix,
-            CASE WHEN count(tb) < tb.quantite THEN TRUE ELSE FALSE END as estDisponible
+        return $this->getEntityManager()->createQuery('SELECT count(tb) AS nombreBillets,tb.date_debut as debut, tb.date_fin as fin,tb.quantite as quantite, tb.description as descriptions, tb.libelle, tb.prix as prix,
+            CASE WHEN count(tb) < tb.quantite AND tb.date_debut < :right_now AND tb.date_fin > :right_now THEN TRUE ELSE FALSE END as estDisponible
             from AppBundle:Evenement evt
             LEFT JOIN AppBundle:TypeBillet tb WITH evt.id=tb.evenement
             LEFT JOIN AppBundle:Billet b WITH b.typeBillet=tb.id
@@ -29,6 +30,7 @@ class BilletRepository extends EntityRepository
             GROUP BY tb.id,prix
             ORDER BY tb.libelle DESC
             ')
+            ->setParameter('right_now', new DateTime('now'))
             ->setParameter('idEvent', $event->getId())
             ->getResult();
     }
