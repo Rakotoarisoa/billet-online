@@ -798,7 +798,7 @@
 												                                            }
 												                                        }).render('#btnPaypal');
 												                                        return frmInfo.valid();
-												                                        {% if is_granted('ROLE_USER_SHOP') %}
+												                                        {% if is_granted('ROLE_USER_SHOP') and app.user.pointDeVente != NULL %}
 												                                    case 'point_de_vente':
 												                                        let user_name = '{{ app.user.username }}';
 												                                        let shop_name = '{{ app.user.pointDeVente.nom|escape("js") }}';
