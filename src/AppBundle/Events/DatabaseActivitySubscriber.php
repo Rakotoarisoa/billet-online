@@ -69,7 +69,7 @@ class DatabaseActivitySubscriber implements EventSubscriber
             $this->logManager->logAction('Réservation','Mise à jour Réservation n° '.$entity->getRandomCodeCommande().' au nom de '.$entity->getUserCheckout()->getNom().' '.$entity->getUserCheckout()->getPrenom(),$entity->getEvenement()->getUser());
         }
         if ($entity  instanceof Reservation && $action == 'remove') {
-            $this->logManager->logAction('Réservation','Mise à jour Réservation n° '.$entity->getRandomCodeCommande().' au nom de '.$entity->getUserCheckout()->getNom().' '.$entity->getUserCheckout()->getPrenom(),$entity->getEvenement()->getUser());
+            //$this->logManager->logAction('Réservation','Mise à jour Réservation n° '.$entity->getRandomCodeCommande().' au nom de '.$entity->getUserCheckout()->getNom().' '.$entity->getUserCheckout()->getPrenom(),$entity->getEvenement()->getUser());
         }
         /*------------------- User ------------------------------*/
         if ($entity instanceof User && $action == 'persist') {

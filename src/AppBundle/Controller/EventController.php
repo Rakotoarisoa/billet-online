@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class EventController extends Controller
 {
@@ -154,11 +155,15 @@ class EventController extends Controller
 
     /**
      * Modifier un évènement
-     * @Route("//user/event/manage/{id}", name="viewEventUpdate")
+     * @Route("/user/event/manage/{id}", name="viewEventUpdate")
      * */
     public function updateEvent(Request $request, Evenement $event)
     {
+
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event->getId());
+        if($this->getUser() != $event->getUser() ){
+            throw new AccessDeniedException();
+        }
         $flow = $this->get('app.form.flow.create_event'); // must match the flow's service id
         $flow->bind($event);
         $form = $flow->createForm();

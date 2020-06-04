@@ -4,6 +4,7 @@ imports:
     - { resource: services.yml }
     - { resource: vich_uploader.yml }
     - { resource: liip_imagine.yml }
+    - { resource: sonata_admin.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -198,20 +199,6 @@ core23_dompdf:
     defaults:
         dpi: 150
         defaultPaperSize: A5
-sonata_block:
-    blocks:
-        # enable the SonataAdminBundle block
-        sonata.admin.block.admin_list:
-            contexts: [admin]
-        sonata.admin.block.search_result:
-          contexts: [admin]
-sonata_admin:
-    title: 'Administration'
-    title_logo: 'img/ivenco_admin.png'
-    breadcrumbs:
-        # use this to change the default route used to generate the link
-        # to the parent object inside a breadcrumb, when in a child admin
-        child_admin_route: edit
 stof_doctrine_extensions:
     default_locale: en_US
     orm:

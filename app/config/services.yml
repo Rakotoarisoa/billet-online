@@ -2,8 +2,11 @@
 # https://symfony.com/doc/current/service_container.html
 parameters:
     #parameter_name: value
+    sonata.admin.security.mask.builder.class: Sonata\AdminBundle\Security\Acl\Permission\MaskBuilder
 
 services:
+    security.acl.permission.map:
+        class: Sonata\AdminBundle\Security\Acl\Permission\AdminPermissionMap
     # default configuration for services in *this* file
     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
         public:    false
@@ -58,55 +61,154 @@ services:
         tags:
             - { name: twig.extension }
     admin.billet:
-        class: AppBundle\Admin\BilletAdmin
+        class: AdminBundle\Admin\BilletAdmin
         arguments: [~, AppBundle\Entity\Billet, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Gestion de Billets', label: Billet ,icon: "<i class=\"fa fa-ticket\"></i>"}
+            -   name: sonata.admin
+                manager_type: orm
+                group: ~
+                label: Billet
     admin.typebillet:
-        class: AppBundle\Admin\TypeBilletAdmin
+        calls:
+            - [ addChild, ['@admin.billet','typebillet'] ]
+        class: AdminBundle\Admin\TypeBilletAdmin
         arguments: [~, AppBundle\Entity\TypeBillet, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Gestion de Billets', label: 'Type Billet' }
-    admin.categorieevenement:
-        class: AppBundle\Admin\CategorieEvenementAdmin
-        arguments: [~, AppBundle\Entity\CategorieEvenement, ~]
-        tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Evènement', label: 'Catégorie évenement' }
-    admin.lieuevenement:
-        class: AppBundle\Admin\LieuEvenementAdmin
-        arguments: [~, AppBundle\Entity\LieuEvenement, ~]
-        tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Evènement', label: "Lieu d'évènement",icon: "<i class=\"fa fa-map-marker\"></i>" }
+            -   name: sonata.admin
+                manager_type: orm
+                group: ~
+                label: 'Type Billet'
     admin.evenement:
-        class: AppBundle\Admin\EvenementAdmin
+        calls:
+            - [ addChild, ['@admin.typebillet','evenement'] ]
+        class: AdminBundle\Admin\EvenementAdmin
         arguments: [~, AppBundle\Entity\Evenement, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Evènement', label: 'Evenement',icon: "<i class=\"fa fa-folder\"></i>" }
-    admin.user:
-        class: AppBundle\Admin\UserAdmin
+            -   name: sonata.admin
+                manager_type: orm
+                group: 'app.admin.groups.event'
+                label: 'Evènements'
+                label_catalogue: 'SonataAdminBundle'
+    admin.categorieevenement:
+        class: AdminBundle\Admin\CategorieEvenementAdmin
+        arguments: [~, AppBundle\Entity\CategorieEvenement, ~]
+        tags:
+            -   name: sonata.admin
+                manager_type: orm
+                group: 'app.admin.groups.event'
+                label: "Catégorie d'évènements"
+                label_catalogue: 'SonataAdminBundle'
+    admin.lieuevenement:
+        class: AdminBundle\Admin\LieuEvenementAdmin
+        arguments: [~, AppBundle\Entity\LieuEvenement, ~]
+        tags:
+            -   name: sonata.admin
+                manager_type: orm
+                group: 'app.admin.groups.event'
+                label: "Lieu d'évènement"
+                label_catalogue: 'SonataAdminBundle'
+    admin.reservation:
+        class: AdminBundle\Admin\ReservationAdmin
+        arguments: [~, AppBundle\Entity\Reservation, ~]
+        tags:
+            - name: sonata.admin
+              manager_type: orm
+              group: ~
+              label: "Réservations"
+              label_catalogue: 'SonataAdminBundle'
+    admin.user_admin:
+        calls:
+            - [ addChild, ['@admin.evenement','user'] ]
+        class: AdminBundle\Admin\UserAdmin
         arguments: [~, AppBundle\Entity\User, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Utilisateurs et Droits', label: 'Utilisateurs',icon: "<i class=\"fa fa-user\"></i>" }
+            -   name: sonata.admin
+                manager_type: orm
+                group: 'app.admin.groups.user' #'Utilisateurs et droits'
+                label: 'Utilisateurs'
+                label_catalogue: 'SonataAdminBundle'
+                icon: '<i class=\"fa fa-user\"></i>'
+    admin.user_checkout:
+        class: AdminBundle\Admin\UserCheckoutAdmin
+        arguments: [~~,AppBundle\Entity\UserCheckout,~]
+        tags:
+            - name: sonata.admin
+              manager_type: orm
+              group: ~
+              label: "Acheteurs"
+              label_catalogue: 'SonataAdminBundle'
+
     admin.shop:
-        class: AppBundle\Admin\ShopAdmin
+        class: AdminBundle\Admin\ShopAdmin
         arguments: [~, AppBundle\Entity\Shop, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Point de vente', label: 'Point de vente',icon: "<i class=\"fa fa-shop\"></i>" }
+            -   name: sonata.admin
+                manager_type: orm
+                group: 'app.admin.groups.shop'
+                label: 'Point de vente'
+                label_catalogue: 'SonataAdminBundle'
     admin.pays:
-        class: AppBundle\Admin\PaysAdmin
+        class: AdminBundle\Admin\PaysAdmin
         arguments: [~, AppBundle\Entity\Pays, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Configurations générales', label: 'Pays' }
+            -   name: sonata.admin
+                manager_type: orm
+                group: 'app.admin.groups.config'
+                label: 'Pays'
+                label_catalogue: 'SonataAdminBundle'
     admin.devise:
-        class: AppBundle\Admin\DeviseAdmin
+        class: AdminBundle\Admin\DeviseAdmin
         arguments: [~, AppBundle\Entity\Devise, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Configurations générales', label: 'Devise' }
+            -   name: sonata.admin
+                manager_type: orm
+                group: 'app.admin.groups.config'
+                label: 'Devise'
+                label_catalogue: 'SonataAdminBundle'
     admin.log:
-        class: AppBundle\Admin\LogAdmin
+        class: AdminBundle\Admin\LogAdmin
         arguments: [~, AppBundle\Entity\Log, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: 'Journal activités', label: 'Journal' }
+            -   name: sonata.admin
+                manager_type: orm
+                group: "app.admin.groups.log"
+                label: "Journal d'activités"
+                label_catalogue: 'SonataAdminBundle'
+    admin.stats:
+        class: AdminBundle\Admin\StatsAdmin
+        arguments: [~, ~, AdminBundle\Controller\StatsCRUDController]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "app.admin.group.stats", on_top: true, label: Stats }
+    sonata.block.service.recent_orders:
+        class: AdminBundle\AdminBundle\Block\Service\RecentOrdersBlockService
+        arguments:
+            - "sonata.block.service.recent_orders"
+            - "@templating"
+            - "@doctrine.orm.entity_manager"
+            - "@sonata.admin.pool"
+        public: true
+        tags:
+            - { name: "sonata.block" }
+    sonata.block.service.recent_tickets:
+        class: AdminBundle\AdminBundle\Block\Service\RecentTicketsBlockService
+        arguments:
+            - "sonata.block.service.recent_tickets"
+            - "@templating"
+            - "@doctrine.orm.entity_manager"
+            - "@sonata.admin.pool"
+        public: true
+        tags:
+            - { name: "sonata.block" }
+    sonata.block.service.recent_customers:
+        class: AdminBundle\AdminBundle\Block\Service\RecentCustomersBlockService
+        arguments:
+            - "sonata.block.service.recent_customers"
+            - "@templating"
+            - "@doctrine.orm.entity_manager"
+            - "@sonata.admin.pool"
+        public: true
+        tags:
+            - { name: "sonata.block" }
     app.manager.log:
         class: AppBundle\Manager\LogManager
         arguments:
@@ -119,3 +221,6 @@ services:
         arguments: ["@session", "@security.token_storage", "@router",'@doctrine.orm.entity_manager', %session_max_idle_time_remove_cart%,%session_max_idle_time%]
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+    app.form_login_authenticator:
+        class: AppBundle\Security\FormLoginAuthenticator
+        arguments: ["@router", "@security.password_encoder"]

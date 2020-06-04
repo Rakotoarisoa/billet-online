@@ -42,8 +42,8 @@ class BilletController extends AbstractFOSRestController
     public function getTicketById($id)
     {
         $restResult = $this->getDoctrine()->getRepository(Billet::class)->find($id);
-        if ($restResult === null) {
-            return new View("there are no users exist", Response::HTTP_NOT_FOUND);
+        if($restResult === null) {
+            return new View("There are no users exist", Response::HTTP_NOT_FOUND);
         }
         return View::create($restResult, Response::HTTP_OK);
     }
@@ -72,7 +72,7 @@ class BilletController extends AbstractFOSRestController
         $id = $request->get('id');
         $sn = $this->getDoctrine()->getManager();
         $user = $this->getDoctrine()->getRepository(Billet::class)->find($id);
-        if (empty($user)) {
+        if(empty($user)) {
             return new View("Ticket non trouvé", Response::HTTP_NOT_FOUND);
         } else {
             $sn->remove($user);
@@ -92,7 +92,7 @@ class BilletController extends AbstractFOSRestController
     {
         $evenement = $this->getDoctrine()->getRepository(Evenement::class)->find($id);
         $billet = $this->getDoctrine()->getRepository(Billet::class)->findBy(['evenement' => $evenement]);
-        if ($billet === null) {
+        if($billet === null) {
             return new View("there are no users exist", Response::HTTP_NOT_FOUND);
         }
         return $billet;

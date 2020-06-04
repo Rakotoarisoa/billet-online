@@ -213,7 +213,7 @@ class Evenement
      */
     private $lieuEvenement;
     /**
-     * @ORM\OneToMany(targetEntity="Reservation", mappedBy="evenement")
+     * @ORM\OneToMany(targetEntity="Reservation", mappedBy="evenement",orphanRemoval=true)
      * @Serializer\Exclude
      */
     private $reservation;

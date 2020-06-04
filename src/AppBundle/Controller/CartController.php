@@ -31,6 +31,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+use Doctrine\ORM\EntityManager;
 
 class CartController extends Controller
 {
@@ -283,8 +284,9 @@ class CartController extends Controller
      */
     public function checkOutAction(EventDispatcherInterface $eventDispatcher)
     {
-
+        $entity_manager=$this->container->get('doctrine.orm.default_entity_manager');
         $cartItems = $this->cart->getItems();
+        $entity_manager->getConnection()->beginTransaction();
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($this->cart->getItem(0)->getEvenement()->getId());
         $buyer_data = $this->session->get('buyer_data');
         $user_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => (string)$buyer_data['email']]);
@@ -314,7 +316,8 @@ class CartController extends Controller
                 $typeBillet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $item->getCategoryStr(), 'evenement' => $event]);
                 $billet = new Billet();
                 $billet->setEstVendu(true);
-                $billet->setIsMapped(false);
+                if($item->getSeat() == "-" && $item->getSection() == "-"){$billet->setIsMapped(false);}
+                else{$billet->setIsMapped(true);}
                 $billet->setPlaceId($item->getSeat());
                 $billet->setSectionId($item->getSection());
                 $billet->setTypeBillet($typeBillet);
@@ -326,11 +329,19 @@ class CartController extends Controller
             $this->getDoctrine()->getManager()->persist($reservation);
             $this->getDoctrine()->getManager()->flush();
             $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation));
+            foreach ($cartItems as $item){
+                //$this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
+                $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(),'seat_id' => $item->getSeat(),'evenement'=>$item->getEvenement(),'sess_id'=>$this->session->getId()]);
+                if(!empty($locked_seat)) $this->getDoctrine()->getManager()->remove($locked_seat);
+            }
+            $this->getDoctrine()->getManager()->flush();
+            $entity_manager->getConnection()->commit();
             //delete session and cart _data
             return new Response('Processus Terminé', Response::HTTP_OK);
             //return $this->redirectToRoute('viewList');
         } catch (\Exception $exception) {
             //$this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
+            $entity_manager->getConnection()->rollback();
             return new Response($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -394,6 +405,12 @@ class CartController extends Controller
             //set Name and username
             $data_buyer_name="";
             $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation,$order_method,array('name'=> $buyer_name,'lastname'=>$buyer_lastname)));
+            foreach ($cartItems as $item){
+                //$this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
+                $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(),'seat_id' => $item->getSeat(),'evenement'=>$item->getEvenement(),'sess_id'=>$this->session->getId()]);
+                if(!empty($locked_seat)) $this->getDoctrine()->getManager()->remove($locked_seat);
+            }
+            $this->getDoctrine()->getManager()->flush();
             //delete session and cart _data
             return new Response('Processus Terminé', Response::HTTP_OK);
             //return $this->redirectToRoute('viewList');

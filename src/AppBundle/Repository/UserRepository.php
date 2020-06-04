@@ -12,6 +12,7 @@ class UserRepository extends EntityRepository
     /**
      * count Event
      */
+
     public function countEvents(User $user){
         return $this->getEntityManager()->createQuery('SELECT count(u) AS nombreEvents
             from AppBundle:User u

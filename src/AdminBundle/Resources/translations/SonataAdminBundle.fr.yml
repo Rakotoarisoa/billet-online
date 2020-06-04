@@ -1,0 +1,10 @@
+app:
+  admin:
+    groups:
+      user: 'Utilisateurs et Droits'
+      event: 'Evènements'
+      shop: 'Point de vente'
+      config: 'Configurations'
+      log: "Journal d'activités"
+    show:
+      general_info: 'Informations générales'

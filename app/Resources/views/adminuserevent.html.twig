@@ -10,6 +10,7 @@
         <!-- Stylesheet -->
         <link rel="stylesheet" href="{{ asset('build/css/app.css') }}">
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
         <style type="text/css">
             .has-search .form-control {
                 padding-left: 2.375rem;
@@ -38,7 +39,8 @@
         <!-- Popper js -->
         <script src="{{ asset('js/bootstrap/popper.min.js') }}"></script>
         <!-- Bootstrap js -->
-        <script src="{{ asset('js/bootstrap/bootstrap.min.js') }}"></script>       
+        <script src="{{ asset('js/bootstrap/bootstrap.min.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
     {% endblock %}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
 </head>
@@ -86,7 +88,44 @@
 {% endblock %}
 {% block body %}
     {% block javascripts %}
-
+        <script type="text/javascript">
+            $('.delete_event').on('click',function(){
+                let event_title=$(this).data('event-title');
+                let event_id=$(this).data('event-id');
+                $.confirm({
+                    title: 'Etes-vous sur de vouloir supprimer cet évènement?',
+                    type: 'red',
+                    columnClass: 'col-md-6',
+                    icon: 'fa fa-warning',
+                    content: "<ul><li>Titre de l\'évènement: <b>"+event_title+"</b><br/><li>" +
+                        //"<li>Date de l\'évènement: <b>"+event_date+"</b><br></li>" +
+                        "<li>Toutes les données de cet évènement seront supprimées <b>(Type de billets, Billets, Plan de salle, ...)</b> </li></ul>",
+                    buttons: {
+                        supprimer:  {
+                            action: function(suppr){
+                                $.ajax({
+                                    url:'/user/admin-event/'+event_id+'/delete',
+                                    type: 'GET',
+                                    success:  function(result) {
+                                        // Do something with the result
+                                        $.alert('Suppression effectuée avec succès: '+result);
+                                        location.reload();
+                                    },
+                                    error: function(result) {
+                                        // Do something with the result
+                                        $.alert('Erreur pendant la supression: '+result);
+                                    },
+                                });
+                            },
+                            btnClass: 'bg-danger text-white'
+                        },
+                        annuler: function () {
+                            $.alert('Suppression annulée');
+                        }
+                    }
+                });
+            })
+        </script>
     {% endblock %}
 {% endblock body %}
 

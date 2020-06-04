@@ -10,6 +10,7 @@ namespace AppBundle\Controller\AdminUserEvent;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\User;
+use Dompdf\Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -21,13 +22,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 
-
 class AdminUserEventController extends Controller
 {
     /**
      * Gestion des évènements de l'utilisateur
      * @Route("/user/admin-event/list", name="viewEventUserAdmin")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("has_role('ROLE_USER_MEMBER')")
      * @param Request $request
      * @param User $user
      * @return Response
@@ -165,7 +165,28 @@ class AdminUserEventController extends Controller
             'nbAllBillet'=> $nbAllBillets[0]['nbAllBillet'],
             'nbAllBilletChecked'=> $allbilletchecked,
             'billets'=>$nbEventsBillets_all]);
-    }    
+    }
+    /**
+     * Gestion des évènements de l'utilisateur
+     * @Route("/user/admin-event/{eventId}/delete", name="deleteEventUserAdmin")
+     * @ParamConverter("user",options={"mapping":{"eventId"= "event_id"}})
+     * @ParamConverter("evenement",options={"mapping":{"eventId"= "id"}})
+     * @Security("has_role('ROLE_USER_MEMBER')")
+     * @param Request $request
+     * @param Evenement $event
+     * @return Response
+     */
+    public function deleteEvent(Request $request, Evenement $evenement){
+        try{
+            $em=$this->getDoctrine()->getManager();
+            $em->remove($evenement);
+            $em->flush();
+            return new Response('Suppression Réussie',200);
+        }
+        catch (Exception $e){
+            return new Response('Erreur: '.$e->getMessage(), 500);
+        }
+    }
 
 
 }

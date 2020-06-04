@@ -259,6 +259,16 @@ ORDER BY b.id ASC')
         return $rs;*/
     }
 
+
+    public function getRecentTicketPurchased() { // 10 Results
+        $qbUC = $this->createQueryBuilder('billet')
+            ->select('billet')
+            ->join('billet.reservation','res','res.id=billet.reservation')
+            ->orderBy('res.dateReservation','DESC')
+            ->setMaxResults(10);
+        return $qbUC->getQuery()->execute();
+    }
+
     private function stripAccents($str)
     {
         return strtr(utf8_decode($str), utf8_decode('àáâãäçèéêëìíîïñòóôõöùúûüýÿÀÁÂÃÄÇÈÉÊËÌÍÎÏÑÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaceeeeiiiinooooouuuuyyAAAAACEEEEIIIINOOOOOUUUUY');

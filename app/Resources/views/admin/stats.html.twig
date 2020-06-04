@@ -1,0 +1,25 @@
+{% extends 'SonataAdminBundle::standard_layout.html.twig' %}
+{% block content %}
+    <div class="row">
+        {{ sonata_block_render(
+            { 'type': 'sonata.block.service.stats' },
+            {
+            'entity' : 'AppBundle:Evenement',
+            'repository_method' : 'findAll',
+            'title' : 'Users',
+            'css_class' : 'bg-gray-active',
+            'icon' : 'fa-users'
+            })
+        }}
+        {{ sonata_block_render(
+            { 'type': 'sonata.block.service.stats' },
+            {
+                'entity' : 'AppBundle:User',
+                'repository_method' : 'findAll',
+                'title' : 'Users',
+                'css_class' : 'bg-gray-active',
+                'icon' : 'fa-users'
+            })
+        }}
+    </div>
+{% endblock %}

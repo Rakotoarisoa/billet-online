@@ -101,7 +101,7 @@ class TypeBillet
         $this->billets = $billets;
     }
     /**
-     * @ORM\OneToMany(targetEntity="Billet", mappedBy="typeBillet",cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="Billet", mappedBy="typeBillet",orphanRemoval=true,cascade={"remove"})
      * @Serializer\Exclude
      */
     private $billets;
