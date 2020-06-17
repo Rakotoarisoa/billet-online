@@ -48,7 +48,7 @@ class SessionIdleHandler
                 if(count($items) >0) {
                     foreach ($items as $item){
                         $locked_seat=$this->manager->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(),'seat_id' => $item->getSeat(),'evenement'=>$item->getEvenement(),'sess_id'=>$this->session->getId()]);
-                        $this->manager->remove($locked_seat);
+                        if($locked_seat != null) $this->manager->remove($locked_seat);
                     }
                     $this->session->set('quantity', 0);
                     $this->cart->clear();

@@ -202,7 +202,7 @@ class SeatMap extends Component {
                     let colors = this.state.ticket_colors;
                     let mapped = object.mapping;
                     mapped.forEach((el) => {
-                        if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString() && !el.is_booked)
+                        if(el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString() && !el.is_booked)
                             colors.forEach((color) => {
                                 if (color.billet === el.type) {
                                     circle_color = color.color;
@@ -212,6 +212,9 @@ class SeatMap extends Component {
                         else if (el.seat_id === (alphabet[i].toUpperCase() + (j + 1)).toString() && el.is_booked) {
                             circle_color = this.state.booked_circle_color;
                             stroke_color = this.state.booked_circle_color;
+                            colors.forEach((color) => {
+                                if (color.billet === el.type) seat_type = el.type;
+                            });
                         }
                     });
                 }
@@ -248,93 +251,55 @@ class SeatMap extends Component {
                 newGroup.add(text);
                 newGroup.on('click',
                     (e) => {
-                        // update tooltip
-                        /*$('#tooltip_wrapper').remove();*/
-                        circle = newGroup
-                            .getChildren(function (node) {
-                                return node.getType() === 'Shape' && node.getClassName() === 'Circle';
-                            })[0]
-                        ;
-                        //circle.fill('red');
-                        //circle.draw();
-                        /*newGroup.getStage().remove();
-                        let card_body = $("<div></div>").attr('class', 'card-body');
-                        let card_title = $('<h6></h6>').attr('class', 'card-title').text('Chaise');
-                        let row_type = $("<div></div>").attr('class', 'row');
-                        let row_title = $("<div></div>").attr('class', 'row');
-                        let row_value = $("<div></div>").attr('class', 'row');
-                        let card_text_table = $("<small></small>").attr('class', 'card-text col-6').text('Table/Section');
-                        let card_text_seat = $("<small></small>").attr('class', 'card-text col-6').text('Chaise');
-                        let card_text_type = $("<small></small>").attr('class', 'card-text col-6').text('Type');
-                        let table_value = $("<p></p>").attr('class', 'card-text col-6').text(object.nom.toString());
-                        let seat_value = $("<p></p>").attr('class', 'card-text col-6').text(alphabet[i].toUpperCase() + (j + 1));
-                        let type_value = $("<p></p>").attr('class', 'card-text col-12').text(seat_type);
-                        row_type.append(card_text_type);
-                        row_type.append(type_value);
-                        row_title.append(card_text_table);
-                        row_title.append(card_text_seat);
-                        row_value.append(table_value);
-                        row_value.append(seat_value);
-                        let buy_link = $('<a></a>');
-                        if (seat_type !== '-') {
-                            buy_link.attr('class', 'card-link btn btn-danger').attr('href', '#').attr('id', 'submit-seat').text('Ajouter');
-                        } else {
-                            buy_link.attr('class', 'card-link btn btn-danger').attr('href', '#').text('Place non disponible');
+                        if(circle_color !== this.state.booked_circle_color && circle_color !== this.state.color_seat) {
+                            circle = newGroup
+                                .getChildren(function (node) {
+                                    return node.getType() === 'Shape' && node.getClassName() === 'Circle';
+                                })[0]
+                            ;
+                            let seat_data = this.state.data_map;
+                            seat_data = JSON.stringify(seat_data);
+                            $.post("/api/event/seat/is-locked", {
+                                section_id: object.nom.toString(),
+                                seat_id: alphabet[i].toUpperCase() + (j + 1),
+                                table_event: JSON.parse(seat_data),
+                                lock_action: true,
+                                event_id: this.props.eventId
+                            }, (data, status, xhr) => {
+                                if (!data) {
+                                    $.post("/res_billet/add/", {
+                                        select_nb_billets: 1,
+                                        type_billet: seat_type,
+                                        event_id: this.props.eventId,
+                                        redirect: "/",
+                                        section_id: object.nom.toString(),
+                                        place_id: alphabet[i].toUpperCase() + (j + 1)
+                                    }, (data, status, xhr) => {
+                                        switch (xhr.status) {
+                                            case 200:
+                                                container.success(data.toString(), 'Commande ajoutée');
+                                                this.getDataInCart();
+                                                break;
+                                            case 208:
+                                                container.warning(data.toString(), 'Impossible de commander');
+                                                break;
+                                            case 500:
+                                                container.error(data.toString(), 'Impossible de commander');
+                                                break;
+                                            default:
+                                                container.warning('', 'Requete en cours');
+                                                break;
+
+                                        }
+
+                                    })
+                                } else {
+                                    container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
+                                }
+                            });
                         }
-                        card_body.append(card_title);
-                        card_body.append(row_type);
-                        card_body.append(row_title);
-                        card_body.append(row_value);
-                        card_body.append(buy_link);
-                        let el = $("<div></div>").attr('class', 'card').attr('id', 'tooltip_wrapper').css({
-                            'width': '24%',
-                            'position': 'absolute',
-                            'top': newGroup.getAbsolutePosition().y - 250,
-                            'left': newGroup.getAbsolutePosition().x - 100
-                        }).append(card_body);
-                        $('#stage-container-front').append(el);
-                        newGroup.setAttr('is_selected', !newGroup.getAttr('is_selected'));*/
-                        //$("#submit-seat").on('click', (e) => {
-                        let seat_data = this.state.data_map;
-                        seat_data = JSON.stringify(seat_data);
-                        $.post("/api/event/seat/is-locked", {
-                            section_id: object.nom.toString(),
-                            seat_id: alphabet[i].toUpperCase() + (j + 1),
-                            table_event: JSON.parse(seat_data),
-                            lock_action: true,
-                            event_id: this.props.eventId
-                        }, (data, status, xhr) => {
-                            if (!data) {
-                                $.post("/res_billet/add/", {
-                                    select_nb_billets: 1,
-                                    type_billet: seat_type,
-                                    event_id: this.props.eventId,
-                                    redirect: "/",
-                                    section_id: object.nom.toString(),
-                                    place_id: alphabet[i].toUpperCase() + (j + 1)
-                                }, (data, status, xhr) => {
-                                    switch (xhr.status) {
-                                        case 200:
-                                            container.success(data.toString(), 'Commande ajoutée');
-                                            this.getDataInCart();
-                                            break;
-                                        case 208:
-                                            container.warning(data.toString(), 'Impossible de commander');
-                                            break;
-                                        case 500:
-                                            container.error(data.toString(), 'Impossible de commander');
-                                            break;
-                                        default:
-                                            container.warning('', 'Requete en cours');
-                                            break;
-
-                                    }
-
-                                })
-                            } else {
-                                container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
-                            }
-                        });
+                        else if(circle_color === this.state.color_seat) container.warning('Cette place n\'est pas disponible','Commande impossible');
+                        else container.warning('Cette place n\'est plus disponible','Commande impossible')
                         //})
                     }
                 );
@@ -427,6 +392,7 @@ class SeatMap extends Component {
         });
         let colors = this.state.ticket_colors;
         let mapped = object.mapping;
+        let seat_type='-';
         //render top and left seats
         for (let i = 0; i < x; i++) {
             if (deleted && deleted.includes(i + 1)) {
@@ -435,12 +401,22 @@ class SeatMap extends Component {
             }
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
+            let stroke_color = "#888888";
             if (object.mapping !== undefined) {
                 mapped.forEach((el) => {
-                    if (el.seat_id === parseInt(numero_chaise + 1))
+                    if(el.seat_id === parseInt(numero_chaise + 1) && !el.is_booked)
                         colors.forEach((color) => {
-                            if (color.billet === el.type) circle_color = color.color;
-                        })
+                            if (color.billet === el.type){
+                                seat_type=el.type;
+                                circle_color = color.color;}
+                        });
+                    else if (el.seat_id === parseInt(numero_chaise + 1) && el.is_booked) {
+                        circle_color = this.state.booked_circle_color;
+                        stroke_color = this.state.booked_circle_color;
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) seat_type = el.type;
+                        });
+                    }
                 });
             }
             /** end assigned  seat representation */
@@ -456,7 +432,7 @@ class SeatMap extends Component {
                 width: 20,
                 height: 20,
                 fill: circle_color,
-                stroke: "#888888",
+                stroke: stroke_color,
                 strokeWidth: 2,
                 shadowColor: 'gray',
                 shadowOffsetX: 2,
@@ -472,6 +448,56 @@ class SeatMap extends Component {
             });
             top_group.add(top_circle);
             top_group.add(top_text);
+            top_group.on('click',
+                (e) => {
+                    if(circle_color !== this.state.booked_circle_color && circle_color !== this.state.color_seat) {
+                        top_circle = top_group
+                            .getChildren(function (node) {
+                                return node.getType() === 'Shape' && node.getClassName() === 'Circle';
+                            })[0];
+                        let seat_data = this.state.data_map;
+                        seat_data = JSON.stringify(seat_data);
+                        $.post("/api/event/seat/is-locked", {
+                            section_id: object.nom.toString(),
+                            seat_id: top_group.getAttr("name"),
+                            table_event: JSON.parse(seat_data),
+                            lock_action: true,
+                            event_id: this.props.eventId
+                        }, (data, status, xhr) => {
+                            if (!data) {
+                                $.post("/res_billet/add/", {
+                                    select_nb_billets: 1,
+                                    type_billet: seat_type,
+                                    event_id: this.props.eventId,
+                                    redirect: "/",
+                                    section_id: object.nom.toString(),
+                                    place_id: top_group.getAttr("name")
+                                }, (data, status, xhr) => {
+                                    switch (xhr.status) {
+                                        case 200:
+                                            container.success(data.toString(), 'Commande ajoutée');
+                                            this.getDataInCart();
+                                            break;
+                                        case 208:
+                                            container.warning(data.toString(), 'Impossible de commander');
+                                            break;
+                                        case 500:
+                                            container.error(data.toString(), 'Impossible de commander');
+                                            break;
+                                        default:
+                                            container.warning('', 'Requete en cours');
+                                            break;
+                                    }
+                                })
+                            } else {
+                                container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
+                            }
+                        });
+                    }
+                    else if(circle_color === this.state.color_seat) container.warning('Cette place n\'est pas disponible','Commande impossible');
+                    else container.warning('Cette place n\'est plus disponible','Commande impossible');
+                }
+            );
             table.add(top_group);
         }
         for (let i = 0; i < y; i++) {
@@ -481,12 +507,22 @@ class SeatMap extends Component {
             }
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
+            let stroke_color="#888888";
             if (object.mapping !== undefined) {
                 mapped.forEach((el) => {
-                    if (el.seat_id === parseInt(numero_chaise + 1))
+                    if (el.seat_id === parseInt(numero_chaise + 1) && !el.is_booked)
                         colors.forEach((color) => {
-                            if (color.billet === el.type) circle_color = color.color;
-                        })
+                            if (color.billet === el.type){
+                                seat_type=el.type;
+                                circle_color = color.color;}
+                        });
+                    else if (el.seat_id === parseInt(numero_chaise + 1) && el.is_booked) {
+                        circle_color = this.state.booked_circle_color;
+                        stroke_color = this.state.booked_circle_color;
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) seat_type = el.type;
+                        });
+                    }
                 });
             }
             /** end assigned  seat representation */
@@ -504,7 +540,7 @@ class SeatMap extends Component {
                 width: 20,
                 height: 20,
                 fill: circle_color,
-                stroke: "#888888",
+                stroke: stroke_color,
                 strokeWidth: 2,
                 shadowColor: 'gray',
                 shadowOffsetX: 2,
@@ -520,6 +556,60 @@ class SeatMap extends Component {
             });
             right_group.add(right_circle);
             right_group.add(right_text);
+            right_group.on('click',
+                (e) => {
+                    if(circle_color !== this.state.booked_circle_color && circle_color !== this.state.color_seat) {
+
+                        right_circle = right_group
+                            .getChildren(function (node) {
+                                return node.getType() === 'Shape' && node.getClassName() === 'Circle';
+                            })[0]
+                        ;
+                        let seat_data = this.state.data_map;
+                        seat_data = JSON.stringify(seat_data);
+                        $.post("/api/event/seat/is-locked", {
+                            section_id: object.nom.toString(),
+                            seat_id: right_group.getAttr("name"),
+                            table_event: JSON.parse(seat_data),
+                            lock_action: true,
+                            event_id: this.props.eventId
+                        }, (data, status, xhr) => {
+                            if (!data) {
+                                $.post("/res_billet/add/", {
+                                    select_nb_billets: 1,
+                                    type_billet: seat_type,
+                                    event_id: this.props.eventId,
+                                    redirect: "/",
+                                    section_id: object.nom.toString(),
+                                    place_id: right_group.getAttr("name")
+                                }, (data, status, xhr) => {
+                                    switch (xhr.status) {
+                                        case 200:
+                                            container.success(data.toString(), 'Commande ajoutée');
+                                            this.getDataInCart();
+                                            break;
+                                        case 208:
+                                            container.warning(data.toString(), 'Impossible de commander');
+                                            break;
+                                        case 500:
+                                            container.error(data.toString(), 'Impossible de commander');
+                                            break;
+                                        default:
+                                            container.warning('', 'Requete en cours');
+                                            break;
+
+                                    }
+
+                                })
+                            } else {
+                                container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
+                            }
+                        });
+                    }
+                    else if(circle_color === this.state.color_seat) container.warning('Cette place n\'est pas disponible','Commande impossible')
+                    else container.warning('Cette place n\'est plus disponible', 'Commande impossible');
+                }
+            );
             table.add(right_group);
         }
         for (let j = x; j > 0; j--) {
@@ -529,12 +619,22 @@ class SeatMap extends Component {
             }
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
+            let stroke_color = "#888888";
             if (object.mapping !== undefined) {
                 mapped.forEach((el) => {
-                    if (el.seat_id === parseInt(numero_chaise + 1))
+                    if (el.seat_id === parseInt(numero_chaise + 1) && !el.is_booked)
                         colors.forEach((color) => {
-                            if (color.billet === el.type) circle_color = color.color;
-                        })
+                            if (color.billet === el.type){
+                                seat_type=el.type;
+                                circle_color = color.color;}
+                        });
+                    else if (el.seat_id === parseInt(numero_chaise + 1) && el.is_booked) {
+                        circle_color = this.state.booked_circle_color;
+                        stroke_color = this.state.booked_circle_color;
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) seat_type = el.type;
+                        });
+                    }
                 });
             }
             /** end assigned  seat representation */
@@ -550,7 +650,7 @@ class SeatMap extends Component {
                 width: 20,
                 height: 20,
                 fill: circle_color,
-                stroke: "#888888",
+                stroke: stroke_color,
                 strokeWidth: 2,
                 shadowColor: 'gray',
                 shadowOffsetX: 2,
@@ -566,6 +666,59 @@ class SeatMap extends Component {
             });
             bottom_group.add(bottom_circle);
             bottom_group.add(bottom_text);
+            bottom_group.on('click',
+                (e) => {
+                    if(circle_color !== this.state.booked_circle_color && circle_color !== this.state.color_seat) {
+                        bottom_circle = bottom_group
+                            .getChildren(function (node) {
+                                return node.getType() === 'Shape' && node.getClassName() === 'Circle';
+                            })[0]
+                        ;
+                        let seat_data = this.state.data_map;
+                        seat_data = JSON.stringify(seat_data);
+                        $.post("/api/event/seat/is-locked", {
+                            section_id: object.nom.toString(),
+                            seat_id: bottom_group.getAttr("name"),
+                            table_event: JSON.parse(seat_data),
+                            lock_action: true,
+                            event_id: this.props.eventId
+                        }, (data, status, xhr) => {
+                            if (!data) {
+                                $.post("/res_billet/add/", {
+                                    select_nb_billets: 1,
+                                    type_billet: seat_type,
+                                    event_id: this.props.eventId,
+                                    redirect: "/",
+                                    section_id: object.nom.toString(),
+                                    place_id: bottom_group.getAttr("name")
+                                }, (data, status, xhr) => {
+                                    switch (xhr.status) {
+                                        case 200:
+                                            container.success(data.toString(), 'Commande ajoutée');
+                                            this.getDataInCart();
+                                            break;
+                                        case 208:
+                                            container.warning(data.toString(), 'Impossible de commander');
+                                            break;
+                                        case 500:
+                                            container.error(data.toString(), 'Impossible de commander');
+                                            break;
+                                        default:
+                                            container.warning('', 'Requete en cours');
+                                            break;
+
+                                    }
+
+                                })
+                            } else {
+                                container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
+                            }
+                        });
+                    }
+                    else if(circle_color === this.state.color_seat) container.warning('Cette place n\'est pas disponible','Commande impossible')
+                    else container.warning('Cette place n\'est plus disponible','Commande impossible');
+                }
+            );
             table.add(bottom_group);
         }
         for (let j = y; j > 0; j--) {
@@ -575,12 +728,22 @@ class SeatMap extends Component {
             }
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
+            let stroke_color = "#888888";
             if (object.mapping !== undefined) {
                 mapped.forEach((el) => {
-                    if (el.seat_id === parseInt(numero_chaise + 1))
+                    if (el.seat_id === parseInt(numero_chaise + 1) && !el.is_booked)
                         colors.forEach((color) => {
-                            if (color.billet === el.type) circle_color = color.color;
-                        })
+                            if (color.billet === el.type){
+                                seat_type=el.type;
+                                circle_color = color.color;}
+                        });
+                    else if (el.seat_id === parseInt(numero_chaise + 1) && el.is_booked) {
+                        circle_color = this.state.booked_circle_color;
+                        stroke_color = this.state.booked_circle_color;
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) seat_type = el.type;
+                        });
+                    }
                 });
             }
             /** end assigned  seat representation */
@@ -598,7 +761,7 @@ class SeatMap extends Component {
                 width: 20,
                 height: 20,
                 fill: circle_color,
-                stroke: "#888888",
+                stroke: stroke_color,
                 strokeWidth: 2,
                 shadowColor: 'gray',
                 shadowOffsetX: 2,
@@ -614,6 +777,59 @@ class SeatMap extends Component {
             });
             left_group.add(left_circle);
             left_group.add(left_text);
+            left_group.on('click',
+                (e) => {
+                    if(circle_color !== this.state.booked_circle_color && circle_color !== this.state.color_seat) {
+                        left_circle = left_group
+                            .getChildren(function (node) {
+                                return node.getType() === 'Shape' && node.getClassName() === 'Circle';
+                            })[0]
+                        ;
+                        let seat_data = this.state.data_map;
+                        seat_data = JSON.stringify(seat_data);
+                        $.post("/api/event/seat/is-locked", {
+                            section_id: object.nom.toString(),
+                            seat_id: left_group.getAttr("name"),
+                            table_event: JSON.parse(seat_data),
+                            lock_action: true,
+                            event_id: this.props.eventId
+                        }, (data, status, xhr) => {
+                            if (!data) {
+                                $.post("/res_billet/add/", {
+                                    select_nb_billets: 1,
+                                    type_billet: seat_type,
+                                    event_id: this.props.eventId,
+                                    redirect: "/",
+                                    section_id: object.nom.toString(),
+                                    place_id: left_group.getAttr("name")
+                                }, (data, status, xhr) => {
+                                    switch (xhr.status) {
+                                        case 200:
+                                            container.success(data.toString(), 'Commande ajoutée');
+                                            this.getDataInCart();
+                                            break;
+                                        case 208:
+                                            container.warning(data.toString(), 'Impossible de commander');
+                                            break;
+                                        case 500:
+                                            container.error(data.toString(), 'Impossible de commander');
+                                            break;
+                                        default:
+                                            container.warning('', 'Requete en cours');
+                                            break;
+
+                                    }
+
+                                })
+                            } else {
+                                container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
+                            }
+                        });
+                    }
+                    else if(circle_color === this.state.color_seat) container.warning('Cette place n\'est pas disponible','Commande impossible')
+                    else container.warning('Cette place n\'est plus disponible','Commande impossible');
+                }
+            );
             table.add(left_group);
         }
         table.add(tableRect);
@@ -690,14 +906,25 @@ class SeatMap extends Component {
             /* end manage delete */
             /** assigned seat representation*/
             let circle_color = this.state.color_seat;
+            let stroke_color="#888888";
+            let seat_type='-';
             if (object.mapping !== undefined) {
                 let colors = this.state.ticket_colors;
                 let mapped = object.mapping;
                 mapped.forEach((el) => {
-                    if (el.seat_id === i + 1)
+                    if (el.seat_id === i + 1 && !el.is_booked)
                         colors.forEach((color) => {
-                            if (color.billet === el.type) circle_color = color.color;
-                        })
+                            if (color.billet === el.type){
+                                seat_type= el.type;
+                                circle_color = color.color;}
+                        });
+                    else if (el.seat_id === i + 1 && el.is_booked) {
+                        circle_color = this.state.booked_circle_color;
+                        stroke_color = this.state.booked_circle_color;
+                        colors.forEach((color) => {
+                            if (color.billet === el.type) seat_type = el.type;
+                        });
+                    }
                 });
             }
             /** end assigned  seat representation */
@@ -711,7 +938,7 @@ class SeatMap extends Component {
                 width: 20,
                 height: 20,
                 fill: circle_color,
-                stroke: "#888888",
+                stroke: stroke_color,
                 strokeWidth: 2,
                 shadowColor: 'gray',
                 shadowOffsetX: 2,
@@ -727,6 +954,59 @@ class SeatMap extends Component {
             });
             c_group.add(circle);
             c_group.add(text);
+            c_group.on('click',
+                (e) => {
+                    if(circle_color !== this.state.booked_circle_color && circle_color !== this.state.color_seat) {
+                        circle = c_group
+                            .getChildren(function (node) {
+                                return node.getType() === 'Shape' && node.getClassName() === 'Circle';
+                            })[0]
+                        ;
+                        let seat_data = this.state.data_map;
+                        seat_data = JSON.stringify(seat_data);
+                        $.post("/api/event/seat/is-locked", {
+                            section_id: object.nom.toString(),
+                            seat_id: c_group.getAttr("name"),
+                            table_event: JSON.parse(seat_data),
+                            lock_action: true,
+                            event_id: this.props.eventId
+                        }, (data, status, xhr) => {
+                            if (!data) {
+                                $.post("/res_billet/add/", {
+                                    select_nb_billets: 1,
+                                    type_billet: seat_type,
+                                    event_id: this.props.eventId,
+                                    redirect: "/",
+                                    section_id: object.nom.toString(),
+                                    place_id: c_group.getAttr("name")
+                                }, (data, status, xhr) => {
+                                    switch (xhr.status) {
+                                        case 200:
+                                            container.success(data.toString(), 'Commande ajoutée');
+                                            this.getDataInCart();
+                                            break;
+                                        case 208:
+                                            container.warning(data.toString(), 'Impossible de commander');
+                                            break;
+                                        case 500:
+                                            container.error(data.toString(), 'Impossible de commander');
+                                            break;
+                                        default:
+                                            container.warning('', 'Requete en cours');
+                                            break;
+
+                                    }
+
+                                })
+                            } else {
+                                container.warning('Une autre personne est en instance sur la place', 'Commande impossible');
+                            }
+                        });
+                    }
+                    else if(circle_color === this.state.color_seat) container.warning('Cette place n\'est pas disponible','Commande impossible')
+                    else container.warning('Cette place n\'est plus disponible','Commande impossible');
+                }
+            );
             group.add(c_group);
         }
         group.add(tableCircle);
@@ -781,7 +1061,6 @@ class SeatMap extends Component {
                 let color = colors_palette[i];
                 let billet = billets[i].libelle;
                 listColors.push({color, billet});
-                //document.getElementById("billet-"+i).setAttribute("style","color:"+color+';');
             }
             return listColors;
         };

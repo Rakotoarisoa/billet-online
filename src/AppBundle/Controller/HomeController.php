@@ -3,12 +3,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Billet;
-
 use AppBundle\Entity\CategorieEvenement;
 use AppBundle\Entity\Pays;
-use AppBundle\Entity\TypeBillet;
-use AppBundle\Repository\BilletRepository;
-use Doctrine\ORM\Query;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -19,10 +15,6 @@ use Omines\DataTablesBundle\Adapter\ArrayAdapter;
 use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\Controller\DataTablesTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
-use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class HomeController extends Controller
 {
@@ -33,7 +25,6 @@ class HomeController extends Controller
      */
     public function showListEvent(Request $request)
     {
-
         if($lieu=$request->request->has('lieu'))
             $lieu=$request->request->get('lieu');
         if($titre=$request->request->has('titre'))

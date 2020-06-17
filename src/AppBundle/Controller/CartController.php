@@ -228,7 +228,7 @@ class CartController extends Controller
             $section_id = $request->request->get('section_id');
             $place_id = $request->request->get('place_id');
             if($this->cart->alreadyExists($section_id,$place_id,$type_billet->getLibelle())){
-                return new Response('Le billet est déjà commandé', Response::HTTP_ALREADY_REPORTED);
+                return new Response('Le billet a été déjà commandé', Response::HTTP_ALREADY_REPORTED);
             }
         } 
         if(count($this->cart->getItems()) > 0){
@@ -434,8 +434,6 @@ class CartController extends Controller
             } else {
                 return new Response("Error Buyer ", Response::HTTP_INTERNAL_SERVER_ERROR);
             }
-
-
         }
     }
 
@@ -452,6 +450,6 @@ class CartController extends Controller
         } else {
             throw new \ErrorException('Erreur lors de l\'enregistrement', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
+
 }

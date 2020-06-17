@@ -36,7 +36,6 @@ class EventController extends Controller
 
         $response = new Response($data);
         $response->headers->set('Content-Type', 'application/json');
-
         return $response;
     }
 
@@ -222,7 +221,7 @@ class EventController extends Controller
 
     /**
      * Modifier un évènement
-     * @Route("/event/view/{id}/map", name="viewEventMapAdmin")
+     * @Route("/event/{id}/edit/map", name="viewEventMapAdmin")
      * */
     public function viewStateUserMap(Evenement $event)
     {

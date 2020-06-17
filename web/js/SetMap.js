@@ -57,7 +57,7 @@ class SetMap extends Component {
             if (el.id === object.id) {
                 data[i] = object;
                 this.setState({'data_map': data}, () => {
-                    this.loadStage(object);
+                    //this.loadStage(object);
                 });
             }
         });
@@ -160,7 +160,8 @@ class SetMap extends Component {
                 zone.getLayer().draw();
             });
         });
-        zone.on('dragend transformend', (e) => {
+        zone.on('transformend', (e) => {
+            console.log('transformend engaged');
             let data = {
                 id: object.id,
                 nom: object.nom,
@@ -173,10 +174,10 @@ class SetMap extends Component {
                 type: 'zone',
                 rotation: zone.rotation(),
             };
-            transformer.resizeEnabled(true);
             this.updateObject(data);
+            console.log('update object end engaged');
         });
-        zone.on('resize transform', (e) => {
+        /*zone.on('resize transform', (e) => {
             zone = this.renderZone(object, transformer, zone.getAbsoluteScale().x * zone.width(), zone.getAbsoluteScale().y * zone.height());
             zone.position({x: e.target.x(), y: e.target.y()});
             let data = {
@@ -193,7 +194,7 @@ class SetMap extends Component {
             };
             this.updateObject(data);
             zone.getLayer().batchDraw();
-        });
+        });*/
         return zone;
 
     };
@@ -1109,7 +1110,6 @@ class SetMap extends Component {
                 <div className="col-sm-3 sidebar-right">
                     <p style={{color: '#eeeeee'}}>Nombre de places: {this.state.number_seats}</p>
                     <DeleteContext.Provider value={this.deleteObject}>
-
                         <RightSidebar addNewObject={this.addNewObjectFromSidebar} saveCanvas={this.saveCanvas}
                                       focusedObject={this.getFocusedObject} updatedObject={this.getUpdatedObject}
                                       dataMap={this.state.data_map} updateObject={this.state.selectedItem}
@@ -1125,8 +1125,7 @@ class SetMap extends Component {
                         variant="contained"
                         color="primary"
                         className={"btn btn-primary"}
-                        onClick={this.switchData}
-                    >
+                        onClick={this.switchData}>
                         Commencer
                     </Button>
                 </div>}

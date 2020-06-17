@@ -15,10 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\View\View;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
-use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
-use Symfony\Component\HttpFoundation\Session\Session as dSession;
-use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
-
 
 class EventController extends AbstractFOSRestController
 {
@@ -199,8 +195,7 @@ class EventController extends AbstractFOSRestController
     //Search Section and Seat into array to Lock
     public function isLocked(Request $request, $array = null, $section = '', $seat = '')
     {
-        if ($request->getMethod() != 'POST')
-            return new MethodNotAllowedException(['POST']);
+        if ($request->getMethod() != 'POST') return new MethodNotAllowedException(['POST']);
         if ($request->request->has('section_id') && $request->request->has('seat_id') && $request->request->has('table_event') && $request->request->has('lock_action') && $request->request->has('event_id')) {
             $section = $request->request->get('section_id');
             $seat = $request->request->get('seat_id');
@@ -208,12 +203,7 @@ class EventController extends AbstractFOSRestController
             $id = $request->request->get('event_id');
             $event=$this->getDoctrine()->getRepository(Evenement::class)->find((int)$id);
             $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['evenement'=>$event,'section_id'=>$section,'seat_id'=>$seat]);
-            if($locked_seat == null){
-                return JsonResponse::create(false);
-            }
-            else{
-                return JsonResponse::create(true); 
-            }
+            if($locked_seat != null) return JsonResponse::create(true);
         }
         return JsonResponse::create(false);
     }

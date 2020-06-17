@@ -8,6 +8,6 @@ class AdminBundle extends Bundle
 {
     function getParent()
     {
-        return 'SonataAdminBundle';
+        //return 'SonataAdminBundle';
     }
 }
