@@ -45,6 +45,13 @@ final class LogAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper->addIdentifier('message')
-        ->add('createdAt','date',['label'=>'Date de création']);
+        ->add('createdAt','date',['label'=>'Date de création'])
+            ->add('_action', null,[
+                'actions' => [
+                    'show' => [],
+                    'edit' => [],
+                    'delete' => [],
+                ]
+            ]);
     }
 }

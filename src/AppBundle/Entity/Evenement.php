@@ -4,6 +4,7 @@ namespace AppBundle\Entity;
 
 use AppBundle\Utils\Slugger;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use JMS\Serializer\Annotation as Serializer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\UniqueConstraint;
@@ -18,7 +19,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  */
 class Evenement
 {
-
+    use TimestampableEntity;
     public function __construct()
     {
         $slugger= new Slugger();
@@ -95,6 +96,27 @@ class Evenement
      * @ORM\JoinColumn(name="id_devise", referencedColumnName="id")
      */
     private $devise;
+    /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\EventOptions", inversedBy="evenement",cascade={"persist"})
+     * @ORM\JoinColumn(name="options", referencedColumnName="id")
+     */
+    private $options;
+
+    /**
+     * @return mixed
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param mixed $options
+     */
+    public function setOptions($options): void
+    {
+        $this->options = $options;
+    }
 
     /**
      * @return mixed

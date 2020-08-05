@@ -289,9 +289,7 @@ class SeatMap extends Component {
                                             default:
                                                 container.warning('', 'Requete en cours');
                                                 break;
-
                                         }
-
                                     })
                                 } else {
                                     container.warning('Une autre personne est en instance sur la place', 'Commande impossible');

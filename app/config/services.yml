@@ -68,6 +68,14 @@ services:
                 manager_type: orm
                 group: ~
                 label: Billet
+    admin.payment_transaction:
+        class: AdminBundle\Admin\PaymentTransactionAdmin
+        arguments: [~, AppBundle\Entity\PaymentTransaction, ~]
+        tags:
+            - name: sonata.admin
+              manager_type: orm
+              group: ~
+              label: Billet
     admin.typebillet:
         calls:
             - [ addChild, ['@admin.billet','typebillet'] ]
@@ -78,15 +86,27 @@ services:
                 manager_type: orm
                 group: ~
                 label: 'Type Billet'
+    admin.evenementadmin:
+        calls:
+            - [ addChild, ['@admin.typebillet','evenement'] ]
+        class: AdminBundle\Admin\EventAdmin
+        arguments: [~, AppBundle\Entity\Evenement, ~]
+        tags:
+            - name: sonata.admin
+              manager_type: orm
+              group: 'app.admin.groups.event'
+              label: 'Evènements'
+              label_catalogue: 'SonataAdminBundle'
     admin.evenement:
         calls:
             - [ addChild, ['@admin.typebillet','evenement'] ]
+            - [ addChild, ['@admin.reservation','evenement'] ]
         class: AdminBundle\Admin\EvenementAdmin
         arguments: [~, AppBundle\Entity\Evenement, ~]
         tags:
             -   name: sonata.admin
                 manager_type: orm
-                group: 'app.admin.groups.event'
+                group: ~
                 label: 'Evènements'
                 label_catalogue: 'SonataAdminBundle'
     admin.categorieevenement:
@@ -116,9 +136,10 @@ services:
               group: ~
               label: "Réservations"
               label_catalogue: 'SonataAdminBundle'
-    admin.user_admin:
+    admin.user_organizer:
         calls:
             - [ addChild, ['@admin.evenement','user'] ]
+            - [ addChild, ['@admin.shop','shop'] ]
         class: AdminBundle\Admin\UserAdmin
         arguments: [~, AppBundle\Entity\User, ~]
         tags:
@@ -127,15 +148,35 @@ services:
                 group: 'app.admin.groups.user' #'Utilisateurs et droits'
                 label: 'Utilisateurs'
                 label_catalogue: 'SonataAdminBundle'
-                icon: '<i class=\"fa fa-user\"></i>'
-    admin.user_checkout:
-        class: AdminBundle\Admin\UserCheckoutAdmin
-        arguments: [~~,AppBundle\Entity\UserCheckout,~]
+                icon: '<i class=\"fa fa-music\"></i>'
+    admin.user_admin:
+        calls:
+        class: AdminBundle\Admin\UserAdmin
+        arguments: [~, AppBundle\Entity\User, ~]
         tags:
             - name: sonata.admin
               manager_type: orm
-              group: ~
+              group: 'app.admin.groups.user' #'Utilisateurs et droits'
+              label: 'Utilisateurs'
+              label_catalogue: 'SonataAdminBundle'
+              icon: '<i class=\"fa fa-user\"></i>'
+    admin.user_checkout:
+        class: AdminBundle\Admin\UserCheckoutAdmin
+        arguments: [~,AppBundle\Entity\UserCheckout,~]
+        tags:
+            - name: sonata.admin
+              manager_type: orm
+              group: 'app.admin.groups.user'
               label: "Acheteurs"
+              label_catalogue: 'SonataAdminBundle'
+    admin.user_shop:
+        class: AdminBundle\Admin\UserCheckoutAdmin
+        arguments: [~,AppBundle\Entity\User,~]
+        tags:
+            - name: sonata.admin
+              manager_type: orm
+              group: 'app.admin.groups.user'
+              label: "Gestionnaire de point de vente"
               label_catalogue: 'SonataAdminBundle'
 
     admin.shop:
@@ -203,6 +244,26 @@ services:
         class: AdminBundle\AdminBundle\Block\Service\RecentCustomersBlockService
         arguments:
             - "sonata.block.service.recent_customers"
+            - "@templating"
+            - "@doctrine.orm.entity_manager"
+            - "@sonata.admin.pool"
+        public: true
+        tags:
+            - { name: "sonata.block" }
+    sonata.block.service.events_by_type_chart:
+        class: AdminBundle\AdminBundle\Block\Service\EventsChartBlockByTypeService
+        arguments:
+            - "sonata.block.service.event_chart"
+            - "@templating"
+            - "@doctrine.orm.entity_manager"
+            - "@sonata.admin.pool"
+        public: true
+        tags:
+            - { name: "sonata.block" }
+    sonata.block.service.events_by_place_chart:
+        class: AdminBundle\AdminBundle\Block\Service\EventsChartBlockByPlaceService
+        arguments:
+            - "sonata.block.service.event_chart"
             - "@templating"
             - "@doctrine.orm.entity_manager"
             - "@sonata.admin.pool"

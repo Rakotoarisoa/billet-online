@@ -19,8 +19,8 @@ final class DeviseAdmin extends AbstractAdmin
 {
     public function toString($object)
     {
-        return $object instanceof DeviseAdmin
-            ? $object->getOrganisation()
+        return $object instanceof Devise
+            ? $object->getLibelle()
             : 'Devise'; // shown in the breadcrumb on the create view
     }
 

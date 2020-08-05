@@ -15,7 +15,7 @@
             </div>
         </div>
         <br />
-        <form method="GET" action="{{ path('viewEventUserAdmin',{'userId':app.user.id }) }}">
+        <form method="GET" action="{{ path('viewEventUserAdmin') }}">
             <div class="row">
                 <div class="col">
                     <input type="text" name="event_name" value="{{ app.request.get('event_name') }}"
@@ -171,7 +171,10 @@
                                 </div>                      
                             </td>
                         </tr>
+                    {% else %}
+                        <tr><td colspan="5">Aucun évènement à afficher . <a class="btn btn-danger" href="{{  path('createEvent') }}"> Créer un évènement</a></td></tr>
                     {% endfor %}
+
                 </table>
                 <div class="text-center">{{ knp_pagination_render(events) }}</div>
             </div>

@@ -114,6 +114,26 @@ class Reservation
      */
     private $billet;
     /**
+     * @ORM\OneToOne(targetEntity="PaymentTransaction", inversedBy="reservation",cascade={"persist"})
+     */
+    private $payment_transaction;
+
+    /**
+     * @return mixed
+     */
+    public function getPaymentTransaction()
+    {
+        return $this->payment_transaction;
+    }
+
+    /**
+     * @param mixed $payment_transaction
+     */
+    public function setPaymentTransaction($payment_transaction): void
+    {
+        $this->payment_transaction = $payment_transaction;
+    }
+    /**
      * * @ORM\ManyToOne(targetEntity="UserCheckout", inversedBy="reservations",cascade={"persist"})
      * * @ORM\JoinColumn(name="user_checkout_id", referencedColumnName="id",nullable=false)
      */

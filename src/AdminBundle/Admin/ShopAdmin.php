@@ -7,8 +7,19 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Sonata\AdminBundle\Route\RouteCollection;
 final class ShopAdmin extends AbstractAdmin
 {
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        if ($this->isChild()) {
+            return;
+        }
+
+        // This is the route configuration as a parent
+        $collection->clearExcept(['list']);
+
+    }
     public function toString($object)
     {
         return $object instanceof BilletAdmin

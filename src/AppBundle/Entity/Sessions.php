@@ -4,8 +4,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use JMS\Serializer\Annotation as Serializer;
 /**
- * @ORM\Entity(repositoryClass="AppBundle\Repository\SessionsRepository")
- * @ORM\Table(name = "sessions",uniqueConstraints={@UniqueConstraint(name="unique_session", columns={"sess_id"})})
+
  *
  */
 class Sessions

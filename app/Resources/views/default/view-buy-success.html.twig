@@ -1,0 +1,24 @@
+a{% extends 'base.html.twig' %}
+{% block title %}Ivenco Réservation{% endblock %}
+{% block breadcrumb %}
+{% endblock %}
+{% block body %}
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+        {{ parent() }}
+        <section class="events-area section-padding-0-100">
+            Paiement réussi .
+            <table>
+                <thead><td>Code réservation</td><td>{{ reservation.nomReservation }}</td></thead>
+                <tr><td>Status</td><td>{{ reservation.paymentTransaction.status }}</td></tr>
+            </table>
+        </section>
+    {% endblock %}
+    <!-- ##### Events Area End ##### -->
+    {% block javascripts %}
+        {{ parent() }}
+
+    {% endblock %}
+    {% block contact %}{% endblock %}
+{% endblock %}
+

@@ -4,10 +4,12 @@ sonata_admin:
   dashboard:
     blocks:
       # display a dashboard block
-      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.evenement, icon: fa-music, text: "Evènements enregistrées", color: bg-yellow  } }
-      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.reservation, icon: fa-purchase, text: "Réservations", color: bg-green  } }
-      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.billet, icon: fa-ticket, text: "Billets enregistrées", color: bg-blue  } }
-      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.user_checkout, icon: fa-users, text: "Acheteurs", color: bg-red  } }
+      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.evenement, icon: fa-music, text: "Evènements enregistrées", color: bg-yellow  }}
+      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.reservation, icon: fa-purchase, text: "Réservations", color: bg-green  }}
+      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.billet, icon: fa-ticket, text: "Billets enregistrées", color: bg-blue  }}
+      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.user_checkout, icon: fa-users, text: "Acheteurs", color: bg-red  }}
+      - { class:    col-lg-3 col-xs-6, position: left, type: sonata.block.service.events_by_type_chart}
+      - { class:    col-lg-3 col-xs-6, position: right, type: sonata.block.service.events_by_place_chart}
       - { class:    col-lg-3 col-xs-6, position: right, type: sonata.block.service.recent_orders}
       - { class:    col-lg-3 col-xs-6, position: right, type: sonata.block.service.recent_tickets}
       - { class:    col-lg-3 col-xs-6, position: left, type: sonata.block.service.recent_customers}
@@ -49,6 +51,8 @@ sonata_admin:
     admin_permissions: [CREATE, LIST, DELETE, UNDELETE, EXPORT, OPERATOR, MASTER]
     # permission related to the objects
     object_permissions: [VIEW, EDIT, DELETE, UNDELETE, OPERATOR, MASTER, OWNER]
+  assets:
+    extra_javascripts: ['//code.highcharts.com/highcharts.js','//code.highcharts.com/4.0.1/modules/exporting.js']
 sonata_block:
   blocks:
     # enable the SonataAdminBundle block
@@ -61,3 +65,6 @@ sonata_block:
     sonata.block.service.recent_orders: ~
     sonata.block.service.recent_tickets: ~
     sonata.block.service.recent_customers: ~
+    admin.block.service.event_chart: #This is the chart block - RegistrationsChartBlockService (below)
+      contexts: [admin]
+

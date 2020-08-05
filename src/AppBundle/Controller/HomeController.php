@@ -59,7 +59,7 @@ class HomeController extends Controller
         ->getRepository(CategorieEvenement::class)
         ->searchUsedCategories();
         $country = $this->getDoctrine()->getRepository(Pays::class)->findAll();//Command_ID generation
-        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState,'max_command_per_ticket'=> 10,'country'=>$country,'catList'=>$categoryList));
+        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState,'max_command_per_ticket'=> 10,'country_list'=>$country,'catList'=>$categoryList));
     }
     /**
      * Page création map

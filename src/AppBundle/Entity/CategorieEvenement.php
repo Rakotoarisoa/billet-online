@@ -3,12 +3,15 @@
 
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CategorieEvenementRepository")
  * @ORM\Table(name = "categorie_evenement")
  */
 class CategorieEvenement
 {
+    use TimestampableEntity;
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id

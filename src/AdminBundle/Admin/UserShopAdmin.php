@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use AppBundle\Entity\User;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 
-final class UserAdmin extends AbstractAdmin
+final class UserShopAdmin extends AbstractAdmin
 {
     public function toString($object)
     {

@@ -104,12 +104,12 @@
                                 </ul>
                             </li>
                         {% endif %}
-                        <li class="nav-item">
+                        <!--<li class="nav-item">
                             <a class="nav-link text-info" data-toggle="tab" href="#commande">Formulaire de commande</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-info" data-toggle="tab" href="#"><span class="fa fa-money"></span> Options de paiement</a>
-                        </li>
+                        </li>-->
 
                     </ul>
                 </div>
@@ -117,7 +117,7 @@
                     {{ parent() }}
                     <div class="tab-content">
                         <div id="info_event" class="container tab-pane fade section-padding-0-100 active"><br>
-                            {{ form_start(form, {'method': 'post', 'action':  (event.id)?path('viewEventUpdate',{'user':app.user.id,'id':event.id}):path('createEvent',{'userId':app.user.id}), 'attr': {'class': 'form'}}) }}
+                            {{ form_start(form, {'method': 'post', 'action':  (event.id)?path('viewEventUpdate',{'id':event.id}):path('createEvent'), 'attr': {'class': 'form'}}) }}
                             {% if flow.getCurrentStepNumber() == 1 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <div class="form-group col-md-6 col-sm-6">
@@ -137,7 +137,7 @@
                                     <label class="">{{ form_label(form.categorieEvenement) }}</label>
                                     {{ form_widget(form.categorieEvenement) }}
                                     <small id="lieu" class="form-text text-muted">Préciser la catégorie de
-                                        l'évènement
+                                        l'évènement (Concert, Festival, ...)
                                     </small>
                                 </div>
                                 <div class="form-group col-md-6 col-sm-6">
@@ -155,7 +155,7 @@
                                 <div class="form-group col-md-6 col-sm-6">
                                     <label class="">{{ form_label(form.devise) }}</label>
                                     {{ form_widget(form.devise) }}
-                                    <small id="devise" class="form-text text-muted">Sélectionner la devise à utiliser 
+                                    <small id="devise" class="form-text text-muted">Sélectionner la devise à utiliser
                                     </small>
                                 </div>
                                 <br/>
@@ -184,8 +184,8 @@
                                             {{ formMacros.printBilletItemRow(typeBilletForm,i) }}
                                             {% set i=i+1 %}
                                         {% endfor %}
-                                        <a class="btn btn-link text-center js-add-type">
-                                            Ajouter un type de billet
+                                        <a class="btn btn-secondary text-center text-white js-add-type">
+                                           <span class="fa fa-ticket"></span> Ajouter un type de billet
                                         </a>
                                     </div>
                                     {{ form_widget(form.typeBillets) }}
@@ -212,11 +212,16 @@
                             {% endif %}
 
                             {% if flow.getCurrentStepNumber() == 3 %}
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <h1>Plan de salle</h1>
+                                    </div>
+                                </div>
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
+
                                 <div class="row align-items-center">
                                     <div class="col-6">
-                                        <label for="appbundle_event_isUsingSeatMap">Utiliser la carte pour sélectionner
-                                            des billets</label>
+                                        <label for="appbundle_event_isUsingSeatMap">Utiliser un plan de salle</label>
                                         {{ form_widget(form.isUsingSeatMap) }}
                                     </div>
                                     {% if event.id is defined and event.id %}
@@ -252,21 +257,40 @@
                                     <small class="col-12 text text-muted">Commencer rapidement avec un plan de salle
                                     </small>
                                 </div>
-                                <hr/>
+                            {% endif %}
+                            {% if flow.getCurrentStepNumber() == 4 %}
                                 <div class="row align-items-center">
                                     <div class="col-12 my-1">
-                                        <label for="appbundle_event_isPublished">Publier l'évènement</label>
-                                        {{ form_widget(form.isPublished) }}
+                                        <h1>Configurations et mode de paiement</h1>
                                     </div>
                                 </div>
                                 <div class="row align-items-center">
-                                    <small class="col-12 text text-muted">L'évènement est publié par défaut</small>
+                                    <div class="col-12 my-1">
+                                        <h4>Choississez parmi les mode de paiements disponibles  à utiliser pour cet évènement </h4>
+                                    </div>
                                 </div>
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <img src="{{ asset('img/paypal.png') }}" width="80px"/>
+                                        {{ form_widget(form.options.usePaypalMethodPayment) }}
+                                        {{ form_errors(form.options.usePaypalMethodPayment) }}
+                                        <p><small class="col-12 text text-muted">Les informations Paypal liées sur votre compte seront utilisées</small></p>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <img src="{{ asset('img/om.png') }}" width="80px"/>
+                                        {{ form_widget(form.options.useOrangeMoneyMethodPayment) }}
+                                        {{ form_errors(form.options.useOrangeMoneyMethodPayment) }}
+                                    <p><small class="col-12 text text-muted">Les informations Orange Money liées sur votre compte seront utilisées</small></p>
+                                    </div>
+                                </div>
+
                             {% endif %}
-                            {% if flow.getCurrentStepNumber() == 4 %}
+                            {% if flow.getCurrentStepNumber() == 5 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <p class="text">Vous avez saisis les informations suivantes concernant l'évènement: </p>
-                                <p>Appuyer sur<small class="text-danger">Sauvegarder et confirmer</small> pour confirmer.
+                                <p>Appuyer sur <small class="text-white bg-red "><b>Sauvegarder et confirmer</b></small> pour confirmer.
                                 </p>
                                 <div class="card">
                                     <img class="card-img-top"
@@ -274,10 +298,15 @@
                                          alt="Card image cap">
 
                                     <div class="card-body">
-                                        <div class="row">
-                                            <div class="col">
+                                        <div class="row my-3">
+                                            <div class="col-3">
                                                 <p class="card-text">
-                                                    {{ event.categorieEvenement.libelle }} : <span>{{ event.titreEvenement }}</span>
+                                                    <h4>{{ event.categorieEvenement.libelle }}</h4>
+                                                </p>
+                                            </div>
+                                            <div class="col">
+                                                <p class="card-text display-4">
+                                                    {{ event.titreEvenement }}
                                                 </p>
                                             </div>
                                             <div class="col">
@@ -288,10 +317,46 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <p class="card-text">Devise: <b>{{ event.devise.code }}</b></p>
-                                        <p class="card-text">Lieu: <b>{{ event.lieuEvenement.nomSalle }}</b></p>
-                                        <p class="card-text">Organisateur: <b>{{ event.organisation }}</b></p>
+                                        <div class="row my-3">
+                                            <div class="col-1"><span class="fa fa-calendar fa-2x"></span></div>
+                                            <div class="col">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,"d MMM Y") }}</div>
+                                            <div class="col-1"><span class="fa fa-calendar-times fa-2x"></span></div>
+                                            <div class="col">{{ event.dateFinEvent|localizeddate('none', 'none', null, null,"d MMM Y") }}</div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row my-1">
+                                            <div class="col-1"><span class="fa fa-map-marker fa-2x"></span></div>
+                                            <div class="col">
+                                                <p class="card-text">Lieu: <b>{{ event.lieuEvenement.nomSalle }}</b></p>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row my-1">
+                                            <div class="col-1"><span class="fa fa-calendar-check fa-2x"></span></div>
+                                            <div class="col">
+                                                <p class="card-text">Organisateur: <b>{{ event.organisation }}</b></p>
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row my-1">
+                                            <div class="col-1"><span class="fa fa-ticket fa-2x"></span></div>
+                                            <div class="col">
+                                                <p >Billets disponible pour cet évènement</p>
+                                                {% for type in event.typeBillets  %}
+                                                    <p class="card-text"><span class="fa fa-money"></span> <b>{{ type.libelle }} | {{ type.prix|number_format(2,'.',',') }} {{ event.devise.libelle }}</b></p>
+                                                {% else %}
+                                                    <p>Aucun billets à afficher</p>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <hr/>
+                                        <div class="row my-1">
+                                            <div class="col-1"><span class="fa fa-money fa-2x"></span></div>
+                                            <div class="col">
 
+                                                <p class="card-text">Devise: <b>{{ event.devise.code }}</b></p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             {% endif %}

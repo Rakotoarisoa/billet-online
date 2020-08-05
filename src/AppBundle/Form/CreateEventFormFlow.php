@@ -35,6 +35,16 @@ class CreateEventFormFlow extends FormFlow {
                     return $estimatedCurrentStepNumber > 2 ;
                 },*/
             ],
+            [
+                'label' => 'Configuration et méthode de paiement',
+                'form_type' => EventType::class,
+                'form_options' => [
+                    'validation_groups' => ['Default'],
+                ],
+                /*'skip' => function($estimatedCurrentStepNumber, FormFlowInterface $flow) {
+                    return $estimatedCurrentStepNumber > 2 ;
+                },*/
+            ],
             /*[
                 'label' => 'Billets',
                 'form_type' => BilletType::class,

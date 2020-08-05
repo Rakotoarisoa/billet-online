@@ -37,11 +37,19 @@ final class CategorieEvenementAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper->add('libelle');
+
     }
 
     protected function configureListFields(ListMapper $listMapper)
     {
-        $listMapper->addIdentifier('libelle');
+        $listMapper->addIdentifier('libelle')
+            ->add('_action', null,[
+                'actions' => [
+                    'show' => [],
+                    'edit' => [],
+                    'delete' => [],
+                ]
+            ]);
        
     }
 }

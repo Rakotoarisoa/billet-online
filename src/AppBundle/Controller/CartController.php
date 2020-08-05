@@ -9,6 +9,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Evenement;
+use AppBundle\Entity\PaymentTransaction;
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\TypeBillet;
 use AppBundle\Entity\LockedSeat;
@@ -326,6 +327,12 @@ class CartController extends Controller
                 $billets_collection->add($billet);
             }
             $reservation->setBillet($billets_collection);
+            $txn = new PaymentTransaction();
+            $txn->setReservation($reservation);
+            $txn->setAmount($this->cart->getTotalPrice());
+            $txn->setCurrency($event->getDevise()->getLibelle());
+            $txn->setPaymentMethod();
+            $reservation->setPaymentTransaction($txn);
             $this->getDoctrine()->getManager()->persist($reservation);
             $this->getDoctrine()->getManager()->flush();
             $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation));
@@ -337,12 +344,24 @@ class CartController extends Controller
             $this->getDoctrine()->getManager()->flush();
             $entity_manager->getConnection()->commit();
             //delete session and cart _data
+            return $this->redirectToRoute('cart_payment_complete',array('order_id'=>$reservation->getNomReservation()));
             return new Response('Processus Terminé', Response::HTTP_OK);
             //return $this->redirectToRoute('viewList');
         } catch (\Exception $exception) {
             //$this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
             $entity_manager->getConnection()->rollback();
             return new Response($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    /**
+     * Checkout process of the cart
+     *
+     * @Route("/res_billet/payment_complete/{order_id}", name="cart_payment_complete")
+     */
+    public function completePayment(string $order_id){
+        $reservation = $this->getDoctrine()->getRepository(Reservation::class)->findBy(['nomReservation'=> $order_id]);
+        if($reservation and $reservation->getPaymentTransaction()->getStatus() == PaymentTransaction::STATUS_OK){
+            return new $this->render('default/view-buy-success.html.twig',['reservation'=>$reservation]);
         }
     }
     /**

@@ -51,6 +51,16 @@ class RegistrationController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
+            $user_options=$user->getOptions();
+            if($user_options->getIsEventManager()) $user->addRole('ROLE_USER_MEMBER');
+            else $user->setRoles(array('ROLE_USER'));
+            if(!$user_options->getUsePaypal()) {
+                $user->getOptions()->setPaypalAccount('');
+            }
+            if($user_options->getUseOrangeMoney()) {
+                $user->getOptions()->setOrangeMoneyConsumerId('');
+                $user->getOptions()->setOrangeMoneyMerchantKey('');
+            }
             if ($form->isValid()) {
                 /** @var UploadedFile $imageFile */
                 $imageFile = $form['image']->getData();
@@ -76,7 +86,7 @@ class RegistrationController extends BaseController
                     }
 
                     // instead of its contents
-                    $user->setRoles(array('ROLE_USER'));
+                    //$user->setRoles(array('ROLE_USER'));
 
                     $event = new FormEvent($form, $request);
                     $dispatcher->dispatch(FOSUserEvents::REGISTRATION_SUCCESS, $event);
@@ -91,7 +101,7 @@ class RegistrationController extends BaseController
                     );
 
                     if (null === $response = $event->getResponse()) {
-                        $url = $this->generateUrl('viewListUser', array('userId'=> $user->getId()));
+                        $url = $this->generateUrl('viewListUser');
                         $response = new RedirectResponse($url);
                     }
 

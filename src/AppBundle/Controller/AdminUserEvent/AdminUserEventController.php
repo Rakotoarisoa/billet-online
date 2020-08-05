@@ -45,9 +45,6 @@ class AdminUserEventController extends Controller
         $nbCheckout=$userRepository->countCheckout($user);
         $nbTickets=$userRepository->countTickets($user);
         $nbTicketsVerified=$userRepository->countVerifiedTickets($user);
-        if($nbTicketsVerified == null){
-            $nbTicketsVerified[0]['nombreBilletV'] =0;
-        }
         $event_name = $request->get('event_name');
         $event_state = $request->get('event_state');
         $event_creator = $request->get('event_creator');
@@ -64,12 +61,12 @@ class AdminUserEventController extends Controller
             'event_name'=>$event_name,
             'event_state'=> $event_state,
             'event_creator'=> $event_creator,
-            'nbEvents' => $nbEvents[0]['nombreEvents'],
-            'nbEventsPublic'=>$nbEventsPublic[0]['nombreEvents'],
-            'nbEventsUsingSeatMap'=>$nbEventsUsingSeatMap[0]['nombreEvents'],
-            'nbCheckout' => $nbCheckout[0]['nombreCheckout'],
-            'nbTickets' => $nbTickets[0]['nombreBillets'],
-            'nbChecked' => $nbTicketsVerified[0]['nombreBilletV']]);
+            'nbEvents' => ($nbEvents?$nbEvents[0]['nombreEvents']:0),
+            'nbEventsPublic'=>$nbEventsPublic?$nbEventsPublic[0]['nombreEvents']:0,
+            'nbEventsUsingSeatMap'=>$nbEventsUsingSeatMap?$nbEventsUsingSeatMap[0]['nombreEvents']:0,
+            'nbCheckout' => $nbCheckout?$nbCheckout[0]['nombreCheckout']:0,
+            'nbTickets' => $nbTickets?$nbTickets[0]['nombreBillets']:0,
+            'nbChecked' => $nbTicketsVerified?$nbTicketsVerified[0]['nombreBilletV']:0]);
     }
     /**
      * List des commandes pour un évènements

@@ -164,7 +164,7 @@
 																	</small>
 																</div>
 
-																<span class="text-muted">{{ billet.estDisponible?event.devise.code ~' '~billet.prix:'Non disponible' }}</span>
+																<span class="text-muted">{{ billet.estDisponible?event.devise.code ~' '~billet.prix|number_format(2,'.',','):'Non disponible' }}</span>
 															</li>
 														{% endfor %}
 													</ul>
@@ -269,7 +269,7 @@
 																						</div>
 																					</div>
 																					<small>{{ devise }}
-																						{{ type.prix }}</small>
+																						{{ type.prix|number_format(2,'.',',') }}</small>
 																					<br/>
 																					<small>{{ type.description|raw }}</small>
 																				</div>
@@ -344,31 +344,27 @@
 																			<label for="pays">Pays</label>
 																			<select class="form-control" name="pays">
 																				<option>Votre pays..</option>
-																				{% for country_item in country %}
-																					<option value="{{ country_item.code }}">{{ country_item.libelle }}</option>
+																				{% for country_item in country_list %}
+																					<option value="{{ country_item.id }}">{{ country_item.libelle }}</option>
 																				{% endfor %}
 																			</select>
 																		</div>
 																		<div class="form-group col-md-4">
 																			<label for="region">Région</label>
 																			<select id="region" class="form-control" name="region">
-																				<option value="" selected>Votre
-																																																																																																																																																																																																																																																										                                                                                        région...
-																				</option>
+																				<option value="" selected>Votre région...</option>
 																				<option>...</option>
 																			</select>
 																		</div>
 																		<div class="form-group col-md-3">
-																			<label for="code_zip">Code
-																																																																																																																																																																																																																																														                                                                                    postal</label>
+																			<label for="code_zip">Code	 postal</label>
 																			<input type="text" class="form-control" id="inputZip" name="code_zip" value="{{ zipCode }}">
 																		</div>
 																	</div>
 																	<hr/>
 																	<div class="form-group">
 																		<label for="inputAddress2">
-																			<h6>Méthode de
-																																																																																																																																																																																																																																														                                                                                    paiement</h6>
+																			<h6>Méthode de paiement</h6>
 																		</label>
 																		{% if(is_granted('ROLE_USER_SHOP')) %}
 																			<div class="row">
@@ -387,14 +383,28 @@
 																				</div>
 																			</div>
 																			<hr/>
+																		{% if event.options.usePaypalMethodPayment %}
 																			<div class="row">
 																				<div class="col-6">
-																					<input type="radio" class="form-check-input" name="paymentMethod" value="Paypal" checked>
+																					<input type="radio" class="form-check-input" name="paymentMethod" value="Paypal">
 																					<span class="fa fa-paypal fa-2x"></span>
 																					Paypal
 																				</div>
 																			</div>
 																			<hr/>
+																			{% endif %}
+																			{% if event.options.useOrangeMoneyMethodPayment %}
+																				<div class="row">
+																					<div class="col-6">
+																						<input type="radio"
+																							   class="form-check-input"
+																							   name="paymentMethod"
+																							   value="OrangeMoney" checked>
+																						<img src="{{ asset('img/om.png') }}" width="100px"/>
+																					</div>
+																				</div>
+																				<hr/>
+																			{% endif %}
 																			<div class="row">
 																				<div class="col-6">
 																					<input type="radio" class="form-check-input" name="paymentMethod" disabled>
@@ -416,6 +426,9 @@
 																<div class="form-row">
 																	<div class="col-12">
 																		<div id="btnPaypal"></div>
+																		<div id="orangeMoney">
+
+																		</div>
 																		<form class="form_order_method" method="post" novalidate></form>
 																		<form id="form_printer" class="form_printer" method="post" enctype="multipart/form-data">
 																			<input type="hidden" name="order_method" value="print"/>
@@ -733,7 +746,15 @@
 												                                    }
 												                                });
 												                                switch (data_payment_method.value) {
-												                                    case 'Paypal':
+																					case "OrangeMoney":
+																						$(".form_order_method").empty();
+																						$(".paymentInfo").text('Voici avez choisi Orange Money comme mode de paiement,\n' +
+																								'                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
+																								'                                                                    fois le paiement effectué , vous serez redirigé\n' +
+																								'                                                                    automatiquement sur la page.');
+
+																						break;
+												                                    case "Paypal":
 												                                        $(".form_order_method").empty();
 												                                        $(".paymentInfo").text('Voici avez choisi paypal comme mode de paiement,\n' +
 												                                            '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
@@ -799,6 +820,7 @@
 												                                        }).render('#btnPaypal');
 												                                        return frmInfo.valid();
 												                                        {% if is_granted('ROLE_USER_SHOP') and app.user.pointDeVente != NULL %}
+
 												                                    case 'point_de_vente':
 												                                        let user_name = '{{ app.user.username }}';
 												                                        let shop_name = '{{ app.user.pointDeVente.nom|escape("js") }}';
@@ -943,6 +965,7 @@
 												                                            }
 												                                        });
 												                                        {% endif %}
+																						break;
 												                                    default:
 												                                        console.log("default");
 												                                        break;

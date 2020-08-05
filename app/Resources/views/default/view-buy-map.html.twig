@@ -216,6 +216,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr/>
+                                                                {% if event.options.usePaypalPaymentMethod %}
                                                                 <div class="row">
                                                                     <div class="col-6">
                                                                         <input type="radio"
@@ -227,6 +228,20 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr/>
+                                                                {% endif %}
+                                                                {% if event.options.useOrangeMoneyPaymentMethod %}
+                                                                <div class="row">
+                                                                    <div class="col-6">
+                                                                        <input type="radio"
+                                                                               class="form-check-input"
+                                                                               name="paymentMethod"
+                                                                               value="OrangeMoney" checked>
+                                                                        <img src="{{ asset('img/om.png') }}" width="100px"/>
+                                                                        Orange Money
+                                                                    </div>
+                                                                </div>
+                                                                <hr/>
+                                                                {% endif %}
                                                                 <div class="row">
                                                                     <div class="col-6">
                                                                         <input type="radio"
@@ -542,9 +557,15 @@
                                     }
                                 });
                                 switch (data_payment_method.value) {
+                                    case 'OrangeMoney':
+                                        $(".form_order_method").empty();
+                                        $(".paymentInfo").text('Voici avez choisi Orange Money comme mode de paiement,\n' +
+                                            '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
+                                            '                                                                    fois le paiement effectué , vous serez redirigé\n' +
+                                            '                                                                    automatiquement sur la page.');
                                     case 'Paypal':
                                         $(".form_order_method").empty();
-                                        $(".paymentInfo").text('Voici avez choisi paypal comme mode de paiement,\n' +
+                                        $(".paymentInfo").text('Voici avez choisi Paypal comme mode de paiement,\n' +
                                             '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
                                             '                                                                    fois le paiement effectué , vous serez redirigé\n' +
                                             '                                                                    automatiquement sur la page.');

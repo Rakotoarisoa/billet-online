@@ -49,7 +49,7 @@ class EventController extends Controller
      */
     public function createFormEvent(Request $request)
     {
-        if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->isGranted('IS_AUTHENTICATED_FULLY') || !$this->isGranted('ROLE_USER_MEMBER')) {
             $this->redirect('/login?src=create');
         };
         $event = new Evenement();
@@ -63,6 +63,7 @@ class EventController extends Controller
                 $form = $flow->createForm();
             } else {
                 try {
+                    $event->getOptions()->setEvenement($event);
                     // flow finished
                     $em = $this->getDoctrine()->getManager();
                     $event->setUser($this->getUser());
@@ -72,10 +73,11 @@ class EventController extends Controller
                     $em->flush();
                     $flow->reset(); // remove step data from the session
                     $this->addFlash('success', 'Evènement enregistré avec succès.');
-                    return $this->redirectToRoute('viewSingle', array( 'id' => (string)$event->getId()));// redirect when done
+                    if($event->getIsUsingSeatMap()) return $this->redirectToRoute('viewCreateMap',['event'=>$event]);
+                    else return $this->redirectToRoute('viewSingle', array( 'id' => (string)$event->getId()));// redirect when done
                 } catch (\Exception $e)
                     {
-                        $this->addFlash('error','Une erreur s\'est produite : '+$e->getMessage());
+                        $this->addFlash('error','Une erreur s\'est produite : '.$e->getMessage());
                     }
             }
         }
@@ -85,7 +87,6 @@ class EventController extends Controller
     /**
      * Gestion des évènements de l'utilisateur
      * @Route("/user/events/list", name="viewListUser")
-     * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
      * @return Response
