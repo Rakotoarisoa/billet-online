@@ -393,14 +393,14 @@ class CartController extends Controller
 
                 $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation,'send_email',$buyer_data));
                 //delete session and cart _data
-                var_dump("redirect to payment");
-                return $this->redirectToRoute('viewList',array('order_id'=>$reservation->getNomReservation()));
+                //var_dump("redirect to payment");
+                return $this->redirectToRoute('cart_payment_complete',array('order_id'=>$reservation->getNomReservation()));
                 //return $this->redirectToRoute('viewList');
 
 
 
         });
-        return new Response('Done',500);
+        return new Response('Error',500);
 
     }
     /**
