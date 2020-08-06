@@ -145,7 +145,7 @@ const GenerateAdmissionTicket = (props) => {
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
-                                            helperText={(parseInt(ticket.quantite) - parseInt(ticket.nombreBillets)) > 0 ?"Prix: EUR " + ticket.prix:"Billet épuisé"}
+                                            helperText={(parseInt(ticket.quantite) - parseInt(ticket.nombreBillets)) > 0 ?"Prix: " + ticket.prix:"Billet épuisé"}
                                         />
                                         <ListItemSecondaryAction>
                                             <IconButton type={"submit"} edge={"end"} color="primary"
@@ -324,7 +324,7 @@ const GenerateDataCart = (props) => {
                         <ListItem className={classes.listItem}>
                             <ListItemText primary="Total"/>
                             <Typography variant="subtitle1" className={classes.total}>
-                                {"EUR " + totalCart}
+                                { totalCart}
                             </Typography>
                         </ListItem>
                         <div className={classes.buttons}>

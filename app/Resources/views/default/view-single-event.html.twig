@@ -458,10 +458,7 @@
 																		</div>
 																		<div class="row">
 																			<div class="col">
-																				Merci, la commande a été effectué
-																																																																																																																																																																																																																																														                                                                                    avec succès. Veuiller vérifier vos
-																																																																																																																																																																																																																																														                                                                                    billets selon votre méthode de
-																																																																																																																																																																																																																																														                                                                                    paiement
+																				Merci, la commande a été effectué avec succès. Veuiller vérifier vos billets selon votre méthode de paiement
 																			</div>
 																		</div>
 																	</div>
@@ -475,8 +472,7 @@
 																		</div>
 																		<div class="row">
 																			<div class="col">
-																				Désolé, le process n'a pas abouti.
-																																																																																																																																																																																																																																														                                                                                    Veuiller recommencer
+																				Désolé, le process n'a pas abouti. Veuiller recommencer
 																			</div>
 																		</div>
 																	</div>
@@ -628,7 +624,7 @@
 {% block javascripts %}{{ parent() }}<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 <script type="text/javascript" src="{{ asset('js/jquery-steps.js') }}"></script>
-<script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency={{ devise }}"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency={{ devise=='MGA'?'EUR':devise }}"></script>
 <script type="text/javascript">let cart_items = [];
 												            let steps_api = null;
 												            let total_price = 0;
@@ -752,8 +748,14 @@
 																								'                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
 																								'                                                                    fois le paiement effectué , vous serez redirigé\n' +
 																								'                                                                    automatiquement sur la page.');
-
-																						break;
+																						let btn_om_template = "<form method=\"post\">" +
+																								"<input type=\"hidden\" name=\"amount\" value=\""+total_price+"\"/>" +
+																								"<input type=\"hidden\" name=\"currency\" value=\"{{ event.devise.code }}\"/>" +
+																								"<input type=\"hidden\" name=\"_token\" value=\"{{ csrf_token('payment-om') }}\"/>" +
+																								"<div class=\"row\"><div class=\"col-4\"><img src=\"{{ asset('img/om.png') }}\" width=\"80px\"/></div>" +
+																								"<div class=\"col\"><input type=\"submit\" class=\"btn btn-warning btn-block\" value=\"Payer maintenant\"/></div></div></form>";
+																						 $("#orangeMoney").append(btn_om_template);
+																						return frmInfo.valid();
 												                                    case "Paypal":
 												                                        $(".form_order_method").empty();
 												                                        $(".paymentInfo").text('Voici avez choisi paypal comme mode de paiement,\n' +
@@ -776,12 +778,12 @@
 												                                                        amount: {
 												                                                            breakdown: {
 												                                                                item_total: {
-												                                                                    currency_code: "{{ devise }}",
-												                                                                    value: total_price
+												                                                                    currency_code: "{{ devise=='MGA'?'EUR':devise }}",
+												                                                                    value: {% if devise=='MGA' %}(total_price/4100).toFixed(2){% else %}total_price{% endif %}
 												                                                                }
 												                                                            },
-												                                                            currency_code: "{{ devise }}",
-												                                                            value: total_price
+												                                                            currency_code: "{{ devise=='MGA'?'EUR':devise }}",
+												                                                            value: {% if devise=='MGA' %}(total_price/4100).toFixed(2){% else %}total_price{% endif %}
 												                                                        },
 												                                                        items:
 												                                                            transformItemsPaypalFormat(cart_items)
@@ -971,7 +973,7 @@
 												                                        break;
 												                                }
 												                                $("#btnPaypal").empty();
-												
+																				$('#orangeMoney').empty();
 												                            }
 												                        }
 												                        if (stepDirection === 'backward') {
@@ -985,6 +987,7 @@
 												                            }
 												                            if (newIndex === 1 && currentIndex === newIndex + 1) {
 												                                $("#btnPaypal").find('.paypal-buttons').remove();
+																				$("#orangeMoney").find('form').remove();
 												                                $(".paymentInfo").empty();
 												                                $(".form_order_method").empty();
 												                            }
@@ -1061,10 +1064,10 @@
 												                    let item = {
 												                        name: el.category_str,
 												                        quantity: el.quantity,
-												                        currency: "{{ devise }}",
+												                        currency: "{{ devise=='MGA'?'EUR':devise }}",
 												                        unit_amount: {
-												                            value: el.price,
-												                            currency_code: "{{ devise }}"
+												                            value: {% if devise=='MGA' %}(el.price/4100).toFixed(2){% else %}el.price{% endif %},
+												                            currency_code: "{{ devise=='MGA'?'EUR':devise }}"
 												                        }
 												                    };
 												                    formatted_cart.push(item);

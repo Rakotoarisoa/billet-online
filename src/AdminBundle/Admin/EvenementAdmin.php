@@ -3,6 +3,7 @@
 
 namespace AdminBundle\Admin;
 
+use AppBundle\Entity\CategorieEvenement;
 use AppBundle\Entity\Evenement;
 use Knp\Menu\ItemInterface as MenuItemInterface;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
@@ -10,6 +11,7 @@ use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\Filter\DateType;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 
@@ -30,7 +32,6 @@ final class EvenementAdmin extends AbstractAdmin
     }
     protected function configureTabMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
     {
-        var_dump($menu);
         if (!$childAdmin && !in_array($action, ['edit','show'])) {
             return;
         }
@@ -92,9 +93,11 @@ final class EvenementAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper->addIdentifier('titreEvenement')
-                        ->add('dateDebutEvent')
-                        ->add('dateFinEvent')
-                        ->add('organisation')
+                        ->add('dateDebutEvent',null,array('format'=> 'd-m-Y','label'=>'Date de début'))
+                        ->add('categorieEvenement.libelle',null,array('label'=>'Catégorie'))
+                        ->add('organisation',null,array('label'=>'Organisateur'))
+                        ->add('isPublished', 'boolean',array('label'=>'Est publié'))
+                        ->add('user.username',null,array('label'=>'Utilisateur'))
                         ->add('_action', null,[
                             'actions' => [
                                     'show' => [],

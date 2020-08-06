@@ -94,7 +94,7 @@ class PaymentTransaction
     /**
      * @param int $currency
      */
-    public function setCurrency(int $currency): void
+    public function setCurrency(string $currency): void
     {
         $this->currency = $currency;
     }
@@ -110,7 +110,7 @@ class PaymentTransaction
     /**
      * @param int $payment_method
      */
-    public function setPaymentMethod(int $payment_method): void
+    public function setPaymentMethod(string $payment_method): void
     {
         $this->payment_method = $payment_method;
     }
@@ -180,7 +180,7 @@ class PaymentTransaction
     /**
      * @var int
      *
-     * @ORM\Column(type="decimal", precision=6, scale=2, options={"default": 0})
+     * @ORM\Column(type="decimal", precision=10, scale=2, options={"default": 0})
      */
     private $amount;
     /**

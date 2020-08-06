@@ -33,6 +33,12 @@ services:
         # you can exclude directories or files
         # but if a service is unused, it's removed anyway
         exclude: '../../src/AppBundle/{Entity,Tests}'
+    service.payment.orange_money.api:
+        class: AppBundle\Utils\OmApi
+        arguments:
+            - '@service_container'
+        autoconfigure: true
+        public: true
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
@@ -139,27 +145,36 @@ services:
     admin.user_organizer:
         calls:
             - [ addChild, ['@admin.evenement','user'] ]
-            - [ addChild, ['@admin.shop','shop'] ]
         class: AdminBundle\Admin\UserAdmin
-        arguments: [~, AppBundle\Entity\User, ~]
+        arguments: [~, AppBundle\Entity\User,~, 'ROLE_USER_MEMBER']
         tags:
             -   name: sonata.admin
                 manager_type: orm
                 group: 'app.admin.groups.user' #'Utilisateurs et droits'
-                label: 'Utilisateurs'
+                label: "Organisateurs d' évènements"
                 label_catalogue: 'SonataAdminBundle'
                 icon: '<i class=\"fa fa-music\"></i>'
     admin.user_admin:
         calls:
         class: AdminBundle\Admin\UserAdmin
-        arguments: [~, AppBundle\Entity\User, ~]
+        arguments: [~, AppBundle\Entity\User, ~,'ROLE_SUPER_ADMIN']
         tags:
             - name: sonata.admin
               manager_type: orm
               group: 'app.admin.groups.user' #'Utilisateurs et droits'
-              label: 'Utilisateurs'
+              label: 'Administrateurs'
               label_catalogue: 'SonataAdminBundle'
               icon: '<i class=\"fa fa-user\"></i>'
+
+    admin.user_shop:
+        class: AdminBundle\Admin\UserAdmin
+        arguments: [~,AppBundle\Entity\User,~,'ROLE_USER_SHOP']
+        tags:
+            - name: sonata.admin
+              manager_type: orm
+              group: 'app.admin.groups.user'
+              label: "Gestionnaire de point de vente"
+              label_catalogue: 'SonataAdminBundle'
     admin.user_checkout:
         class: AdminBundle\Admin\UserCheckoutAdmin
         arguments: [~,AppBundle\Entity\UserCheckout,~]
@@ -169,16 +184,6 @@ services:
               group: 'app.admin.groups.user'
               label: "Acheteurs"
               label_catalogue: 'SonataAdminBundle'
-    admin.user_shop:
-        class: AdminBundle\Admin\UserCheckoutAdmin
-        arguments: [~,AppBundle\Entity\User,~]
-        tags:
-            - name: sonata.admin
-              manager_type: orm
-              group: 'app.admin.groups.user'
-              label: "Gestionnaire de point de vente"
-              label_catalogue: 'SonataAdminBundle'
-
     admin.shop:
         class: AdminBundle\Admin\ShopAdmin
         arguments: [~, AppBundle\Entity\Shop, ~]

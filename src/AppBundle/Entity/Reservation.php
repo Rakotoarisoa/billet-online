@@ -177,7 +177,7 @@ class Reservation
     public function __construct()
     {
         $this->randomCodeCommande=substr(str_shuffle("0123456789"), 0, 5);
-        $this->dateReservation = new \Datetime();
+        $this->nomReservation = 'commande_'.$this->randomCodeCommande;
     }
 
     /**

@@ -216,7 +216,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <hr/>
-                                                                {% if event.options.usePaypalPaymentMethod %}
+                                                                {% if event.options.usePaypalMethodPayment %}
                                                                 <div class="row">
                                                                     <div class="col-6">
                                                                         <input type="radio"
@@ -229,7 +229,7 @@
                                                                 </div>
                                                                 <hr/>
                                                                 {% endif %}
-                                                                {% if event.options.useOrangeMoneyPaymentMethod %}
+                                                                {% if event.options.useOrangeMoneyMethodPayment %}
                                                                 <div class="row">
                                                                     <div class="col-6">
                                                                         <input type="radio"
@@ -267,6 +267,7 @@
                                                     <div class="row">
                                                         <div class="col-12">
                                                             <div id="btnPaypal"></div>
+                                                            <div id="orangeMoney"></div>
                                                             <form class="form_order_method" method="post" novalidate>
                                                             </form>
                                                             <form id="form_printer" class="form_printer" method="post" enctype="multipart/form-data">
@@ -444,7 +445,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
         <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
         <script type="text/javascript" src="{{ asset('js/jquery-steps.js') }}"></script>
-        <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency={{ event.devise.code }}"></script>
+        <script src="https://www.paypal.com/sdk/js?client-id=AXZ-9C193mTXkOfkwZ0ehMUiaNbVXM20I9xbh65Rk8HseaqLYuOJxjCy6wpyaCfPRaWmvfAzo5S_FwIU&currency={{ event.devise.code=='MGA'?'EUR':event.devise.code }}"></script>
         <script type="text/javascript">
             let cart_items = [];
             let steps_api = null;
@@ -557,12 +558,20 @@
                                     }
                                 });
                                 switch (data_payment_method.value) {
-                                    case 'OrangeMoney':
+                                    case "OrangeMoney":
                                         $(".form_order_method").empty();
                                         $(".paymentInfo").text('Voici avez choisi Orange Money comme mode de paiement,\n' +
                                             '                                                                    cliquer sur le bouton ci-dessous pour continuer, une\n' +
                                             '                                                                    fois le paiement effectué , vous serez redirigé\n' +
                                             '                                                                    automatiquement sur la page.');
+                                        let btn_om_template = "<form method=\"post\">" +
+                                            "<input type=\"hidden\" name=\"amount\" value=\""+total_price+"\"/>" +
+                                            "<input type=\"hidden\" name=\"currency\" value=\"{{ event.devise.code }}\"/>" +
+                                            "<input type=\"hidden\" name=\"_token\" value=\"{{ csrf_token('payment-om') }}\"/>" +
+                                            "<div class=\"row\"><div class=\"col-4\"><img src=\"{{ asset('img/om.png') }}\" width=\"80px\"/></div>" +
+                                            "<div class=\"col\"><input type=\"submit\" class=\"btn btn-warning btn-block\" value=\"Payer maintenant\"/></div></div></form>";
+                                        $("#orangeMoney").append(btn_om_template);
+                                        return frmInfo.valid();
                                     case 'Paypal':
                                         $(".form_order_method").empty();
                                         $(".paymentInfo").text('Voici avez choisi Paypal comme mode de paiement,\n' +
@@ -585,12 +594,12 @@
                                                         amount: {
                                                             breakdown: {
                                                                 item_total: {
-                                                                    currency_code: "{{ event.devise.code }}",
-                                                                    value: total_price
+                                                                    currency_code: "{{ event.devise.code=='MGA'?'EUR':event.devise.code }}",
+                                                                    value: {% if event.devise.code=='MGA' %}(total_price/4100).toFixed(2){% else %}total_price{% endif %}
                                                                 }
                                                             },
-                                                            currency_code: "{{ event.devise.code }}",
-                                                            value: total_price
+                                                            currency_code: "{{ event.devise.code=='MGA'?'EUR':event.devise.code }}",
+                                                            value: {% if event.devise.code=='MGA' %}(total_price/4100).toFixed(2){% else %}total_price{% endif %}
                                                         },
                                                         items:
                                                             transformItemsPaypalFormat(cart_items)
@@ -784,6 +793,8 @@
                                         });
                                         {% endif %}
                                 }
+                                $("#btnPaypal").empty();
+                                $('#orangeMoney').empty();
 
                             }
                         }
@@ -791,6 +802,7 @@
                             if (newIndex === 0 && currentIndex === newIndex + 1) {
                                 clearInterval(counter);
                                 $("#btnPaypal").find('.paypal-buttons').remove();
+                                $("#orangeMoney").find('form').remove();
                                 $(".paymentInfo").empty();
                                 $(".form_order_method").empty();
                             }
@@ -876,9 +888,9 @@
                     let item = {
                         name: el.category_str + '-' + el.section + '-' + el.seat,
                         quantity: el.quantity,
-                        currency: "{{ event.devise.code }}",
+                        currency: "{{ event.devise.code=='MGA'?'EUR':event.devise.code }}",
                         unit_amount: {
-                            value: el.price,
+                            value: {% if event.devise.code=='MGA' %}(el.price/4100).toFixed(2){% else %}el.price{% endif %},
                             currency_code: "{{ event.devise.code }}"
                         }
                     };

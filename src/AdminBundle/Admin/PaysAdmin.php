@@ -41,6 +41,9 @@ final class PaysAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper->addIdentifier('code')
-                        ->add('libelle');
+                        ->add('libelle')
+        ->add('libelle_en', null,array('label'=>'Libelle en anglais'))
+        ->add('alpha2')
+        ->add('alpha3');
     }
 }

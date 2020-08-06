@@ -8,11 +8,12 @@ use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Form\Type\ModelType;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Symfony\Bridge\Doctrine\Form\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use AppBundle\Entity\User;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 final class UserAdmin extends AbstractAdmin
 {
@@ -21,6 +22,35 @@ final class UserAdmin extends AbstractAdmin
         return $object instanceof User
             ? $object->getNom()." ".$object->getPrenom()
             : 'Utilisateurs'; // shown in the breadcrumb on the create view
+    }
+    protected $roles;
+    public function getRoles(){
+        return $this->roles;
+    }
+    public function __construct($code, $class, $baseControllerName,$roles)
+    {
+        parent::__construct($code, $class, $baseControllerName);
+        $this->roles = $roles;
+        if($roles == 'ROLE_USER_MEMBER') {
+            $this->baseRouteName = 'admin_user_member';
+            $this->baseRoutePattern = 'user_member';
+        }
+        if($roles == 'ROLE_USER_SHOP') {
+            $this->baseRouteName = 'admin_user_shop';
+            $this->baseRoutePattern = 'user_shop';
+        }
+        if($roles == 'ROLE_SUPER_ADMIN') {
+            $this->baseRouteName = 'admin_user_admin';
+            $this->baseRoutePattern = 'user_admin';
+        }
+    }
+    public function createQuery($context = 'list')
+    {
+
+        $query = parent::createQuery($context);
+        $query->andWhere($query->getRootAliases()[0].'.roles like :role');
+        $query->setParameter('role', '%'.$this->roles.'%');
+        return $query;
     }
     protected function configureTabMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
     {
@@ -100,19 +130,12 @@ final class UserAdmin extends AbstractAdmin
             ->add('blog','text',['label'=> 'Blog'])
             ->add('phone','text',['label'=> 'Téléphone'])
             ->add('mobile_phone','text',['label'=> 'Téléphone mobile'])
-            ->add('roles','choice',[
-                'multiple' => true,
-                'mapped' => true,
-                'required' => true,
-                'choices' => [
-                    'Simple utilisateur' => 'ROLE_USER',
-                    'Utilisateurs membre' => 'ROLE_USER_MEMBER',
-                    'Administrateur' => 'ROLE_ADMIN',
-                    'Administrateur de point de vente' => 'ROLE_USER_SHOP'
+            ->add('roles',HiddenType::class,[
+                'data' => $this->roles
                 ]
-            ])
+            )
             ->add('point_de_vente',
-                EntityType::class,
+                ModelType::class,
                 ['class' => 'AppBundle\Entity\Shop','placeholder' => 'Sélectionner le point de vente à gérer']
             );
 

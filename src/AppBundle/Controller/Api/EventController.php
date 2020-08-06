@@ -208,7 +208,7 @@ class EventController extends AbstractFOSRestController
         return JsonResponse::create(false);
     }
     /**
-     * @Rest\Post("/api/event/seat/book")
+     * @Rest\Post("/api/event/seat/book",name="book_seat")
      */
     //Search Section and Seat into array to Lock
     public function isBooked(Request $request)
