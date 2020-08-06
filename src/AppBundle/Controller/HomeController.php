@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Billet;
 use AppBundle\Entity\CategorieEvenement;
 use AppBundle\Entity\Pays;
+use AppBundle\Utils\Cart;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -15,15 +16,29 @@ use Omines\DataTablesBundle\Adapter\ArrayAdapter;
 use Omines\DataTablesBundle\Column\TextColumn;
 use Omines\DataTablesBundle\Controller\DataTablesTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 
 class HomeController extends Controller
 {
     use DataTablesTrait;
+    private $session;
+    /**
+     * The constructor
+     */
+    public function __construct()
+    {
+        $storage = new NativeSessionStorage();
+        $attributes = new NamespacedAttributeBag();
+        $this->session = new Session($storage, $attributes);
+
+    }
     /**
      * Page d'accueil liste d'évènements
      * @Route("/", name="viewList")
      */
-    public function showListEvent(Request $request)
+    public function showListEvent(Request $request )
     {
         if($lieu=$request->request->has('lieu'))
             $lieu=$request->request->get('lieu');
@@ -50,16 +65,31 @@ class HomeController extends Controller
      * @param Evenement $event
      * @return Response
      */
-    public function showSingleEvent(Evenement $event)
+    public function showSingleEvent(Request $request,Evenement $event)
     {
-        $repo = $this->getDoctrine()->getRepository(Billet::class);
-        $queryTicketsState=$repo->getListTicketsByType($event);
-        $this->getDoctrine()->getRepository(Evenement::class)->initMapEvent($event);
-        $categoryList= $this->getDoctrine()
-        ->getRepository(CategorieEvenement::class)
-        ->searchUsedCategories();
-        $country = $this->getDoctrine()->getRepository(Pays::class)->findAll();//Command_ID generation
-        return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState,'max_command_per_ticket'=> 10,'country_list'=>$country,'catList'=>$categoryList));
+        //var_dump($request->getMethod());
+        //die;
+        //OAuth 2 Management, here is Orange Money
+        if($request->getMethod() == 'POST' && $this->isCsrfTokenValid('payment-om', $request->get('_token'))){
+            $om=$this->container->get('service.payment.orange_money.api');
+            $token=json_decode($om->getToken()->getBody()->getContents());
+            $status=$om->Payment($token->access_token,[]);
+            $result_status=json_decode($status->getBody()->getContents());
+            $this->session->set('_resa_',$om->getReservation());
+            //check result of status and redirects
+            if($result_status->status == $om::STATUS_OK) return $this->redirect($result_status->payment_url);
+            else return new Response($result_status->message,500);
+        }
+        else{
+            $repo = $this->getDoctrine()->getRepository(Billet::class);
+            $queryTicketsState=$repo->getListTicketsByType($event);
+            $this->getDoctrine()->getRepository(Evenement::class)->initMapEvent($event);
+            $categoryList= $this->getDoctrine()
+            ->getRepository(CategorieEvenement::class)
+            ->searchUsedCategories();
+            $country = $this->getDoctrine()->getRepository(Pays::class)->findAll();//Command_ID generation
+            return $this->render('default/view-single-event.html.twig',array('event'=>$event,'ticketNumber'=> $queryTicketsState,'max_command_per_ticket'=> 10,'country_list'=>$country,'catList'=>$categoryList));
+        }
     }
     /**
      * Page création map
@@ -75,7 +105,18 @@ class HomeController extends Controller
      * @Route("/event/{idEvent}/map", name="viewBuyMap")
      * @ParamConverter("event", options={"mapping":{"idEvent"="id"}})
      */
-    public function vueMap(Evenement $event){
+    public function vueMap(Request $request,  Evenement $event){
+        if($request->getMethod() == 'POST' && $this->isCsrfTokenValid('payment-om', $request->get('_token'))){
+            $om=$this->container->get('service.payment.orange_money.api');
+            $token=json_decode($om->getToken()->getBody()->getContents());
+            $status=$om->Payment($token->access_token,[]);
+            $result_status=json_decode($status->getBody()->getContents());
+            if($result_status->status == $om::STATUS_OK) $this->session->set('pay_token',$result_status->pay_token);
+            $this->session->set('_resa_',$om->getReservation());
+            //check result of status and redirects
+            if($result_status->status == $om::STATUS_OK) return $this->redirect($result_status->payment_url);
+            else return new Response($result_status->message,500);
+        }
 
         return $this->render('default/view-buy-map.html.twig',array('event'=>$event,'max_command_per_ticket'=> 10));
     }
