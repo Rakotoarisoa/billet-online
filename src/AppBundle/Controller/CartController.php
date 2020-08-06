@@ -394,7 +394,7 @@ class CartController extends Controller
                 $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation,'send_email',$buyer_data));
                 //delete session and cart _data
                 var_dump("redirect to payment");
-                return $this->redirectToRoute('cart_payment_complete',array('order_id'=>$reservation->getNomReservation()));
+                return $this->redirectToRoute('viewList',array('order_id'=>$reservation->getNomReservation()));
                 //return $this->redirectToRoute('viewList');
 
 
@@ -409,7 +409,7 @@ class CartController extends Controller
      * @Route("/res_billet/payment_complete/{order_id}", name="cart_payment_complete")
      */
     public function completePayment(string $order_id){
-        $reservation = $this->getDoctrine()->getRepository(Reservation::class)->findBy(['nomReservation'=> $order_id]);
+        $reservation = $this->getDoctrine()->getRepository(Reservation::class)->findOneBy(['randomCodeCommande'=> $order_id]);
         if($reservation and $reservation->getPaymentTransaction()->getStatus() == PaymentTransaction::STATUS_OK){
             return  $this->render('default/view-buy-success.html.twig',['reservation'=>$reservation]);
         }

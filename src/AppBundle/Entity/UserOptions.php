@@ -157,11 +157,11 @@ class UserOptions
         $this->orange_money_merchant_key = $orange_money_merchant_key;
     }
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100,nullable=true)
      */
     private $orange_money_bearer_key;
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100,nullable=true)
      */
     private $orange_money_consumer_bearer_lifetime;
     /**

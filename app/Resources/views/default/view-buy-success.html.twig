@@ -1,4 +1,4 @@
-a{% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block title %}Ivenco Réservation{% endblock %}
 {% block breadcrumb %}
 {% endblock %}
@@ -6,13 +6,25 @@ a{% extends 'base.html.twig' %}
     <!-- ##### Events Area Start ##### -->
     {% block content %}
         {{ parent() }}
-        <section class="events-area section-padding-0-100">
-            Paiement réussi .
-            <table>
-                <thead><td>Code réservation</td><td>{{ reservation.nomReservation }}</td></thead>
-                <tr><td>Status</td><td>{{ reservation.paymentTransaction.status }}</td></tr>
-            </table>
-        </section>
+        <div class="container">
+            <section class="events-area section-padding-0-100">
+                <h2> {{ reservation.evenement.categorieevenement.libelle }} : {{ reservation.evenement.titreEvenement }}</h2>
+                <h3>Etat de la réservation du paiement n° {{ reservation.randomCodeCommande }}</h3>
+                <table class="table table-striped">
+                    <thead><td>Code réservation</td><td>{{ reservation.randomCodeCommande }}</td></thead>
+                    <tr><td>Etat</td><td><p class="badge badge-success">{{ reservation.paymentTransaction.status == 0 ?'Réussi': 'En attente'  }}</p></td></tr>
+                    <tr><td>Nom de l'acheteur</td><td>{{ reservation.userCheckout.nom }} {{ reservation.userCheckout.prenom }}</td></tr>
+                    <tr><td>Evenement</td><td><a href="{{ path('viewSingle',{'id': reservation.evenement.id}) }}">{{ reservation.evenement.TitreEvenement }}<span class="fa fa-link"></span></a> </td></tr>
+                    <tr><td>Nom de l'acheteur</td><td>{{ reservation.userCheckout.nom }} {{ reservation.userCheckout.prenom }}</td></tr>
+                    <tr><td>Montant</td><td><span class="fa fa-money"></span> {{ reservation.evenement.devise.code }} {{ reservation.montantTotal|number_format(2,'.',',') }}</td></tr>
+                    <tr><td>Mode de paiement</td><td>{{ reservation.modePaiement }}</td></tr>
+                    <tr><td>Date de reservation</td><td>{{ reservation.dateReservation|localizeddate('none', 'none', null, null,'d MMM Y') }}</td></tr>
+
+                    <tr><td colspan="1"><a href="#">Redemander l'état du paiement</a>  <small class="text-muted">Ce lien demandera l'état auprès du fournisseur du système de paiement</small></td></tr>
+
+                </table>
+            </section>
+        </div>
     {% endblock %}
     <!-- ##### Events Area End ##### -->
     {% block javascripts %}
