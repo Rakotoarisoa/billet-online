@@ -65,6 +65,14 @@ class OmApi
     }
 
     /**
+     * @param string $reservation
+     */
+    public function setReservation(Reservation $reservation): void
+    {
+        $this->reservation = $reservation;
+    }
+
+    /**
      * Constructor
      * @param string $userid
      * @param string $password
@@ -75,9 +83,6 @@ class OmApi
         $this->client = new Client([
             'base_uri' => self::BASE_URL
         ]);
-        $this->reservation = new Reservation();
-        $this->reservation->setModePaiement('OrangeMoney');
-
         $this->auth_header  =  $container->getParameter('orange_money_auth_header');
         $this->merchant_key =  $container->getParameter('orange_money_merchant_key');
         $this->return_url   =  $container->getParameter('orange_money_return_url');

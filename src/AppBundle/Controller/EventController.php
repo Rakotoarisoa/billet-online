@@ -3,6 +3,8 @@
 
 namespace AppBundle\Controller;
 use AppBundle\FileLoader\ImageEventUploader;
+use AppBundle\Form\EvenementType;
+use AppBundle\Form\EventType;
 use AppBundle\Utils\Slugger;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -164,7 +166,15 @@ class EventController extends Controller
         if($this->getUser() != $event->getUser() ){
             throw new AccessDeniedException();
         }
-        $flow = $this->get('app.form.flow.create_event'); // must match the flow's service id
+        $form=$this->createForm(EvenementType::class,$event);
+        $form->handleRequest($request);
+        if($form->isSubmitted())
+        {
+            if($form->isValid()){
+
+            }
+        }
+        /*$flow = $this->get('app.form.flow.create_event'); // must match the flow's service id
         $flow->bind($event);
         $form = $flow->createForm();
         if ($flow->isValid($form)) {
@@ -193,11 +203,11 @@ class EventController extends Controller
                     $this->addFlash('error','Une erreur s\'est produite : '+$e->getMessage());
                 }
             }
-        }
-        return $this->render('event_admin/event/event-register.html.twig', array(
+        }*/
+        return $this->render('event_admin/event/event-update.html.twig', array(
             'title' => 'Edition de l\'évènement '.$event->getTitreEvenement(),
             'event' => $event,
-            'flow' => $flow,
+            /*'flow' => $flow,*/
             'form' => $form->createView()
         ));
 

@@ -20,7 +20,7 @@
                 <small>{{ form_errors(typeBilletForm.quantite) }}</small>
             </div>
             <div class="col-sm-2">
-               {{ form_label(typeBilletForm.isAdmission) }}
+                {{ form_label(typeBilletForm.isAdmission) }}
                 {{ form_widget(typeBilletForm.isAdmission) }}
             </div>
             <div class="col-sm-1">
@@ -31,15 +31,16 @@
                 </span>
             </div>
         </div>
+
         <div class="row">
-                        <div class="col">
-                            <span class="text-muted"> {{ form_label(typeBilletForm.dateDebut) }}</span>
-                            {{ form_widget(typeBilletForm.dateDebut) }}
-                        </div>
-                        <div class="col">
-                            <span class="text-muted"> {{ form_label(typeBilletForm.dateFin) }}</span>
-                            {{ form_widget(typeBilletForm.dateFin) }}
-                        </div>
+            <div class="col">
+                <span class="text-muted"> {{ form_label(typeBilletForm.dateDebut) }}</span>
+                {{ form_widget(typeBilletForm.dateDebut,{'attr':{'class': 'date-debut-billet billet_'~ i }}) }}
+            </div>
+            <div class="col">
+                <span class="text-muted"> {{ form_label(typeBilletForm.dateFin) }}</span>
+                {{ form_widget(typeBilletForm.dateFin,{'attr':{'class': 'date-fin-billet billet_'~ i }}) }}
+            </div>
         </div>
         <div class="row">
             <div class="col">
@@ -99,7 +100,9 @@
                             <li class="nav-item">
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        <a target="_blank" class="btn btn-link" href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span class="fa fa-map"></span> Configurer le plan de salle</a>
+                                        <a target="_blank" class="btn btn-link"
+                                           href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span
+                                                    class="fa fa-map"></span> Configurer le plan de salle</a>
                                     </li>
                                 </ul>
                             </li>
@@ -185,7 +188,7 @@
                                             {% set i=i+1 %}
                                         {% endfor %}
                                         <a class="btn btn-secondary text-center text-white js-add-type">
-                                           <span class="fa fa-ticket"></span> Ajouter un type de billet
+                                            <span class="fa fa-ticket"></span> Ajouter un type de billet
                                         </a>
                                     </div>
                                     {{ form_widget(form.typeBillets) }}
@@ -226,7 +229,9 @@
                                     </div>
                                     {% if event.id is defined and event.id %}
                                         <div class="col-6">
-                                            <a class="btn btn-danger" href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span class="fa fa-map"></span> Configurer le plan de salle</a>
+                                            <a class="btn btn-danger"
+                                               href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span
+                                                        class="fa fa-map"></span> Configurer le plan de salle</a>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -266,7 +271,8 @@
                                 </div>
                                 <div class="row align-items-center">
                                     <div class="col-12 my-1">
-                                        <h4>Choississez parmi les mode de paiements disponibles  à utiliser pour cet évènement </h4>
+                                        <h4>Choississez parmi les mode de paiements disponibles à utiliser pour cet
+                                            évènement </h4>
                                     </div>
                                 </div>
                                 <div class="row align-items-center">
@@ -274,7 +280,11 @@
                                         <img src="{{ asset('img/paypal.png') }}" width="80px"/>
                                         {{ form_widget(form.options.usePaypalMethodPayment) }}
                                         {{ form_errors(form.options.usePaypalMethodPayment) }}
-                                        <p><small class="col-12 text text-muted">Les informations Paypal liées sur votre compte seront utilisées</small></p>
+                                        <p>
+                                            <small class="col-12 text text-muted">Les informations Paypal liées sur
+                                                votre compte seront utilisées
+                                            </small>
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="row align-items-center">
@@ -282,7 +292,11 @@
                                         <img src="{{ asset('img/om.png') }}" width="80px"/>
                                         {{ form_widget(form.options.useOrangeMoneyMethodPayment) }}
                                         {{ form_errors(form.options.useOrangeMoneyMethodPayment) }}
-                                    <p><small class="col-12 text text-muted">Les informations Orange Money liées sur votre compte seront utilisées</small></p>
+                                        <p>
+                                            <small class="col-12 text text-muted">Les informations Orange Money liées
+                                                sur votre compte seront utilisées
+                                            </small>
+                                        </p>
                                     </div>
                                 </div>
 
@@ -290,7 +304,9 @@
                             {% if flow.getCurrentStepNumber() == 5 %}
                                 <p class="alert-danger">{{ form_errors(form) }}</p>
                                 <p class="text">Vous avez saisis les informations suivantes concernant l'évènement: </p>
-                                <p>Appuyer sur <small class="text-white bg-red "><b>Sauvegarder et confirmer</b></small> pour confirmer.
+                                <p>Appuyer sur
+                                    <small class="text-white bg-red "><b>Sauvegarder et confirmer</b></small>
+                                    pour confirmer.
                                 </p>
                                 <div class="card">
                                     <img class="card-img-top"
@@ -301,7 +317,7 @@
                                         <div class="row my-3">
                                             <div class="col-3">
                                                 <p class="card-text">
-                                                    <h4>{{ event.categorieEvenement.libelle }}</h4>
+                                                <h4>{{ event.categorieEvenement.libelle }}</h4>
                                                 </p>
                                             </div>
                                             <div class="col">
@@ -311,9 +327,9 @@
                                             </div>
                                             <div class="col">
                                                 <div class="date-single-event pull-right">
-                                                    <p class="day_">{{event.dateDebutEvent|localizeddate('none', 'none', null, null,"d")}}</p>
-                                                    <p class="month_">{{event.dateDebutEvent|localizeddate('none', 'none', null, null,"MMM")}}</p>
-                                                    <p class="year_">{{event.dateDebutEvent|localizeddate('none', 'none', null, null,"Y")}}</p>
+                                                    <p class="day_">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,"d") }}</p>
+                                                    <p class="month_">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,"MMM") }}</p>
+                                                    <p class="year_">{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,"Y") }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -341,9 +357,12 @@
                                         <div class="row my-1">
                                             <div class="col-1"><span class="fa fa-ticket fa-2x"></span></div>
                                             <div class="col">
-                                                <p >Billets disponible pour cet évènement</p>
-                                                {% for type in event.typeBillets  %}
-                                                    <p class="card-text"><span class="fa fa-money"></span> <b>{{ type.libelle }} | {{ type.prix|number_format(2,'.',',') }} {{ event.devise.libelle }}</b></p>
+                                                <p>Billets disponible pour cet évènement</p>
+                                                {% for type in event.typeBillets %}
+                                                    <p class="card-text"><span class="fa fa-money"></span>
+                                                        <b>{{ type.libelle }}
+                                                            | {{ type.prix|number_format(2,'.',',') }} {{ event.devise.libelle }}</b>
+                                                    </p>
                                                 {% else %}
                                                     <p>Aucun billets à afficher</p>
                                                 {% endfor %}
@@ -496,75 +515,74 @@
                 });
                 $('.nav-tabs a[href="#info_event"]').tab('show');
                 {% if flow.currentStepNumber == 1 %}
-                $('#appbundle_event_titreEvenement').on('input', function (e) {
-                    maxLength = 75;
-                    document.getElementById("word-count").innerHTML = this.value.length + "/" + maxLength;
-                });
-                $('.dateDebut').datetimepicker({
-                    format: 'DD-MM-YYYY HH:mm',
-                    sideBySide: true,
-                    // as Bootstrap 4 is not using Glyphicons anymore
-                    icons: {
-                        time: 'fa fa-clock-o',
-                        date: 'fa fa-calendar',
-                        up: 'fa fa-chevron-up',
-                        down: 'fa fa-chevron-down',
-                        previous: 'fa fa-chevron-left',
-                        next: 'fa fa-chevron-right',
-                        today: 'fa fa-check',
-                        clear: 'fa fa-trash',
-                        close: 'fa fa-times'
-                    }
-                });
-                $('.dateFin').datetimepicker({
-                    format: 'DD-MM-YYYY HH:mm',
-                    sideBySide: true,
-                    // as Bootstrap 4 is not using Glyphicons anymore
-                    icons: {
-                        time: 'fa fa-clock-o',
-                        date: 'fa fa-calendar',
-                        up: 'fa fa-chevron-up',
-                        down: 'fa fa-chevron-down',
-                        previous: 'fa fa-chevron-left',
-                        next: 'fa fa-chevron-right',
-                        today: 'fa fa-check',
-                        clear: 'fa fa-trash',
-                        close: 'fa fa-times'
-                    }
-                });
-                {% if event.id is defined and event.id %}
-                $('.dateDebut').data("DateTimePicker").minDate({{ event.dateDebutEvent|date('U') }});
-                $('.dateFin').data("DateTimePicker").minDate({{ event.dateDebutEvent|date('U') }});
-                $('.dateDebut').data("DateTimePicker").date({{ event.dateDebutEvent|date('U') }});
-                $('.dateFin').data("DateTimePicker").date({{ event.dateFinEvent|date('U') }});
-                $('.dateDebut').data("DateTimePicker").maxDate({{ event.dateFinEvent|date('U') }});
-                $(".dateDebut").on("dp.change", function (e) {
-                    $('.dateFin').data("DateTimePicker").minDate(e.date);
-                });
-                $(".dateFin").on("dp.change", function (e) {
-                    $('.dateDebut').data("DateTimePicker").maxDate(e.date);
-                });
+                    $('#appbundle_event_titreEvenement').on('input', function (e) {
+                        maxLength = 75;
+                        document.getElementById("word-count").innerHTML = this.value.length + "/" + maxLength;
+                    });
+                    $('.dateDebut').datetimepicker({
+                        format: 'DD-MM-YYYY HH:mm',
+                        sideBySide: true,
+                        // as Bootstrap 4 is not using Glyphicons anymore
+                        icons: {
+                            time: 'fa fa-clock-o',
+                            date: 'fa fa-calendar',
+                            up: 'fa fa-chevron-up',
+                            down: 'fa fa-chevron-down',
+                            previous: 'fa fa-chevron-left',
+                            next: 'fa fa-chevron-right',
+                            today: 'fa fa-check',
+                            clear: 'fa fa-trash',
+                            close: 'fa fa-times'
+                        }
+                    });
+                    $('.dateFin').datetimepicker({
+                        format: 'DD-MM-YYYY HH:mm',
+                        sideBySide: true,
+                        // as Bootstrap 4 is not using Glyphicons anymore
+                        icons: {
+                            time: 'fa fa-clock-o',
+                            date: 'fa fa-calendar',
+                            up: 'fa fa-chevron-up',
+                            down: 'fa fa-chevron-down',
+                            previous: 'fa fa-chevron-left',
+                            next: 'fa fa-chevron-right',
+                            today: 'fa fa-check',
+                            clear: 'fa fa-trash',
+                            close: 'fa fa-times'
+                        }
+                    });
+                    {% if event.id is defined and event.id %}
+                        $('.dateDebut').data("DateTimePicker").minDate(new Date("{{ event.dateDebutEvent|date('Y-m-d H:i:s') }}"));
+                        $('.dateFin').data("DateTimePicker").minDate(new Date("{{ event.dateDebutEvent|date('Y-m-d H:i:s') }}"));
+                        $('.dateDebut').data("DateTimePicker").date(new Date("{{ event.dateDebutEvent|date('Y-m-d H:i:s') }}"));
+                        $('.dateFin').data("DateTimePicker").date(new Date("{{ event.dateFinEvent|date('Y-m-d H:i:s') }}"));
+                        $('.dateDebut').data("DateTimePicker").maxDate(new Date("{{ event.dateFinEvent|date('Y-m-d H:i:s') }}"));
+                        $(".dateDebut").on("dp.change", function (e) {
+                            $('.dateFin').data("DateTimePicker").minDate(e.date);
+                        });
+                        $(".dateFin").on("dp.change", function (e) {
+                            $('.dateDebut').data("DateTimePicker").maxDate(e.date);
+                        });
 
-                {% else %}
-                $wrapper.find('.js-add-type').click();
-                // Date Event
-                $('.dateDebut').data("DateTimePicker").date(new Date());
-                $('.dateDebut').data("DateTimePicker").minDate(new Date());
-                $('.dateFin').data("DateTimePicker").minDate(new Date());
-                $(".dateDebut").on("dp.change", function (e) {
-                    $('.dateFin').data("DateTimePicker").minDate(e.date);
-                    $('.date-fin-billet').data("DateTimePicker").maxDate(e.date);
-                });
-                $(".dateFin").on("dp.change", function (e) {
-                    $('.dateDebut').data("DateTimePicker").maxDate(e.date);
-                });
-                {% endif %}
+                    {% else %}
+                        $wrapper.find('.js-add-type').click();
+                        // Date Event
+                        $('.dateDebut').data("DateTimePicker").date(new Date());
+                        $('.dateDebut').data("DateTimePicker").minDate(new Date());
+                        $('.dateFin').data("DateTimePicker").minDate(new Date());
+                        $(".dateDebut").on("dp.change", function (e) {
+                            $('.dateFin').data("DateTimePicker").minDate(e.date);
+                            $('.date-fin-billet').data("DateTimePicker").maxDate(e.date);
+                        });
+                        $(".dateFin").on("dp.change", function (e) {
+                            $('.dateDebut').data("DateTimePicker").maxDate(e.date);
+                        });
+                    {% endif %}
                 {% endif %}
             });
             $('#appbundle_event_templateSeatmap').on('change', function (e) {
                 $('#'.$(this).children("option:selected").val()).show();
             });
-
         </script>
     {% endblock %}
     {% block stylesheets %}

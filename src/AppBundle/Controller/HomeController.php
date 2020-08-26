@@ -2,9 +2,12 @@
 
 namespace AppBundle\Controller;
 
+use AdminBundle\Admin\UserCheckoutAdmin;
 use AppBundle\Entity\Billet;
 use AppBundle\Entity\CategorieEvenement;
 use AppBundle\Entity\Pays;
+use AppBundle\Entity\Reservation;
+use AppBundle\Entity\UserCheckout;
 use AppBundle\Utils\Cart;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -71,7 +74,11 @@ class HomeController extends Controller
         //die;
         //OAuth 2 Management, here is Orange Money
         if($request->getMethod() == 'POST' && $this->isCsrfTokenValid('payment-om', $request->get('_token'))){
+            $reservation = new Reservation();
+            $this->getDoctrine()->getManager()->persist($reservation);
+            $this->getDoctrine()->getManager()->flush();
             $om=$this->container->get('service.payment.orange_money.api');
+            $om->setReservation($reservation);
             $token=json_decode($om->getToken()->getBody()->getContents());
             $status=$om->Payment($token->access_token,[]);
             $result_status=json_decode($status->getBody()->getContents());
@@ -107,7 +114,23 @@ class HomeController extends Controller
      */
     public function vueMap(Request $request,  Evenement $event){
         if($request->getMethod() == 'POST' && $this->isCsrfTokenValid('payment-om', $request->get('_token'))){
+            $reservation = new Reservation();
+            $reservation->setModePaiement('OrangeMoney');
+            $reservation->setDateReservation(new \DateTime());
+            //TODO: Ajouter les données de reservation
+            $reservation->setEvenement($event);
+            $reservation->setMontantTotal($request->request->get('amount'));
+            $user_checkout=new UserCheckout();
+            $user_checkout->setEmail('a'.random_int(10,1000).'@a.com');
+            $user_checkout->setNom('nom');
+            $user_checkout->setPrenom('prenom');
+            $user_checkout->setIsRegisteredUser(false);
+            $reservation->setUserCheckout($user_checkout);
+            $this->getDoctrine()->getManager()->persist($reservation);
+            $this->getDoctrine()->getManager()->flush();
             $om=$this->container->get('service.payment.orange_money.api');
+            $buyer_data=$this->session->get('buyer_data');
+            $om->setReservation($reservation);
             $token=json_decode($om->getToken()->getBody()->getContents());
             $status=$om->Payment($token->access_token,[]);
             $result_status=json_decode($status->getBody()->getContents());
@@ -213,4 +236,12 @@ class HomeController extends Controller
             $this->get('skies_barcode.generator')->generate($options);
         return new Response('<img src="data:image/png;base64,'.$barcode.'" />');
     }
+    /**
+     * @Route("/seatsio", name="seatsio")
+     * @return Response
+     */
+    public function seatsio(Request $request){
+        return $this->render('default/seatsio.html.twig');
+    }
+
 }

@@ -75,9 +75,8 @@ class TypeBilletType extends AbstractType
                 'widget' => 'single_text',
                 'html5' => false,
                 'required' => true,
-                'data' => new \DateTime(),
                 'attr' => [
-                    'class' => 'form-control date-debut-billet',
+                    'class' => 'form-control',
                 ],
                 'format' => 'dd-MM-yyyy HH:mm'
             ))
@@ -86,9 +85,8 @@ class TypeBilletType extends AbstractType
                 'widget' => 'single_text',
                 'html5' => false,
                 'required' => true,
-                'data' => new \DateTime(),
                 'attr' => [
-                    'class' => 'form-control date-fin-billet',
+                    'class' => 'form-control',
                 ],
                 'format' => 'dd-MM-yyyy HH:mm'
             ))
