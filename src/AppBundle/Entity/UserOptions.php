@@ -133,6 +133,26 @@ class UserOptions
      */
     private $paypal_account;
     /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $seats_io_workspace_id;
+
+    /**
+     * @return mixed
+     */
+    public function getSeatsIoWorkspaceId()
+    {
+        return $this->seats_io_workspace_id;
+    }
+
+    /**
+     * @param mixed $seats_io_workspace_id
+     */
+    public function setSeatsIoWorkspaceId($seats_io_workspace_id): void
+    {
+        $this->seats_io_workspace_id = $seats_io_workspace_id;
+    }
+    /**
      * @ORM\Column(type="string", length=100)
      */
     private $orange_money_consumer_id;

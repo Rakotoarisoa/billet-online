@@ -41,6 +41,46 @@ class EventOptions
      */
     private $usePaypalMethodPayment;
     /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $seatsIoEventSecretKey;
+
+    /**
+     * @return mixed
+     */
+    public function getSeatsIoEventSecretKey()
+    {
+        return $this->seatsIoEventSecretKey;
+    }
+
+    /**
+     * @param mixed $seatsIoEventSecretKey
+     */
+    public function setSeatsIoEventSecretKey($seatsIoEventSecretKey): void
+    {
+        $this->seatsIoEventSecretKey = $seatsIoEventSecretKey;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSeatsIoChartKey()
+    {
+        return $this->seatsIoChartKey;
+    }
+
+    /**
+     * @param mixed $seatsIoChartKey
+     */
+    public function setSeatsIoChartKey($seatsIoChartKey): void
+    {
+        $this->seatsIoChartKey = $seatsIoChartKey;
+    }
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $seatsIoChartKey;
+    /**
      * @var boolean
      * @ORM\Column(type="boolean")
      */

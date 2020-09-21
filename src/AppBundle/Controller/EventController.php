@@ -70,6 +70,13 @@ class EventController extends Controller
                     $em = $this->getDoctrine()->getManager();
                     $event->setUser($this->getUser());
                     $slugger = new Slugger();
+                    if($event->getIsUsingSeatMap()){
+                        $seatsio = new \Seatsio\SeatsioClient($event->getUser()->getUserOptions()->getSeatsIoWorkspaceId()); // can be found on https://app.seats.io/workspace-settings
+                        $chart = $seatsio->charts->create();
+                        $event = $seatsio->events->create($chart->key);
+                        $event->getOptions()->setSeatsIoChartKey($chart->key);
+                        $event->getOptions()->setSeatsIoEventSecretKey($event->key);
+                    }
                     $event->setTitreEvenementSlug($slugger->slugify($event->getTitreEvenement()));
                     $em->persist($event);
                     $em->flush();

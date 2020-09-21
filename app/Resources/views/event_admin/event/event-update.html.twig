@@ -239,11 +239,13 @@
                                         <label for="appbundle_event_isUsingSeatMap">Utiliser un plan de salle</label>
                                         {{ form_widget(form.isUsingSeatMap) }}
                                     </div>
-
                                         <div class="col-6">
-                                            <a class="btn btn-danger"
-                                               href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span
-                                                        class="fa fa-map"></span> Configurer le plan de salle</a>
+                                            <div class="row">
+                                                <div class="col"><div id="chart"></div></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col align-items-center"><a class="btn btn-danger" href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span class="fa fa-map"></span> Configurer</a></div>
+                                            </div>
                                         </div>
 
                                 </div>
@@ -506,6 +508,26 @@
             $('#appbundle_event_templateSeatmap').on('change', function (e) {
                 $('#'.$(this).children("option:selected").val()).show();
             });
+        </script>
+        <script src="https://cdn.seatsio.net/chart.js"></script>
+        <script type="text/javascript">
+            new seatsio.SeatingChart({
+                divId: 'chart',
+                workspaceKey: '1d982e69-89ab-4509-bdc3-8329d7e4795e',
+                event: '02dab5ac-f0f3-4d1f-b3a5-b8cc51f53863',
+                language : 'fr',
+                //selectedObjectsInputName : 'selectedSeatsField',
+                pricing: [
+                    {'category': 'SIMPLE', 'price': 3000},
+                    {'category': 'RESA', 'price': 4000},
+                    {'category': 3, 'price': 5000}
+                ],
+                priceFormatter: function(price) {
+                    return 'MGA ' + price;
+                },
+                showLegend : true,
+                mode: 'print'
+            }).render();
         </script>
     {% endblock %}
     {% block stylesheets %}
