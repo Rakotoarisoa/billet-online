@@ -10,7 +10,9 @@
                          {% if is_granted('ROLE_USER_MEMBER') %}
                             <a href="{{ path('createEvent') }}" class="btn btn-danger"><i class="fas fa-edit"></i> Créer un évenement</a>                    
                             <a href="{{ path('viewEventUserAdmin') }}" class="btn btn-dark"><i class="fas fa-list-ul"></i> Gérer les évenements</a>
-                        {% endif %}
+                          {% else  %}
+                              <a href="#" class="btn btn-danger"><i class="fas fa-info"></i>Mes achats</a>
+                         {% endif %}
                     </div>
             </div>
             <br/>
@@ -42,31 +44,32 @@
                         <div class="card-body"><a href="{{ app.user.website }}">{{ app.user.website }}</a></div>
                     </div>
                     <br/>
+                    {% if is_granted('ROLE_USER_MEMBER') %}
 
-                    <ul class="list-group">
-                        <li class="list-group-item text-muted">Activités <i class="fa fa-dashboard fa-1x"></i></li>
-                        <li class="list-group-item text-right"><span
-                                    class="pull-left"><strong>Evènements</strong></span> {{ app.user.nom }}</li>
-                        <li class="list-group-item text-right"><span class="pull-left"><strong> Billets</strong></span>
-                            13
-                        </li>
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Posts</strong></span> 37
-                        </li>
-                        <li class="list-group-item text-right"><span class="pull-left"><strong>Followers</strong></span>
-                            78
-                        </li>
-                    </ul>
-
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Social Media</div>
-                        <div class="panel-body">
-                            <i class="fa fa-facebook fa-2x"></i>
-                            <i class="fa fa-github fa-2x"></i>
-                            <i class="fa fa-twitter fa-2x"></i>
-                            <i class="fa fa-pinterest fa-2x"></i>
-                            <i class="fa fa-google-plus fa-2x"></i>
+                        <ul class="list-group">
+                            <li class="list-group-item text-muted">Activités <i class="fa fa-dashboard fa-1x"></i></li>
+                            <li class="list-group-item text-right"><span
+                                        class="pull-left"><strong>Evènements créés</strong></span> {{ app.user.evenements|length == 0 ? 'Aucun Evènement créé' : app.user.evenements|length == 0}}</li>
+                            <li class="list-group-item text-right"><span class="pull-left"><strong> Billets</strong></span>
+                                13
+                            </li>
+                            <li class="list-group-item text-right"><span class="pull-left"><strong>Posts</strong></span> 37
+                            </li>
+                            <li class="list-group-item text-right"><span class="pull-left"><strong>Followers</strong></span>
+                                78
+                            </li>
+                        </ul>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Social Media</div>
+                            <div class="panel-body">
+                                <i class="fa fa-facebook fa-2x"></i>
+                                <i class="fa fa-github fa-2x"></i>
+                                <i class="fa fa-twitter fa-2x"></i>
+                                <i class="fa fa-pinterest fa-2x"></i>
+                                <i class="fa fa-google-plus fa-2x"></i>
+                            </div>
                         </div>
-                    </div>
+                    {% endif %}
 
                 </div><!--/col-3-->
                 <div class="col-sm-8">

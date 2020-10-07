@@ -16,7 +16,6 @@
     {% block content %}
         {{ parent() }}
         <section>
-            <div class="">
                 <div class="row mr-15 mt-15 ml-15 mb-15">
                     <div class="col-sm-8">
                         <div class="col p-4 d-flex flex-column position-static">
@@ -55,9 +54,12 @@
                         </div>
                     </div>
                 </div>
-                <div id="root" data-event-id="{{ event.id }}">
+                <div id="root" data-event-id="{{ event.id }}" class="container-fluid" style="height: 800px;">
                 </div>
-            </div>
+                <div id="event-manager" class="container-fluid" style="height: 800px;">
+                </div>
+                <div id="chart-manager" class="container-fluid" style="height: 800px;">
+                </div>
         </section>
     {% endblock %}
     {% block contact %}{% endblock %}
@@ -73,8 +75,35 @@
         <script src="{{ asset('js/plugins/plugins.js') }}"></script>
         <!-- Active js -->
         <script src="{{ asset('js/active.js') }}"></script>
-        <!-- Vue js -->
-        <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
+        <script src="https://cdn.seatsio.net/chart.js"></script>
+        <script>
+            new seatsio.SeatingChartDesigner({
+                divId: 'root',
+                secretKey: '5f368bd5-a0be-42d1-9a60-7f85bc5e5e60',
+                chartKey: 'bc72864b-7908-853d-71a7-995753c71882',
+                language :'fr'
+            }).render();
+        </script>
+        <script>
+            new seatsio.EventManager({
+                divId: 'event-managers',
+                secretKey: '5f368bd5-a0be-42d1-9a60-7f85bc5e5e60', // never expose the secret key on a public web page!
+                event: '2a372126-c46f-4e85-a790-7ccc2d7ace73',
+                mode: 'manageForSaleConfig', // 'manageObjectStatuses' or 'manageForSaleConfig'. More to follow.
+                language: 'fr'
+            }).render();
+        </script>
+        <script>
+            new seatsio.ChartManager({
+                divId: 'chart-managers',
+                secretKey: '5f368bd5-a0be-42d1-9a60-7f85bc5e5e60', // never expose the secret key on a public web page!
+                chart: 'bf2356aa-1844-3fe8-8ef8-8ae839350236',
+                mode: 'manageRulesets',
+                language: 'fr'
+            }).render();
+        </script>
+        <!-- Vue js
+        <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>-->
 
     {% endblock %}
 {% endblock %}

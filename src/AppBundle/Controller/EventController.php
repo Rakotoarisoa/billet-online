@@ -3,6 +3,8 @@
 
 namespace AppBundle\Controller;
 use AppBundle\FileLoader\ImageEventUploader;
+use AppBundle\Form\EvenementType;
+use AppBundle\Form\EventType;
 use AppBundle\Utils\Slugger;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -13,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\User;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class EventController extends Controller
 {
@@ -35,7 +38,6 @@ class EventController extends Controller
 
         $response = new Response($data);
         $response->headers->set('Content-Type', 'application/json');
-
         return $response;
     }
 
@@ -49,7 +51,7 @@ class EventController extends Controller
      */
     public function createFormEvent(Request $request)
     {
-        if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->isGranted('IS_AUTHENTICATED_FULLY') || !$this->isGranted('ROLE_USER_MEMBER')) {
             $this->redirect('/login?src=create');
         };
         $event = new Evenement();
@@ -63,19 +65,28 @@ class EventController extends Controller
                 $form = $flow->createForm();
             } else {
                 try {
+                    $event->getOptions()->setEvenement($event);
                     // flow finished
                     $em = $this->getDoctrine()->getManager();
                     $event->setUser($this->getUser());
                     $slugger = new Slugger();
+                    if($event->getIsUsingSeatMap()){
+                        $seatsio = new \Seatsio\SeatsioClient($event->getUser()->getUserOptions()->getSeatsIoWorkspaceId()); // can be found on https://app.seats.io/workspace-settings
+                        $chart = $seatsio->charts->create();
+                        $event = $seatsio->events->create($chart->key);
+                        $event->getOptions()->setSeatsIoChartKey($chart->key);
+                        $event->getOptions()->setSeatsIoEventSecretKey($event->key);
+                    }
                     $event->setTitreEvenementSlug($slugger->slugify($event->getTitreEvenement()));
                     $em->persist($event);
                     $em->flush();
                     $flow->reset(); // remove step data from the session
                     $this->addFlash('success', 'Evènement enregistré avec succès.');
-                    return $this->redirectToRoute('viewSingle', array( 'id' => (string)$event->getId()));// redirect when done
+                    if($event->getIsUsingSeatMap()) return $this->redirectToRoute('viewCreateMap',['event'=>$event]);
+                    else return $this->redirectToRoute('viewSingle', array( 'id' => (string)$event->getId()));// redirect when done
                 } catch (\Exception $e)
                     {
-                        $this->addFlash('error','Une erreur s\'est produite : '+$e->getMessage());
+                        $this->addFlash('error','Une erreur s\'est produite : '.$e->getMessage());
                     }
             }
         }
@@ -85,7 +96,6 @@ class EventController extends Controller
     /**
      * Gestion des évènements de l'utilisateur
      * @Route("/user/events/list", name="viewListUser")
-     * @Security("has_role('ROLE_USER')")
      * @param Request $request
      * @param User $user
      * @return Response
@@ -154,12 +164,24 @@ class EventController extends Controller
 
     /**
      * Modifier un évènement
-     * @Route("//user/event/manage/{id}", name="viewEventUpdate")
+     * @Route("/user/event/manage/{id}", name="viewEventUpdate")
      * */
     public function updateEvent(Request $request, Evenement $event)
     {
+
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event->getId());
-        $flow = $this->get('app.form.flow.create_event'); // must match the flow's service id
+        if($this->getUser() != $event->getUser() ){
+            throw new AccessDeniedException();
+        }
+        $form=$this->createForm(EvenementType::class,$event);
+        $form->handleRequest($request);
+        if($form->isSubmitted())
+        {
+            if($form->isValid()){
+
+            }
+        }
+        /*$flow = $this->get('app.form.flow.create_event'); // must match the flow's service id
         $flow->bind($event);
         $form = $flow->createForm();
         if ($flow->isValid($form)) {
@@ -188,11 +210,11 @@ class EventController extends Controller
                     $this->addFlash('error','Une erreur s\'est produite : '+$e->getMessage());
                 }
             }
-        }
-        return $this->render('event_admin/event/event-register.html.twig', array(
+        }*/
+        return $this->render('event_admin/event/event-update.html.twig', array(
             'title' => 'Edition de l\'évènement '.$event->getTitreEvenement(),
             'event' => $event,
-            'flow' => $flow,
+            /*'flow' => $flow,*/
             'form' => $form->createView()
         ));
 
@@ -217,7 +239,7 @@ class EventController extends Controller
 
     /**
      * Modifier un évènement
-     * @Route("/event/view/{id}/map", name="viewEventMapAdmin")
+     * @Route("/event/{id}/edit/map", name="viewEventMapAdmin")
      * */
     public function viewStateUserMap(Evenement $event)
     {

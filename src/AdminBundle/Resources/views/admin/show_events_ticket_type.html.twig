@@ -1,0 +1,103 @@
+{% extends '@SonataAdmin/CRUD/base_show_field.html.twig' %}
+
+{% block field %}
+    {% if value|length >0 %}
+    <script src="//code.highcharts.com/highcharts.js"></script>
+    <script src="//code.highcharts.com/4.0.1/modules/exporting.js"></script>
+    {% set bar_chart_total_nb_item =[] %}
+    {% set bar_chart_type_ticket_item = [] %}
+    {% set bar_chart_type_ticket_purchased = [] %}
+
+    {% set pie_chart_array_type_list = [] %}
+    {% set event = value[0].evenement %}
+    {% for val in value %}
+        {%  set billets_vendus= val.billets|filter(v => v.estVendu == 1 )|length %}
+        {%  set bar_chart_type_ticket_purchased = bar_chart_type_ticket_purchased|merge([billets_vendus]) %}
+        {% set bar_chart_total_nb_item = bar_chart_total_nb_item|merge([val.quantite]) %}
+        {% set bar_chart_type_ticket_item = bar_chart_type_ticket_item|merge([val.libelle]) %}
+        {%  set pie_chart_array_type_list= pie_chart_array_type_list|merge([{"name": val.libelle, "y": val.quantite}]) %} {# I'm just guessing the object properties #}
+        <br/>
+    {% endfor %}
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">
+                    <i class="fa fa-users"></i> Billets
+                </h3>
+            </div>
+
+            <div class="box-body with-border"  style="height: 410px">
+
+                <div class="col-md-6">
+                    <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
+
+                            let bar_items_nb = {{ bar_chart_total_nb_item|json_encode|raw }};
+                            let bar_items = {{ bar_chart_type_ticket_item|json_encode|raw }};
+                            let bar_items_purchased ={{ bar_chart_type_ticket_purchased|json_encode|raw }};
+                            Highcharts.chart('container', {
+                                chart: {
+                                    type: 'bar'
+                                },
+                                title: {
+                                    text: 'Ventes par types de billets'
+                                },
+                                xAxis: {
+                                    categories: bar_items
+                                },
+                                yAxis: {
+                                    title: {
+                                        text: 'Fruit eaten'
+                                    }
+                                },
+                                series: [{
+                                    name: 'Ventes',
+                                    data: bar_items_purchased
+                                },{
+                                    name: 'Nombres',
+                                    data: bar_items_nb
+                                } ]
+                            });
+                            let pie_chart_data = {{ pie_chart_array_type_list|json_encode|raw }};
+                            Highcharts.chart('pie-data-type-billet', {
+                                chart: {
+                                    plotBackgroundColor: null,
+                                    plotBorderWidth: null,
+                                    plotShadow: false,
+                                    type: 'pie'
+                                },
+                                title: {
+                                    text: "Les types de billets de: {{ event.titreEvenement|raw }}"
+                                },
+                                tooltip: {
+                                    pointFormat: '{point.name}: <b>{point.y}</b> ({point.percentage:.1f}%)'
+                                },
+                                accessibility: {
+                                    point: {
+                                        valueSuffix: '%'
+                                    }
+                                },
+                                plotOptions: {
+                                    pie: {
+                                        allowPointSelect: true,
+                                        cursor: 'pointer',
+                                        dataLabels: {
+                                            enabled: true,
+                                            format: '<b>{point.name}</b>: {point.value} {point.percentage:.1f} %'
+                                        }
+                                    }
+                                },
+                                series: [{
+                                    name: 'Type de billets',
+                                    colorByPoint: true,
+                                    data: pie_chart_data
+                                }]
+                            });
+                        });</script>
+                    <div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+                </div>
+                <div class="col-md-6">
+                    <div id="pie-data-type-billet"></div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

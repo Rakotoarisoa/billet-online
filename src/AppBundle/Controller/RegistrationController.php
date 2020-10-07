@@ -51,6 +51,23 @@ class RegistrationController extends BaseController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
+            $user_options=$user->getOptions();
+            if($user_options->getIsEventManager()) {
+                $user->addRole('ROLE_USER_MEMBER');
+                $seatsio = new \Seatsio\SeatsioClient("4e3f1a8f-10d1-4f32-a073-58c462b40ffe");
+                $wk_id="user_".$user->getUsername()."_".time();
+                $workspace=$seatsio->workspaces->create($wk_id);
+                $user_options->setSeatsIoWorkspaceId($workspace->secretKey);
+
+            }
+            else $user->setRoles(array('ROLE_USER'));
+            if(!$user_options->getUsePaypal()) {
+                $user->getOptions()->setPaypalAccount('');
+            }
+            if($user_options->getUseOrangeMoney()) {
+                $user->getOptions()->setOrangeMoneyConsumerId('');
+                $user->getOptions()->setOrangeMoneyMerchantKey('');
+            }
             if ($form->isValid()) {
                 /** @var UploadedFile $imageFile */
                 $imageFile = $form['image']->getData();
@@ -76,7 +93,7 @@ class RegistrationController extends BaseController
                     }
 
                     // instead of its contents
-                    $user->setRoles(array('ROLE_USER'));
+                    //$user->setRoles(array('ROLE_USER'));
 
                     $event = new FormEvent($form, $request);
                     $dispatcher->dispatch(FOSUserEvents::REGISTRATION_SUCCESS, $event);
@@ -91,7 +108,7 @@ class RegistrationController extends BaseController
                     );
 
                     if (null === $response = $event->getResponse()) {
-                        $url = $this->generateUrl('viewListUser', array('userId'=> $user->getId()));
+                        $url = $this->generateUrl('viewEventUserAdmin');
                         $response = new RedirectResponse($url);
                     }
 

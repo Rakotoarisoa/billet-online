@@ -122,7 +122,7 @@
                                         <h4>{{ item.titreEvenement }}</h4>
                                         <div class="event-meta-data">
                                             <a href="#" class="event-place"><b>{{ item.nomSalle }}</b></a>
-                                            <a href="#" class="event-date">à {{ item.dateDebutEvent|localizeddate('none', 'none', null, null,"HH:mm") }}</a>
+                                            <a href="#" class="event-date">Début:  {{ item.dateDebutEvent|localizeddate('none', 'none', null, null,"HH:mm") }}</a>
                                         </div>
                                         <a href="{{ path('viewSingle',{'id':item.id}) }}" class="btn see-more-btn">Détails</a>
                                     </div>

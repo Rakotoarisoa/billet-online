@@ -35,10 +35,18 @@ RegistrationType extends  AbstractType
         $builder->add('phone',TextType::class,array('label'=> 'Autre numéro téléphone',
             'required' => true
         ));//secondary phone
-        $builder->add('isEventManager',CheckboxType::class,[
+        $builder->add('options',UserOptionsType::class,[
+            'label' => 'Options de l\'évènement',
+            //'attr' => array('class' => 'custom-checkbox'),
+            //'label_attr' =>array('class' => 'custom-control-label')
+        ]);
+        /*$builder->add('options.isEventManager',CheckboxType::class,[
             'label' => 'Devenir créateur d\'évènements',
             'mapped' => false,
-        ]);
+            'required' => false
+            //'attr' => array('class' => 'custom-checkbox'),
+            //'label_attr' =>array('class' => 'custom-control-label')
+        ]);*/
         $builder->add('plainPassword', RepeatedType::class, array(
         'type' => PasswordType::class,
         'first_options'  => array('label' => 'Mot de passe'),
@@ -49,6 +57,7 @@ RegistrationType extends  AbstractType
             'Homme' => '1',
             'Femme' => '2',
             ),
+            'label_attr' => array('class'=>'checkbox-inline'),
             'choices_as_values' => true,
             'multiple'=>false,
             'expanded'=>true,
@@ -79,7 +88,7 @@ RegistrationType extends  AbstractType
 
             // make it optional so you don't have to re-upload the PDF file
             // everytime you edit the Product details
-            'required' => true,
+            'required' => false,
 
             // unmapped fields can't define their validation using annotations
             // in the associated entity, so you can use the PHP constraint classes

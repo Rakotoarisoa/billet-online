@@ -16,12 +16,6 @@
                         <hr/>
                     </div>
                 </div>
-                <div class="form-group col-md-6 col-sm-10">
-                    <div class="row">
-                        {{ form_widget(form.isEventManager) }}
-                    </div>
-                </div>
-                <hr/>
                 <div class="form-group col-md-6">
                     <div class="row">
                         {{ form_label(form.nom) }}
@@ -39,15 +33,28 @@
                     </div>
                 </div>
                 <div class="form-group col-md-6">
+                    {% for sexe in form.sexe  %}
+                        <div class="form-check form-check-inline">
+                            {{ form_label(sexe) }}
+                            {{ form_widget(sexe) }}
+                            {{ form_errors(sexe) }}
+                        </div>
+                    {% endfor %}
+                    <!--<div class="form-check-inline">
+                        <label class="form-check-label">
+                            <input type="radio" class="form-check-input" name="optradio">Option 1
+                        </label>
+                    </div>
+
                     <div class="row">
-                        {{ form_label(form.sexe) }}
+                        {# form_label(form.sexe) #}
                     </div>
                     <div class="row">
-                        {{ form_widget(form.sexe) }}
+                        {# form_widget(form.sexe) #}
                     </div>
                     <div class="row">
-                        {{ form_errors(form.sexe) }}
-                    </div>
+                        {# form_errors(form.sexe) #}
+                    </div>-->
                 </div>
 
                 <div class="form-group col-md-6">
@@ -99,6 +106,24 @@
                         {{ form_errors(form.email) }}
                     </div>
                 </div>
+                <!--<div class="form-group col-md-6 col-sm-10">
+                    <div class="row">
+                        {# form_widget(form.isEventManager) #}
+                        <small class="text-muted">
+                            En devenant créateur d'évènement , vous pouvez gérer des évènements et recevoir de l' argent à partir de plusieurs mode de paiement disponible sur la plateforme.
+                        </small>
+                    </div>
+                </div>-->
+                <div class="row">
+                    <div class="col">
+                        <hr/>
+                    </div>
+                    <div class="col-auto">Options pour créateur d'évènements</div>
+                    <div class="col">
+                        <hr/>
+                    </div>
+                </div>
+                {{ form_widget(form.options) }}
 
 
                 <div class="row">

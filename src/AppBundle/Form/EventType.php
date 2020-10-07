@@ -4,9 +4,11 @@
 namespace AppBundle\Form;
 
 
+use AppBundle\Entity\EventOptions;
 use AppBundle\Entity\TypeBillet;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -24,6 +26,7 @@ class EventType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->remove('isPublished');
         switch ($options['flow_step']) {
             case 1:
                 $builder
@@ -48,7 +51,7 @@ class EventType extends AbstractType
                         'constraints' => [
                             new Assert\Count([
                                 'min' => 1,
-                                'minMessage' => 'Au moins 1 type de billets est requis',
+                                'minMessage' => 'Au moins un type de billets est requis',
                                 // also has max and maxMessage just like the Length constraint
                             ])]
                     ])
@@ -113,7 +116,7 @@ class EventType extends AbstractType
                 break;
             case 2:
                 $builder->add('image', VichImageType::class, [
-                    'label' => 'create_event_field_label.image_event',
+                    'label' => 'Image de l\'évènement',
                     // unmapped means that this field is not associated to any entity property
                     'mapped' => true,
                     'required' => false,
@@ -171,26 +174,24 @@ class EventType extends AbstractType
                             'mapped' => false
                         ]
 
-                    )
+                    );
 
-                    ->add('isPublished', ChoiceType::class, [
-                            'choices' => [
-                                'Oui' => true,
-                                'Non' => false,
-                            ],
-                            'expanded' => false,
-                            'multiple' => false,
+                   /* ->add('isPublished', CheckboxType::class, [
+
                             'attr' => [
-                                'class' => 'custom-select mr-sm-2 col-sm-2'
+                                'class' => 'col-sm-1'
                             ],
                             'label' => 'Publier',
                         ]
 
-                    );
+                    );*/
                 break;
-            //case 4:
-                //$builder
-                   // ->add('typeBillet', BilletType::class);
+            case 4:
+                $builder
+                    ->add('options', EventOptionsType::class, [
+
+
+                    ]);
         }
 
     }

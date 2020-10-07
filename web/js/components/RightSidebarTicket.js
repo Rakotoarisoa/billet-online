@@ -70,18 +70,18 @@ function RightSidebarTicket(props) {
                     for (let i = 0; i < selectedItem.ySeats; i++) {
                         let name = ((alphabet[j]) + (i + 1)).toString().toUpperCase();
                         if (selectedItem.deleted_seats.includes(name)) continue;
-                        formattedSeat.push({seat_id: name, type: billet, is_booked: false, is_choosed: false});
+                        formattedSeat.push({seat_id: name, type: billet, is_booked: false});
                     }
                 }
             } else if (selectedItem.type === "rectangle") {
                 for (let i = 0; i < ((selectedItem.xSeats * 2) + (selectedItem.ySeats * 2)); i++) {
                     if (selectedItem.deleted_seats.includes(parseInt(i + 1))) continue;
-                    formattedSeat.push({seat_id: i + 1, type: billet, is_booked: false, is_choosed: false});
+                    formattedSeat.push({seat_id: i + 1, type: billet, is_booked: false});
                 }
             } else if (selectedItem.type === "ronde") {
                 for (let i = 0; i < selectedItem.chaises; i++) {
                     if (selectedItem.deleted_seats.includes(parseInt(i + 1))) continue;
-                    formattedSeat.push({seat_id: i + 1, type: billet, is_booked: false, is_choosed: false});
+                    formattedSeat.push({seat_id: i + 1, type: billet, is_booked: false});
                 }
             }
             props.assignTicket(formattedSeat);

@@ -72,6 +72,24 @@ class ReservationRepository extends EntityRepository
         $qbUC->orderBy('res.user_checkout','DESC');
         return $qbUC->getQuery()->execute();
     }
+    public function getRecentUserCheckoutByDate(){ // Limit 10
+        $qbUC = $this->createQueryBuilder('res')
+            ->select('res.dateReservation')
+            ->addSelect('uc.nom, uc.prenom')
+            ->join('res.user_checkout','uc','res.user_checkout_id=uc.id')
+            ->groupBy('uc.email')
+            ->orderBy('res.dateReservation','DESC')
+            ->setMaxResults(10);
+        return $qbUC->getQuery()->execute();
+    }
+    public function getRecentOrdersByDate(){ #LIMIT 10
+        $qbUC = $this->createQueryBuilder('res')
+            ->select('res')
+            ->join('res.user_checkout','uc','res.user_checkout_id=uc.id')
+            ->orderBy('res.dateReservation','DESC')
+            ->setMaxResults(10);
+        return $qbUC->getQuery()->execute();
+    }
 
     public function printOrder($id){
         $reservation=$this->find($id);

@@ -145,7 +145,7 @@ const GenerateAdmissionTicket = (props) => {
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
-                                            helperText={(parseInt(ticket.quantite) - parseInt(ticket.nombreBillets)) > 0 ?"Prix: EUR " + ticket.prix:"Billet épuisé"}
+                                            helperText={(parseInt(ticket.quantite) - parseInt(ticket.nombreBillets)) > 0 ?"Prix: " + ticket.prix:"Billet épuisé"}
                                         />
                                         <ListItemSecondaryAction>
                                             <IconButton type={"submit"} edge={"end"} color="primary"
@@ -290,10 +290,12 @@ const GenerateDataCart = (props) => {
     const [colors, setColors] = useState(null);
     const [billetAdmission, setBilletAdmission] = useState(null);
     const [totalCart, setTotalCart] = useState(null);
+    const [eventId, setEventId] = useState(null);
     useEffect(() => {
         try {
             setDataCart(props.data);
             setColors(props.colors);
+            setEventId(props.event_id);
             setBilletAdmission(props.billets_admission);
         } catch (error) {
             container.error("Une erreur s'est produite: " + error.message, "Erreur", {closeButton: true});
@@ -308,7 +310,7 @@ const GenerateDataCart = (props) => {
     const handleDataCartFromSideBar = (item) => {
         props.handleDataCartFromSideBar(item);
     };
-    if (dataCart !== null && dataCart.length > 0 && colors !== null && colors.length > 0) {
+    if (dataCart !== null && dataCart.length > 0 && dataCart[0].evenement.id === parseInt(eventId) && colors !== null && colors.length > 0) {
         return (
             <Card className={classes.root} variant="outlined">
                 <CardContent>
@@ -322,7 +324,7 @@ const GenerateDataCart = (props) => {
                         <ListItem className={classes.listItem}>
                             <ListItemText primary="Total"/>
                             <Typography variant="subtitle1" className={classes.total}>
-                                {"EUR " + totalCart}
+                                { totalCart}
                             </Typography>
                         </ListItem>
                         <div className={classes.buttons}>

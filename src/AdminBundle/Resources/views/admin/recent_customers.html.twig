@@ -1,0 +1,27 @@
+<div id="cms-block-{{ block.id }}" class="cms-block cms-block-element">
+    {% block block %}
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">
+                    <i class="fa fa-users"></i> {{ settings.title }}
+                </h3>
+            </div>
+            <div class="box-body">
+
+                <div class="sonata-customer-block-customer-container list-group">
+                    {% for customer in customers %}
+                        <a class="list-group-item" href="#">
+                            {{ customer.nom }} {{ customer.prenom }} - {{ customer.dateReservation|date() }}
+                        </a>
+                    {% else %}
+                        <p> Aucun acheteur </p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="box-footer">
+                <a href="{{ admin.generateUrl('list') }}" class="btn btn-primary btn-block"><i class="fa fa-list"></i>&nbsp;Afficher Tous</a>
+            </div>
+        </div>
+    {% endblock %}
+</div>

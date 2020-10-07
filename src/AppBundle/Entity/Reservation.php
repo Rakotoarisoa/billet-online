@@ -1,6 +1,4 @@
 <?php
-
-
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\UniqueConstraint;
@@ -116,6 +114,26 @@ class Reservation
      */
     private $billet;
     /**
+     * @ORM\OneToOne(targetEntity="PaymentTransaction", inversedBy="reservation",cascade={"persist"})
+     */
+    private $payment_transaction;
+
+    /**
+     * @return mixed
+     */
+    public function getPaymentTransaction()
+    {
+        return $this->payment_transaction;
+    }
+
+    /**
+     * @param mixed $payment_transaction
+     */
+    public function setPaymentTransaction($payment_transaction): void
+    {
+        $this->payment_transaction = $payment_transaction;
+    }
+    /**
      * * @ORM\ManyToOne(targetEntity="UserCheckout", inversedBy="reservations",cascade={"persist"})
      * * @ORM\JoinColumn(name="user_checkout_id", referencedColumnName="id",nullable=false)
      */
@@ -159,7 +177,7 @@ class Reservation
     public function __construct()
     {
         $this->randomCodeCommande=substr(str_shuffle("0123456789"), 0, 5);
-        $this->dateReservation = new \Datetime();
+        $this->nomReservation = 'commande_'.$this->randomCodeCommande;
     }
 
     /**

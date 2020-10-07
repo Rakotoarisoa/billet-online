@@ -52,18 +52,19 @@ class RightSidebar extends Component {
 
     render() {
         return (
+
             <aside className={"d-inline-flex flex-wrap justify-content-center"}>
                 {!this.props.updateObject &&
                 <div className="d-inline-flex p-3 bg-light flex-wrap justify-content-center">
-                    <div className="p-1 bg-light">
+                    <div className="p-3 bg-light">
                         <button className={"btn"} id="table" onClick={this.switchClick}>Table
                         </button>
                     </div>
-                    <div className="p-1 bg-light">
+                    <div className="p-3 bg-light">
                         <button className={"btn"} id="zone" onClick={this.switchClick}>Zone
                         </button>
                     </div>
-                    <div className="p-1 bg-light">
+                    <div className="p-3 bg-light">
                         <button className={"btn"} id="section" onClick={this.switchClick}>Rangée
                         </button>
                     </div>

@@ -51,6 +51,18 @@ class EvenementRepository extends EntityRepository
             ->setParameter('user', $user)
             ->getResult();
     }
+    public function getAllEventsByCategory(){
+        return $this->getEntityManager()
+            ->createQuery('SELECT count(e) as nb_ev, cat.libelle as libelle FROM AppBundle:Evenement e
+            LEFT JOIN AppBundle:CategorieEvenement cat WITH e.categorieEvenement=cat.id GROUP BY cat.libelle')
+            ->getResult();
+    }
+    public function getAllEventsByPlace(){
+        return $this->getEntityManager()
+            ->createQuery('SELECT count(e) as nb_ev, lieu.nomSalle as libelle FROM AppBundle:Evenement e
+            LEFT JOIN AppBundle:LieuEvenement lieu WITH e.lieuEvenement=lieu.id GROUP BY lieu.nomSalle')
+            ->getResult();
+    }
 
     /** @fonction initier plan de salle
      * @param Evenement $event

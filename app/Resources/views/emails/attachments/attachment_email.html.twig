@@ -182,7 +182,7 @@
                 <div class="commande">
                     Commande n° {{ reservation.randomCodeCommande }} par
                     {% if buyer_data is defined %}
-                        <b>{{ buyer_data["lastname"] }} {{ buyer_data["name"] }}</b>
+                        <b>{{ buyer_data["nom"] }} {{ buyer_data["prenom"] }}</b>
                     {% else %}
                         <b>{{ reservation.userCheckout.nom }} {{ reservation.userCheckout.prenom }}</b>
                     {% endif %}

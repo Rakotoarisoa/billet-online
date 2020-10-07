@@ -24,6 +24,12 @@ security:
                 csrf_token_generator: security.csrf.token_manager
                 login_path : fos_user_security_login
                 check_path : fos_user_security_check
+                always_use_default_target_path: true
+                default_target_path: fos_user_security_login
+            logout:
+                invalidate_session: true
+
+            user_checker: AppBundle\Security\UserChecker
             # activate different ways to authenticate
 
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
@@ -31,38 +37,25 @@ security:
 
             # https://symfony.com/doc/current/security/form_login_setup.html
             #form_login: ~
-            logout: true
     access_control:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/user,role : ROLE_USER_MEMBER}
-        - { path: ^/admin', roles: ROLE_ADMIN }
+        - { path: ^/user, role: ROLE_USER_MEMBER}
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
     role_hierarchy:
-        ROLE_USER:        ROLE_USER
-        ROLE_USER_MEMBER: ROLE_USER
-        ROLE_USER_SHOP: ROLE_USER
-        ROLE_ADMIN:       [ROLE_USER, ROLE_USER_MEMBER,ROLE_USER_SHOP]
-        ROLE_SUPER_ADMIN: ROLE_ADMIN,ROLE_USER_SHOP
+        ROLE_USER:         ROLE_USER
+        ROLE_USER_MEMBER: [ROLE_USER, ROLE_SONATA_USER_READER]
+        ROLE_USER_SHOP:   [ROLE_USER, ROLE_SONATA_USER_READER]
+        ROLE_ADMIN:       [ROLE_USER, ROLE_ADMIN_USER_ADMIN_STAFF,ROLE_ADMIN_LOG_STAFF]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+        # set access_strategy to unanimous, else you may have unexpected behaviors
+    acl:
+        connection: default
+    access_decision_manager:
+        strategy: unanimous
     # Learn more about services, parameters and containers at
     # http://symfony.com/doc/current/book/service_container.html
 parameters:
 #    parameter_name: value
-
-services:
-        # default configuration for services in *this* file
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        public: false
-
-        # makes classes in src/AppBundle available to be used as services
-    AppBundle\:
-        resource: '../../src/AppBundle/*'
-            # you can exclude directories or files
-            # but if a service is unused, it's removed anyway
-        exclude: '../../src/AppBundle/{Entity,Repository}'
-    app.form_login_authenticator:
-        class: AppBundle\Security\FormLoginAuthenticator
-        arguments: ["@router", "@security.password_encoder"]

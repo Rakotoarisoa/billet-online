@@ -1,0 +1,68 @@
+{% block block %}
+<div class="box box-primary">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            <i class="fa fa-music"></i> {{ settings.title }}
+        </h3>
+    </div>
+
+    <div class="box-body with-border"  style="height: 410px">
+
+        <div class="col-md-10 chart">
+            <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
+                    var myChart = Highcharts.chart('container_events_by_cat', {
+                        chart: {
+                            type: 'column'
+                        },
+                        title: {
+                            text: 'Nombre d\évènements par Catégorie'
+                        },
+                        xAxis: {
+                            type: 'category',
+                            labels: {
+                                rotation: -45,
+                                style: {
+                                    fontSize: '13px',
+                                    fontFamily: 'Verdana, sans-serif'
+                                }
+                            }
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: 'Nombre d\'évènements'
+                            }
+                        },
+                        legend: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            pointFormat: 'Evènements: <b>{point.y} </b>'
+                        },
+                        series: [{
+                            name: 'Population',
+                            data: [
+                                {% for event in events  %}
+                                ['{{  event.libelle }}', {{ event.nb_ev }}],
+                                {% endfor %}
+                            ],
+                            dataLabels: {
+                                enabled: true,
+                                rotation: -90,
+                                color: '#FFFFFF',
+                                align: 'right',
+                                format: '{point.y:.1f}', // one decimal
+                                y: 10, // 10 pixels down from the top
+                                style: {
+                                    fontSize: '13px',
+                                    fontFamily: 'Verdana, sans-serif'
+                                }
+                            }
+                        }]
+                    });
+                });</script>
+            <div id="container_events_by_cat" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

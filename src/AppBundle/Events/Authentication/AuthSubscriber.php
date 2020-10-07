@@ -7,8 +7,9 @@ use AppBundle\Manager\LogManager;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Http\SecurityEvents;
-use FOS\UserBundle\FOSUserEvents;
-
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Security\Core\AuthenticationEvents;
+use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 
 class AuthSubscriber implements EventSubscriberInterface
 {
@@ -21,7 +22,11 @@ class AuthSubscriber implements EventSubscriberInterface
     public function handleLogin(InteractiveLoginEvent $event)
     {
         $this->logManager->logAction('Connexion', 'Utilisateur: '.$event->getAuthenticationToken()->getUsername().':'.$event->getAuthenticationToken()->getUser()->getEmail().' connecté', $event->getAuthenticationToken()->getUser());
+        return new RedirectResponse("/test");
 
+
+    }
+    public function handleSuccess(AuthenticationEvent $event){
     }
     public function onRegistrationSuccess(InteractiveLoginEvent $event)
     {
@@ -35,7 +40,9 @@ class AuthSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
+
             SecurityEvents::INTERACTIVE_LOGIN => 'handleLogin',
+            AuthenticationEvents::AUTHENTICATION_SUCCESS => 'handleSuccess',
             //FOSUserEvents::REGISTRATION_SUCCESS => 'onRegistrationSuccess'
         ];
     }

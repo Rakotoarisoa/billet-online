@@ -10,6 +10,7 @@ namespace AppBundle\Controller\AdminUserEvent;
 use AppBundle\Entity\Evenement;
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\User;
+use Dompdf\Exception;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -21,13 +22,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 
-
 class AdminUserEventController extends Controller
 {
     /**
      * Gestion des évènements de l'utilisateur
      * @Route("/user/admin-event/list", name="viewEventUserAdmin")
-     * @Security("has_role('ROLE_USER')")
+     * @Security("has_role('ROLE_USER_MEMBER')")
      * @param Request $request
      * @param User $user
      * @return Response
@@ -45,9 +45,6 @@ class AdminUserEventController extends Controller
         $nbCheckout=$userRepository->countCheckout($user);
         $nbTickets=$userRepository->countTickets($user);
         $nbTicketsVerified=$userRepository->countVerifiedTickets($user);
-        if($nbTicketsVerified == null){
-            $nbTicketsVerified[0]['nombreBilletV'] =0;
-        }
         $event_name = $request->get('event_name');
         $event_state = $request->get('event_state');
         $event_creator = $request->get('event_creator');
@@ -64,12 +61,12 @@ class AdminUserEventController extends Controller
             'event_name'=>$event_name,
             'event_state'=> $event_state,
             'event_creator'=> $event_creator,
-            'nbEvents' => $nbEvents[0]['nombreEvents'],
-            'nbEventsPublic'=>$nbEventsPublic[0]['nombreEvents'],
-            'nbEventsUsingSeatMap'=>$nbEventsUsingSeatMap[0]['nombreEvents'],
-            'nbCheckout' => $nbCheckout[0]['nombreCheckout'],
-            'nbTickets' => $nbTickets[0]['nombreBillets'],
-            'nbChecked' => $nbTicketsVerified[0]['nombreBilletV']]);
+            'nbEvents' => ($nbEvents?$nbEvents[0]['nombreEvents']:0),
+            'nbEventsPublic'=>$nbEventsPublic?$nbEventsPublic[0]['nombreEvents']:0,
+            'nbEventsUsingSeatMap'=>$nbEventsUsingSeatMap?$nbEventsUsingSeatMap[0]['nombreEvents']:0,
+            'nbCheckout' => $nbCheckout?$nbCheckout[0]['nombreCheckout']:0,
+            'nbTickets' => $nbTickets?$nbTickets[0]['nombreBillets']:0,
+            'nbChecked' => $nbTicketsVerified?$nbTicketsVerified[0]['nombreBilletV']:0]);
     }
     /**
      * List des commandes pour un évènements
@@ -165,7 +162,28 @@ class AdminUserEventController extends Controller
             'nbAllBillet'=> $nbAllBillets[0]['nbAllBillet'],
             'nbAllBilletChecked'=> $allbilletchecked,
             'billets'=>$nbEventsBillets_all]);
-    }    
+    }
+    /**
+     * Gestion des évènements de l'utilisateur
+     * @Route("/user/admin-event/{eventId}/delete", name="deleteEventUserAdmin")
+     * @ParamConverter("user",options={"mapping":{"eventId"= "event_id"}})
+     * @ParamConverter("evenement",options={"mapping":{"eventId"= "id"}})
+     * @Security("has_role('ROLE_USER_MEMBER')")
+     * @param Request $request
+     * @param Evenement $event
+     * @return Response
+     */
+    public function deleteEvent(Request $request, Evenement $evenement){
+        try{
+            $em=$this->getDoctrine()->getManager();
+            $em->remove($evenement);
+            $em->flush();
+            return new Response('Suppression Réussie',200);
+        }
+        catch (Exception $e){
+            return new Response('Erreur: '.$e->getMessage(), 500);
+        }
+    }
 
 
 }

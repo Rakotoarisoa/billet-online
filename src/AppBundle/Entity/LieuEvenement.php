@@ -2,12 +2,15 @@
 
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name = "lieu_evenement")
  */
 class LieuEvenement
 {
+    use TimestampableEntity;
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id

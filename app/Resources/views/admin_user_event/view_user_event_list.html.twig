@@ -15,7 +15,7 @@
             </div>
         </div>
         <br />
-        <form method="GET" action="{{ path('viewEventUserAdmin',{'userId':app.user.id }) }}">
+        <form method="GET" action="{{ path('viewEventUserAdmin') }}">
             <div class="row">
                 <div class="col">
                     <input type="text" name="event_name" value="{{ app.request.get('event_name') }}"
@@ -102,8 +102,6 @@
                                     Aucun billets à vendre
                                 {% endif %}
                             </td>
-
-
                             <td>{% if event.reservation|length %}
                                     <a class="link_table_admin_user text-success"
                                        href="{{ path('viewOrdersList',{ 'userId':app.user.id,'eventId': event.id }) }}"
@@ -141,7 +139,7 @@
                                                 <i class="fa fa-align-justify" aria-hidden="true"></i> Afficher
                                             </a>
                                             <div class="dropdown-divider"></div>
-                                            <a href="{{ path('viewEventUpdate',{'user':app.user.id,'id':event.id}) }}" class="dropdown-item" target="_blank">
+                                            <a href="{{ path('viewEventUpdate',{'id':event.id}) }}" class="dropdown-item" target="_blank">
                                             <i class="fa fa-pencil" aria-hidden="true"></i> Modifier
                                             </a>
                                             <div class="dropdown-divider"></div>
@@ -151,7 +149,7 @@
                                             <div class="dropdown-divider"></div>
                                             {% if event.reservation|length %}
                                                 <a class="dropdown-item"
-                                                href="{{ path('viewOrdersList',{ 'userId':app.user.id,'eventId': event.id }) }}"
+                                                href="{{ path('viewOrdersList',{'eventId': event.id }) }}"
                                                 target="_blank">
                                                 {{ event.reservation|length }} commandes
                                                 </a>
@@ -161,15 +159,22 @@
                                                 </a>
                                             {% endif %}
                                             <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="{{ path('viewTicketEventUserAdmin',{'userId':app.user.id,'eventId':event.id}) }}">
+                                            <a class="dropdown-item" href="{{ path('viewTicketEventUserAdmin',{'eventId':event.id}) }}">
                                                     <i class="fa fa-ticket" aria-hidden="true"></i>  Billets                                                   
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="delete_event dropdown-item bg bg-red-gradient" data-event-title="{{ event.titreEvenement }}" data-event-id="{{ event.id }}" data-event-date=""{{ event.dateDebutEvent|localizeddate('none', 'none', null, null,'MMM Y') }} >
+                                                <i class="fa fa-trash" aria-hidden="true"></i>  Supprimer
                                             </a>
                                             
                                     </div>
                                 </div>                      
                             </td>
                         </tr>
+                    {% else %}
+                        <tr><td colspan="5">Aucun évènement à afficher . <a class="btn btn-danger" href="{{  path('createEvent') }}"> Créer un évènement</a></td></tr>
                     {% endfor %}
+
                 </table>
                 <div class="text-center">{{ knp_pagination_render(events) }}</div>
             </div>
@@ -228,8 +233,9 @@
                     </div>
                 </div>
                 <!-- end code HH -->
-                
         </div>
     </div>
+        {% block javascripts %}
+            {{ parent() }}
+        {% endblock %}
 {% endblock %}
-

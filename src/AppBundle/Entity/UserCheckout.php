@@ -3,6 +3,7 @@
 
 namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -12,6 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class UserCheckout
 {
+    use TimestampableEntity;
     public function __construct()
     {
         $this->dateInsert = new \DateTime();
@@ -187,22 +189,6 @@ class UserCheckout
     {
         $this->zipCode = $zipCode;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getDateInsert()
-    {
-        return $this->dateInsert;
-    }
-
-    /**
-     * @param mixed $dateInsert
-     */
-    public function setDateInsert($dateInsert): void
-    {
-        $this->dateInsert = $dateInsert;
-    }
     /**
      * @ORM\Column(type="string",length=100,nullable=false)
      */
@@ -235,10 +221,6 @@ class UserCheckout
      * @ORM\Column(type="string", length=10,nullable=true)
      */
     private $zipCode;
-    /**
-     * @ORM\Column(type="date")
-     */
-    private $dateInsert;
     /**
      * @ORM\OneToMany(targetEntity="Reservation", mappedBy="user_checkout")
      * @ORM\JoinColumn(name="reservation", referencedColumnName="id",nullable=false)

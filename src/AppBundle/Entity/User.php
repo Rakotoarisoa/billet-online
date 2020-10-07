@@ -2,7 +2,6 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use FOS\UserBundle\Model\User as BaseUser;
@@ -41,6 +40,27 @@ class User extends BaseUser implements UserInterface
      * @ORM\JoinColumn(name="shop_id", referencedColumnName="id", nullable=true)
      */
     protected $pointDeVente;
+    /**
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\UserOptions", inversedBy="user",cascade={"persist"})
+     * @ORM\JoinColumn(name="options", referencedColumnName="id")
+     */
+    protected $options;
+
+    /**
+     * @return mixed
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param mixed $options
+     */
+    public function setOptions($options): void
+    {
+        $this->options = $options;
+    }
 
     /**
      * @return mixed

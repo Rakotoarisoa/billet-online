@@ -36,7 +36,7 @@ class CategorieController extends Controller
         $pagination = $paginator->paginate(
             $categorie, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
-            5 /*limit per page*/
+            5 /* limit per page */
         );
 
         return $this->render('event_admin/categorieevenement/index.html.twig', array('event' => $event, 'categories' => $pagination));

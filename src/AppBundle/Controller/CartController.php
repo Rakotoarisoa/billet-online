@@ -9,19 +9,22 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Evenement;
+use AppBundle\Entity\PaymentTransaction;
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\TypeBillet;
+use AppBundle\Entity\LockedSeat;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Billet;
 use AppBundle\Entity\UserCheckout;
 use AppBundle\Events\Reservation\RegisteredReservationEvent;
 use AppBundle\Utils\Cart;
 use AppBundle\Utils\CartItem;
+use AppBundle\Entity\Sessions;
 use Doctrine\Common\Collections\ArrayCollection;
+use Dompdf\Exception;
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\Form\Factory\FactoryInterface;
 use FOS\UserBundle\FOSUserEvents;
-use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -30,6 +33,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\Attribute\NamespacedAttributeBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+use Doctrine\ORM\EntityManager;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 
 class CartController extends Controller
 {
@@ -70,7 +75,13 @@ class CartController extends Controller
         $event = new GetResponseUserEvent($user);
         $dispatcher->dispatch(FOSUserEvents::REGISTRATION_INITIALIZE, $event);
         $form->setData($user);
-        return $this->render('default/cart.html.twig', ['cart' => $cart, 'form' => $form->createView()]);
+        $session_info_created=$this->session->getMetadataBag()->getCreated();
+        $session_info_lastUsed=$this->session->getMetadataBag()->getLastUsed();
+        $session_info_lifetime=$this->session->getMetadataBag()->getLifetime();
+        $session_info_created=\DateTime::createFromFormat( 'U', $session_info_created );
+        $session_info_lastUsed=\DateTime::createFromFormat( 'U', $session_info_lastUsed );
+        $session_info_lifetime=\DateTime::createFromFormat( 'U', $session_info_lifetime );
+        return $this->render('default/cart.html.twig', ['cart' => $cart, 'form' => $form->createView(),'lifetime'=> $session_info_lifetime,'lastUsed'=>$session_info_lastUsed,'created'=>$session_info_created]);
     }
 
     /**
@@ -83,10 +94,13 @@ class CartController extends Controller
         $items=$this->cart->getItems();
         if(count($items) >0) {
                 foreach ($items as $item){
-                    $this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
+                    //$this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
+                    $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(),'seat_id' => $item->getSeat(),'evenement'=>$item->getEvenement(),'sess_id'=>$this->session->getId()]);
+                    if(!empty($locked_seat)) $this->getDoctrine()->getManager()->remove($locked_seat);
                 }
                     $this->session->set('quantity', 0);
             $this->cart->clear();
+            $this->getDoctrine()->getManager()->flush();
             return $this->redirect('/res_billet/list');
         }
         else{
@@ -105,9 +119,27 @@ class CartController extends Controller
             $event=$item->getEvenement();
             $this->unlockSeat(unserialize($event->getEtatSalle()),$item->getSection(),$item->getSeat(),$event->getId());
             $this->cart->removeItem($request->request->get('id'));
+            $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(),'seat_id' => $item->getSeat(),'evenement'=>$event,'sess_id'=>$this->session->getId()]);
+            $this->getDoctrine()->getManager()->remove($locked_seat);
+            $this->getDoctrine()->getManager()->flush();
             return new Response('Done', Response::HTTP_OK);
         }
         return new Response('Error', Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+    /**
+     * Clears the cart
+     *
+     * @Route("/res_billet/getSessions", name="cart_get_sessions")
+     */
+    public function getAllSessions()
+    {
+        $sessions=$this->getDoctrine()->getRepository(Sessions::class)->findAll();
+        foreach($sessions as $session){
+            var_dump($session->getSessData());
+        }
+            return new Response('Done', Response::HTTP_OK);
+
+        //return new Response('Error', Response::HTTP_INTERNAL_SERVER_ERROR);
     }
     /**
      * Clears the cart
@@ -125,6 +157,7 @@ class CartController extends Controller
     //Search Section and Seat into array to Lock
     private function unlockSeat($array, $section = '', $seat = '', $id)
     {
+        if($array != null){
         foreach ($array as $key => $value) {
             if (is_array($value) && array_key_exists('mapping', $value) && $value['nom'] == trim($section)) {
                 foreach ($value['mapping'] as $mapKey => $mapValue) {
@@ -144,6 +177,7 @@ class CartController extends Controller
                 $em->flush();
             }
         }
+    }
     }
 
     /**
@@ -168,6 +202,49 @@ class CartController extends Controller
     private function lockItemSeat(Evenement $event, $section, $place){
 
     }
+    public function isBooked($items,$book_action,$event)
+    {
+        try{
+            $book_action = (boolean)$book_action;
+            if ($book_action) {
+                foreach ($items as $item) {
+                    $this->bookSeat(unserialize($event->getEtatSalle()),$item->getSection(),$item->getSeat(),$event);
+                }
+            }
+
+            return new Response('Done',200);
+        }
+        catch(Exception $e) {
+            return new Response('Error occured : '.$e->getMessage(), 500);
+        }
+    }
+    //Search Section and Seat into array to Lock
+    private function bookSeat($array, $section = '', $seat = '', $event)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value) && array_key_exists('mapping', $value) && $value['nom'] == trim($section)) {
+                foreach ($value['mapping'] as $mapKey => $mapValue) {
+                    if (is_array($mapValue) &&
+                        array_key_exists('seat_id', $mapValue) &&
+                        array_key_exists('type', $mapValue) &&
+                        $mapValue['seat_id'] == trim($seat)
+                    ) {
+                        $em = $this->getDoctrine()->getManager();
+                        $array = unserialize($event->getEtatSalle());
+                        $array[$key]['mapping'][$mapKey]['is_booked'] = true;
+                        $array[$key]['mapping'][$mapKey]['is_choosed'] = false;
+                        $event->setEtatSalle(serialize($array));
+                        $em->persist($event);
+                    }
+                }
+                $em->flush();
+            }
+        }
+    }
+    private function locked_seat($event,$section,$seat){
+        $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['evenement'=>$event,'section_id'=>$section,'seat_id'=>$seat]);
+        return $locked_seat;
+    }
 
     /**
      *  Adds the book to cart list
@@ -186,15 +263,21 @@ class CartController extends Controller
         }
         //Récupérer les billets à vendre
         $event = $this->getDoctrine()->getRepository(Evenement::class)->find($event_id);//get Event entity
+        //$repo_locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class);
         $type_billet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $type_billet, 'evenement' => $event]);
         $section_id = '-';
         $place_id = '-';
         if ($request->request->has('section_id') && $request->request->has('place_id')) {
             $section_id = $request->request->get('section_id');
             $place_id = $request->request->get('place_id');
-
             if($this->cart->alreadyExists($section_id,$place_id,$type_billet->getLibelle())){
-                return new Response('Le billet est déjà commandé', Response::HTTP_ALREADY_REPORTED);
+                return new Response('Le billet a été déjà commandé', Response::HTTP_ALREADY_REPORTED);
+            }
+        } 
+        if(count($this->cart->getItems()) > 0){
+            $items=$this->cart->getItems();
+            if($items[0] != null && (int)$items[0]->getEvenement()->getId()  != (int)$event_id){
+                    $this->clearCartAction();
             }
         }
         for ($i = 0; $i < $nbr_billets; $i++) {
@@ -209,6 +292,15 @@ class CartController extends Controller
             $item->setQuantity(1); // defaults to 1
             $item->setCategoryStr($type_billet->getLibelle());
             $this->cart->addItem($item);
+            if($section_id != '-' && $place_id != '-'){
+                $locked=new LockedSeat();
+                $locked->setEvenement($event);
+                $locked->setSectionId($section_id);
+                $locked->setSeatId($place_id);
+                $locked->setSessId($this->session->getId());
+                $this->getDoctrine()->getManager()->persist($locked);
+                $this->getDoctrine()->getManager()->flush();
+            }
         }
         return new Response('Section '.$section_id.' | Place n°'.$place_id.'  ajouté avec succès', Response::HTTP_OK);
 
@@ -235,15 +327,18 @@ class CartController extends Controller
      */
     public function checkOutAction(EventDispatcherInterface $eventDispatcher)
     {
-
-        $cartItems = $this->cart->getItems();
-        $event = $this->getDoctrine()->getRepository(Evenement::class)->find($this->cart->getItem(0)->getEvenement()->getId());
-        $buyer_data = $this->session->get('buyer_data');
-        $user_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => (string)$buyer_data['email']]);
-        $user_checkout = $this->getDoctrine()->getRepository(UserCheckout::class)->findOneBy(['email' => (string)$buyer_data['email']]);
+        $entity_manager=$this->container->get('doctrine.orm.default_entity_manager');
+        $conn=$entity_manager->getConnection();
+        $conn->setAutoCommit(false);
+        $conn->beginTransaction();
         try {
-            if (!isset($user_checkout) && $this->isCsrfTokenValid('checkout_info', $buyer_data['_token'])) {
+            $cartItems = $this->cart->getItems();
+            $event = $this->getDoctrine()->getRepository(Evenement::class)->find($this->cart->getItem(0)->getEvenement()->getId());
+            $buyer_data = $this->session->get('buyer_data');
+            $user_exist = $this->getDoctrine()->getRepository(User::class)->findOneBy(['email' => (string)$buyer_data['email']]);
+            $user_checkout = $this->getDoctrine()->getRepository(UserCheckout::class)->findOneBy(['email' => (string)$buyer_data['email']]);
 
+            if (!isset($user_checkout) && $this->isCsrfTokenValid('checkout_info', $buyer_data['_token'])) {
                 $user_checkout = new  UserCheckout();
                 $user_checkout->setNom((string)$buyer_data['nom']);
                 $user_checkout->setPrenom((string)$buyer_data['prenom']);
@@ -252,10 +347,11 @@ class CartController extends Controller
                 $user_checkout->setIsRegisteredUser(isset($user_exist));
                 $user_checkout->setPays((string)$buyer_data['pays']);
             }
-            $reservation = new Reservation();
-            $reservation->setNomReservation('commande_' . $reservation->getRandomCodeCommande());
+
+            $reservation = $this->session->has('_resa_') ? $this->getDoctrine()->getRepository(Reservation::class)->find($this->session->get('_resa_')->getId()) : new Reservation();//$reservation = new Reservation();
+            //$reservation->setNomReservation('commande_' . $reservation->getRandomCodeCommande());
+            $reservation->setDateReservation(new \DateTime());
             //TODO: Ajouter les données de reservation
-            $reservation->setModePaiement('Paypal');
             $reservation->setEvenement($event);
             $reservation->setUserCheckout($user_checkout);
             $reservation->setMontantTotal($this->cart->getTotalPrice());
@@ -267,7 +363,11 @@ class CartController extends Controller
                 $typeBillet = $this->getDoctrine()->getRepository(TypeBillet::class)->findOneBy(['libelle' => $item->getCategoryStr(), 'evenement' => $event]);
                 $billet = new Billet();
                 $billet->setEstVendu(true);
-                $billet->setIsMapped(false);
+                if ($item->getSeat() == "-" && $item->getSection() == "-") {
+                    $billet->setIsMapped(false);
+                } else {
+                    $billet->setIsMapped(true);
+                }
                 $billet->setPlaceId($item->getSeat());
                 $billet->setSectionId($item->getSection());
                 $billet->setTypeBillet($typeBillet);
@@ -276,16 +376,50 @@ class CartController extends Controller
                 $billets_collection->add($billet);
             }
             $reservation->setBillet($billets_collection);
-            $this->getDoctrine()->getManager()->persist($reservation);
-            $this->getDoctrine()->getManager()->flush();
-            $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation));
+            $txn = new PaymentTransaction();
+            $txn->setReservation($reservation);
+            $txn->setAmount($this->cart->getTotalPrice());
+            $txn->setCurrency($event->getDevise()->getCode());
+            $txn->setTxnid($this->session->has('pay_token') ? $this->session->get('pay_token') : '-');
+            $txn->setPayToken($this->session->has('pay_token') ? $this->session->get('pay_token') : '-');
+            $txn->setPaymentMethod($reservation->getModePaiement());
+            $txn->setDescription($reservation->getNomReservation());
+            $entity_manager->persist($txn);
+            $reservation->setPaymentTransaction($txn);
+            $entity_manager->persist($reservation);
             //delete session and cart _data
-            return new Response('Processus Terminé', Response::HTTP_OK);
-            //return $this->redirectToRoute('viewList');
-        } catch (\Exception $exception) {
-            //$this->addFlash('danger', 'Erreur lors de la création de la réservation'); // need to log the exception details
-            return new Response($exception, Response::HTTP_INTERNAL_SERVER_ERROR);
+            $entity_manager->flush();
+            $conn->commit();
+            foreach ($cartItems as $item) {
+                if ($item->getSection() != "-" && $item->getSeat() != "-") {
+                    $this->isBooked($cartItems, true, $reservation->getEvenement());
+                }
+                //$this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
+                $locked_seat = $this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(), 'seat_id' => $item->getSeat(), 'evenement' => $item->getEvenement(), 'sess_id' => $this->session->getId()]);
+                if (!empty($locked_seat)) $this->getDoctrine()->getManager()->remove($locked_seat);
+            }
+            $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation, 'send_email', $buyer_data));
+            //return new Response($reservation->getId());
+            return $this->redirectToRoute('cart_payment_complete', array('order_id' => $reservation->getRandomCodeCommande()));
         }
+        catch(\Exception $e){
+            $conn->rollBack();
+            return new Response('Error: '.$e->getMessage(),500);
+        }
+        //return $this->redirectToRoute('cart_payment_complete',array('order_id'=>'10754'));
+
+    }
+    /**
+     * Checkout process of the cart
+     *
+     * @Route("/res_billet/payment_complete/{order_id}", name="cart_payment_complete")
+     */
+    public function completePayment(string $order_id){
+        $reservation = $this->getDoctrine()->getRepository(Reservation::class)->findOneBy(['randomCodeCommande'=> $order_id]);
+        if($reservation and $reservation->getPaymentTransaction()->getStatus() == PaymentTransaction::STATUS_OK){
+            return  $this->render('default/view-buy-success.html.twig',['reservation'=>$reservation]);
+        }
+        return $this->render('default/view-buy-success.html.twig',['reservation'=>$reservation]);
     }
     /**
      * Checkout process of the cart
@@ -322,7 +456,7 @@ class CartController extends Controller
             //TODO: Ajouter les données de reservation
             $reservation->setModePaiement('Point de vente: Test'/*. $user_exist->getPointDeVente()->getNom()*/);
             $reservation->setEvenement($event);
-            $reservation->setPointDeVente($user_exist->getPointDeVente());
+            $reservation->setPointDeVente(null/*$user_exist->getPointDeVente()*/);
             $reservation->setUserCheckout($user_checkout);
             $reservation->setMontantTotal($this->cart->getTotalPrice());
             $this->getDoctrine()->getManager()->persist($user_checkout);
@@ -347,6 +481,12 @@ class CartController extends Controller
             //set Name and username
             $data_buyer_name="";
             $eventDispatcher->dispatch(RegisteredReservationEvent::NAME, new RegisteredReservationEvent($reservation,$order_method,array('name'=> $buyer_name,'lastname'=>$buyer_lastname)));
+            foreach ($cartItems as $item){
+                //$this->unlockSeat(unserialize($item->getEvenement()->getEtatSalle()),$item->getSection(),$item->getSeat(),$item->getEvenement()->getId());
+                $locked_seat=$this->getDoctrine()->getRepository(LockedSeat::class)->findOneBy(['section_id' => $item->getSection(),'seat_id' => $item->getSeat(),'evenement'=>$item->getEvenement(),'sess_id'=>$this->session->getId()]);
+                if(!empty($locked_seat)) $this->getDoctrine()->getManager()->remove($locked_seat);
+            }
+            $this->getDoctrine()->getManager()->flush();
             //delete session and cart _data
             return new Response('Processus Terminé', Response::HTTP_OK);
             //return $this->redirectToRoute('viewList');
@@ -370,8 +510,6 @@ class CartController extends Controller
             } else {
                 return new Response("Error Buyer ", Response::HTTP_INTERNAL_SERVER_ERROR);
             }
-
-
         }
     }
 
@@ -388,6 +526,6 @@ class CartController extends Controller
         } else {
             throw new \ErrorException('Erreur lors de l\'enregistrement', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
+
 }

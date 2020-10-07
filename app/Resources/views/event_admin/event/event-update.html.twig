@@ -1,37 +1,73 @@
 {% trans_default_domain 'messages' %}
 {% extends 'base.html.twig' %}
-{% block title %}
-    Mise à jour de l'évènement | {{ app.user.username }}
-{% endblock %}
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
-    <link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}"/>
-    <link type="text/css" rel="stylesheet" href="{{ asset('css/croppie.css') }}"/>
-    <style type="text/css">
-        .upload-msg {
-            text-align: center;
-            padding: 50px;
-            font-size: 22px;
-            color: #aaa;
-            width: 400px;
-            height: 400px;
-            margin: 50px auto;
-            border: 1px solid #aaa;
-        }
+{% form_theme form 'form/theme.html.twig' %}
+{% macro printBilletItemRow(typeBilletForm,i) %}
+    <div class="js-type-item">
+        <div class="row mb-1 align-items-end">
+            <div class="col-sm-3">
+                {{ form_label(typeBilletForm.libelle) }}
+                {{ form_widget(typeBilletForm.libelle) }}
+                <small>{{ form_errors(typeBilletForm.libelle) }}</small>
+            </div>
+            <div class="col-sm-2">
+                {{ form_label(typeBilletForm.prix) }}
+                {{ form_widget(typeBilletForm.prix) }}
+                <small>{{ form_errors(typeBilletForm.prix) }}</small>
+            </div>
+            <div class="col-sm-2">
+                {{ form_label(typeBilletForm.quantite) }}
+                {{ form_widget(typeBilletForm.quantite) }}
+                <small>{{ form_errors(typeBilletForm.quantite) }}</small>
+            </div>
+            <div class="col-sm-2">
+                {{ form_label(typeBilletForm.isAdmission) }}
+                {{ form_widget(typeBilletForm.isAdmission) }}
+            </div>
+            <div class="col-sm-1">
+                <span class="fa fa-cog fa-2x" title="Options avancées" data-toggle="collapse" href="#billet_{{ i }}"
+                      role="button" aria-expanded="false" aria-controls="billet_{{ i }}">
+                </span>
+                <span class="js-remove-type fa fa-minus-circle fa-2x clonable-button-close">
+                </span>
+            </div>
+        </div>
 
-        #upload-demo {
-            text-align: center;
-            padding: 0;
-            font-size: 22px;
-            color: #aaa;
-            width: 400px;
-            height: 400px;
-            margin: 50px auto;
-            border: 1px solid #aaa;
-        }
-    </style>
+        <div class="row">
+            <div class="col">
+                <span class="text-muted"> {{ form_label(typeBilletForm.dateDebut) }}</span>
+                {{ form_widget(typeBilletForm.dateDebut,{'attr':{'class': 'date-debut-billet billet_'~ i }}) }}
+            </div>
+            <div class="col">
+                <span class="text-muted"> {{ form_label(typeBilletForm.dateFin) }}</span>
+                {{ form_widget(typeBilletForm.dateFin,{'attr':{'class': 'date-fin-billet billet_'~ i }}) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="collapse" id="billet_{{ i }}">
+                    <div class="row">
+                        <div class="col">
+                            <span class="text-muted">{{ form_label(typeBilletForm.description) }}</span>
+                            {{ form_widget(typeBilletForm.description) }}
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row">
+                        <div class="col">
+                            <span class="text-muted">{{ form_label(typeBilletForm.active) }}</span>
+                            {{ form_widget(typeBilletForm.active) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr/>
+    </div>
+
+{% endmacro %}
+{% import _self as formMacros %}
+{% block title %}
+    {{ title }} | {{ app.user.username }}
 {% endblock %}
 {% block breadcrumb %}
 {% endblock %}
@@ -40,13 +76,29 @@
         <!-- ##### Event Registration Area Start ##### -->
         <section class="section-padding-0-0">
             <div class="row">
+                <div class="col-sm-3 bg-light">
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Information</a>
+                        <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Profile</a>
+                        <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Messages</a>
+                        <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">...</div>
+                        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">...</div>
+                        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">...</div>
+                        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-3  bg-light">
                     <ul class="nav nav-tabs flex-column" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link text-info" data-toggle="tab" href="#info_event">Données de
                                 l'évènement</a>
-
-                            {% if flow.getCurrentStepNumber() != 1 %}
                                 <div class="card">
                                     <div class="card-body">
                                         <ul>
@@ -54,223 +106,224 @@
                                             <li>
                                                 <small class="text text-muted">{{ event.dateDebutEvent|date('d M Y') }}</small>
                                             </li>
+
                                         </ul>
                                     </div>
                                 </div>
-                            {% endif %}
-                            {% include '@CraueFormFlow/FormFlow/stepList.html.twig' %}
+
                         </li>
-                        <li class="nav-item">
+                        {% if event.id is defined and event.id %}
+                            <li class="nav-item">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a target="_blank" class="btn btn-link"
+                                           href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span
+                                                    class="fa fa-map"></span> Configurer le plan de salle</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                        <!--<li class="nav-item">
                             <a class="nav-link text-info" data-toggle="tab" href="#commande">Formulaire de commande</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-info" data-toggle="tab" href="#"><span class="fa fa-money"></span> Options de paiement</a>
+                        </li>-->
 
                     </ul>
                 </div>
                 <div class="col-sm-9">
                     {{ parent() }}
-                    <p class="text text-danger">Mise à jour l' évènement {{ event.titreEvenement }}</p>
                     <div class="tab-content">
                         <div id="info_event" class="container tab-pane fade section-padding-0-100 active"><br>
-                            {{ form_start(form, {'method': 'post', 'action':  path('viewEventUpdate',{'user':app.user.id,'id':event.id}), 'attr': {'class': 'form'}}) }}
+                            {{ form_start(form, {'method': 'post', 'action':  (event.id)?path('viewEventUpdate',{'id':event.id}):path('createEvent'), 'attr': {'class': 'form'}}) }}
 
-                            {% if flow.getCurrentStepNumber() == 1 %}
-                            <p class="alert-danger">{{ form_errors(form) }}</p>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label class="">{{ 'create_event_field_label.title_event'|trans }}<span
-                                            class="fa fa-align-left"></span></label>
-                                {{ form_widget(form.titreEvenement) }}
-                                <div class="row">
-                                    <small id="title-help" class="form-text text-muted col-sm-10">Entrer le titre de
-                                        votre évènement
-                                    </small>
-                                    <small id="word-count" class="form-text text-muted col-sm-1">0/75</small>
-                                </div>
-                            </div>
-                            <br/>
-                            <hr/>
-                            <br/>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label class="">{{ 'create_event_field_label.categorie'|trans }}</label>
-                                {{ form_widget(form.categorieEvenement) }}
-                                <small id="lieu" class="form-text text-muted">Ajouter la catégorie de l'évènement
-                                </small>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label class="">{{ 'create_event_field_label.lieu'|trans }} <span
-                                            class="fa fa-map-marker"></span></label>
-                                {{ form_widget(form.lieuEvenement) }}
-                                <small id="lieu" class="form-text text-muted">Ajouter le lieu de l'évènement</small>
-                            </div>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label class="">{{ form_label(form.organisation) }}</label>
-                                {{ form_widget(form.organisation) }}
-                            </div>
-                            <br/>
-                            <hr/>
-                            <br/>
-                            <h4>Date et heure <span class="fa fa-calendar"></span></h4>
-                            <p>Indiquez aux participants potentiels quand votre événement commence et se termine
-                                pour qu'ils puissent planifier au mieux leur venue.</p>
-                            <div class="form-group col-md-3 col-sm-6">
-                                <h4 class="lead">{{ 'create_event_field_label.date_start'|trans }} </h4>
-                                {{ form_widget(form.dateDebutEvent) }}
-                            </div>
-                            <div class="form-group col-md-3 col-sm-6">
-                                <h4 class="lead">{{ 'create_event_field_label.date_end'|trans }}</h4>
-                                {{ form_widget(form.dateFinEvent) }}
-                            </div>
-                            <br/>
-                            <hr/>
-                            <br/>
-                            <h4>Billets <span class="fa fa-ticket"></span></h4>
-                            <p>Définissez des billets pour votre évènement</p>
-                            <div class="ken-block">
-                                <div class="js-type-wrapper" data-prototype="{{ form_widget(form.typeBillets.vars.prototype)|e('html_attr') }}" data-index="{{ form.typeBillets|length }}">
-                                    {% set i=1 %}
-                                    {% for typeBilletForm in form.typeBillets %}
-                                        <div class="js-type-item">
-                                            <div class="row mb-1 align-items-end">
-                                                <div class="col-sm-4">
-                                                    {{ form_label(typeBilletForm.libelle) }}
-                                                    {{ form_widget(typeBilletForm.libelle) }}
-                                                    <small>{{ form_errors(typeBilletForm.libelle) }}</small>
-                                                </div>
-                                                <div class="col-sm-3">
-                                                    {{ form_label(typeBilletForm.prix) }}
-                                                    {{ form_widget(typeBilletForm.prix) }}
-                                                    <small>{{ form_errors(typeBilletForm.prix) }}</small>
-                                                </div>
-                                                <div class="col-sm-2">
-                                                    {{ form_label(typeBilletForm.quantite) }}
-                                                    {{ form_widget(typeBilletForm.quantite) }}
-                                                    <small>{{ form_errors(typeBilletForm.quantite) }}</small>
-                                                </div>
-                                                <div class="col-sm-1">
-                                                        <span class="fa fa-cog fa-2x"
-                                                              title="Options avancées"
-                                                              data-toggle="collapse"
-                                                              href="#billet_{{ i }}" role="button" aria-expanded="false"
-                                                              aria-controls="billet_{{ i }}">
-                                                        </span>
-                                                    <span class="js-remove-type fa fa-minus-circle fa-2x clonable-button-close">
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="collapse" id="billet_{{ i }}">
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                {{ form_label(typeBilletForm.dateDebut) }}
-                                                                {{ form_widget(typeBilletForm.dateDebut) }}
-                                                            </div>
-                                                            <div class="col">
-                                                                {{ form_label(typeBilletForm.dateFin) }}
-                                                                {{ form_widget(typeBilletForm.dateFin) }}
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                {{ form_label(typeBilletForm.description) }}
-                                                                {{ form_widget(typeBilletForm.description) }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {% set i=i+1 %}
-                                    {% endfor %}
-                                    <br/>
-                                    <div class="row" data-ss="1">
-                                        <div class="col-sm-12 text-center">
-                                            <span class="fa fa-plus-circle fa-2x js-add-type">
-                                                </span>
-                                        </div>
+                                <p class="alert-danger">{{ form_errors(form) }}</p>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <label class=""> {{ form_label(form.titreEvenement) }}<span
+                                                class="fa fa-align-left"></span></label>
+                                    {{ form_widget(form.titreEvenement) }}
+                                    <div class="row">
+                                        <small id="title-help" class="form-text text-muted col-sm-10">
+                                            Entrer le titre de votre évènement
+                                        </small>
+                                        <small id="word-count" class="form-text text-muted col-sm-1">0/75</small>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if flow.getCurrentStepNumber() == 2 %}
-                            <p class="alert-danger">{{ form_errors(form.image_event) }}</p>
-                            <div class="form-group col-md-6 col-sm-6">
-                                <label class="">{{ 'create_event_field_label.image_event'|trans }}</label>
-                                {{ form_widget(form.image_event) }}
-                                <small class="text text-muted">Veuiller ajouter un fichier pour remplacer l'image
-                                </small>
-                                <div class="">
-                                    <img src="{{ asset(event.imageEvent) }}"/>
+                                <br/>
+                                <hr/><br/>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <label class="">{{ form_label(form.categorieEvenement) }}</label>
+                                    {{ form_widget(form.categorieEvenement) }}
+                                    <small id="lieu" class="form-text text-muted">Préciser la catégorie de
+                                        l'évènement (Concert, Festival, ...)
+                                    </small>
                                 </div>
-                                <div class="upload-demo" id="upload-demo" style="display:none;">
-
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <label class="">{{ form_label(form.lieuEvenement) }} <span
+                                                class="fa fa-map-marker"></span></label>
+                                    {{ form_widget(form.lieuEvenement) }}
+                                    <small id="lieu" class="form-text text-muted">Ajouter le lieu ou se déroulera
+                                        l'évènement
+                                    </small>
+                                </div>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <label class="">{{ form_label(form.organisation) }}</label>
+                                    {{ form_widget(form.organisation) }}
+                                </div>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <label class="">{{ form_label(form.devise) }}</label>
+                                    {{ form_widget(form.devise) }}
+                                    <small id="devise" class="form-text text-muted">Sélectionner la devise à utiliser
+                                    </small>
                                 </div>
                                 <br/>
-                            </div>
-                            <div class="form-group col-md-12 col-sm-12">
-                                <label class="">{{ 'create_event_field_label.description'|trans }}</label>
-                                {{ form_widget(form.description) }}
-                            </div>
-                        {% endif %}
-
-                        {% if flow.getCurrentStepNumber() == 3 %}
-                            <p class="alert-danger">{{ form_errors(form) }}</p>
-                            <div class="row align-items-center">
-                                <div class="col-12 my-1">
-                                    <label for="appbundle_event_isUsingSeatMap">Utiliser la carte pour sélectionner
-                                        des billets</label>
-                                    {{ form_widget(form.isUsingSeatMap) }}
+                                <hr/><br/>
+                                <h4>Date et heure <span class="fa fa-calendar"></span></h4>
+                                <p>Indiquez aux participants potentiels quand votre événement commence et se termine
+                                    pour qu'ils puissent planifier au mieux leur venue.</p>
+                                <div class="form-group col-md-3 col-sm-6">
+                                    <h4 class="lead">{{ form_label(form.dateDebutEvent) }} </h4>
+                                    {{ form_widget(form.dateDebutEvent) }}
                                 </div>
-                            </div>
-                            <div class="row align-items-center">
-                                <small class="col-12 text text-muted">L'évènement peut utiliser la carte intéractive
-                                    pour la sélection des places
-                                </small>
-                            </div>
+                                <div class="form-group col-md-3 col-sm-6">
+                                    <h4 class="lead">{{ form_label(form.dateFinEvent) }}</h4>
+                                    {{ form_widget(form.dateFinEvent) }}
+                                </div>
+                                <br/>
+                                <hr/><br/>
+                                <h4>Billets <span class="fa fa-ticket"></span></h4>
+                                <p>Définissez des billets pour votre évènement</p>
+                                <div class="ken-block">
+                                    <div class="js-type-wrapper"
+                                         data-prototype="{{ formMacros.printBilletItemRow(form.typeBillets.vars.prototype)|e('html_attr') }}"
+                                         data-index="{{ form.typeBillets|length }}">
+                                        {% set i=1 %}
+                                        {% for typeBilletForm in form.typeBillets %}
+                                            {{ formMacros.printBilletItemRow(typeBilletForm,i) }}
+                                            {% set i=i+1 %}
+                                        {% endfor %}
+                                        <a class="btn btn-secondary text-center text-white js-add-type">
+                                            <span class="fa fa-ticket"></span> Ajouter un type de billet
+                                        </a>
+                                    </div>
+                                    {{ form_widget(form.typeBillets) }}
+                                    {{ form_errors(form.typeBillets) }}
+                                </div>
+
+                                <p class="alert-danger">{{ form_errors(form.image) }}</p>
+                                <div class="form-group col-md-6 col-sm-6">
+                                    <h4 class="">{{ form_label(form.image) }} <span class="fa fa-file-image"></span>
+                                    </h4>
+                                    <small>Insérer une image ayant une dimension au dessus de 600px x 400px</small>
+                                    {{ form_widget(form.image) }}
+                                    <br/>
+                                </div>
+                                <div class="form-group col-md-12 col-sm-12">
+                                    <h4 class="">{{ 'create_event_field_label.description'|trans }} <span
+                                                class="fa fa-layers-text"></span></h4>
+                                    {{ form_widget(form.description) }}
+                                    {{ form_errors(form.description) }}
+                                </div>
+
+
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <h1>Plan de salle</h1>
+                                    </div>
+                                </div>
+                                <p class="alert-danger">{{ form_errors(form) }}</p>
+
+                                <div class="row align-items-center">
+                                    <div class="col-6">
+                                        <label for="appbundle_event_isUsingSeatMap">Utiliser un plan de salle</label>
+                                        {{ form_widget(form.isUsingSeatMap) }}
+                                    </div>
+                                        <div class="col-6">
+                                            <div class="row">
+                                                <div class="col"><div id="chart"></div></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col align-items-center"><a class="btn btn-danger" href="{{ path('viewEventMapAdmin',{'id':event.id}) }}"><span class="fa fa-map"></span> Configurer</a></div>
+                                            </div>
+                                        </div>
+
+                                </div>
+                                <div class="row align-items-center">
+                                    <small class="col-12 text text-muted">L'évènement peut utiliser la carte intéractive
+                                        pour la sélection des places
+                                    </small>
+                                </div>
+                                <hr/>
+                                <div class="row align-items-center">
+                                    <div class="col-5 my-1">
+                                        <label for="appbundle_event_isUsingSeatMap">Démarrer avec un plan de salle
+                                            prédéfini</label>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-5 my-1">
+                                        {{ form_widget(form.templateSeatMap) }}
+                                    </div>
+                                    <div class="col-7 my-1">
+                                        <img id="template_antsahamanitra"
+                                             src="{{ asset('img/map/template_antsahamanitra.jpg') }}" width="500"
+                                             height="500">
+                                        <!--<img id="template_palais" src="{{ asset('img/map/template_palais.jpg') }}" width="500" height="500">-->
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <small class="col-12 text text-muted">Commencer rapidement avec un plan de salle
+                                    </small>
+                                </div>
+
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <h1>Configurations et mode de paiement</h1>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <h4>Choississez parmi les mode de paiements disponibles à utiliser pour cet
+                                            évènement </h4>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <img src="{{ asset('img/paypal.png') }}" width="80px"/>
+                                        {{ form_widget(form.options.usePaypalMethodPayment) }}
+                                        {{ form_errors(form.options.usePaypalMethodPayment) }}
+                                        <p>
+                                            <small class="col-12 text text-muted">Les informations Paypal liées sur
+                                                votre compte seront utilisées
+                                            </small>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-12 my-1">
+                                        <img src="{{ asset('img/om.png') }}" width="80px"/>
+                                        {{ form_widget(form.options.useOrangeMoneyMethodPayment) }}
+                                        {{ form_errors(form.options.useOrangeMoneyMethodPayment) }}
+                                        <p>
+                                            <small class="col-12 text text-muted">Les informations Orange Money liées
+                                                sur votre compte seront utilisées
+                                            </small>
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="alert-danger">{{ form_errors(form) }}</p>
+
+                            {{ form_rest(form) }}
                             <hr/>
-                            <div class="row align-items-center">
-                                <div class="col-12 my-1">
-                                    <label for="appbundle_event_isPublished">Publier l'évènement</label>
-                                    {{ form_widget(form.isPublished) }}
-                                </div>
-                            </div>
-                            <div class="row align-items-center">
-                                <small class="col-12 text text-muted">L'évènement est publié par défaut</small>
-                            </div>
-                        {% endif %}
-
-                        {% if flow.getCurrentStepNumber() == 4 %}
-                            <p class="alert-danger">{{ form_errors(form) }}</p>
-                            <p class="text">Vous avez saisis les informations concernant l'évènement
-                                <b>{{ event.titreEvenement }}</b> qui déroulera le
-                                <b>{{ event.dateDebutEvent|date('d m Y') }}</b></p>
-                            <p>Appuyer sur
-                                <small class="text-danger">Sauvegarder et confirmer</small>
-                                pour confirmer.
-                            </p>
-                        {% endif %}
-
-                        {{ form_rest(form) }}
-                        <hr/>
-                        {% include '@CraueFormFlow/FormFlow/buttons.html.twig' with {
-                            craue_formflow_button_label_last: 'Sauvegarder et continuer',
-                            craue_formflow_button_class_last: 'btn btn-outline-danger',
-                            craue_formflow_button_label_back: 'Précédent',
-                            craue_formflow_button_class_back: 'btn btn-outline-secondary',
-                            craue_formflow_button_label_reset: 'Recommencer',
-                            craue_formflow_button_class_reset: 'btn btn-outline-dark',
-                            craue_formflow_button_label_finish: 'Valider',
-
-                        } %}
-                        {{ form_end(form) }}
+                            {{ form_end(form) }}
+                        </div>
+                        <div id="commande" class="container tab-pane fade"><br>
+                            <h3>Formulaire de commande</h3>
+                        </div>
                     </div>
-                    <div id="commande" class="container tab-pane fade"><br>
-                        <h3>Formulaire de commande</h3>
-                    </div>
+
                 </div>
-
-            </div>
             </div>
         </section>
     {% endblock %}
@@ -279,7 +332,46 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/fr.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
-        <script src="{{ asset('js/croppie.js') }}"></script>
+        <script src="{{ asset('build/kartik-v/js/plugins/piexif.min.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('build/kartik-v/js/fileinput.min.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('build/kartik-v/js/locales/fr.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('build/kartik-v/themes/theme.min.js') }}" type="text/javascript"></script>
+        <script type="text/javascript">
+
+            {% if event.id is defined and event.id %}
+            $(".file").fileinput({
+                initialPreview: ["{{ asset('/img/events/'~event.imageEvent) }}"],
+                initialPreviewAsData: true,
+                initialPreviewConfig: [
+                    {
+                        caption: "{{ event.imageEvent }}",
+                        downloadUrl: "{{ asset('/img/events/'~event.imageEvent) }}",
+                        key: 1
+                    },
+                ],
+                overwriteInitial: true,
+                maxFileSize: 2000,
+                allowedFileTypes: ["image"],
+                maxFilePreviewSize: 1000,
+                initialCaption: "{{ event.imageEvent }}",
+                language: 'fr',
+                theme: "fa",
+                showUpload: false,
+                showDownload: false,
+                multiple: false
+            });
+            {% else %}
+            $(".file").fileinput({
+                theme: "fa",
+                showUpload: false,
+                language: 'fr',
+                maxFilePreviewSize: 1000,
+                maxFileSize: 2000,
+                allowedFileTypes: ["image"]
+
+            });
+            {% endif %}
+        </script>
         <script type="text/javascript">
             $(document).ready(function () {
                 let $wrapper = $('.js-type-wrapper');
@@ -289,24 +381,72 @@
                         .fadeOut()
                         .remove();
                 });
-                $wrapper.on('click', '.js-add-type', function(e) {
+                $wrapper.on('click', '.js-add-type', function (e) {
                     e.preventDefault();
+                    // Get the data-prototype explained earlier
+                    let prototype = $wrapper.data('prototype');
+                    // get the new index
+                    let index = $wrapper.data('index');
+                    // Replace '__name__' in the prototype's HTML to
+                    // instead be a number based on how many items we have
+                    let newForm = prototype.replace(/__name__/g, index);
+                    // increase the index with one for the next item
+                    $wrapper.data('index', index + 1);
+                    // Display the form in the page before the "new" link
+                    $(this).before(newForm);
+                    $wrapper.find('.date-debut-billet').datetimepicker({
+                        format: 'DD-MM-YYYY HH:mm',
+                        sideBySide: true,
+                        // as Bootstrap 4 is not using Glyphicons anymore
+                        icons: {
+                            time: 'fa fa-clock-o',
+                            date: 'fa fa-calendar',
+                            up: 'fa fa-chevron-up',
+                            down: 'fa fa-chevron-down',
+                            previous: 'fa fa-chevron-left',
+                            next: 'fa fa-chevron-right',
+                            today: 'fa fa-check',
+                            clear: 'fa fa-trash',
+                            close: 'fa fa-times'
+                        }
+                    });
+                    $wrapper.find('.date-fin-billet').datetimepicker({
+                        format: 'DD-MM-YYYY HH:mm',
+                        sideBySide: true,
+                        // as Bootstrap 4 is not using Glyphicons anymore
+                        icons: {
+                            time: 'fa fa-clock-o',
+                            date: 'fa fa-calendar',
+                            up: 'fa fa-chevron-up',
+                            down: 'fa fa-chevron-down',
+                            previous: 'fa fa-chevron-left',
+                            next: 'fa fa-chevron-right',
+                            today: 'fa fa-check',
+                            clear: 'fa fa-trash',
+                            close: 'fa fa-times'
+                        }
+                    });
+                    let dateBegin = $wrapper.find('.date-debut-billet');
+                    let dateEnd = $wrapper.find('.date-fin-billet');
+                    //Date Billet
+                    //dateBegin.data("DateTimePicker").minDate(new Date());
+                    //dateEnd.data("DateTimePicker").minDate(new Date());
+                    dateBegin.on("dp.change", function (e) {
+                        dateEnd.data("DateTimePicker").minDate(e.date);
+                    });
+                    dateEnd.on("dp.change", function (e) {
+                        dateBegin.data("DateTimePicker").maxDate(e.date);
+                    });
                 });
                 $('.nav-tabs a[href="#info_event"]').tab('show');
-                {% if flow.currentStepNumber == 1 %}
-                document.getElementById("word-count").innerHTML = $('#appbundle_event_titreEvenement').val().length + "/" + 75;
+
                 $('#appbundle_event_titreEvenement').on('input', function (e) {
                     maxLength = 75;
                     document.getElementById("word-count").innerHTML = this.value.length + "/" + maxLength;
                 });
                 $('.dateDebut').datetimepicker({
                     format: 'DD-MM-YYYY HH:mm',
-                    defaultDate: new Date(),
                     sideBySide: true,
-                    showTodayButton: true,
-                    ignoreReadonly: true,
-
-                    // Your Icons
                     // as Bootstrap 4 is not using Glyphicons anymore
                     icons: {
                         time: 'fa fa-clock-o',
@@ -321,61 +461,79 @@
                     }
                 });
                 $('.dateFin').datetimepicker({
-                        format: 'DD-MM-YYYY HH:mm',
-                        sideBySide: true,
-                        ignoreReadonly: true,
-                        // Your Icons
-                        // as Bootstrap 4 is not using Glyphicons anymore
-                        icons: {
-                            time: 'fa fa-clock-o',
-                            date: 'fa fa-calendar',
-                            up: 'fa fa-chevron-up',
-                            down: 'fa fa-chevron-down',
-                            previous: 'fa fa-chevron-left',
-                            next: 'fa fa-chevron-right',
-                            today: 'fa fa-check',
-                            clear: 'fa fa-trash',
-                            close: 'fa fa-times'
-                        }
+                    format: 'DD-MM-YYYY HH:mm',
+                    sideBySide: true,
+                    // as Bootstrap 4 is not using Glyphicons anymore
+                    icons: {
+                        time: 'fa fa-clock-o',
+                        date: 'fa fa-calendar',
+                        up: 'fa fa-chevron-up',
+                        down: 'fa fa-chevron-down',
+                        previous: 'fa fa-chevron-left',
+                        next: 'fa fa-chevron-right',
+                        today: 'fa fa-check',
+                        clear: 'fa fa-trash',
+                        close: 'fa fa-times'
                     }
-                );
+                });
+
+                $('.dateDebut').data("DateTimePicker").minDate(new Date("{{ event.dateDebutEvent|date('Y-m-d H:i:s') }}"));
+                $('.dateFin').data("DateTimePicker").minDate(new Date("{{ event.dateDebutEvent|date('Y-m-d H:i:s') }}"));
+                $('.dateDebut').data("DateTimePicker").date(new Date("{{ event.dateDebutEvent|date('Y-m-d H:i:s') }}"));
+                $('.dateFin').data("DateTimePicker").date(new Date("{{ event.dateFinEvent|date('Y-m-d H:i:s') }}"));
+                $('.dateDebut').data("DateTimePicker").maxDate(new Date("{{ event.dateFinEvent|date('Y-m-d H:i:s') }}"));
                 $(".dateDebut").on("dp.change", function (e) {
                     $('.dateFin').data("DateTimePicker").minDate(e.date);
                 });
                 $(".dateFin").on("dp.change", function (e) {
                     $('.dateDebut').data("DateTimePicker").maxDate(e.date);
                 });
-                {% endif %}
+
+
+                /*$wrapper.find('.js-add-type').click();
+                // Date Event
+                $('.dateDebut').data("DateTimePicker").date(new Date());
+                $('.dateDebut').data("DateTimePicker").minDate(new Date());
+                $('.dateFin').data("DateTimePicker").minDate(new Date());
+                $(".dateDebut").on("dp.change", function (e) {
+                    $('.dateFin').data("DateTimePicker").minDate(e.date);
+                    $('.date-fin-billet').data("DateTimePicker").maxDate(e.date);
+                });
+                $(".dateFin").on("dp.change", function (e) {
+                    $('.dateDebut').data("DateTimePicker").maxDate(e.date);
+                });*/
+
+
             });
-            {% if flow.currentStepNumber == 2 %}
-            $('#appbundle_event_image_event').removeAttr('required');
-            $('.image-event').on('change', function (e) {
-                var file = this.files[0];
-                var valid_extensions = ['png', 'jpg', 'jpeg'];
-                if (valid_extensions.includes(file.name.split(".")[1])) {
-                    $('.upload-msg').hide();
-                    $('#upload-demo').show();
-                    $('#upload-demo').croppie({
-                        showZoomer: false,
-                        enableExif: true,
-                        viewport: {
-                            width: 350,
-                            height: 350,
-                            type: 'square'
-                        },
-                        boundary: {
-                            width: 400,
-                            height: 400
-                        },
-                        mouseWheelZoom: false
-                    });
-                } else {
-                    $('.upload-msg').show();
-                    $('#upload-demo').hide();
-                }
+            $('#appbundle_event_templateSeatmap').on('change', function (e) {
+                $('#'.$(this).children("option:selected").val()).show();
             });
-            {% endif %}
         </script>
+        <script src="https://cdn.seatsio.net/chart.js"></script>
+        <script type="text/javascript">
+            new seatsio.SeatingChart({
+                divId: 'chart',
+                workspaceKey: '1d982e69-89ab-4509-bdc3-8329d7e4795e',
+                event: '02dab5ac-f0f3-4d1f-b3a5-b8cc51f53863',
+                language : 'fr',
+                //selectedObjectsInputName : 'selectedSeatsField',
+                pricing: [
+                    {'category': 'SIMPLE', 'price': 3000},
+                    {'category': 'RESA', 'price': 4000},
+                    {'category': 3, 'price': 5000}
+                ],
+                priceFormatter: function(price) {
+                    return 'MGA ' + price;
+                },
+                showLegend : true,
+                mode: 'print'
+            }).render();
+        </script>
+    {% endblock %}
+    {% block stylesheets %}
+        {{ parent() }}
+        <link rel="stylesheet" href="{{ asset('build/kartik-v/css/fileinput.min.css') }}"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
     {% endblock %}
 {% endblock %}
 {% block contact %}{% endblock %}

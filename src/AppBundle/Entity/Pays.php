@@ -27,6 +27,72 @@ class Pays
      * @ORM\Column(name="code", type="string", length=255, nullable=true)
      */
     private $code;
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="alpha2", type="string", length=2, nullable=true)
+     */
+    private $alpha2;
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="alpha3", type="string", length=3, nullable=true)
+     */
+    private $alpha3;
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="libelle_en", type="string", length=255, nullable=true)
+     */
+    private $libelle_en;
+
+    /**
+     * @return mixed
+     */
+    public function getAlpha2()
+    {
+        return $this->alpha2;
+    }
+
+    /**
+     * @param mixed $alpha2
+     */
+    public function setAlpha2($alpha2): void
+    {
+        $this->alpha2 = $alpha2;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAlpha3()
+    {
+        return $this->alpha3;
+    }
+
+    /**
+     * @param mixed $alpha3
+     */
+    public function setAlpha3($alpha3): void
+    {
+        $this->alpha3 = $alpha3;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLibelleEn()
+    {
+        return $this->libelle_en;
+    }
+
+    /**
+     * @param mixed $libelle_en
+     */
+    public function setLibelleEn($libelle_en): void
+    {
+        $this->libelle_en = $libelle_en;
+    }
 
     /**
      * @var string

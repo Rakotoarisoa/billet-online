@@ -80,6 +80,8 @@ class RegisteredReservationSubscriber implements EventSubscriberInterface
                     $this->eventDispatcher->dispatch();
                 };
                 $this->session->remove('buyer_data');
+                $this->session->remove('_resa_');
+                $this->session->remove('pay_token');
                 $this->cart->clear();
                 $this->log->logAction('Réservation','Mail pour nouvelle Réservation n° '.$reservation->getReservation()->getRandomCodeCommande().' au nom de '.$reservation->getReservation()->getUserCheckout()->getNom().' '.$reservation->getReservation()->getUserCheckout()->getPrenom(),$reservation->getReservation()->getEvenement()->getUser());
             }
@@ -93,7 +95,7 @@ class RegisteredReservationSubscriber implements EventSubscriberInterface
         }
         catch(\Exception $e){
             $this->log->logAction('Erreur', "Réservation n° ".$reservation->getReservation()->getRandomCodeCommande(),$reservation->getReservation()->getEvenement()->getUser());
-            throw new \Exception('Une erreur s\'est produite pendant l\'envoi du mail'.$e->getMessage());
+            throw new \Exception('Une erreur s\'est produite pendant l\'envoi du mail: '.$e->getMessage());
         }
 
     }

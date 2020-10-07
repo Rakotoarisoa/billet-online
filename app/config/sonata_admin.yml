@@ -1,0 +1,70 @@
+sonata_admin:
+  title: 'Administration'
+  title_logo: 'img/ivenco_admin.png'
+  dashboard:
+    blocks:
+      # display a dashboard block
+      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.evenement, icon: fa-music, text: "Evènements enregistrées", color: bg-yellow  }}
+      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.reservation, icon: fa-purchase, text: "Réservations", color: bg-green  }}
+      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.billet, icon: fa-ticket, text: "Billets enregistrées", color: bg-blue  }}
+      - { class:    col-lg-3 col-xs-6, position: top, type: sonata.admin.block.stats ,settings:{  code: admin.user_checkout, icon: fa-users, text: "Acheteurs", color: bg-red  }}
+      - { class:    col-lg-3 col-xs-6, position: left, type: sonata.block.service.events_by_type_chart}
+      - { class:    col-lg-3 col-xs-6, position: right, type: sonata.block.service.events_by_place_chart}
+      - { class:    col-lg-3 col-xs-6, position: right, type: sonata.block.service.recent_orders}
+      - { class:    col-lg-3 col-xs-6, position: right, type: sonata.block.service.recent_tickets}
+      - { class:    col-lg-3 col-xs-6, position: left, type: sonata.block.service.recent_customers}
+      - { position: left, type: sonata.admin.block.admin_list, settings: { groups: [ app.admin.groups.user, app.admin.groups.shop, app.admin.groups.config ] } }
+      - { position: left, type: sonata.admin.block.admin_list, settings: { groups: [ app.admin.groups.event, app.admin.groups.log ] } }
+    groups:
+      app.admin.groups.user:
+        label: "Utilisateurs"
+        items: ~
+        icon: "<i class=\"fa fa-user\"></i>"
+      app.admin.groups.event:
+        label: "Evènements"
+        items: ~
+        icon: "<i class=\"fa fa-music\"></i>"
+      app.admin.groups.shop:
+        label: "Point de vente"
+        items: ~
+        icon: "<i class=\"fa fa-home\"></i>"
+      app.admin.groups.log:
+        label: "Journal d'activités"
+        items: ~
+        icon: "<i class=\"fa fa-list\"></i>"
+      app.admin.groups.config:
+        label: "Configurations"
+        items: ~
+        icon: "<i class=\"fa fa-cogs\"></i>"
+  security:
+    handler: sonata.admin.security.handler.acl
+    role_admin: ROLE_ADMIN
+    role_super_admin: ROLE_SUPER_ADMIN
+      # acl security information
+    information:
+      GUEST:    [VIEW, LIST]
+      STAFF:    [EDIT, LIST, CREATE]
+      EDITOR:   [OPERATOR, EXPORT]
+      ADMIN:    [MASTER]
+    # permissions not related to an object instance and also to be available when objects do not exist
+    # the DELETE admin permission means the user is allowed to batch delete objects
+    admin_permissions: [CREATE, LIST, DELETE, UNDELETE, EXPORT, OPERATOR, MASTER]
+    # permission related to the objects
+    object_permissions: [VIEW, EDIT, DELETE, UNDELETE, OPERATOR, MASTER, OWNER]
+  assets:
+    extra_javascripts: ['//code.highcharts.com/highcharts.js','//code.highcharts.com/4.0.1/modules/exporting.js']
+sonata_block:
+  blocks:
+    # enable the SonataAdminBundle block
+    sonata.admin.block.admin_list:
+      contexts: [admin]
+    sonata.admin.block.stats:
+      contexts: [admin]
+    sonata.admin.block.search_result:
+      contexts: [admin]
+    sonata.block.service.recent_orders: ~
+    sonata.block.service.recent_tickets: ~
+    sonata.block.service.recent_customers: ~
+    admin.block.service.event_chart: #This is the chart block - RegistrationsChartBlockService (below)
+      contexts: [admin]
+

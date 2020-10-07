@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+{% block title %}Ivenco Réservation{% endblock %}
+{% block breadcrumb %}
+{% endblock %}
+{% block body %}
+    <!-- ##### Events Area Start ##### -->
+    {% block content %}
+        {{ parent() }}
+        <div class="container">
+            <h2> {{ reservation.evenement.categorieevenement.libelle }} : {{ reservation.evenement.titreEvenement }}</h2>
+            <section class="events-area section-padding-0-100">
+                <div class="align-items-center"><img src="{{ reservation.evenement.imageevent?vich_uploader_asset(reservation.evenement,'image')|imagine_filter('single_event_view'):"https://via.placeholder.com/1000x600?text=IMAGE+NON+DISPONIBLE" }}" alt="{{ reservation.evenement.titreEvenement }}"></div>
+                <h5>Etat de la réservation du paiement n° {{ reservation.randomCodeCommande }}</h5>
+                <table class="table table-striped">
+                    <tr><td>Etat</td><td><p class="badge badge-success">{{ reservation.paymentTransaction.status == 0 ?'Réussi': 'En attente'  }}</p></td></tr>
+                    <tr><td>Nom de l'acheteur</td><td>{{ reservation.userCheckout.nom }} {{ reservation.userCheckout.prenom }}</td></tr>
+                    <tr><td>Evenement</td><td><a href="{{ path('viewSingle',{'id': reservation.evenement.id}) }}">{{ reservation.evenement.TitreEvenement }}<span class="fa fa-link"></span></a> </td></tr>
+                    <tr><td>Nom de l'acheteur</td><td>{{ reservation.userCheckout.nom }} {{ reservation.userCheckout.prenom }}</td></tr>
+                    <tr><td>Montant</td><td><span class="fa fa-money"></span> {{ reservation.evenement.devise.code }} {{ reservation.montantTotal|number_format(2,'.',',') }}</td></tr>
+                    <tr><td>Mode de paiement</td><td>{{ reservation.modePaiement }}</td></tr>
+                    <tr><td>Date de reservation</td><td>{{ reservation.dateReservation|localizeddate('none', 'none', null, null,'d MMM Y') }}</td></tr>
+                    <tr><td colspan="2"><a href="#">Redemander l'état du paiement</a>  <small class="text-muted">Ce lien demandera l'état auprès du fournisseur du système de paiement</small></td></tr>
+                    <tr><td colspan="2"><p class="bg bg-info"> Vous pouvez visualiser vos billets via votre adresse e-mail. </p></td></tr>
+                    <tr><td colspan="2">Besoin d'aide? <strong><a href="#">Contactez-nous</a></strong></td></tr>
+
+                </table>
+                <div class="row"><div class="col"> <a href="{{ path('viewList') }}"><span class="fa fa-arrow-left"></span> Revenir à la liste des évènements</a></div><div class="col"></div></div>
+
+            </section>
+        </div>
+    {% endblock %}
+    <!-- ##### Events Area End ##### -->
+    {% block javascripts %}
+        {{ parent() }}
+
+    {% endblock %}
+    {% block contact %}{% endblock %}
+{% endblock %}
+

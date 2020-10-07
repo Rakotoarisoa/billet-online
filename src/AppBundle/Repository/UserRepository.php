@@ -12,6 +12,7 @@ class UserRepository extends EntityRepository
     /**
      * count Event
      */
+
     public function countEvents(User $user){
         return $this->getEntityManager()->createQuery('SELECT count(u) AS nombreEvents
             from AppBundle:User u
@@ -26,7 +27,7 @@ class UserRepository extends EntityRepository
         return $this->getEntityManager()->createQuery('SELECT count(u) AS nombreCheckout
             from AppBundle:User u
             JOIN AppBundle:Evenement e WITH u.id=e.user
-            LEFT JOIN AppBundle:Reservation r WITH e.id=r.evenement
+            JOIN AppBundle:Reservation r WITH e.id=r.evenement
             WHERE u.id= :userId
             GROUP BY  u.id
             ')
@@ -37,8 +38,8 @@ class UserRepository extends EntityRepository
         return $this->getEntityManager()->createQuery('SELECT Count(u) AS nombreBillets
             from AppBundle:User u
             JOIN AppBundle:Evenement e WITH u.id=e.user
-            LEFT JOIN AppBundle:TypeBillet tb WITH tb.evenement=e.id
-            LEFT JOIN AppBundle:Billet b WITH tb.id=b.typeBillet
+            JOIN AppBundle:TypeBillet tb WITH tb.evenement=e.id
+            JOIN AppBundle:Billet b WITH tb.id=b.typeBillet
             WHERE u.id= :userId
             GROUP BY  u.id
             ')
@@ -50,8 +51,8 @@ class UserRepository extends EntityRepository
         return $this->getEntityManager()->createQuery('SELECT Count(u) AS nombreBilletV
             from AppBundle:User u
             JOIN AppBundle:Evenement e WITH u.id=e.user
-            LEFT JOIN AppBundle:TypeBillet tb WITH tb.evenement=e.id
-            LEFT JOIN AppBundle:Billet b WITH tb.id=b.typeBillet
+            JOIN AppBundle:TypeBillet tb WITH tb.evenement=e.id
+            JOIN AppBundle:Billet b WITH tb.id=b.typeBillet
             WHERE u.id= :userId
             AND b.checked = 1
             GROUP BY  u.id
@@ -76,7 +77,6 @@ class UserRepository extends EntityRepository
             ->setParameter('userId', $user->getId())
             ->getResult();
     }
-
     /**
      * count Event Public
      */

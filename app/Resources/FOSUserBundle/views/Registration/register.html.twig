@@ -20,12 +20,23 @@
     <script src="{{ asset('build/kartik-v/js/fileinput.min.js')  }}" type="text/javascript"></script>
     <script src="{{ asset('build/kartik-v/js/locales/fr.js')  }}" type="text/javascript"></script>
     <script type="text/javascript">
-        $("#fos_user_registration_form_image").fileinput({
-            showUpload: true,
-            language: 'fr',
-            theme :'fa',
-            showUploadButton: true
+        $(document).ready(function () {
+            $("#fos_user_registration_form_image").fileinput({
+                showUpload: true,
+                language: 'fr',
+                theme: 'fa',
+                showUploadButton: true
 
+            });
+            $('#fos_user_registration_form_options_isEventManager').on("change",function(){
+                if(!$(this).is(":checked")) {
+                    $('#fos_user_registration_form_options_usePaypal').hide();
+                    $('label[attr=""]').hide();
+                    $('#fos_user_registration_form_options_useOrangeMoney').hide();
+                    $('#fos_user_registration_form_options_paypalAccount').hide();
+                    //$('#fos_user_registration_form_options_useOrangeMoney').hide();
+                }
+            });
         });
     </script>
 {% endblock %}
