@@ -132,6 +132,27 @@ class UserOptions
      * @ORM\Column(type="string", length=100)
      */
     private $paypal_account;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $seats_io_workspace_name;
+
+    /**
+     * @return mixed
+     */
+    public function getSeatsIoWorkspaceName()
+    {
+        return $this->seats_io_workspace_name;
+    }
+
+    /**
+     * @param mixed $seats_io_workspace_name
+     */
+    public function setSeatsIoWorkspaceName($seats_io_workspace_name): void
+    {
+        $this->seats_io_workspace_name = $seats_io_workspace_name;
+    }
     /**
      * @ORM\Column(type="string", length=100, nullable=true)
      */
@@ -143,6 +164,26 @@ class UserOptions
     public function getSeatsIoWorkspaceId()
     {
         return $this->seats_io_workspace_id;
+    }
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $seats_io_public_workspace_id;
+
+    /**
+     * @return mixed
+     */
+    public function getSeatsIoPublicWorkspaceId()
+    {
+        return $this->seats_io_public_workspace_id;
+    }
+
+    /**
+     * @param mixed $seats_io_public_workspace_id
+     */
+    public function setSeatsIoPublicWorkspaceId($seats_io_public_workspace_id): void
+    {
+        $this->seats_io_public_workspace_id = $seats_io_public_workspace_id;
     }
 
     /**

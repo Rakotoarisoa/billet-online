@@ -56,10 +56,6 @@
                 </div>
                 <div id="root" data-event-id="{{ event.id }}" class="container-fluid" style="height: 800px;">
                 </div>
-                <div id="event-manager" class="container-fluid" style="height: 800px;">
-                </div>
-                <div id="chart-manager" class="container-fluid" style="height: 800px;">
-                </div>
         </section>
     {% endblock %}
     {% block contact %}{% endblock %}
@@ -79,8 +75,8 @@
         <script>
             new seatsio.SeatingChartDesigner({
                 divId: 'root',
-                secretKey: '5f368bd5-a0be-42d1-9a60-7f85bc5e5e60',
-                chartKey: 'bc72864b-7908-853d-71a7-995753c71882',
+                secretKey: '{{ event.user.options.seatsIoWorkspaceId }}',//'5f368bd5-a0be-42d1-9a60-7f85bc5e5e60',
+                chartKey: '{{ event.options.seatsIoChartKey }}',//bc72864b-7908-853d-71a7-995753c71882',
                 language :'fr'
             }).render();
         </script>

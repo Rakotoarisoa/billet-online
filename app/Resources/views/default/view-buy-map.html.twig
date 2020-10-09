@@ -934,8 +934,8 @@
         <script type="text/javascript">
             new seatsio.SeatingChart({
                 divId: 'chart',
-                workspaceKey: '1d982e69-89ab-4509-bdc3-8329d7e4795e',
-                event: '02dab5ac-f0f3-4d1f-b3a5-b8cc51f53863',
+                workspaceKey: '{{ event.user.options.seatsIoPublicWorkspaceId }}', //'1d982e69-89ab-4509-bdc3-8329d7e4795e',
+                event: '{{ event.options.seatsIoEventSecretKey }}',
                 language : 'fr',
                 //selectedObjectsInputName : 'selectedSeatsField',
                 pricing: [

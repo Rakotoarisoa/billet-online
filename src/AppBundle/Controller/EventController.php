@@ -243,7 +243,8 @@ class EventController extends Controller
      * */
     public function viewStateUserMap(Evenement $event)
     {
-        return $this->render('event_admin/event/view-map-admin.html.twig', array('event' => $event));
+        $admin_secret = $this->getParameter('seats_io_admin_key');
+        return $this->render('event_admin/event/view-map-admin.html.twig', array('event' => $event, 'admin_secret' => $admin_secret));
     }
 
 }
