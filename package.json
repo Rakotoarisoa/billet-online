@@ -37,6 +37,6 @@
     "react-material-ui-form-validator": "^2.0.9",
     "react-promise-tracker": "^2.0.5",
     "react-toastr": "^3.0.0",
-    "yarn": "^1.17.3"
+    "yarn": "^1.22.0"
   }
 }
