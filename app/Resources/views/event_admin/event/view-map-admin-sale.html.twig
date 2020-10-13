@@ -2,7 +2,7 @@
 {% block header %}
 {% endblock %}
 {% block title %}
-    {{ event.titreEvenement }} | Configuration plan de salle
+    {{ event.titreEvenement }} | Paramètrer les billets - Plan de salle
 {% endblock %}
 {% block breadcrumb %}
     <!--<section class="breadcumb-area bg-img bg-overlay" style="background-color: black;">
@@ -19,7 +19,7 @@
                 <div class="row mr-15 mt-15 ml-15 mb-15">
                     <div class="col-sm-8">
                         <div class="col p-4 d-flex flex-column position-static">
-                            <h3 class="mb-0"><a href="{{ url('viewSingle',{'id':event.id}) }}">{{ event.titreEvenement }}</a></h3>
+                            <h3 class="mb-0"><a href="{{ url('viewSingle',{'id':event.id}) }}">{{ event.titreEvenement }} | Paramètres des billets</a></h3>
                             <div class="mb-1 text-muted">
                                 {% if event.dateFinEvent is defined and event.dateFinEvent is defined and  event.dateDebutEvent|date("d M Y") == event.dateFinEvent|date("d M Y") %}
                                     <span class="fa fa-clock"></span>&nbsp;{{ event.dateDebutEvent|localizeddate('none','none',null,null,"cccc, d MMMM Y 'à' hh:mm") }}
@@ -73,17 +73,13 @@
         <script src="{{ asset('js/active.js') }}"></script>
         <script src="https://cdn.seatsio.net/chart.js"></script>
         <script>
-            new seatsio.SeatingChartDesigner({
+            new seatsio.EventManager({
                 divId: 'root',
-                secretKey: '{{ event.user.options.seatsIoWorkspaceId }}',//'5f368bd5-a0be-42d1-9a60-7f85bc5e5e60',
-                chartKey: '{{ event.options.seatsIoChartKey }}',//bc72864b-7908-853d-71a7-995753c71882',
-                language : 'fr',
-                features: {
-                    disabled: ['generalAdmissionAreas','focalPoint', 'backgroundImage', 'rows', 'tables']
-                }
-
+                secretKey: '{{ event.user.options.seatsIoWorkspaceId }}', // never expose the secret key on a public web page!
+                event: '{{ event.options.seatsIoEventSecretKey }}',
+                mode: 'manageForSaleConfig', // 'manageObjectStatuses' or 'manageForSaleConfig'. More to follow.
+                language: 'fr'
             }).render();
-
         </script>
 
         <!-- Vue js

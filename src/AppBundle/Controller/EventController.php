@@ -231,20 +231,67 @@ class EventController extends Controller
     /**
      * Modifier un évènement
      * @Route("/{user}/event/edit/{id}", name="viewEventAdmin")
+     * @Security("has_role('ROLE_USER')")
      * */
     public function viewEventUser(Evenement $event)
     {
+        if($this->getUser() != $event->getUser() ){
+            throw new AccessDeniedException();
+        }
         return $this->render('event_admin/event/event-view.html.twig', array('event' => $event));
     }
 
     /**
      * Modifier un évènement
-     * @Route("/event/{id}/edit/map", name="viewEventMapAdmin")
+     * @Route("/event/edit/map/{id}", name="viewEventMapAdmin")
+     * @Security("has_role('ROLE_USER')")
      * */
     public function viewStateUserMap(Evenement $event)
     {
+        if($this->getUser() != $event->getUser() ){
+            throw new AccessDeniedException();
+        }
         $admin_secret = $this->getParameter('seats_io_admin_key');
         return $this->render('event_admin/event/view-map-admin.html.twig', array('event' => $event, 'admin_secret' => $admin_secret));
+    }
+    /**
+     * Modifier un évènement
+     * @Route("/event/edit/sale/map/{id}", name="viewEventSaleMapAdmin")
+     * @Security("has_role('ROLE_USER')")
+     * */
+    public function viewToSaleUserMap(Evenement $event)
+    {
+        if($this->getUser() != $event->getUser() ){
+            throw new AccessDeniedException();
+        }
+        $admin_secret = $this->getParameter('seats_io_admin_key');
+        return $this->render('event_admin/event/view-map-admin-sale.html.twig', array('event' => $event, 'admin_secret' => $admin_secret));
+    }
+    /**
+     * Modifier un évènement
+     * @Route("/event/edit/object/map/{id}", name="viewEventObjectMapAdmin")
+     * @Security("has_role('ROLE_USER')")
+     * */
+    public function viewStateObjectUserMap(Evenement $event)
+    {
+        if($this->getUser() != $event->getUser() ){
+            throw new AccessDeniedException();
+        }
+        $admin_secret = $this->getParameter('seats_io_admin_key');
+        return $this->render('event_admin/event/view-map-admin-object.html.twig', array('event' => $event, 'admin_secret' => $admin_secret));
+    }
+    /**
+     * Modifier un évènement
+     * @Route("/event/edit/object/map/{id}", name="viewEventChannelMapAdmin")
+     * @Security("has_role('ROLE_USER')")
+     * */
+    public function viewStateChannelUserMap(Evenement $event)
+    {
+        if($this->getUser() != $event->getUser() ){
+            throw new AccessDeniedException();
+        }
+        $admin_secret = $this->getParameter('seats_io_admin_key');
+        return $this->render('event_admin/event/view-map-admin-channels.html.twig', array('event' => $event, 'admin_secret' => $admin_secret));
     }
 
 }

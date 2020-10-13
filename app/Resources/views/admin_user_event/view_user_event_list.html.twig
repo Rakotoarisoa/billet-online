@@ -140,11 +140,18 @@
                                             </a>
                                             <div class="dropdown-divider"></div>
                                             <a href="{{ path('viewEventUpdate',{'id':event.id}) }}" class="dropdown-item" target="_blank">
-                                            <i class="fa fa-pencil" aria-hidden="true"></i> Modifier
+                                                <i class="fa fa-pencil" aria-hidden="true"></i> Modifier
                                             </a>
                                             <div class="dropdown-divider"></div>
+                                            <h3 class="dropdown-item text-justify"><i class="fa fa-grip-horizontal" aria-hidden="true"></i> PLAN DE SALLE</h3>
                                             <a href="{{ path('viewEventMapAdmin',{'id':event.id}) }}" class="dropdown-item" target="_blank">
-                                            <i class="fa fa-address-book" aria-hidden="true"></i> Plan de salle                                            
+                                                <i class="fa fa-address-book" aria-hidden="true"></i> Modifier le plan de salle
+                                            </a>
+                                            <a href="{{ path('viewEventSaleMapAdmin',{'id':event.id}) }}" class="dropdown-item" target="_blank">
+                                                <i class="fa fa-ticket" aria-hidden="true"></i> Modifier les billets en vente
+                                            </a>
+                                            <a href="{{ path('viewEventObjectMapAdmin',{'id':event.id}) }}" class="dropdown-item" target="_blank">
+                                                <i class="fa fa-ticket" aria-hidden="true"></i> Modifier le mode de ventes
                                             </a>
                                             <div class="dropdown-divider"></div>
                                             {% if event.reservation|length %}

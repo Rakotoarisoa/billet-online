@@ -176,6 +176,10 @@ class AdminUserEventController extends Controller
     public function deleteEvent(Request $request, Evenement $evenement){
         try{
             $em=$this->getDoctrine()->getManager();
+            if($evenement->getIsUsingSeatMap() && $evenement->getOptions()->getSeatsIoEventSecretKey() != ''){
+                $seatsio= new \Seatsio\SeatsioClient($evenement->getUser()->getUserOptions()->getSeatsIoWorkspaceId());
+                $seatsio->events->delete($evenement->getOptions()->getSeatsIoEventSecretKey());
+            }
             $em->remove($evenement);
             $em->flush();
             return new Response('Suppression Réussie',200);
