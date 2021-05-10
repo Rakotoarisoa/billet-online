@@ -32,7 +32,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "ckeditor": "^4.12.1",
     "croppie": "^2.6.4",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "material-ui-color-picker": "^3.2.0",
     "react-material-ui-form-validator": "^2.0.9",
     "react-promise-tracker": "^2.0.5",
